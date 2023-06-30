@@ -1,0 +1,122 @@
+[gd_scene load_steps=8 format=2]
+
+[ext_resource path="res://QuitButton.cs" type="Script" id=1]
+[ext_resource path="res://scenes/PlayButton.cs" type="Script" id=2]
+[ext_resource path="res://scenes/WebBuildUploader.tscn" type="PackedScene" id=3]
+[ext_resource path="res://gradient256.png" type="Texture" id=4]
+[ext_resource path="res://scenes/HookesButton.tscn" type="PackedScene" id=5]
+[ext_resource path="res://scenes/MainMenu.cs" type="Script" id=7]
+
+[sub_resource type="CanvasItemMaterial" id=1]
+
+[node name="MainMenu" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 7 )
+
+[node name="bg" type="TextureRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -8.0
+margin_right = -8.0
+expand = true
+stretch_mode = 7
+
+[node name="WebBuildUploader" parent="bg" instance=ExtResource( 3 )]
+
+[node name="gradient" type="TextureRect" parent="."]
+modulate = Color( 0, 0, 0, 1 )
+material = SubResource( 1 )
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = -85.0
+texture = ExtResource( 4 )
+expand = true
+stretch_mode = 1
+
+[node name="title_logo" type="TextureRect" parent="."]
+margin_left = 285.0
+margin_top = 65.0
+margin_right = 776.0
+margin_bottom = 213.0
+
+[node name="quit_button" type="Button" parent="."]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = 88.0
+margin_top = -198.0
+margin_right = 208.0
+margin_bottom = -158.0
+rect_pivot_offset = Vector2( 100, 0 )
+script = ExtResource( 1 )
+
+[node name="Label" type="Label" parent="quit_button"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "Quit Game"
+align = 1
+valign = 1
+autowrap = true
+
+[node name="hookesbutton" parent="quit_button" instance=ExtResource( 5 )]
+
+[node name="play_button" type="Button" parent="."]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -211.0
+margin_top = -197.0
+margin_right = -91.0
+margin_bottom = -157.0
+rect_pivot_offset = Vector2( 60, 20 )
+script = ExtResource( 2 )
+
+[node name="Label" type="Label" parent="play_button"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "Play"
+align = 1
+valign = 1
+autowrap = true
+
+[node name="hookesbutton" parent="play_button" instance=ExtResource( 5 )]
+
+[node name="credits_button" type="Button" parent="."]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -62.0
+margin_top = -198.0
+margin_right = 58.0
+margin_bottom = -158.0
+rect_pivot_offset = Vector2( 100, 0 )
+
+[node name="Label" type="Label" parent="credits_button"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "Credits"
+align = 1
+valign = 1
+autowrap = true
+
+[node name="hookesbutton" parent="credits_button" instance=ExtResource( 5 )]
+
+[node name="Label" type="Label" parent="."]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -220.0
+margin_top = 58.0
+margin_right = 222.0
+margin_bottom = 140.0
+text = "GAME TITLE"
+align = 1
+valign = 1
+
+[connection signal="pressed" from="quit_button" to="quit_button" method="OnPressed"]
+[connection signal="pressed" from="play_button" to="play_button" method="OnPressed"]
+[connection signal="pressed" from="credits_button" to="credits_button" method="OnPressed"]

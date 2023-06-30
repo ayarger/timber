@@ -1,0 +1,55 @@
+using Godot;
+using System;
+
+public class UIOrb : Control
+{
+    HasStats target_data;
+
+    TextureProgress tex_progress;
+
+    MeshInstance target_mesh;
+
+    public override void _Ready()
+    {
+        tex_progress = GetNode<TextureProgress>("FrontProgress");
+        if(IsInstanceValid(target_data) && IsInstanceValid(target_data.GetParent()))
+            target_mesh = target_data.GetParent().GetNode<MeshInstance>("view/mesh");
+    }
+
+    public void Configure(HasStats _target)
+    {
+        target_data = _target;
+    }
+
+    public override void _Process(float delta)
+    {
+        if (IsInstanceValid(target_data))
+            PursueTarget();
+        else
+            QueueFree();
+    }
+
+    void PursueTarget()
+    {
+        Camera cam = (Camera)GameplayCamera.GetGameplayCamera();
+        Vector3 desired_position = target_data.GetParent<Spatial>().GlobalTranslation;
+
+        if (IsInstanceValid(target_mesh))
+            desired_position = target_mesh.GlobalTransform.Xform(new Vector3(0, 1, 0));
+
+        var screenPosition = cam.UnprojectPosition(desired_position);
+        RectGlobalPosition = screenPosition;
+        RectScale = Vector2.One * 0.15f;
+
+        tex_progress.Value = target_data.health;
+    }
+
+    public static UIOrb Create(HasStats stats)
+    {
+        PackedScene scene = (PackedScene)ResourceLoader.Load("res://scenes/UIOrb.tscn");
+        UIOrb new_orb = (UIOrb) scene.Instance();
+        new_orb.Configure(stats);
+        PrimaryCanvas.AddChildNode(new_orb);
+        return new_orb;
+    }
+}

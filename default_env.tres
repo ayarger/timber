@@ -1,0 +1,11 @@
+[gd_resource type="Environment" format=2]
+
+[resource]
+background_mode = 1
+background_sky_custom_fov = 93.7
+background_energy = 0.0
+fog_color = Color( 0, 0, 0, 1 )
+glow_intensity = 8.0
+glow_strength = 2.0
+glow_bloom = 0.65
+glow_hdr_threshold = 0.5

@@ -1,0 +1,463 @@
+[gd_scene load_steps=23 format=2]
+
+[ext_resource path="res://gameover_background.png" type="Texture" id=1]
+[ext_resource path="res://heroine_continue.png" type="Texture" id=2]
+[ext_resource path="res://circle_1024.png" type="Texture" id=3]
+[ext_resource path="res://scenes/UISinMovement.cs" type="Script" id=4]
+[ext_resource path="res://fonts/LuckiestGuy-Regular.ttf" type="DynamicFontData" id=5]
+[ext_resource path="res://scenes/ContinueScreenSpotlight.cs" type="Script" id=6]
+[ext_resource path="res://scenes/GameOver.cs" type="Script" id=7]
+[ext_resource path="res://scenes/HookesButton.cs" type="Script" id=8]
+[ext_resource path="res://scenes/HookesButton.tscn" type="PackedScene" id=9]
+
+[sub_resource type="Curve" id=11]
+_data = [ Vector2( 0, 0 ), 0.0, 1.4, 0, 0, Vector2( 1, 1 ), 0.0, 0.0, 0, 0 ]
+
+[sub_resource type="Curve" id=12]
+_data = [ Vector2( 0, 0 ), 0.0, 0.0, 0, 0, Vector2( 1, 1 ), 0.0, 0.0, 0, 0 ]
+
+[sub_resource type="Curve" id=19]
+_data = [ Vector2( 0, 0 ), 0.0, 0.0, 0, 0, Vector2( 0.696629, 0.998864 ), 4.57447, -5.72143, 0, 0, Vector2( 0.857678, 0.998864 ), 6.49296, -3.98569, 0, 0, Vector2( 0.996255, 1 ), 2.77403, 0.0, 0, 0 ]
+
+[sub_resource type="Shader" id=16]
+code = "shader_type canvas_item;
+
+uniform float blur_amount : hint_range(1.0, 20.0) = 5.0;
+uniform vec2 texture_resolution = vec2(1920.0, 1080.0);
+
+const float pi = 3.14159265358979323846;
+const int kernel_size = 7; // Try different values but typically 7 or 5 is good enough
+
+float gaussian(float x, float sigma) {
+    return (1.0 / (sigma * sqrt(2.0 * pi))) * exp(-(x * x) / (2.0 * sigma * sigma));
+}
+
+void fragment() {
+    vec2 texel_size = 1.0 / texture_resolution;
+    float sigma = blur_amount;
+
+    vec4 sum = vec4(0.0);
+    float totalWeight = 0.0;
+
+    // Horizontal pass
+    for (int x = -kernel_size; x <= kernel_size; x++) {
+        float weight = gaussian(float(x), sigma);
+        vec2 offset = vec2(float(x), 0.0) * texel_size;
+        sum += texture(TEXTURE, UV + offset) * weight;
+        totalWeight += weight;
+    }
+
+    // Vertical pass
+    vec4 sumV = vec4(0.0);
+    float totalWeightV = 0.0;
+    for (int y = -kernel_size; y <= kernel_size; y++) {
+        float weight = gaussian(float(y), sigma);
+        vec2 offset = vec2(0.0, float(y)) * texel_size;
+        sumV += texture(TEXTURE, UV + offset) * weight;
+        totalWeightV += weight;
+    }
+
+    vec4 finalColor = (sum / totalWeight + sumV / totalWeightV) * 0.5;
+    COLOR = finalColor;
+}
+"
+
+[sub_resource type="ShaderMaterial" id=15]
+shader = SubResource( 16 )
+shader_param/blur_amount = 10.0
+shader_param/texture_resolution = Vector2( 1920, 1080 )
+
+[sub_resource type="Theme" id=3]
+
+[sub_resource type="Gradient" id=20]
+offsets = PoolRealArray( 0, 0.0466102, 0.898305, 1 )
+colors = PoolColorArray( 0, 0, 0, 0, 0.0470588, 0.0470588, 0.0470588, 0.0901961, 1, 1, 1, 1, 1, 1, 1, 0 )
+
+[sub_resource type="StyleBoxFlat" id=7]
+bg_color = Color( 1, 1, 1, 0 )
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color( 1, 1, 1, 1 )
+
+[sub_resource type="DynamicFont" id=13]
+size = 70
+outline_color = Color( 0, 0, 0, 1 )
+font_data = ExtResource( 5 )
+
+[sub_resource type="StreamTexture" id=10]
+flags = 4
+load_path = "res://.import/mtd_icon.png-e200de41f2b9e2d9b88122771d83c33e.stex"
+
+[sub_resource type="DynamicFont" id=9]
+size = 500
+outline_size = 3
+outline_color = Color( 0.913725, 0.913725, 0.913725, 1 )
+use_mipmaps = true
+use_filter = true
+font_data = ExtResource( 5 )
+
+[sub_resource type="DynamicFont" id=17]
+size = 100
+outline_size = 7
+outline_color = Color( 0, 0, 0, 1 )
+font_data = ExtResource( 5 )
+
+[sub_resource type="DynamicFont" id=18]
+size = 50
+font_data = ExtResource( 5 )
+
+[node name="GameOver" type="Node"]
+script = ExtResource( 7 )
+ease_out_curve = SubResource( 11 )
+ease_in_out = SubResource( 12 )
+ease_bounce = SubResource( 19 )
+continue_text_letters = [ NodePath("ui_foreground/continue_text_c"), NodePath("ui_foreground/continue_text_o"), NodePath("ui_foreground/continue_text_n"), NodePath("ui_foreground/continue_text_t"), NodePath("ui_foreground/continue_text_i"), NodePath("ui_foreground/continue_text_n2"), NodePath("ui_foreground/continue_text_u"), NodePath("ui_foreground/continue_text_e"), NodePath("ui_foreground/continue_text_questionmark") ]
+
+[node name="ui_backround" type="CanvasLayer" parent="."]
+layer = -1
+
+[node name="game_over_background" type="TextureRect" parent="ui_backround"]
+material = SubResource( 15 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+rect_pivot_offset = Vector2( 512, 300 )
+theme = SubResource( 3 )
+texture = ExtResource( 1 )
+expand = true
+stretch_mode = 7
+
+[node name="scene2d" type="Node2D" parent="."]
+
+[node name="spotlight" type="Sprite" parent="scene2d"]
+position = Vector2( 1000, 912 )
+scale = Vector2( 1, 0.25 )
+texture = ExtResource( 3 )
+script = ExtResource( 6 )
+
+[node name="Camera2D" type="Camera2D" parent="scene2d"]
+position = Vector2( 1000, -1000 )
+scale = Vector2( 3, 1 )
+current = true
+zoom = Vector2( 1.5, 1.5 )
+
+[node name="character" type="Sprite" parent="scene2d"]
+position = Vector2( 960, 960 )
+
+[node name="view" type="Sprite" parent="scene2d/character"]
+position = Vector2( 0, -543 )
+texture = ExtResource( 2 )
+
+[node name="spotlight_particles" type="CPUParticles2D" parent="scene2d"]
+position = Vector2( 900, 300 )
+amount = 200
+lifetime = 5.0
+randomness = 0.78
+emission_shape = 2
+emission_rect_extents = Vector2( 400, 600 )
+gravity = Vector2( 0, 0 )
+initial_velocity = 72.99
+initial_velocity_random = 1.0
+scale_amount = 10.0
+color = Color( 1, 1, 1, 0.192157 )
+color_ramp = SubResource( 20 )
+
+[node name="ui_foreground" type="CanvasLayer" parent="."]
+
+[node name="give_up_button" type="Button" parent="ui_foreground"]
+visible = false
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = 467.0
+margin_top = -816.0
+margin_right = 867.0
+margin_bottom = -216.0
+rect_pivot_offset = Vector2( 91, 30 )
+custom_styles/normal = SubResource( 7 )
+
+[node name="Label" type="Label" parent="ui_foreground/give_up_button"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+rect_pivot_offset = Vector2( 91, 30 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_fonts/font = SubResource( 13 )
+text = "Give
+Up"
+align = 1
+valign = 1
+autowrap = true
+
+[node name="hookesbutton" type="Node" parent="ui_foreground/give_up_button"]
+script = ExtResource( 8 )
+
+[node name="MtdIcon" type="Sprite" parent="ui_foreground/give_up_button"]
+position = Vector2( 1, 24 )
+scale = Vector2( 0.5625, 0.5625 )
+texture = SubResource( 10 )
+
+[node name="game_over_image" type="TextureRect" parent="ui_foreground"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 129.0
+margin_top = 78.0
+margin_right = -127.0
+margin_bottom = -72.0
+expand = true
+stretch_mode = 6
+
+[node name="countdown_number" type="Label" parent="ui_foreground"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -10.0
+margin_top = -540.0
+margin_right = 1011.0
+margin_bottom = 548.0
+rect_pivot_offset = Vector2( 510.5, 297 )
+custom_colors/font_color = Color( 1, 1, 1, 0 )
+custom_fonts/font = SubResource( 9 )
+text = "9"
+align = 1
+valign = 1
+autowrap = true
+uppercase = true
+
+[node name="continue_text_c" type="Label" parent="ui_foreground"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -346.0
+margin_top = -900.0
+margin_right = 675.0
+margin_bottom = 188.0
+rect_pivot_offset = Vector2( 510.5, 297 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+custom_fonts/font = SubResource( 17 )
+text = "C"
+align = 1
+valign = 1
+autowrap = true
+uppercase = true
+script = ExtResource( 4 )
+amplitude = 30.0
+
+[node name="continue_text_o" type="Label" parent="ui_foreground"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -254.0
+margin_top = -900.0
+margin_right = 767.0
+margin_bottom = 188.0
+rect_pivot_offset = Vector2( 510.5, 297 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+custom_fonts/font = SubResource( 17 )
+text = "O"
+align = 1
+valign = 1
+autowrap = true
+uppercase = true
+script = ExtResource( 4 )
+offset = 1.0
+amplitude = 30.0
+
+[node name="continue_text_n" type="Label" parent="ui_foreground"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -159.0
+margin_top = -900.0
+margin_right = 862.0
+margin_bottom = 188.0
+rect_pivot_offset = Vector2( 510.5, 297 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+custom_fonts/font = SubResource( 17 )
+text = "n"
+align = 1
+valign = 1
+autowrap = true
+uppercase = true
+script = ExtResource( 4 )
+offset = 2.0
+amplitude = 30.0
+
+[node name="continue_text_t" type="Label" parent="ui_foreground"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -68.0
+margin_top = -900.0
+margin_right = 953.0
+margin_bottom = 188.0
+rect_pivot_offset = Vector2( 510.5, 297 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+custom_fonts/font = SubResource( 17 )
+text = "T"
+align = 1
+valign = 1
+autowrap = true
+uppercase = true
+script = ExtResource( 4 )
+offset = 3.0
+amplitude = 30.0
+
+[node name="continue_text_i" type="Label" parent="ui_foreground"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_top = -900.0
+margin_right = 1021.0
+margin_bottom = 188.0
+rect_pivot_offset = Vector2( 510.5, 297 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+custom_fonts/font = SubResource( 17 )
+text = "I"
+align = 1
+valign = 1
+autowrap = true
+uppercase = true
+script = ExtResource( 4 )
+offset = 4.0
+amplitude = 30.0
+
+[node name="continue_text_n2" type="Label" parent="ui_foreground"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = 74.0
+margin_top = -900.0
+margin_right = 1095.0
+margin_bottom = 188.0
+rect_pivot_offset = Vector2( 510.5, 297 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+custom_fonts/font = SubResource( 17 )
+text = "N"
+align = 1
+valign = 1
+autowrap = true
+uppercase = true
+script = ExtResource( 4 )
+offset = 5.0
+amplitude = 30.0
+
+[node name="continue_text_u" type="Label" parent="ui_foreground"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = 167.0
+margin_top = -900.0
+margin_right = 1188.0
+margin_bottom = 188.0
+rect_pivot_offset = Vector2( 510.5, 297 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+custom_fonts/font = SubResource( 17 )
+text = "U"
+align = 1
+valign = 1
+autowrap = true
+uppercase = true
+script = ExtResource( 4 )
+offset = 6.0
+amplitude = 30.0
+
+[node name="continue_text_e" type="Label" parent="ui_foreground"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = 253.0
+margin_top = -900.0
+margin_right = 1274.0
+margin_bottom = 188.0
+rect_pivot_offset = Vector2( 510.5, 297 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+custom_fonts/font = SubResource( 17 )
+text = "e"
+align = 1
+valign = 1
+autowrap = true
+uppercase = true
+script = ExtResource( 4 )
+offset = 7.0
+amplitude = 30.0
+
+[node name="continue_text_questionmark" type="Label" parent="ui_foreground"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = 330.0
+margin_top = -900.0
+margin_right = 1351.0
+margin_bottom = 188.0
+rect_pivot_offset = Vector2( 510.5, 297 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+custom_fonts/font = SubResource( 17 )
+text = "?"
+align = 1
+valign = 1
+autowrap = true
+uppercase = true
+script = ExtResource( 4 )
+offset = 8.0
+amplitude = 30.0
+
+[node name="retry_button" type="Button" parent="ui_foreground"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = 242.0
+margin_top = -280.0
+margin_right = 755.0
+margin_bottom = -130.0
+rect_pivot_offset = Vector2( 91, 30 )
+custom_styles/normal = SubResource( 7 )
+
+[node name="Label" type="Label" parent="ui_foreground/retry_button"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_right = -284.119
+margin_bottom = 15.0
+rect_pivot_offset = Vector2( 91, 30 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+custom_fonts/font = SubResource( 13 )
+text = "Retry"
+align = 1
+valign = 1
+autowrap = true
+
+[node name="continue_count" type="Label" parent="ui_foreground/retry_button"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 390.0
+margin_top = 67.0
+margin_right = -23.0
+margin_bottom = 12.0
+rect_pivot_offset = Vector2( 91, 30 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+custom_fonts/font = SubResource( 18 )
+text = "2"
+align = 1
+valign = 1
+autowrap = true
+
+[node name="hookesbutton" parent="ui_foreground/retry_button" instance=ExtResource( 9 )]
+
+[node name="MtdIcon" type="Sprite" parent="ui_foreground/retry_button"]
+position = Vector2( 355, 75 )
+texture = SubResource( 10 )
+
+[connection signal="pressed" from="ui_foreground/give_up_button" to="." method="OnRetryPressed"]
+[connection signal="pressed" from="ui_foreground/retry_button" to="." method="OnRetryPressed"]

@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://scenes/UIManager.cs" type="Script" id=1]
+
+[sub_resource type="StyleBoxFlat" id=1]
+bg_color = Color( 1, 1, 1, 1 )
+
+[node name="UIManager" type="CanvasLayer"]
+layer = 128
+script = ExtResource( 1 )
+
+[node name="flash_panel" type="Panel" parent="."]
+margin_right = 9999.0
+margin_bottom = 9999.0
+custom_styles/panel = SubResource( 1 )

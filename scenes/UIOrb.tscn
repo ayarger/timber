@@ -1,0 +1,55 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://UIOrb.cs" type="Script" id=1]
+[ext_resource path="res://lives_tex.png" type="Texture" id=2]
+[ext_resource path="res://circle_256.png" type="Texture" id=3]
+[ext_resource path="res://circle_256_ring.png" type="Texture" id=4]
+
+[node name="UIOrb" type="Control"]
+margin_left = 284.0
+margin_top = 1029.0
+margin_right = 284.0
+margin_bottom = 1029.0
+rect_scale = Vector2( 0.35, 0.35 )
+script = ExtResource( 1 )
+
+[node name="BackProgress" type="TextureProgress" parent="."]
+self_modulate = Color( 0, 0, 0, 1 )
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -128.0
+margin_top = -128.0
+margin_right = 128.0
+margin_bottom = 128.0
+value = 100.0
+texture_progress = ExtResource( 3 )
+fill_mode = 4
+
+[node name="FrontProgress" type="TextureProgress" parent="."]
+self_modulate = Color( 1, 0.34902, 0.34902, 1 )
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -128.0
+margin_top = -128.0
+margin_right = 128.0
+margin_bottom = 128.0
+value = 75.0
+texture_progress = ExtResource( 4 )
+fill_mode = 4
+
+[node name="TextureRect" type="TextureRect" parent="FrontProgress"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -82.0
+margin_top = -82.0
+margin_right = 82.0
+margin_bottom = 82.0
+texture = ExtResource( 2 )
+expand = true
+stretch_mode = 7
