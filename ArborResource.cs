@@ -253,7 +253,12 @@ public class ArborResource : Node
             return;
         instance.assets_currently_loading.Add(resource);
 
-        new_request.Request(web_url);
+        var headers = new string[]
+        {
+            "Cache-Control: max-age=999999", // Cache data for 1 hour (3600 seconds)
+        };
+
+        new_request.Request(web_url, headers);
         GD.Print("web retrieving [" + resource + "]");
     }
 

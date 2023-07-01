@@ -2,6 +2,7 @@
 
 using Godot;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 public class UIManager : Node
@@ -26,12 +27,14 @@ public class UIManager : Node
 
         if(flash_panel.Modulate.a > 0.01f)
         {
-            flash_panel.Modulate = flash_panel.Modulate.LinearInterpolate(flash_panel_invisible, 0.01f);
+            flash_panel.Modulate = flash_panel.Modulate.LinearInterpolate(flash_panel_invisible, flash_degrade_rate);
         }
     }
 
-    public static void RequestFlash()
+    float flash_degrade_rate = 0.01f;
+    public static void RequestFlash(float _flash_degrade_rate = 0.01f)
     {
+        instance.flash_degrade_rate = _flash_degrade_rate;
         instance.flash_panel.Modulate = instance.flash_panel_visible;
     }
 
@@ -156,24 +159,51 @@ public class UIManager : Node
 
     void SettingsMenu()
     {
-        List<string> options = new List<string>() { "Discord", "Credits2", "Quit", "debug_victory", "debug_lose", "debug_webgl_upload", "debug_webgl_upload_opt", "debug_test_image_upload" };
+        List<string> options = new List<string>() { "Discord", "Credits2", "Quit", "debug_victory", "debug_lose", "debug_webgl_upload", "debug_webgl_upload_opt", "debug_test_image_upload", "debug_test_fullscreen" };
         List<System.Action> actions = new List<Action>()
         {
             () => { OS.ShellOpen(@"https://discord.gg/2GZ3SxVA7Q"); },
             () => {  },
             () => { GameOver.PerformGameOver(new GameOverRequest() {fast_mode = true}); },
-            () => { },
+            () => { VictoryScene.PerformVictory(); },
             () => { GameOver.PerformGameOver(new GameOverRequest()); },
             () => { WebBuildUploader.UploadWebBuild(); },
             () => { WebBuildUploader.UploadOptimizedWebBuild(); },
-            () => { 
-            
-                
+            () => {
+                ArborCoroutine.StartCoroutine(changeCharacterExperiment());
+            },
+            () => {
+                string jsCode = @"
+                    document.getElementById('canvas').requestFullscreen ? document.getElementById('canvas').requestFullscreen() :
+                    document.getElementById('canvas').mozRequestFullScreen ? document.getElementById('canvas').mozRequestFullScreen() :
+                    document.getElementById('canvas').webkitRequestFullscreen ? document.getElementById('canvas').webkitRequestFullscreen() : false;
+                ";
 
+                JavaScript.Eval(jsCode);
             },
         };
 
         UIManager.SimpleMenu("pause", options, actions);
+    }
+
+    IEnumerator changeCharacterExperiment()
+    {
+        yield return ArborResource.Upload<Texture>("upload");
+
+        Texture uploaded_tex = ArborResource.Get<Texture>("upload");
+        if (uploaded_tex == null)
+            yield break;
+
+        /* Scale */
+        MeshInstance mi = GetNode<MeshInstance>("../Main/LuaLoader/Spot/view/mesh");
+        Spatial view = GetNode<Spatial>("../Main/LuaLoader/Spot/view");
+        view.Scale = new Vector3(uploaded_tex.GetWidth(), uploaded_tex.GetHeight(), 1.0f) * 0.01f;
+
+        //shadow_view.Scale = new Vector3(Mathf.Min(2.0f, view.Scale.x), shadow_view.Scale.y, shadow_view.Scale.z);
+
+        ShaderMaterial mat = (ShaderMaterial)mi.GetSurfaceMaterial(0);
+        mat.SetShaderParam("texture_albedo", uploaded_tex);
+        mi.SetSurfaceMaterial(0, mat);
     }
 
     private void CloseButtonPressed(MarginContainer marginContainer)

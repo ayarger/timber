@@ -69,6 +69,8 @@ public class GameOver : Node
         retry_button.Visible = false;
         ToggleContinueLetters(false);
 
+        retry_button.GetNode<Label>("continue_count").Text = continues.ToString();
+
         ArborCoroutine.StartCoroutine(DoIntro(), this);
     }
 
@@ -104,6 +106,8 @@ public class GameOver : Node
         ArborResource.Load<Texture>("images/spot_continue_1.png");
         ArborResource.Load<Texture>("images/spot_continue_2.png");
         ArborResource.Load<Texture>("images/spot_continue_3.png");
+        ArborResource.Load<Texture>("images/spot_victory.png");
+
         ArborResource.Load<Texture>("images/lose_bg.png");
         ArborResource.Load<Texture>("images/gameover_bg.png");
         ArborResource.Load<AudioStream>("sounds/bgm_gameover.ogg");
@@ -130,6 +134,8 @@ public class GameOver : Node
         yield return ArborResource.WaitFor("images/spot_continue_1.png");
         yield return ArborResource.WaitFor("images/spot_continue_2.png");
         yield return ArborResource.WaitFor("images/spot_continue_3.png");
+        yield return ArborResource.WaitFor("images/spot_victory.png");
+
         yield return ArborResource.WaitFor("images/lose_bg.png");
         yield return ArborResource.WaitFor("images/gameover_bg.png");
         yield return ArborResource.WaitFor("images/" + game_config.gameover_image);
@@ -140,7 +146,10 @@ public class GameOver : Node
 
         Texture game_over_image_tex = ArborResource.Get<Texture>("images/" + game_config.gameover_image);
         game_over_image.Texture = game_over_image_tex;
-        character_view.Texture = ArborResource.Get<Texture>("images/spot_continue_3.png");
+        if(continues > 0)
+            character_view.Texture = ArborResource.Get<Texture>("images/spot_continue_3.png");
+        else
+            character_view.Texture = ArborResource.Get<Texture>("images/spot_continue_1.png");
         background_image.Texture = ArborResource.Get<Texture>("images/lose_bg.png");
 
         TransitionSystem.RemoveHold();
@@ -154,18 +163,19 @@ public class GameOver : Node
         AudioStream lose_bgm = ArborResource.Get<AudioStream>("sounds/bgm_btd_defeat.ogg");
         ArborAudioManager.RequestBGM(lose_bgm);
 
-
-        yield return ArborCoroutine.WaitForSeconds(2);
+        yield return ArborCoroutine.WaitForSeconds(0.5f);
+        yield return ArborCoroutine.WaitForMouseClick();
 
         /* Fade out background */
-        Color black_color = new Color(0, 0, 0, 1);
+        Color faded_color = new Color(1, 1, 1, 0.1f);
         Color full_color = new Color(1, 1, 1, 1);
         void FadeOutBackground(float progress)
         {
-            background_image.Modulate = full_color.LinearInterpolate(black_color, progress);
+            mat.SetShaderParam("blur_amount", 0.1f + progress * 10.0f);
+            background_image.Modulate = full_color.LinearInterpolate(faded_color, progress);
         }
 
-        yield return ArborCoroutine.DoOverTime(FadeOutBackground, 0.5f);
+        yield return ArborCoroutine.DoOverTime(FadeOutBackground, 1.0f);
 
         bool can_continue = continues > 0;
 
@@ -182,9 +192,6 @@ public class GameOver : Node
         /* Mode down to character. */
         spotlight_particles.Visible = true;
         yield return ArborCoroutine.MoveOverTime(camera, 1.0f, camera_starting_position, camera_final_position, ease_out_curve);
-
-
-        yield return ArborCoroutine.WaitForSeconds(1.5f);
 
         UIManager.RequestFlash();
         character_view.Texture = ArborResource.Get<Texture>("images/spot_continue_1.png");
@@ -212,6 +219,11 @@ public class GameOver : Node
         int countdown = 9;
         while(countdown > -1)
         {
+            if(retry_clicked)
+            {
+                yield break;
+            }
+
             countdown_number_text.Text = countdown.ToString();
             ArborAudioManager.RequestSFX(ArborResource.Get<AudioStream>("sounds/mtd_vocal_" + countdown.ToString() + ".wav"));
 
@@ -219,11 +231,14 @@ public class GameOver : Node
             countdown--;
         }
 
-        countdown_number_text.Visible = false;
-        ToggleContinueLetters(false);
-        retry_button.Visible = false;
+        if (retry_clicked == false)
+        {
+            countdown_number_text.Visible = false;
+            ToggleContinueLetters(false);
+            retry_button.Visible = false;
 
-        ArborCoroutine.StartCoroutine(DoOnGiveUpPressed(0.0f), this);
+            ArborCoroutine.StartCoroutine(DoOnGiveUpPressed(0.0f), this);
+        }
     }
 
     public override void _Process(float delta)
@@ -348,11 +363,27 @@ public class GameOver : Node
 
         yield return ArborCoroutine.WaitForSeconds(time_to_live + 0.25f);
 
+        continues = 2;
         TransitionSystem.RequestTransition(@"res://scenes/MainMenu.tscn");
     }
 
+    bool retry_clicked = false;
     public void OnRetryPressed()
     {
+        UIManager.RequestFlash(0.1f);
+        retry_clicked = true;
+        countdown_number_text.Visible = false;
+        ToggleContinueLetters(false);
+        retry_button.Visible = false;
+        continues--;
+
+        character_view.Texture = ArborResource.Get<Texture>("images/spot_victory.png");
+        ArborCoroutine.StartCoroutine(DoRetry(), this);
+    }
+
+    IEnumerator DoRetry()
+    {
+        yield return ArborCoroutine.WaitForSeconds(1.0f);
         TransitionSystem.RequestTransition(@"res://Main.tscn");
     }
 }

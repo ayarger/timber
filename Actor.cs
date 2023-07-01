@@ -61,36 +61,6 @@ public class Actor : Spatial
         character_view.SetSurfaceMaterial(0, char_mat);
     }
 
-    IEnumerator DoConfigure_backup(ActorConfig info)
-    {
-        config = info;
-
-        view = (Spatial)GetNode("view");
-        character_view = (MeshInstance)GetNode("view/mesh");
-        character_material = (SpatialMaterial)character_view.GetSurfaceMaterial(0).Duplicate();
-        character_material.ParamsUseAlphaScissor = true;
-        character_material.ParamsAlphaScissorThreshold = 0.5f;
-        //character_material.FlagsTransparent = true;
-
-
-        shadow_view = (MeshInstance)GetNode("shadow");
-        GD.Print("SHADOW [" + shadow_view + "]");
-
-        ArborResource.Load<Texture>("images/" + config.idle_sprite_filename);
-        yield return ArborResource.WaitFor("images/" + config.idle_sprite_filename);
-        Texture idle_sprite = ArborResource.Get<Texture>("images/" + config.idle_sprite_filename);
-
-        /* Scale */
-        view.Scale = new Vector3(idle_sprite.GetWidth(), idle_sprite.GetHeight(), 1.0f) * 0.01f;
-        view.Scale = view.Scale * config.aesthetic_scale_factor;
-        initial_scale = view.Scale;
-
-        shadow_view.Scale = new Vector3(Mathf.Min(2.0f, view.Scale.x), shadow_view.Scale.y, shadow_view.Scale.z);
-
-        character_material.AlbedoTexture = idle_sprite;
-        character_view.SetSurfaceMaterial(0, character_material);
-    }
-
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {

@@ -161,6 +161,14 @@ public class ArborCoroutine : Node
         }
     }
 
+    public static IEnumerator WaitForMouseClick()
+    {
+        while (!Input.IsMouseButtonPressed((int)ButtonList.Left))
+        {
+            yield return null;
+        }
+    }
+
     public static IEnumerator MoveOverTime(Node2D node, float duration_sec, Vector2 initial_pos, Vector2 end_pos, Curve ease = null)
     {
         float initial_time = Time.GetTicksMsec() / 1000.0f;
