@@ -159,7 +159,7 @@ public class UIManager : Node
 
     void SettingsMenu()
     {
-        List<string> options = new List<string>() { "Discord", "Credits2", "Quit", "debug_victory", "debug_lose", "debug_webgl_upload", "debug_webgl_upload_opt", "debug_test_image_upload", "debug_test_fullscreen" };
+        List<string> options = new List<string>() { "Discord", "Credits2", "Quit", "debug_victory", "debug_lose", "debug_open_webgl_build", "debug_webgl_upload", "debug_webgl_upload_opt", "debug_change_title_screen", "debug_change_title_audio", "debug_test_image_upload", "debug_test_fullscreen" };
         List<System.Action> actions = new List<Action>()
         {
             () => { OS.ShellOpen(@"https://discord.gg/2GZ3SxVA7Q"); },
@@ -167,10 +167,18 @@ public class UIManager : Node
             () => { GameOver.PerformGameOver(new GameOverRequest() {fast_mode = true}); },
             () => { VictoryScene.PerformVictory(); },
             () => { GameOver.PerformGameOver(new GameOverRequest()); },
+            () => { WebBuildUploader.OpenWebBuild(); },
             () => { WebBuildUploader.UploadWebBuild(); },
             () => { WebBuildUploader.UploadOptimizedWebBuild(); },
             () => {
-                ArborCoroutine.StartCoroutine(changeCharacterExperiment());
+                ArborCoroutine.StartCoroutine(ArborResource.Upload<Texture>("images/title_screen_background.png"));
+            },
+            () => {
+                ArborCoroutine.StartCoroutine(ArborResource.Upload<AudioStream>("sounds/bgm_title.ogg"));
+            },
+            () => {
+                ArborCoroutine.StartCoroutine(ArborResource.Upload<Texture>("images/spot_idle.png"));
+                //ArborCoroutine.StartCoroutine(changeCharacterExperiment());
             },
             () => {
                 string jsCode = @"
@@ -188,9 +196,9 @@ public class UIManager : Node
 
     IEnumerator changeCharacterExperiment()
     {
-        yield return ArborResource.Upload<Texture>("upload");
+        yield return ArborResource.Upload<Texture>("images/spot_idle.png");
 
-        Texture uploaded_tex = ArborResource.Get<Texture>("upload");
+        Texture uploaded_tex = ArborResource.Get<Texture>("images/spot_idle.png");
         if (uploaded_tex == null)
             yield break;
 

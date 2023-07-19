@@ -3,12 +3,16 @@ using System;
 using System.Collections.Generic;
 using System.Collections;
 using System.Text;
+using System.Linq;
 using Newtonsoft.Json;
 using System.IO;
 using NAudio.Wave;
 using NLayer;
 using NLayer.NAudioSupport;
 using System.Reflection;
+using Amazon.Runtime.Internal.Transform;
+using System.Runtime.CompilerServices;
+using Amazon.Auth.AccessControlPolicy;
 
 public class ArborResource : Node
 {
@@ -42,22 +46,38 @@ public class ArborResource : Node
         }
     }
 
+    public void OnCallbackAssociatedNodeExitTree(object destroyed_node)
+    {
+        GD.Print("NODE DESTROYED");
+
+        /* A node has been destroyed, so let's go and unregister all of its callbacks */
+        Node node = (Node)destroyed_node;
+        GD.Print("node destroyed : [" + node.Name + "]");
+
+        foreach(CallbackResourcePair callback_pair in node_to_associated_callbacks[node])
+        {
+            resource_usage_callbacks[callback_pair.resource].Remove(callback_pair.callback);
+        }
+
+        node_to_associated_callbacks.Remove(node);
+    }
+
     Dictionary<string, object> loaded_assets = new Dictionary<string, object>();
 
     HashSet<string> assets_currently_loading = new HashSet<string>();
     public static bool NumberAssetsCurrentlyLoading() { return instance.assets_currently_loading.Count > 0; }
 
-    void OnRequestCompleted(long result, long responseCode, string[] headers, byte[] body, string resource, string type, HTTPRequest request_used, string force_key_for_asset=null)
+    void OnRequestCompleted(long result, long responseCode, string[] headers, byte[] body, string resource, string type, HTTPRequest request_used, string force_key_for_asset = null)
     {
         string key = resource;
-        if(force_key_for_asset != null)
+        if (force_key_for_asset != null)
             key = force_key_for_asset;
 
         if (responseCode != 200)
         {
             GD.PrintErr("Failed to download resource [" + key + "] got error code [" + responseCode + "]");
-            if(force_key_for_asset != null)
-            loaded_assets[key] = null;
+            if (force_key_for_asset != null)
+                loaded_assets[key] = null;
             return;
         }
 
@@ -81,12 +101,12 @@ public class ArborResource : Node
 
             ImageTexture result_tex = new ImageTexture();
             result_tex.CreateFromImage(image, (uint)Godot.Texture.FlagsEnum.Filter);
-            loaded_assets[key] = result_tex;
+            SetResource(key, result_tex);
         }
         else if (type == "String" || type == "string")
         {
             string s = Encoding.UTF8.GetString(body);
-            loaded_assets[key] = s;
+            SetResource(key, s);
         }
         else if (type == "AudioStream")
         {
@@ -125,7 +145,7 @@ public class ArborResource : Node
                     audioStreamSample.Stereo = numChannels == 2;
                     audioStreamSample.MixRate = sampleRate;
 
-                    loaded_assets[key] = audioStreamSample;
+                    SetResource(key, audioStreamSample);
                 }
             }
             else if (file_extension == ".mp3")
@@ -159,23 +179,23 @@ public class ArborResource : Node
 
                 GD.Print("done processing mp3 [" + resource + "]");
 
-                loaded_assets[key] = audioStreamSample;
+                SetResource(key, audioStreamSample);
             }
             else if (file_extension == ".ogg")
             {
                 var oggStream = new AudioStreamOGGVorbis();
                 oggStream.Data = body;
-                loaded_assets[key] = oggStream;
+                SetResource(key, oggStream);
             }
         }
         else
         {
             string s = Encoding.UTF8.GetString(body);
             JsonSerializerSettings settings = new JsonSerializerSettings();
-            loaded_assets[key] = JsonConvert.DeserializeObject(s, Type.GetType(type), settings);
+            SetResource(key, JsonConvert.DeserializeObject(s, Type.GetType(type), settings));
         }
 
-        if(assets_currently_loading.Contains(key))
+        if (assets_currently_loading.Contains(key))
         {
             assets_currently_loading.Remove(key);
         }
@@ -184,48 +204,27 @@ public class ArborResource : Node
             request_used.QueueFree();
     }
 
-    /*public static IEnumerator Load<T>(string resource) // path relative to external resources folder.
+    static void SetResource<T>(string key, T asset)
     {
-        if (instance.loaded_assets.ContainsKey(resource))
+        instance.loaded_assets[key] = asset;
+
+        NotifyUsageCallbacks(key, asset);
+    }
+
+    static void NotifyUsageCallbacks<T>(string resource, T resource_value)
+    {
+        if (!resource_usage_callbacks.ContainsKey(resource))
+            return;
+
+        List<Action<T>> callbacks_for_resource_changed = resource_usage_callbacks[resource]
+            .Cast<Action<T>>()
+            .ToList();
+
+        foreach (Action<T> callback in callbacks_for_resource_changed)
         {
-            GD.PrintErr("We already have [" + resource + "] in cache.");
-            yield break;
+            callback(resource_value);
         }
-
-        if(true)//if (OS.GetName() == "Web" || OS.GetName() == "HTML5")
-        {
-            HTTPRequest new_request = new HTTPRequest();
-            instance.AddChild(new_request);
-
-            Godot.Collections.Array extra_params = new Godot.Collections.Array
-            {
-                resource,
-                typeof(T).Name,
-                new_request
-            };
-
-            new_request.Connect("request_completed", instance, nameof(OnRequestCompleted), extra_params);
-            string web_url = @"https://arborinteractive.com/squirrel_rts/mods/" + GetCurrentModID() + @"/resources/" + resource;
-            new_request.Request(web_url);
-            GD.Print("web retrieving [" + resource + "]");
-
-            instance.requests_processing++;
-          
-            while (!instance.loaded_assets.ContainsKey(resource))
-                yield return null;
-        }
-        else
-        {
-            GD.Print("Attempting desktop load [" + resource + "]");
-            string absolute_filesystem_path = GetResourcesDirectory() + resource;
-            byte[] data_from_disk = System.IO.File.ReadAllBytes(absolute_filesystem_path);
-            GD.Print("Attempting desktop load 2 [" + data_from_disk.Length + "]");
-
-            instance.OnRequestCompleted(0, 0, null, data_from_disk, resource, typeof(T).Name, null);
-            GD.Print("Attempting desktop load 3 [" + data_from_disk.Length + "]");
-
-        }
-    }*/
+    }
 
     public static void Load<T>(string resource)
     {
@@ -264,13 +263,13 @@ public class ArborResource : Node
 
     public static T Get<T>(string asset_path_relative_to_external_resources_folder) where T : class
     {
-        if(!instance.loaded_assets.ContainsKey(asset_path_relative_to_external_resources_folder))
+        if (!instance.loaded_assets.ContainsKey(asset_path_relative_to_external_resources_folder))
         {
             GD.PrintErr("[ArborResource.Get] Failed to find asset [" + asset_path_relative_to_external_resources_folder + "]. It may not be loaded yet. Be sure to launch the ArborResource.Load() coroutine.");
             return null;
         }
 
-        return (T) instance.loaded_assets[asset_path_relative_to_external_resources_folder];
+        return (T)instance.loaded_assets[asset_path_relative_to_external_resources_folder];
     }
 
     public static IEnumerator WaitFor(string asset_path_relative_to_external_resources_folder)
@@ -285,6 +284,69 @@ public class ArborResource : Node
             yield return UploadWeb<T>(resource);
         else
             yield return UploadDesktop<T>(resource);
+    }
+
+    /* A developer may associate an unlimited number of callbacks with any particular resource. */
+    /* When the resource becomes available, or when it changes, all associated callbacks will run */
+    /* When the callback's associated node becomes invalid / destroyed, we can clean up the callbacks automatically. */
+    static Dictionary<string, List<object>> resource_usage_callbacks = new Dictionary<string, List<object>>();
+    static Dictionary<Node, List<CallbackResourcePair>> node_to_associated_callbacks = new Dictionary<Node, List<CallbackResourcePair>>();
+
+    public static void UseResource<T>(string resource, Action<T> callback, Node associated_node) {
+
+        /* Establish list of callbacks for this resource if one doesn't yet exist */
+        if (!resource_usage_callbacks.ContainsKey(resource))
+            resource_usage_callbacks.Add(resource, new List<object>());
+
+        /* Add this callback to the list (dupes are possible, but cause warning message). */
+        if (resource_usage_callbacks[resource].Contains(callback))
+            GD.PrintErr("duplicate resource callback added on [" + resource + "]");
+        resource_usage_callbacks[resource].Add(callback);
+
+        if (!node_to_associated_callbacks.ContainsKey(associated_node))
+            node_to_associated_callbacks[associated_node] = new List<CallbackResourcePair>();
+        node_to_associated_callbacks[associated_node].Add(new CallbackResourcePair() { callback = callback, resource = resource });
+
+        /* Establish a callbackk on the associated_node so we know when it is destroyed (then we can unregister its callbacks) */
+        if (!associated_node.IsConnected("tree_exiting", instance, nameof(OnCallbackAssociatedNodeExitTree)))
+        {
+            Godot.Collections.Array extra_params = new Godot.Collections.Array
+            {
+                associated_node
+            };
+
+            associated_node.Connect("tree_exiting", instance, nameof(OnCallbackAssociatedNodeExitTree), extra_params);
+        }
+
+        /* If this asset has already been loaded, execute the callback immediately */
+        if (instance.loaded_assets.ContainsKey(resource) && !instance.assets_currently_loading.Contains(resource))
+        {
+            callback((T)instance.loaded_assets[resource]);
+        }
+        /* Otherwise, request a load of the resource */
+        else
+        {
+            ArborResource.Load<T>(resource);
+        }
+
+        PrintUsageCallbackCount();
+    }
+
+    class CallbackResourcePair
+    {
+        public object callback;
+        public string resource;
+    }
+
+    static void PrintUsageCallbackCount()
+    {
+        int result = 0;
+        foreach(List<object> callback_list in resource_usage_callbacks.Values)
+        {
+            result += callback_list.Count;
+        }
+
+        GD.Print("TOTAL USAGE CALLBACKS : " + result.ToString());
     }
 
     static IEnumerator UploadWeb<T>(string resource)
@@ -434,5 +496,13 @@ public class ArborResource : Node
     static IEnumerator DoEdit()
     {
         yield return ArborResource.Upload<Texture>("upload");
+    }
+}
+
+public static class ArborResourceExtensions
+{
+    public static void UseResource<T>(this Node node, string resource, Action<T> callback)
+    {
+        ArborResource.UseResource(resource, callback, node);
     }
 }

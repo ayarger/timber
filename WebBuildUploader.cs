@@ -180,7 +180,7 @@ public class WebBuildUploader : Node
 
     }
 
-    static void OpenWebBuild()
+    public static void OpenWebBuild()
     {
         OS.ShellOpen("https://arborinteractive.com/squirrel_rts/lua_experiment.html?default_mod=021c18c5-d54b-4338-a441-4f07ff496333");
     }

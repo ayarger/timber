@@ -28,42 +28,38 @@ public class Actor : Spatial
 
     public void Configure(ActorConfig info)
     {
-        ArborCoroutine.StartCoroutine(DoConfigure(info), this);
-    }
-
-    IEnumerator DoConfigure(ActorConfig info)
-    {
         config = info;
 
-        view = (Spatial)GetNode("view");
-        character_view = (MeshInstance)GetNode("view/mesh");
-        
-        ShaderMaterial char_mat = (ShaderMaterial)character_view.GetSurfaceMaterial(0).Duplicate();
+        ArborResource.UseResource<Texture>(
+            "images/" + config.idle_sprite_filename,
+            (Texture tex) =>
+            {
+                ShaderMaterial char_mat = (ShaderMaterial)character_view.GetSurfaceMaterial(0).Duplicate();
+                shadow_view = (MeshInstance)GetNode("shadow");
 
-        shadow_view = (MeshInstance)GetNode("shadow");
+                /* Scale */
+                view.Scale = new Vector3(tex.GetWidth(), tex.GetHeight(), 1.0f) * 0.01f;
+                view.Scale = view.Scale * config.aesthetic_scale_factor;
+                initial_scale = view.Scale;
 
-        ArborResource.Load<Texture>("images/" + config.idle_sprite_filename);
-        yield return ArborResource.WaitFor("images/" + config.idle_sprite_filename);
-        Texture idle_sprite = ArborResource.Get<Texture>("images/" + config.idle_sprite_filename);
+                shadow_view.Scale = new Vector3(Mathf.Min(2.0f, view.Scale.x), shadow_view.Scale.y, shadow_view.Scale.z);
 
-        /* Scale */
-        view.Scale = new Vector3(idle_sprite.GetWidth(), idle_sprite.GetHeight(), 1.0f) * 0.01f;
-        view.Scale = view.Scale * config.aesthetic_scale_factor;
-        initial_scale = view.Scale;
+                char_mat.SetShaderParam("texture_albedo", tex);
+                char_mat.SetShaderParam("fade_amount ", 0.8f);
+                char_mat.SetShaderParam("alpha_cutout_threshold  ", 0.2f);
 
-        shadow_view.Scale = new Vector3(Mathf.Min(2.0f, view.Scale.x), shadow_view.Scale.y, shadow_view.Scale.z);
-
-        char_mat.SetShaderParam("texture_albedo", idle_sprite);
-        char_mat.SetShaderParam("fade_amount ", 0.8f);
-        char_mat.SetShaderParam("alpha_cutout_threshold  ", 0.2f);
-
-        //character_material.AlbedoTexture = idle_sprite;
-        character_view.SetSurfaceMaterial(0, char_mat);
+                //character_material.AlbedoTexture = idle_sprite;
+                character_view.SetSurfaceMaterial(0, char_mat);
+            },
+            this
+        );
     }
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
+        view = (Spatial)GetNode("view");
+        character_view = (MeshInstance)GetNode("view/mesh");
         selectable = GetNode<IsSelectable>("IsSelectable");
         time = GlobalTranslation.x + GlobalTranslation.z;
         animation_offset = GD.Randf() * 100.0f;
