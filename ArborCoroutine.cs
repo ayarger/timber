@@ -161,9 +161,21 @@ public class ArborCoroutine : Node
         }
     }
 
+    public static IEnumerator WaitForSecondsOrClick(float duration_sec)
+    {
+        yield return null;
+        float timer = duration_sec;
+
+        while (timer > 0.0f && !Input.IsActionJustPressed("left_click"))
+        {
+            timer -= instance.GetProcessDeltaTime();
+            yield return null;
+        }
+    }
+
     public static IEnumerator WaitForMouseClick()
     {
-        while (!Input.IsMouseButtonPressed((int)ButtonList.Left))
+        while (!Input.IsActionJustPressed("left_click"))
         {
             yield return null;
         }

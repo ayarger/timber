@@ -166,7 +166,7 @@ public class UIManager : Node
             () => {  },
             () => { GameOver.PerformGameOver(new GameOverRequest() {fast_mode = true}); },
             () => { VictoryScene.PerformVictory(); },
-            () => { GameOver.PerformGameOver(new GameOverRequest()); },
+            () => { GetNode<Actor>("../Main/LuaLoader/Spot").Kill(); },
             () => { WebBuildUploader.OpenWebBuild(); },
             () => { WebBuildUploader.UploadWebBuild(); },
             () => { WebBuildUploader.UploadOptimizedWebBuild(); },

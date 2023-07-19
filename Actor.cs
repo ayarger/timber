@@ -2,6 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using System.Collections;
+using Amazon.S3.Model;
 
 public class Actor : Spatial
 {
@@ -21,14 +22,24 @@ public class Actor : Spatial
     Texture idle_sprite;
     Vector3 initial_scale = Vector3.One;
 
-    void ChangeSprite ()
+    // Called when the node enters the scene tree for the first time.
+    public override void _Ready()
     {
-
+        view = (Spatial)GetNode("view");
+        character_view = (MeshInstance)GetNode("view/mesh");
+        selectable = GetNode<IsSelectable>("IsSelectable");
+        time = GlobalTranslation.x + GlobalTranslation.z;
+        animation_offset = GD.Randf() * 100.0f;
     }
 
     public void Configure(ActorConfig info)
     {
         config = info;
+
+        if(config.pre_ko_sprite_filename != null && config.pre_ko_sprite_filename != "")
+            ArborResource.Load<Texture>("images/" + config.pre_ko_sprite_filename);
+        if (config.ko_sprite_filename != null && config.ko_sprite_filename != "")
+            ArborResource.Load<Texture>("images/" + config.ko_sprite_filename);
 
         ArborResource.UseResource<Texture>(
             "images/" + config.idle_sprite_filename,
@@ -55,15 +66,7 @@ public class Actor : Spatial
         );
     }
 
-    // Called when the node enters the scene tree for the first time.
-    public override void _Ready()
-    {
-        view = (Spatial)GetNode("view");
-        character_view = (MeshInstance)GetNode("view/mesh");
-        selectable = GetNode<IsSelectable>("IsSelectable");
-        time = GlobalTranslation.x + GlobalTranslation.z;
-        animation_offset = GD.Randf() * 100.0f;
-    }
+
 
 //  // Called every frame. 'delta' is the elapsed time since the previous frame.
     public override void _Process(float delta)
@@ -102,5 +105,17 @@ public class Actor : Spatial
         }
 
         //character_material.AlbedoColor += (desired_color - character_material.AlbedoColor) * 0.1f;
+    }
+
+    public void Kill()
+    {
+        PackedScene scene = (PackedScene)ResourceLoader.Load("res://scenes/ActorKO.tscn");
+        ActorKO new_ko = (ActorKO)scene.Instance();
+        GetParent().AddChild(new_ko);
+        new_ko.GlobalTranslation = GlobalTranslation;
+        new_ko.GlobalRotation = GlobalRotation;
+        new_ko.Scale = Scale;
+        Visible = false;
+        new_ko.Configure(ArborResource.Get<Texture>("images/" + config.pre_ko_sprite_filename), ArborResource.Get<Texture>("images/" + config.ko_sprite_filename));
     }
 }

@@ -84,20 +84,26 @@ public class LuaLoader : Node
         string config_filename = "scenes/" + scene_filename + ".config";
         ArborResource.Load<string>(config_filename);
 
-        /* Load Audio */
-        ArborResource.Load<AudioStream>("sounds/pre_battle.ogg");
+		/* Load Audio */
+		ArborResource.UseResource(
+			"sounds/pre_battle.ogg",
+			(AudioStream audio) =>
+			{
+				ArborAudioManager.RequestBGM(audio);
+			},
+			this
+		);
+
+		ArborResource.Load<AudioStream>("sounds/bgm_btd_defeat.ogg");
+		yield return ArborResource.WaitFor("sounds/bgm_btd_defeat.ogg");
 
         yield return ArborResource.WaitFor(image_filename);
         yield return ArborResource.WaitFor(layout_filename);
         yield return ArborResource.WaitFor(config_filename);
-        yield return ArborResource.WaitFor("sounds/pre_battle.ogg");
 
         Texture scene_tile_texture = ArborResource.Get<Texture>(image_filename);
         string layout_file_contents = ArborResource.Get<string>(layout_filename);
         string config_file_contents = ArborResource.Get<string>(config_filename);
-
-        AudioStream stream = ArborResource.Get<AudioStream>("sounds/pre_battle.ogg");
-        ArborAudioManager.RequestBGM(stream);
 
         List<Vector3> player_actor_spawn_positions = new List<Vector3>();
 
@@ -260,6 +266,8 @@ public class ActorConfig
 	public float aesthetic_scale_factor = 1.0f;
 	public string idle_sprite_filename;
 	public string lives_sprite_filename;
+	public string pre_ko_sprite_filename;
+	public string ko_sprite_filename;
 
 	public List<string> scripts;
 }
