@@ -1,0 +1,83 @@
+[gd_scene load_steps=11 format=2]
+
+[ext_resource path="res://viewporttexture_3d.tres" type="Texture" id=1]
+[ext_resource path="res://OrbitCam.cs" type="Script" id=2]
+[ext_resource path="res://ComputerScreen.cs" type="Script" id=3]
+[ext_resource path="res://apple-1868496.png" type="Texture" id=4]
+[ext_resource path="res://EditModeManager.cs" type="Script" id=5]
+[ext_resource path="res://1.png" type="Texture" id=6]
+[ext_resource path="res://Bounce.cs" type="Script" id=7]
+
+[sub_resource type="CubeMesh" id=1]
+
+[sub_resource type="Shader" id=2]
+code = "shader_type canvas_item;
+
+uniform vec2 texture_size;
+uniform float effect_strength : hint_range(0, 0.5) = 0.0;
+uniform float scanline_strength : hint_range(0, 1) = 0.3;
+uniform float distortion_strength : hint_range(0, 1) = 0.05;
+
+void fragment() {
+    vec2 uv = FRAGCOORD.xy / texture_size;
+
+    // Apply distortion
+    float distortion = sin(uv.y * texture_size.y) * distortion_strength * effect_strength;
+    uv.x += distortion;
+
+    // Sample the texture with the distorted UVs
+    vec4 screen_color = texture(TEXTURE, uv);
+
+    // Apply scanlines
+    float scanline = sin(uv.y * texture_size.y * 2.0) * scanline_strength;
+    screen_color.rgb -= scanline * 0.;
+
+	
+    COLOR = texture(TEXTURE, UV) + scanline * effect_strength;
+}
+"
+
+[sub_resource type="ShaderMaterial" id=3]
+shader = SubResource( 2 )
+shader_param/texture_size = null
+shader_param/effect_strength = 0.0
+shader_param/scanline_strength = 0.3
+shader_param/distortion_strength = 0.05
+
+[node name="scene_1" type="Spatial"]
+
+[node name="Viewport" type="Viewport" parent="."]
+size = Vector2( 1920, 1080 )
+render_target_v_flip = true
+render_target_update_mode = 3
+
+[node name="Camera" type="Camera" parent="Viewport"]
+transform = Transform( 1, 0, 0, 0, 0.920273, 0.391277, 0, -0.391277, 0.920273, 0, 3.25159, 6.75966 )
+current = true
+script = ExtResource( 2 )
+
+[node name="MeshInstance" type="MeshInstance" parent="Viewport"]
+mesh = SubResource( 1 )
+skeleton = NodePath("../..")
+
+[node name="Node2D" type="Node2D" parent="."]
+
+[node name="Camera2D" type="Camera2D" parent="Node2D"]
+current = true
+script = ExtResource( 5 )
+
+[node name="bg" type="Sprite" parent="Node2D"]
+position = Vector2( 36, 249 )
+texture = ExtResource( 4 )
+
+[node name="computer_screen" type="Sprite" parent="Node2D"]
+material = SubResource( 3 )
+position = Vector2( -23.28, -137.78 )
+texture = ExtResource( 1 )
+script = ExtResource( 3 )
+
+[node name="Sprite" type="Sprite" parent="Node2D"]
+position = Vector2( -1326, 564 )
+scale = Vector2( 3.12891, 3.39453 )
+texture = ExtResource( 6 )
+script = ExtResource( 7 )
