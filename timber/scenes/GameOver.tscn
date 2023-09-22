@@ -88,7 +88,6 @@ font_data = ExtResource( 5 )
 
 [sub_resource type="StreamTexture" id=10]
 flags = 4
-load_path = "res://.import/mtd_icon.png-e200de41f2b9e2d9b88122771d83c33e.stex"
 
 [sub_resource type="DynamicFont" id=9]
 size = 500
