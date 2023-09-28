@@ -4,12 +4,12 @@ using System;
 public class HealthManager : Node
 {
     [Export]
-    public string health_name = "HasHealth"; 
-    private HasHealth healthSystem;
+    public string node_name = "HasStats";
+    private HasStats stats;
 
     public override void _Ready()
     {
-        healthSystem = GetNode<HasHealth>("../" + health_name);
+        stats = GetNode<HasStats>("../" + node_name);
     }
 
     public override void _Input(InputEvent @event)
@@ -18,19 +18,19 @@ public class HealthManager : Node
         {
             if (eventKey.Scancode == (int)KeyList.J)
             {
-                healthSystem.ApplyDamage(10);  // Decrease health by 10
+                stats.ApplyDamage(10);  // Decrease health by 10
             }
             else if (eventKey.Scancode == (int)KeyList.K)
             {
-                healthSystem.ApplyHeal(10);  // Increase health by 10
+                stats.ApplyHeal(10);  // Increase health by 10
             }
             else if(eventKey.Scancode == (int)KeyList.U)
             {
-                healthSystem.DecreaseMaxHealth(10);
+                stats.DecreaseMaxHealth(10);
             }
             else if(eventKey.Scancode == (int)KeyList.I)
             {
-                healthSystem.IncreaseMaxHealth(10);
+                stats.IncreaseMaxHealth(10);
             }
         }
     }

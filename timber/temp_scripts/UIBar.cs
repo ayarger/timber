@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class UIOrb : Control
+public class UIBar : Control
 {
     HasStats target_data;
 
@@ -16,7 +16,7 @@ public class UIOrb : Control
         // get tex_progress
         tex_progress = GetNode<TextureProgress>("FrontProgress");
         // get target_mesh
-        if(IsInstanceValid(target_data) && IsInstanceValid(target_data.GetParent()))
+        if (IsInstanceValid(target_data) && IsInstanceValid(target_data.GetParent()))
             target_mesh = target_data.GetParent().GetNode<MeshInstance>("view/mesh");
         // get target_tween
         ui_tween = GetNode<Tween>("UITween");
@@ -39,7 +39,7 @@ public class UIOrb : Control
     }
 
     /// <summary>
-    /// Move to UIOrb to the target
+    /// Move UI to the target
     /// </summary>
     void PursueTarget()
     {
@@ -57,17 +57,18 @@ public class UIOrb : Control
     }
 
     /// <summary>
-    /// Create UIorb
+    /// Create UIBar
     /// </summary>
     /// <param name="stats"></param>
     /// <returns></returns>
-    public static UIOrb Create(HasStats stats)
+    public static UIBar Create(HasStats stats)
     {
-        PackedScene scene = (PackedScene)ResourceLoader.Load("res://scenes/UIOrb.tscn");
-        UIOrb new_orb = (UIOrb) scene.Instance();
-        new_orb.Configure(stats);
-        PrimaryCanvas.AddChildNode(new_orb);
-        return new_orb;
+        // load scene
+        PackedScene scene = (PackedScene)ResourceLoader.Load("res://scenes/UIBar.tscn");
+        UIBar new_bar = (UIBar)scene.Instance();
+        new_bar.Configure(stats);
+        PrimaryCanvas.AddChildNode(new_bar);
+        return new_bar;
     }
 
     /// <summary>
