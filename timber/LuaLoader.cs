@@ -50,7 +50,8 @@ public class LuaLoader : Node
     }
 
 	Dictionary<char, ActorConfig> map_code_to_actor_config = new Dictionary<char, ActorConfig>();
-	IEnumerator LoadActorConfigs()
+	public static List<List<char>> tileData;
+    IEnumerator LoadActorConfigs()
     {
 		ArborResource.Load<ModFileManifest>("mod_file_manifest.json");
 		yield return ArborResource.WaitFor("mod_file_manifest.json");
@@ -113,6 +114,9 @@ public class LuaLoader : Node
 		int height = 0;
 		int x = 0;
 		int z = 0;
+		//May move tile data elsewhere
+		tileData = new List<List<char>>();
+		tileData.Add(new List<char>());
 		for(int i = 0; i < layout_file_contents.Length; i++)
         {
 			char current_char = layout_file_contents[i];
@@ -123,6 +127,7 @@ public class LuaLoader : Node
 			/* special cases */
 			if(current_char == '\n')
             {
+				tileData.Add(new List<char>());
 				width = x;
                 x = 0;
 				z++;
@@ -136,11 +141,12 @@ public class LuaLoader : Node
 
 			if (current_char == 'e')
             {
-				
+				tileData[z].Add('e');
             }
 			else
             {
-				PackedScene tile_scene = (PackedScene)ResourceLoader.Load("res://scenes/Tile.tscn");
+                tileData[z].Add('.');
+                PackedScene tile_scene = (PackedScene)ResourceLoader.Load("res://scenes/Tile.tscn");
 				CSGBox new_tile = (CSGBox)tile_scene.Instance();
                 ShaderMaterial mat = (ShaderMaterial)new_tile.Material;
 				tile_mats.Add(mat);
@@ -163,17 +169,19 @@ public class LuaLoader : Node
 
 			x++;
         }
+		tileData.RemoveAt(tileData.Count - 1);
+		EventBus.Publish(new TileDataLoadedEvent());
 		height = z;
 
 		/* Configure fog of war */
 		Viewport viewport = GetParent().GetNode<Viewport>("FogOfWar/Viewport");
 		
 
-		viewport.RenderTargetClearMode = Godot.Viewport.ClearMode.Never;
+		//viewport.RenderTargetClearMode = Godot.Viewport.ClearMode.Never;
         float pixels_per_tile = 10;
-		viewport.Size = new Vector2(width, height);
-		viewport.Size = new Vector2(1000, 1000);
-		GD.Print("setting viewport to " + width + " " + height);
+		//viewport.Size = new Vector2(width, height);
+		//viewport.Size = new Vector2(1000, 1000);
+		//GD.Print("setting viewport to " + width + " " + height);
 		Spatial player_node = GetNode<Spatial>("Spot");
         GD.Print("PLAYER AT " + player_node.GlobalTranslation.x + " " + player_node.GlobalTranslation.z);
 
@@ -183,9 +191,11 @@ public class LuaLoader : Node
 		yield return null;
 		yield return null;
 
-		fog_of_war_visibility_texture = new ViewportTexture();
+		//Deprecated
+		//fog_of_war_visibility_texture = new ViewportTexture();
 
-        fog_of_war_visibility_texture.ViewportPath = viewport.GetPath();
+		//fog_of_war_visibility_texture.ViewportPath = viewport.GetPath();
+
         yield return null;
         yield return null;
 
@@ -193,7 +203,7 @@ public class LuaLoader : Node
         Vector2 new_marker_pos = new Vector2(new_marker_x, new_marker_y);
         GD.Print("NEW MARKER POS " + new_marker_pos.x + " " + new_marker_pos.y);
         
-        GD.Print("fog_of_war_visibility_texture.size() " + fog_of_war_visibility_texture.GetSize());
+        //GD.Print("fog_of_war_visibility_texture.size() " + fog_of_war_visibility_texture.GetSize());
 
 
         Sprite visibility_marker = GetParent().GetNode<Sprite>("FogOfWar/Viewport/Sprite");
@@ -201,10 +211,11 @@ public class LuaLoader : Node
 
 		yield return null;
 		yield return null;
-		foreach(ShaderMaterial mat in tile_mats)
-		{
-			mat.SetShaderParam("visibility_texture", fog_of_war_visibility_texture);
-		}
+		//I think you need to set the param every frame? Done in FogOfWar.cs
+		//foreach(ShaderMaterial mat in tile_mats)
+		//{
+		//	mat.SetShaderParam("visibility_texture", fog_of_war_visibility_texture);
+		//}
 
         /* Finish up */
         Vector3 avg_pos = Vector3.Zero;
@@ -328,3 +339,6 @@ public class ModFileManifest
         return matchingStrings;
     }
 }
+
+//May move elsewhere
+public class TileDataLoadedEvent{ }

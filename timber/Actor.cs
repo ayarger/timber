@@ -30,6 +30,8 @@ public class Actor : Spatial
         selectable = GetNode<IsSelectable>("IsSelectable");
         time = GlobalTranslation.x + GlobalTranslation.z;
         animation_offset = GD.Randf() * 100.0f;
+
+        EventBus.Publish<SpawnLightSourceEvent>(new SpawnLightSourceEvent(this));
     }
 
     public void Configure(ActorConfig info)

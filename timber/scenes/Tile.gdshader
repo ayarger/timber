@@ -7,14 +7,18 @@ varying vec3 world_position;
 
 const vec3 player_position = vec3(46, 0, 18);
 
-const int num_positions = 100;
-uniform float test = 100.0f;
+uniform float screenPosX = 0.0f;
+uniform float screenPosZ = 0.0f;
 
-uniform sampler2D positions;
+uniform float screenHeight = 5.0f;
+uniform float screenWidth = 5.0f;
 
-vec4 get_data(int pos){
-	return texture(positions,vec2(.005f+(float(2*pos))/float(num_positions),.5f))*256.0+texture(positions,vec2(.005f+(float(2*pos+1))/float(num_positions),.5f));
-}
+
+uniform sampler2D fowTexture;
+
+//vec4 get_data(int pos){
+//	return texture(positions,vec2(.005f+(float(2*pos))/float(num_positions),.5f))*256.0+texture(positions,vec2(.005f+(float(2*pos+1))/float(num_positions),.5f));
+//}
 
 void vertex() {
     // Transform the vertex position to world space
@@ -40,18 +44,23 @@ void fragment() {
     // Combine the visibility information with the albedo
     // For example, let's say the visibility texture's red channel stores the visibility factor
     vec4 final_color = albedo; //* visibility.r;
+	vec4 fowSample = texture(fowTexture,vec2((world_position.x-screenPosX)/screenWidth,((world_position.z-screenPosZ)/screenHeight)));
+	final_color.r *= fowSample.r;
+	final_color.g *= fowSample.g;
+	final_color.b *= fowSample.b;
 
     // Assign the final color to the output
 	ALBEDO = vec3(0.0, 0.0, 0.0);
+//
+    ALBEDO = final_color.rgb;
+    ALPHA = final_color.a;
 	
-	for(int i = 0; i<50;i++){
-		vec4 data = get_data(i);
-		float d = distance(world_position, data.rgb);
+//	for(int i = 0; i<50;i++){
+//		vec4 data = get_data(i);
+//		float d = distance(world_position, data.rgb);
 
 	    // Check if the x component of the world position is less than 20
-	    if (d<data.a) {
-		    ALBEDO = final_color.rgb;
-		    ALPHA = final_color.a;
-	    }
-	}
+//	    if (d<data.a) {
+//	    }
+//	}
 }

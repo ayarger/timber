@@ -5,4 +5,7 @@
 [resource]
 render_priority = -1
 shader = ExtResource( 1 )
-shader_param/test = 100.0
+shader_param/screenPosX = 0.0
+shader_param/screenPosZ = 0.0
+shader_param/screenHeight = 100.0
+shader_param/screenWidth = 100.0
