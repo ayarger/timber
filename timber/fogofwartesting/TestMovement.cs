@@ -17,7 +17,7 @@ public class TestMovement : Node
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
-        
+
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -37,24 +37,27 @@ public class TestMovement : Node
 
             //Move to position
 
-            foreach(var entity in SelectionSystem.GetCurrentActiveSelectables())
+            foreach (var entity in SelectionSystem.GetCurrentActiveSelectables())
             {
                 //Maybe better way to do this w/o reflection?
                 if (typeof(Actor).IsAssignableFrom(entity.GetParent().GetType()))
                 {
                     var actor = (Actor)entity.GetParent();
+                    StateManager sm = actor.FindNode("StateManager") as StateManager;
+                    string team = actor.GetNode<HasTeam>("HasTeam").team;
+                    if (!sm.states.ContainsKey("MovementState")) continue;
+                    if (team != "player") continue;
+
+                    sm.EnableState("MovementState");
                     List<Vector3> points = PathFind(actor.GlobalTranslation, rounded_point);
-                    ArborCoroutine.StartCoroutine(MoveCharacter(actor, points,.1f), this);
+                    (sm.states["MovementState"] as MovementState).waypoints = points; //override previous waypoints
+
                 }
             }
-
-
-
         }
-        isPressed = Input.IsKeyPressed((int)KeyList.Y);
+        //isPressed = Input.IsKeyPressed((int)KeyList.Y);
     }
-
-    List<Vector3> PathFind(Vector3 cur, Vector3 dest)
+    public static List<Vector3> PathFind(Vector3 cur, Vector3 dest)
     {
         //Theta* https://en.wikipedia.org/wiki/Theta*
         //Priority Queue https://github.com/BlueRaja/High-Speed-Priority-Queue-for-C-Sharp
@@ -65,13 +68,10 @@ public class TestMovement : Node
 
         Coord destCoord = new Coord(destX, destZ);
 
-        int height = LuaLoader.tileData.Count;
-        int len = height == 0 ? 0 : LuaLoader.tileData[0].Count;
-
         //LuaLoader.tileData;
 
         FastPriorityQueue<ThetaNode> open = new FastPriorityQueue<ThetaNode>(10000);
-        ThetaNode origin = new ThetaNode(new Coord(curX,curZ), null);
+        ThetaNode origin = new ThetaNode(new Coord(curX, curZ), null);
         origin.gScore = 0f;
         open.Enqueue(origin, 0f);
         HashSet<ThetaNode> closed = new HashSet<ThetaNode>();
@@ -90,12 +90,12 @@ public class TestMovement : Node
         while (open.Count > 0)
         {
             ThetaNode curNode = open.Dequeue();
-            if (curNode.x==destX && curNode.z == destZ)
+            if (curNode.x == destX && curNode.z == destZ)
             {
                 List<Vector3> ans = new List<Vector3>();
                 while (curNode.parent != null)
                 {
-                    ans.Add(new Vector3(curNode.x*2f,cur.y,curNode.z*2f));
+                    ans.Add(new Vector3(curNode.x * 2f, cur.y, curNode.z * 2f));
                     curNode = curNode.parent;
                 }
                 ans.Reverse();
@@ -103,11 +103,11 @@ public class TestMovement : Node
             }
             closed.Add(curNode);
 
-            foreach(var dir in directions)
+            foreach (var dir in directions)
             {
                 Coord neighbor = curNode.coord + dir;
-                if (neighbor.x < 0 || neighbor.z < 0 || neighbor.x > len - 1 || neighbor.z > height - 1) continue;
-                if (LuaLoader.tileData[neighbor.z][neighbor.x] != '.') continue;
+                if (neighbor.x < 0 || neighbor.z < 0 || neighbor.x > Grid.width - 1 || neighbor.z > Grid.height - 1) continue;
+                if (Grid.tiledata[neighbor.z][neighbor.x].value != '.') continue;
 
                 if (!createdNodes.ContainsKey(neighbor))
                 {
@@ -119,8 +119,8 @@ public class TestMovement : Node
 
                 if (closed.Contains(neighborNode)) continue;
 
-                if (curNode.parent != null 
-                    && curNode.parent.gScore + (curNode.parent.coord - neighbor).Mag() < neighborNode.gScore 
+                if (curNode.parent != null
+                    && curNode.parent.gScore + (curNode.parent.coord - neighbor).Mag() < neighborNode.gScore
                     && LineOfSight(curNode.parent.coord, neighbor))
                 {
                     neighborNode.gScore = curNode.parent.gScore + (curNode.parent.coord - neighbor).Mag();
@@ -150,23 +150,24 @@ public class TestMovement : Node
 
     }
 
-    bool LineOfSight(Coord a, Coord b)
+    static bool LineOfSight(Coord a, Coord b)
     {
         if (a.x == b.x)
         {
-            for(int i = a.z; i!=b.z; i += (a.z - b.z > 0) ? -1 : 1){
-                if (LuaLoader.tileData[i][a.x] != '.') return false;
+            for (int i = a.z; i != b.z; i += (a.z - b.z > 0) ? -1 : 1)
+            {
+                if (Grid.tiledata[i][a.x].value != '.') return false;
             }
             return true;
         }
         if (a.x > b.x)
         {
             var temp = a;
-            a = b; 
+            a = b;
             b = temp;
         }
 
-        float slope = (b.z-a.z)/(b.x-a.x);
+        float slope = (b.z - a.z) / (b.x - a.x);
         float curZ = a.z;
         bool isUp = slope > 0;
         for (int i = a.x; i < b.x; i++)
@@ -174,18 +175,18 @@ public class TestMovement : Node
             float newCurZ = curZ + .5f * slope;
             for (int j = Mathf.RoundToInt(curZ); isUp ? j <= Mathf.RoundToInt(newCurZ) : j >= Mathf.RoundToInt(newCurZ); j += isUp ? 1 : -1)
             {
-                if (LuaLoader.tileData[j][i] != '.') return false;
-                
+                if (Grid.tiledata[j][i].value != '.') return false;
+
             }
             curZ = newCurZ;
             newCurZ = curZ + .5f * slope;
             for (int j = Mathf.RoundToInt(curZ); isUp ? j <= Mathf.RoundToInt(newCurZ) : j >= Mathf.RoundToInt(newCurZ); j += isUp ? 1 : -1)
             {
-                if (LuaLoader.tileData[j][i + 1] != '.') return false;
+                if (Grid.tiledata[j][i + 1].value != '.') return false;
             }
             curZ = newCurZ;
         }
-        
+
         return true;
 
     }
@@ -196,67 +197,28 @@ public class TestMovement : Node
         return ray.start + t * ray.direction;
     }
 
-    IEnumerator MoveCharacter(Actor actor, List<Vector3> points, float mvmSpeed) //mvmSpeed should be a stat
-    {
-        for(int i = 0; i<points.Count; i++)
-        {
-            Vector3 dest = points[i];
-            while (actor.GlobalTranslation != dest)
-            {
-                Vector3 disp = dest - actor.GlobalTranslation;
-                if (disp.Length() < mvmSpeed)
-                {
-                    actor.GlobalTranslation = dest;
-                    break;
-                }
-                actor.GlobalTranslation += mvmSpeed * disp.Normalized();
-                yield return null;
-            }
-        }
-        
-    }
+    //IEnumerator MoveCharacter(Actor actor, List<Vector3> points, float mvmSpeed) //mvmSpeed should be a stat
+    //{
+    //    for (int i = 0; i < points.Count; i++)
+    //    {
+    //        Vector3 dest = points[i];
+    //        while (actor.GlobalTranslation != dest)
+    //        {
+    //            Vector3 disp = dest - actor.GlobalTranslation;
+    //            if (disp.Length() < mvmSpeed)
+    //            {
+    //                actor.GlobalTranslation = dest;
+    //                break;
+    //            }
+    //            actor.GlobalTranslation += mvmSpeed * disp.Normalized();
+    //            yield return null;
+    //        }
+    //    }
+
+    //}
 }
 
-class Coord
-{
-    public int x;
-    public int z;
-    public Coord(int _x, int _z)
-    {
-        x = _x;
-        z = _z;
-    }
-    public static Coord operator +(Coord a, Coord b)
-    => new Coord(a.x+b.x,a.z+b.z);
-    public static Coord operator -(Coord a, Coord b)
-    => new Coord(a.x - b.x, a.z - b.z);
-    public float Mag()
-    {
-        return x * x + z * z;
-    }
-    public override bool Equals(object obj)
-    {
-        Coord other = obj as Coord;
 
-        if (other == null)
-        {
-            return false;
-        }
-
-        return other.x == x && other.z == z;
-    }
-    public override int GetHashCode()
-    {
-        unchecked
-        {
-            var result = 0;
-            result = (result * 397) ^ x;
-            result = (result * 397) ^ z;
-            return result;
-        }
-    }
-
-}
 
 class ThetaNode : FastPriorityQueueNode
 {

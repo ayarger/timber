@@ -50,7 +50,6 @@ public class LuaLoader : Node
     }
 
 	Dictionary<char, ActorConfig> map_code_to_actor_config = new Dictionary<char, ActorConfig>();
-	public static List<List<char>> tileData;
     IEnumerator LoadActorConfigs()
     {
 		ArborResource.Load<ModFileManifest>("mod_file_manifest.json");
@@ -115,8 +114,8 @@ public class LuaLoader : Node
 		int x = 0;
 		int z = 0;
 		//May move tile data elsewhere
-		tileData = new List<List<char>>();
-		tileData.Add(new List<char>());
+		var tileData = new List<List<TileData>>();
+		tileData.Add(new List<TileData>());
 		for(int i = 0; i < layout_file_contents.Length; i++)
         {
 			char current_char = layout_file_contents[i];
@@ -127,7 +126,7 @@ public class LuaLoader : Node
 			/* special cases */
 			if(current_char == '\n')
             {
-				tileData.Add(new List<char>());
+				tileData.Add(new List<TileData>());
 				width = x;
                 x = 0;
 				z++;
@@ -141,11 +140,11 @@ public class LuaLoader : Node
 
 			if (current_char == 'e')
             {
-				tileData[z].Add('e');
+				tileData[z].Add(new TileData('e',new Coord(x,z)));
             }
 			else
             {
-                tileData[z].Add('.');
+                tileData[z].Add(new TileData('.', new Coord(x, z)));
                 PackedScene tile_scene = (PackedScene)ResourceLoader.Load("res://scenes/Tile.tscn");
 				CSGBox new_tile = (CSGBox)tile_scene.Instance();
                 ShaderMaterial mat = (ShaderMaterial)new_tile.Material;
@@ -170,6 +169,10 @@ public class LuaLoader : Node
 			x++;
         }
 		tileData.RemoveAt(tileData.Count - 1);
+		var tempTileData = new List<TileData[]>();
+		foreach (var td in tileData) tempTileData.Add(td.ToArray());
+		Grid.tiledata = tempTileData.ToArray();
+
 		EventBus.Publish(new TileDataLoadedEvent());
 		height = z;
 
@@ -240,10 +243,10 @@ public class LuaLoader : Node
 
 		actor_script.Configure(config);
 
-		/* customize actor aesthetics */
+        /* customize actor aesthetics */
 
-		/* Load scripts of an actor */
-		foreach(string script_name in config.scripts)
+        /* Load scripts of an actor */
+        foreach (string script_name in config.scripts)
         {
 			string source_path = System.IO.Directory.GetCurrentDirectory() + @"\resources\scripts\" + script_name + ".gd";
 			LoadScriptAtLocation(source_path, new_actor);

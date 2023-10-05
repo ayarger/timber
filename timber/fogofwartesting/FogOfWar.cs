@@ -28,8 +28,8 @@ public class FogOfWar : Viewport
         EventBus.Subscribe<SpawnLightSourceEvent>(AddLitArea);
         EventBus.Subscribe<TileDataLoadedEvent>((TileDataLoadedEvent e) =>
         {
-            screenWidth = LuaLoader.tileData.Count == 0 ? 0 : LuaLoader.tileData[0].Count * 2+50;
-            screenHeight = LuaLoader.tileData.Count * 2 + 50;
+            screenWidth = Grid.width * 2+50;
+            screenHeight = Grid.height * 2 + 50;
             screenPosX = -25;
             screenPosZ = -25;
 
