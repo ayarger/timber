@@ -11,6 +11,8 @@ public class UIBar : Control
 
     Tween ui_tween;
 
+    // TODO: adjust barUI so it can handle 1-3 stats
+
     public override void _Ready()
     {
         // get tex_progress
