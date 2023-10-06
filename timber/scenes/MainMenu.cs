@@ -12,7 +12,7 @@ public class MainMenu : Control
             "sounds/bgm_title.ogg", 
             (AudioStream audio) => {
                 GD.Print("playing title music.");
-                ArborAudioManager.RequestBGM(audio);
+                ArborAudioManager.RequestBGM(audio, true);
             },
             this
         );
