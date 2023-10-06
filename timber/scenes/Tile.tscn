@@ -1,10 +1,6 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=2 format=2]
 
-[ext_resource path="res://scenes/Tile.gdshader" type="Shader" id=1]
-
-[sub_resource type="ShaderMaterial" id=2]
-render_priority = -1
-shader = ExtResource( 1 )
+[ext_resource path="res://fogofwartesting/TileMaterial.tres" type="Material" id=1]
 
 [node name="CSGBox" type="CSGBox"]
-material = SubResource( 2 )
+material = ExtResource( 1 )
