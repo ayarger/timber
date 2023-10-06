@@ -1,0 +1,87 @@
+using Godot;
+using System;
+
+
+public class Grid
+{
+    public static TileData[][] tiledata;
+
+    public static int width
+    {
+        get
+        {
+            return tiledata.Length > 0 ? tiledata[0].Length : 0;
+        }
+    }
+    public static int height
+    {
+        get
+        {
+            return tiledata.Length;
+        }
+    }
+    public static TileData Get(Coord c)
+    {
+        if (c.x < 0 || c.z < 0 || c.z >= Grid.tiledata.Length || c.x >= (Grid.tiledata.Length > 0 ? Grid.tiledata[0].Length : 0))
+        {
+            return new TileData('e', c);
+        }
+        else
+        {
+            return tiledata[c.z][c.x];
+        }
+    }
+}
+
+public class TileData
+{
+    public Actor actor = null;
+    public char value = 'e';
+    public Coord coord;
+
+    public TileData(char _value, Coord _coord)
+    {
+        value = _value;
+        coord = _coord;
+    }
+}
+public class Coord
+{
+    public int x;
+    public int z;
+    public Coord(int _x, int _z)
+    {
+        x = _x;
+        z = _z;
+    }
+    public static Coord operator +(Coord a, Coord b)
+    => new Coord(a.x + b.x, a.z + b.z);
+    public static Coord operator -(Coord a, Coord b)
+    => new Coord(a.x - b.x, a.z - b.z);
+    public float Mag()
+    {
+        return x * x + z * z;
+    }
+    public override bool Equals(object obj)
+    {
+        Coord other = obj as Coord;
+
+        if (other == null)
+        {
+            return false;
+        }
+
+        return other.x == x && other.z == z;
+    }
+    public override int GetHashCode()
+    {
+        unchecked
+        {
+            var result = 0;
+            result = (result * 397) ^ x;
+            result = (result * 397) ^ z;
+            return result;
+        }
+    }
+
+}

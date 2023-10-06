@@ -22,6 +22,8 @@ public class Actor : Spatial
     Texture idle_sprite;
     Vector3 initial_scale = Vector3.One;
 
+    public TileData currentTile;
+
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
@@ -30,13 +32,22 @@ public class Actor : Spatial
         selectable = GetNode<IsSelectable>("IsSelectable");
         time = GlobalTranslation.x + GlobalTranslation.z;
         animation_offset = GD.Randf() * 100.0f;
+        EventBus.Subscribe<TileDataLoadedEvent>((TileDataLoadedEvent e) =>
+        {
+            TileData td = Grid.Get(new Coord(Mathf.RoundToInt(GlobalTranslation.x / 2f), Mathf.RoundToInt(GlobalTranslation.z / 2f)));
+            currentTile = td;
+            td.actor = this;
+        });
+
+        EventBus.Publish<SpawnLightSourceEvent>(new SpawnLightSourceEvent(this));
     }
 
     public void Configure(ActorConfig info)
     {
         config = info;
+        GetNode<HasTeam>("HasTeam").team = config.team;
 
-        if(config.pre_ko_sprite_filename != null && config.pre_ko_sprite_filename != "")
+        if (config.pre_ko_sprite_filename != null && config.pre_ko_sprite_filename != "")
             ArborResource.Load<Texture>("images/" + config.pre_ko_sprite_filename);
         if (config.ko_sprite_filename != null && config.ko_sprite_filename != "")
             ArborResource.Load<Texture>("images/" + config.ko_sprite_filename);
