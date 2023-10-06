@@ -26,6 +26,7 @@ public class SelectionSystem : Node
     CSGMesh active_cursor;
 
     HashSet<IsSelectable> current_active_selectables = new HashSet<IsSelectable>();
+    public static HashSet<IsSelectable>  GetCurrentActiveSelectables() { return instance.current_active_selectables; }
     public static bool IsSelected(IsSelectable selectable)
     {
         return instance.current_active_selectables.Contains(selectable);
