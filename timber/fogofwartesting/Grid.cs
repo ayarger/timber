@@ -22,13 +22,17 @@ public class Grid
     }
     public static TileData Get(Coord c)
     {
-        if (c.x < 0 || c.z < 0 || c.z >= Grid.tiledata.Length || c.x >= (Grid.tiledata.Length > 0 ? Grid.tiledata[0].Length : 0))
+        return Get(c.x, c.z);
+    }
+    public static TileData Get(int x, int z)
+    {
+        if (x < 0 || z < 0 || z >= Grid.tiledata.Length || x >= (Grid.tiledata.Length > 0 ? Grid.tiledata[0].Length : 0))
         {
-            return new TileData('e', c);
+            return new TileData('e', x, z);
         }
         else
         {
-            return tiledata[c.z][c.x];
+            return tiledata[z][x];
         }
     }
 }
@@ -38,11 +42,47 @@ public class TileData
     public Actor actor = null;
     public char value = 'e';
     public Coord coord;
+    public int x
+    {
+        get
+        {
+            return coord.x;
+        }
+        set
+        {
+            coord.x = value;
+        }
+    }
+    public int z
+    {
+        get
+        {
+            return coord.z;
+        }
+        set
+        {
+            coord.z = value;
+        }
+    }
+
+    public Vector3 GlobalTranslation
+    {
+        get
+        {
+            return new Vector3(coord.x * 2f, 0f, coord.z * 2f);
+        }
+    }
 
     public TileData(char _value, Coord _coord)
     {
         value = _value;
         coord = _coord;
+    }
+
+    public TileData(char _value, int x, int z)
+    {
+        value = _value;
+        coord = new Coord(x,z);
     }
 }
 public class Coord
@@ -60,7 +100,7 @@ public class Coord
     => new Coord(a.x - b.x, a.z - b.z);
     public float Mag()
     {
-        return x * x + z * z;
+        return Mathf.Sqrt(x * x + z * z);
     }
     public override bool Equals(object obj)
     {
