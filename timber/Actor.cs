@@ -127,7 +127,7 @@ public class Actor : Spatial
     {
         ShaderMaterial char_mat = (ShaderMaterial)character_view.GetSurfaceMaterial(0);
 
-        char_mat.SetShaderParam("fowTexture",FogOfWar.instance.GetTexture());
+        char_mat.SetShaderParam("fowTexture",FogOfWar.actorInstance.GetTexture());
         char_mat.SetShaderParam("world_position", GlobalTranslation);
         char_mat.SetShaderParam("screenWidth", FogOfWar.instance.screenWidth);
         char_mat.SetShaderParam("screenHeight", FogOfWar.instance.screenHeight);

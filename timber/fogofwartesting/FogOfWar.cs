@@ -8,24 +8,30 @@ public class FogOfWar : Viewport
     // private string b = "text";
     //[Export] ImageTexture texture;
     [Export] Material shader;
-    [Export] Material actorShader;
     [Export] public float screenWidth;
     [Export] public float screenHeight;
 
     [Export] public float screenPosX;
     [Export] public float screenPosZ;
 
+    [Export] public bool isActorViewport;
+    [Export] public Texture actorFOWTexture;
 
-    [Export] NodePath testNode;
 
-    float timer = 0f;
     public PackedScene scene;
     public static FogOfWar instance;
+    public static FogOfWar actorInstance;
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
-        instance = this;
-        timer = 0f;
+        if (isActorViewport)
+        {
+            actorInstance = this;
+        }
+        else
+        {
+            instance = this;
+        }
         scene = GD.Load<PackedScene>("res://fogofwartesting/FOWLitArea.tscn");
         EventBus.Subscribe<SpawnLightSourceEvent>(AddLitArea);
         EventBus.Subscribe<TileDataLoadedEvent>((TileDataLoadedEvent e) =>
@@ -66,6 +72,8 @@ public class FogOfWar : Viewport
         //(shader as ShaderMaterial).SetShaderParam("positions", t);
         //(shader as ShaderMaterial).SetShaderParam("test", 200f);
         //texture.Lock();
+        if (isActorViewport) return;
+
         (shader as ShaderMaterial).SetShaderParam("fowTexture",GetTexture());
         (shader as ShaderMaterial).SetShaderParam("screenWidth", screenWidth);
         (shader as ShaderMaterial).SetShaderParam("screenHeight", screenHeight);
@@ -79,6 +87,10 @@ public class FogOfWar : Viewport
     public void AddLitArea(SpawnLightSourceEvent e)
     {
         var newArea = scene.Instance<FOWLitArea>();
+        if (isActorViewport)
+        {
+            newArea.Texture = actorFOWTexture;
+        }
         newArea.follow = e.spatial;
         newArea.parent = this;
         AddChild(newArea);
