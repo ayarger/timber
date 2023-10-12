@@ -35,6 +35,12 @@ public class Grid
             return tiledata[z][x];
         }
     }
+    public static TileData Get(Vector3 worldPos)
+    {
+        int x = Mathf.RoundToInt(worldPos.x / 2.0f);
+        int z = Mathf.RoundToInt(worldPos.z / 2.0f);
+        return Get(x, z);
+    }
 }
 
 public class TileData
