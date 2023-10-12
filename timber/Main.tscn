@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=2]
+[gd_scene load_steps=26 format=2]
 
 [ext_resource path="res://scenes/GameManager.tscn" type="PackedScene" id=1]
 [ext_resource path="res://DebugSphere.cs" type="Script" id=2]
@@ -17,6 +17,7 @@
 [ext_resource path="res://scenes/UIOrb.tscn" type="PackedScene" id=15]
 [ext_resource path="res://fogofwartesting/FogOfWar.tscn" type="PackedScene" id=16]
 [ext_resource path="res://fogofwartesting/TestMovement.cs" type="Script" id=17]
+[ext_resource path="res://scenes/Actor.tres" type="Material" id=18]
 
 [sub_resource type="GDScript" id=2]
 
@@ -153,6 +154,9 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.55476, 0 )
 script = ExtResource( 9 )
 
 [node name="FogOfWar" parent="." instance=ExtResource( 16 )]
+
+[node name="Viewport" parent="FogOfWar" index="0"]
+actorShader = ExtResource( 18 )
 
 [node name="Sprite" parent="FogOfWar/Viewport" index="0"]
 scale = Vector2( 100, 100 )

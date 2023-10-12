@@ -8,6 +8,7 @@ public class FogOfWar : Viewport
     // private string b = "text";
     //[Export] ImageTexture texture;
     [Export] Material shader;
+    [Export] Material actorShader;
     [Export] public float screenWidth;
     [Export] public float screenHeight;
 
@@ -19,10 +20,11 @@ public class FogOfWar : Viewport
 
     float timer = 0f;
     public PackedScene scene;
-
+    public static FogOfWar instance;
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
+        instance = this;
         timer = 0f;
         scene = GD.Load<PackedScene>("res://fogofwartesting/FOWLitArea.tscn");
         EventBus.Subscribe<SpawnLightSourceEvent>(AddLitArea);
@@ -63,12 +65,14 @@ public class FogOfWar : Viewport
         //t.CreateFromImage(i);
         //(shader as ShaderMaterial).SetShaderParam("positions", t);
         //(shader as ShaderMaterial).SetShaderParam("test", 200f);
-
-        (shader as ShaderMaterial).SetShaderParam("fowTexture", GetTexture());
+        //texture.Lock();
+        (shader as ShaderMaterial).SetShaderParam("fowTexture",GetTexture());
         (shader as ShaderMaterial).SetShaderParam("screenWidth", screenWidth);
         (shader as ShaderMaterial).SetShaderParam("screenHeight", screenHeight);
         (shader as ShaderMaterial).SetShaderParam("screenPosX", screenPosX);
         (shader as ShaderMaterial).SetShaderParam("screenPosZ", screenPosZ);
+
+
 
     }
 
@@ -79,6 +83,12 @@ public class FogOfWar : Viewport
         newArea.parent = this;
         AddChild(newArea);
     }
+    //public Color GetAtPixel(Vector3 pos)
+    //{
+    //    int x = Mathf.RoundToInt(Size.x * (pos.x-screenPosX)/screenWidth);
+    //    int y = Mathf.RoundToInt(Size.y * (pos.z - screenPosZ) / screenHeight);
+    //    return texture.GetPixel(x, y);
+    //}
 }
 
 public class SpawnLightSourceEvent
