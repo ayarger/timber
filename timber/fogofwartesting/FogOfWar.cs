@@ -14,16 +14,24 @@ public class FogOfWar : Viewport
     [Export] public float screenPosX;
     [Export] public float screenPosZ;
 
+    [Export] public bool isActorViewport;
+    [Export] public Texture actorFOWTexture;
 
-    [Export] NodePath testNode;
 
-    float timer = 0f;
     public PackedScene scene;
-
+    public static FogOfWar instance;
+    public static FogOfWar actorInstance;
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
-        timer = 0f;
+        if (isActorViewport)
+        {
+            actorInstance = this;
+        }
+        else
+        {
+            instance = this;
+        }
         scene = GD.Load<PackedScene>("res://fogofwartesting/FOWLitArea.tscn");
         EventBus.Subscribe<SpawnLightSourceEvent>(AddLitArea);
         EventBus.Subscribe<TileDataLoadedEvent>((TileDataLoadedEvent e) =>
@@ -63,22 +71,36 @@ public class FogOfWar : Viewport
         //t.CreateFromImage(i);
         //(shader as ShaderMaterial).SetShaderParam("positions", t);
         //(shader as ShaderMaterial).SetShaderParam("test", 200f);
+        //texture.Lock();
+        if (isActorViewport) return;
 
-        (shader as ShaderMaterial).SetShaderParam("fowTexture", GetTexture());
+        (shader as ShaderMaterial).SetShaderParam("fowTexture",GetTexture());
         (shader as ShaderMaterial).SetShaderParam("screenWidth", screenWidth);
         (shader as ShaderMaterial).SetShaderParam("screenHeight", screenHeight);
         (shader as ShaderMaterial).SetShaderParam("screenPosX", screenPosX);
         (shader as ShaderMaterial).SetShaderParam("screenPosZ", screenPosZ);
+
+
 
     }
 
     public void AddLitArea(SpawnLightSourceEvent e)
     {
         var newArea = scene.Instance<FOWLitArea>();
+        if (isActorViewport)
+        {
+            newArea.Texture = actorFOWTexture;
+        }
         newArea.follow = e.spatial;
         newArea.parent = this;
         AddChild(newArea);
     }
+    //public Color GetAtPixel(Vector3 pos)
+    //{
+    //    int x = Mathf.RoundToInt(Size.x * (pos.x-screenPosX)/screenWidth);
+    //    int y = Mathf.RoundToInt(Size.y * (pos.z - screenPosZ) / screenHeight);
+    //    return texture.GetPixel(x, y);
+    //}
 }
 
 public class SpawnLightSourceEvent

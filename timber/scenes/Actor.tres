@@ -1,0 +1,13 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=2]
+
+[ext_resource path="res://scenes/Actor.gdshader" type="Shader" id=1]
+
+[resource]
+shader = ExtResource( 1 )
+shader_param/world_position = null
+shader_param/screenPosX = 0.0
+shader_param/screenPosZ = 0.0
+shader_param/screenHeight = 5.0
+shader_param/screenWidth = 5.0
+shader_param/alpha_cutout_threshold = 0.5
+shader_param/static_amount = 0.8

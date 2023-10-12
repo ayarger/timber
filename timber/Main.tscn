@@ -154,9 +154,6 @@ script = ExtResource( 9 )
 
 [node name="FogOfWar" parent="." instance=ExtResource( 16 )]
 
-[node name="Sprite" parent="FogOfWar/Viewport" index="0"]
-scale = Vector2( 100, 100 )
-
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
 [node name="viewport_tex_rect" type="TextureRect" parent="CanvasLayer"]
