@@ -5,28 +5,23 @@ using System.Collections.Generic;
 
 public class DynamicMenu : Control
 {
-    public MenuHeader header;
+    public VBoxContainer header;
     public VBoxContainer content;
     public Vector2? _size;
     public Vector2? _location;
     public DynamicMenu _parent;
     public bool _disabled = false;
+    public ColorRect overlay;
+
     private Action OnMenuClose;
+    private Control[] _components;
 
     public DynamicMenu(Vector2? location, Vector2? size, DynamicMenu parent, params Control[] components)
     {
         _size = size;
         _location = location;
         _parent = parent;
-
-        InitMenu();
-        foreach (Control component in components)
-        {
-            component.SizeFlagsVertical = (int)Control.SizeFlags.ExpandFill;
-            component.SizeFlagsHorizontal = (int)Control.SizeFlags.ExpandFill;
-            component.RectMinSize = new Vector2(_size.Value.x, (_size.Value.y - 50.0f) / 8.0f);
-            content.AddChild(component);
-        }
+        _components = components;
     }
 
     public DynamicMenu(Vector2 location, Vector2 size, params Control[] components) : this(location, size, null, components) { }
@@ -35,13 +30,62 @@ public class DynamicMenu : Control
 
     public DynamicMenu(params Control[] components) : this(null, null, null, components) { }
 
+    // Style variables
+    private Color _bgColor = new Color(40.0f / 255.0f, 36.0f / 255.0f, 44.0f / 255.0f, 1.0f);
+    private Color _shadowColor = new Color(0.0f, 0.0f, 0.0f, 0.5f);
+    private Color _overlayColor = new Color(0, 0, 0, 0.5f);
+    private Color _secondaryColor = new Color(72.0f / 255.0f, 67.0f / 255.0f, 77.0f / 255.0f, 1.0f);
+
+    private string _font = "res://fonts/Roboto-Regular.ttf";
+    private Color _textColor = new Color(1, 1, 1, 1);
+
+    public void Configure(Color? bgColor = null, Color? shadowColor = null, Color? overlayColor = null, Color? secondaryColor = null, 
+        string font = "res://fonts/Roboto-Regular.ttf", Color? textColor = null)
+    {
+        _bgColor = bgColor ?? _bgColor;
+        _shadowColor = shadowColor ?? _shadowColor;
+        _overlayColor = overlayColor ?? _overlayColor;
+        _secondaryColor = secondaryColor ?? _secondaryColor;
+
+        _font = font;
+        _textColor = textColor ?? _textColor;
+    }
+
+    public void CreateMenu()
+    {
+        InitMenu();
+        foreach (Control component in _components)
+        {
+            component.SizeFlagsVertical = (int)Control.SizeFlags.ExpandFill;
+            component.SizeFlagsHorizontal = (int)Control.SizeFlags.ExpandFill;
+            component.RectMinSize = new Vector2(_size.Value.x, (_size.Value.y - 50.0f) / 8.0f);
+
+            if(component.GetType() == Type.GetType("CustomButton"))
+            {
+                StyleBoxFlat style = new StyleBoxFlat();
+                style.BgColor = _secondaryColor;
+                component.AddStyleboxOverride("normal", style);
+            }
+            content.AddChild(component);
+        }
+    }
 
     private void InitMenu()
     {
         if (_parent != null)
         {
             _parent._disabled = true;
-            _parent.Visible = false;
+            ColorRect tempOverlay = new ColorRect();
+            tempOverlay.RectMinSize = OS.WindowSize; // Set to screen size
+            tempOverlay.Color = _overlayColor; // Set to semi-transparent black
+            _parent.AddChild(tempOverlay);
+            _parent.overlay = tempOverlay;
+            _parent.overlay.Raise();
+            if(_parent._parent != null)
+            {
+                _parent._parent.overlay.QueueFree();
+            }
+            //_parent.Visible = false;
         }
 
         _size = _size ?? new Vector2(400.0f, 650.0f);
@@ -57,12 +101,11 @@ public class DynamicMenu : Control
         this.AddChild(marginContainer);
 
         // Create a Panel to serve as a background
-        // DESIGN STUFF: Maybe make all of these customizable in the future
         Panel panel = new Panel();
         panel.RectSize = (Vector2)_size;
         StyleBoxFlat styleBox = new StyleBoxFlat();
-        styleBox.ShadowColor = new Color(0.0f, 0.0f, 0.0f, 0.5f);
-        styleBox.BgColor = new Color(40.0f / 255.0f, 36.0f / 255.0f, 44.0f / 255.0f, 1.0f);
+        styleBox.ShadowColor = _shadowColor;
+        styleBox.BgColor = _bgColor;
         styleBox.ShadowOffset = new Vector2(10, 10); // Shadow offset (10px to the right and down)
         styleBox.ShadowSize = 10;
 
@@ -84,12 +127,20 @@ public class DynamicMenu : Control
 
         vbox.AddChild(headerContainer);
 
+        VBoxContainer headerContent = new VBoxContainer();
+        headerContent.RectMinSize = headerContainer.RectMinSize;
+        headerContent.RectSize = headerContainer.RectMinSize;
+        headerContainer.AddChild(headerContent);
+
         // Create a close button
         Button closeButton = new Button();
         closeButton.Text = "X";
         closeButton.Align = Button.TextAlign.Center;
         closeButton.AnchorRight = 1.0f;
         closeButton.AnchorLeft = 0.9f;
+        StyleBoxFlat style = new StyleBoxFlat();
+        style.BgColor = _secondaryColor;
+        closeButton.AddStyleboxOverride("normal", style);
         closeButton.Connect("pressed", this, nameof(CloseMenu));
         headerContainer.AddChild(closeButton);
 
@@ -106,15 +157,18 @@ public class DynamicMenu : Control
         GD.Print(contentBox.RectMinSize.y);
         scrollContainer.AddChild(contentBox);
 
-        header = headerContainer;
+        header = headerContent;
         content = contentBox;
     }
+
 
     // Add to header
     public void AddToHeader(params Control[] components)
     {
         foreach (Control component in components)
         {
+            component.SizeFlagsVertical = (int)Control.SizeFlags.ExpandFill;
+            component.SizeFlagsHorizontal = (int)Control.SizeFlags.ExpandFill;
             header.AddChild(component);
         }
     }
@@ -140,19 +194,31 @@ public class DynamicMenu : Control
     }
 
     // Text label (Text)
-    public static Label MenuLabel(string text)
+    public static Label MenuLabel(string text, int fontSize = 20)
     {
         Label label = new Label();
         label.Align = Label.AlignEnum.Center;
         label.Valign = Label.VAlign.Center;
+
+        DynamicFont font = new DynamicFont();
+        font.FontData = (DynamicFontData)GD.Load("res://fonts/Roboto-Regular.ttf");
+        font.Size = fontSize;
+        label.AddFontOverride("font", font);
+
         label.Text = text;
         return label;
     }
 
     // Buttons (Text, action - on press)
-    public static CustomButton MenuButton(string text, Action onPress)
+    public static CustomButton MenuButton(string text, Action onPress, int fontSize = 20)
     {
         CustomButton button = new CustomButton(onPress);
+
+        DynamicFont font = new DynamicFont();
+        font.FontData = (DynamicFontData)GD.Load("res://fonts/Roboto-Regular.ttf");
+        font.Size = fontSize;
+        button.AddFontOverride("font", font);
+
         button.Text = text;
         return button;
     }
@@ -190,11 +256,13 @@ public class DynamicMenu : Control
         return slider;
     }
 
+    // Do something when closing menu
     public void SetOnMenuClose(Action action)
     {
         OnMenuClose = action;
     }
 
+    // Close menu (don't call directly usually)
     public void CloseMenu()
     {
         OnMenuClose?.Invoke();
@@ -202,12 +270,23 @@ public class DynamicMenu : Control
         QueueFree();
     }
 
+    // Why is this public?
     public override void _ExitTree()
     {
         if (_parent != null)
         {
             _parent._disabled = false;
-            _parent.Visible = true;
+            _parent.overlay.QueueFree();
+            if (_parent._parent != null)
+            {
+                ColorRect tempOverlay = new ColorRect();
+                tempOverlay.RectMinSize = OS.WindowSize; // Set to screen size
+                tempOverlay.Color = new Color(0, 0, 0, 0.5f); // Set to semi-transparent black
+                _parent._parent.AddChild(tempOverlay);
+                _parent._parent.overlay = tempOverlay;
+                _parent._parent.overlay.Raise();
+            }
+            //_parent.Visible = true;
         }
 
         base._ExitTree();
@@ -254,13 +333,12 @@ public class Toggle : CheckBox
     {
         if (@event is InputEventMouseButton eventMouseButton && eventMouseButton.Pressed)
         {
-            GD.Print(toggleGroup.ValidateChange(selected));
             if(toggleGroup != null && toggleGroup.ValidateChange(selected))
             {
                 selected = !selected;
                 _action?.Invoke();
             }
-            this.Pressed = selected;
+            this.Pressed = !selected; // No clue why this needs to be this way
         }
     }
 }
@@ -326,8 +404,8 @@ public class ToggleGroup : Control
                     toggle.selected = false;
                     toggle.Pressed = false;
                 }
-                return true;
             }
+            return true;
         }
         else if (selectOnlyOne && initState) // Trying to deselect current option
         {
@@ -335,7 +413,6 @@ public class ToggleGroup : Control
         }
         else if(selectAtLeastOne && initState) // Trying to deselect current option
         {
-            GD.Print("Trying to deselect at least one");
             int count = 0;
             foreach (Toggle toggle in _toggles)
             {

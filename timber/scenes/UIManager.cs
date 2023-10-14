@@ -134,11 +134,16 @@ public class UIManager : Node
         DynamicMenu settings;
         settings = new DynamicMenu(currMenu, content);
         currMenu = settings;
+        settings.Configure(bgColor: new Color(237.0f / 255.0f, 219.0f / 255.0f, 255.0f / 255.0f, 1.0f),
+            secondaryColor: new Color(163.0f / 255.0f, 127.0f / 255.0f, 199.0f / 255.0f, 1.0f));
+        settings.CreateMenu();
         GD.Print("Creating new menu");
 
         settings.SetOnMenuClose(() => { currMenu = settings._parent;  });
         settings.AddToHeader(
-            DynamicMenu.MenuLabel("Pause")
+            DynamicMenu.MenuSpacer(),
+            DynamicMenu.MenuLabel("Pause", 40),
+            DynamicMenu.MenuSpacer()
             );
         settings.AddToggleGroup(true, false, toggle, toggle2);
     }
