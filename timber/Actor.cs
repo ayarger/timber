@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections;
 using Amazon.S3.Model;
+using static System.Net.Mime.MediaTypeNames;
 
 public class Actor : Spatial
 {
@@ -39,13 +40,16 @@ public class Actor : Spatial
             td.actor = this;
         });
 
-        EventBus.Publish<SpawnLightSourceEvent>(new SpawnLightSourceEvent(this));
     }
 
     public void Configure(ActorConfig info)
     {
         config = info;
         GetNode<HasTeam>("HasTeam").team = config.team;
+        if (config.team == "player")
+        {
+            EventBus.Publish<SpawnLightSourceEvent>(new SpawnLightSourceEvent(this));
+        }
 
         if (config.pre_ko_sprite_filename != null && config.pre_ko_sprite_filename != "")
             ArborResource.Load<Texture>("images/" + config.pre_ko_sprite_filename);
@@ -85,6 +89,7 @@ public class Actor : Spatial
         time += delta;
         ProcessAnimation();
         ProcessColor();
+        SetShaderParams();
     }
 
     float animation_offset = 0;
@@ -116,6 +121,18 @@ public class Actor : Spatial
         }
 
         //character_material.AlbedoColor += (desired_color - character_material.AlbedoColor) * 0.1f;
+    }
+
+    void SetShaderParams()
+    {
+        ShaderMaterial char_mat = (ShaderMaterial)character_view.GetSurfaceMaterial(0);
+
+        char_mat.SetShaderParam("fowTexture",FogOfWar.actorInstance.GetTexture());
+        char_mat.SetShaderParam("world_position", GlobalTranslation);
+        char_mat.SetShaderParam("screenWidth", FogOfWar.instance.screenWidth);
+        char_mat.SetShaderParam("screenHeight", FogOfWar.instance.screenHeight);
+        char_mat.SetShaderParam("screenPosX", FogOfWar.instance.screenPosX);
+        char_mat.SetShaderParam("screenPosZ", FogOfWar.instance.screenPosZ);
     }
 
     public void Kill()
