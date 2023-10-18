@@ -3,7 +3,12 @@ using System;
 
 public class UIBar : Control
 {
+
     HasStats target_data;
+
+    String data_name;
+
+    int index;
 
     TextureProgress tex_progress;
 
@@ -22,14 +27,15 @@ public class UIBar : Control
             target_mesh = target_data.GetParent().GetNode<MeshInstance>("view/mesh");
         // get target_tween
         ui_tween = GetNode<Tween>("UITween");
-
         // connect stats change event here
-        target_data.Connect("health_change", this, nameof(OnHealthChange));
+        target_data.Connect("stat_change", this, nameof(OnUIStatChange));
     }
 
-    public void Configure(HasStats _target)
+    public void Configure(HasStats _target, string _data_name, int _index)
     {
         target_data = _target;
+        data_name = _data_name;
+        index = _index;
     }
 
     public override void _Process(float delta)
@@ -55,6 +61,25 @@ public class UIBar : Control
         RectGlobalPosition = screenPosition;
         RectScale = Vector2.One * 0.15f;
 
+        if (index > 0)
+        {
+
+            RectScale = Vector2.One * 0.12f;
+
+            if (index == 1)
+            {
+                RectGlobalPosition = new Vector2(screenPosition.x - 7.5f, screenPosition.y + 10);
+                tex_progress.SelfModulate = new Color(0, 0.3f, 0.6f, 1);
+            }
+            else
+            {
+                RectGlobalPosition = new Vector2(screenPosition.x - 7.5f, screenPosition.y + 10 + 6);
+                tex_progress.SelfModulate = new Color(0.3f, 0.5f, 0, 1);
+            }
+        }
+
+
+
         tex_progress.Value = target_data.health_ratio * 100;
     }
 
@@ -63,20 +88,26 @@ public class UIBar : Control
     /// </summary>
     /// <param name="stats"></param>
     /// <returns></returns>
-    public static UIBar Create(HasStats stats)
+    public static UIBar Create(HasStats stats, string stat_name, int index)
     {
         // load scene
         PackedScene scene = (PackedScene)ResourceLoader.Load("res://scenes/UIBar.tscn");
         UIBar new_bar = (UIBar)scene.Instance();
-        new_bar.Configure(stats);
+        new_bar.Configure(stats, stat_name, index);
         PrimaryCanvas.AddChildNode(new_bar);
+        // TODO resize UIbar& bar pos based on bar index
+        if (index > 0)
+        {
+            Vector2 init_pos = new_bar.RectPosition;
+            new_bar.RectPosition = new Vector2(init_pos.x, init_pos.y - 40);
+        }
         return new_bar;
     }
 
     /// <summary>
     /// Update UI on health change
     /// </summary>
-    public void OnHealthChange()
+    public void OnUIStatChange()
     {
         float target_value = target_data.health_ratio * 100;
         // Stop any ongoing tween operation.

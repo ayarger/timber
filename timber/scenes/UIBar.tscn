@@ -59,6 +59,7 @@ value = 100.0
 texture_progress = ExtResource( 2 )
 
 [node name="TextureRect" type="TextureRect" parent="."]
+visible = false
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
