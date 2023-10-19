@@ -118,7 +118,7 @@ public class HasStats : Node
     public float max_health = 100;
     public float health_ratio = 1;
     //TODO: max 3 overhead progress bar can be stacked together
-    [Signal] public delegate void stat_change();
+    [Signal] public delegate void stat_change(string stat_name);
 
     public override void _Ready()
     {
@@ -142,6 +142,7 @@ public class HasStats : Node
             int index = Stats_With_Bar.Count - 1;
             UIBar.Create(this, name, index);
         }
+
 
         else
             Stats[name] = new Stat(name, min, max, initial, display);
@@ -173,7 +174,7 @@ public class HasStats : Node
         //update ratio
         health_ratio = curr_health / max_health;
         //signal for UI/sound 
-        EmitSignal("stat_change");
+        EmitSignal("stat_change", "health");
     }
 
     public void ApplyHeal(float healAmount)
@@ -185,7 +186,7 @@ public class HasStats : Node
         //update ratio
         health_ratio = curr_health / max_health;
         //signal for UI/sound 
-        EmitSignal("stat_change");
+        EmitSignal("stat_change", "health");
     }
 
     public void IncreaseMaxHealth(float amount)
@@ -194,7 +195,7 @@ public class HasStats : Node
         //update ratio
         health_ratio = curr_health / max_health;
         //signal for UI/sound 
-        EmitSignal("stat_change");
+        EmitSignal("stat_change", "health");
     }
 
     public void DecreaseMaxHealth(float amount)
@@ -209,7 +210,7 @@ public class HasStats : Node
         //update ratio
         health_ratio = curr_health / max_health;
         //signal for UI/sound 
-        EmitSignal("stat_change");
+        EmitSignal("stat_change", "health");
     }
 
 

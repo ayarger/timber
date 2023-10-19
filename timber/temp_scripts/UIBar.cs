@@ -94,6 +94,7 @@ public class UIBar : Control
         PackedScene scene = (PackedScene)ResourceLoader.Load("res://scenes/UIBar.tscn");
         UIBar new_bar = (UIBar)scene.Instance();
         new_bar.Configure(stats, stat_name, index);
+        new_bar.Name = stat_name + " bar";
         PrimaryCanvas.AddChildNode(new_bar);
         // TODO resize UIbar& bar pos based on bar index
         if (index > 0)
@@ -107,22 +108,26 @@ public class UIBar : Control
     /// <summary>
     /// Update UI on health change
     /// </summary>
-    public void OnUIStatChange()
+    public void OnUIStatChange(string stat_name)
     {
-        float target_value = target_data.health_ratio * 100;
-        // Stop any ongoing tween operation.
-        ui_tween.StopAll();
-        //GD.Print(tex_progress.Value);
-        ui_tween.InterpolateProperty(
-            tex_progress,
-            "value",
-            tex_progress.Value,
-            target_value,
-            2f,
-            Tween.TransitionType.Linear,
-            Tween.EaseType.InOut
-        );
-        // start tween 
-        ui_tween.Start();
+        GD.Print("curr_stat_name: " + data_name , " incoming singal name: " + stat_name);
+        if (stat_name == data_name)
+        {
+            float target_value = target_data.health_ratio * 100;
+            // Stop any ongoing tween operation.
+            ui_tween.StopAll();
+            //GD.Print(tex_progress.Value);
+            ui_tween.InterpolateProperty(
+                tex_progress,
+                "value",
+                tex_progress.Value,
+                target_value,
+                2f,
+                Tween.TransitionType.Linear,
+                Tween.EaseType.InOut
+            );
+            // start tween 
+            ui_tween.Start();
+        }
     }
 }
