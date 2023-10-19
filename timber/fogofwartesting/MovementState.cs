@@ -15,7 +15,7 @@ public class MovementState : ActorState
         get { return "MovementState"; }
     }
     public List<Vector3> waypoints = new List<Vector3>();
-    float mvmSpeed = .1f; //Pull from HasStats
+    float mvmSpeed = 6f; //Pull from HasStats
 
 
     // Called when the node enters the scene tree for the first time.
@@ -26,6 +26,7 @@ public class MovementState : ActorState
 
     public override void Start()
     {
+        timer = 0.0f;
         inclusiveStates = new HashSet<string>();
         waypoints = new List<Vector3>();
 
@@ -43,7 +44,7 @@ public class MovementState : ActorState
             if(totalDist.Length() < 5)
             {
                 //Attempt to claim the tile. If the tile is already claimed, flood fill to find the next tile. 
-                Coord cur = new Coord(Mathf.RoundToInt(waypoints[waypoints.Count-1].x / 2.0f), Mathf.RoundToInt(waypoints[waypoints.Count - 1].z / 2.0f));
+                Coord cur = Grid.ConvertToCoord(waypoints[waypoints.Count - 1]);
                 if (Grid.Get(cur).actor == null || Grid.Get(cur).actor == actor)
                 {
                     actor.currentTile.actor = null;
@@ -60,22 +61,23 @@ public class MovementState : ActorState
                 }
 
             }
-            if (disp.Length() < mvmSpeed)
+            if (disp.Length() < mvmSpeed * delta)
             {
                 actor.GlobalTranslation = dest;
                 waypoints.RemoveAt(0);
                 if (waypoints.Count == 0)
                 {
-                    ArborCoroutine.StartCoroutine(MoveToNearestTile(), this);
+                    manager.DisableState(name);
                 }
             }
             else
             {
-                actor.GlobalTranslation += mvmSpeed * disp.Normalized();
+                actor.GlobalTranslation += mvmSpeed * disp.Normalized()*delta;
             }
         }
         else
         {
+            manager.DisableState(name);
         }
     }
 
@@ -85,10 +87,18 @@ public class MovementState : ActorState
         //Place actor in tilemap
     }
 
+    float timer = 0.0f;
+    public override void Animate(float delta)
+    {
+        timer += delta;
+        actor.view.Rotation = actor.initial_rotation + new Vector3(0, 0, .1f*Mathf.Sin(timer * 6));
+    }
+
     IEnumerator MoveToNearestTile()
     {
-        int x = Mathf.RoundToInt(actor.GlobalTranslation.x / 2.0f);
-        int z = Mathf.RoundToInt(actor.GlobalTranslation.z / 2.0f);
+        Coord c = Grid.ConvertToCoord(actor.GlobalTranslation);
+        int x = c.x;
+        int z = c.z;
         if (x < 0 || z < 0||z >= Grid.height || x >= Grid.width)
         {
             //actor.movetotile(OOB);
@@ -105,21 +115,21 @@ public class MovementState : ActorState
         }
         else
         {
-
-            TileData dest = FindNearestUnclaimedTile(Mathf.RoundToInt(actor.GlobalTranslation.x / 2.0f), Mathf.RoundToInt(actor.GlobalTranslation.z / 2.0f));
+            c = Grid.ConvertToCoord(actor.GlobalTranslation);
+            TileData dest = FindNearestUnclaimedTile(c.x,c.z);
             actor.currentTile.actor = null;
             dest.actor = actor;
             actor.currentTile = dest;
 
             manager.DisableState(name);
             //This is kind of jank, change this later
-            waypoints = TestMovement.PathFind(actor.GlobalTranslation, new Vector3(dest.x * 2f, .1f, dest.z * 2f));
+            waypoints = TestMovement.PathFind(actor.GlobalTranslation, new Vector3(dest.x * Grid.tileWidth, .1f, dest.z * Grid.tileWidth));
             for(int i = 0; i<100 && waypoints.Count> 0; i++)
             {
                 Update(.016f);
                 yield return null;
             }
-            actor.GlobalTranslation = new Vector3(dest.x * 2f, .1f, dest.z * 2f);
+            actor.GlobalTranslation = new Vector3(dest.x * Grid.tileWidth, .1f, dest.z * Grid.tileWidth);
 
         }
 

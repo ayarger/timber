@@ -50,7 +50,8 @@ public class SelectionSystem : Node
 
     void ProcessMovement()
     {
-        current_cursor_tile = new Vector3(Mathf.RoundToInt(current_cursor_tile.x / 2.0f) * 2.0f, 0.1f, Mathf.RoundToInt(current_cursor_tile.z / 2.0f) * 2.0f);
+        current_cursor_tile = Grid.LockToGrid(current_cursor_tile);
+        current_cursor_tile.y = 0.1f;
         active_cursor.GlobalTranslation += (current_cursor_tile - active_cursor.GlobalTranslation) * 0.4f;
     }
 
@@ -127,7 +128,7 @@ public class SelectionSystem : Node
         //DebugSphere.VisualizePoint(intersection_point);
 
         /* Round */
-        Vector3 rounded_point = new Vector3(Mathf.RoundToInt(intersection_point.x / 2.0f) * 2.0f, 0.1f, Mathf.RoundToInt(intersection_point.z / 2.0f) * 2.0f);
+        Vector3 rounded_point = Grid.LockToGrid(intersection_point);
 
         /* Check for drag operation */
         if (left_click_down)
@@ -189,9 +190,9 @@ public class SelectionSystem : Node
             Vector3 top_left_point = new Vector3(Mathf.Min(first_point.x, second_point.x), 0.1f, Mathf.Min(first_point.z, second_point.z));   // smallest x, smallest z
             Vector3 bottom_right_point = new Vector3(Mathf.Max(first_point.x, second_point.x), 0.1f, Mathf.Max(first_point.z, second_point.z)); // largest x, largest z
 
-            for (int x = (int)top_left_point.x; x <= bottom_right_point.x; x += 2)
+            for (float x = top_left_point.x; x <= bottom_right_point.x; x += Grid.tileWidth)
             {
-                for (int z = (int)top_left_point.z; z <= bottom_right_point.z; z += 2)
+                for (float z = top_left_point.z; z <= bottom_right_point.z; z += Grid.tileWidth)
                 {
                     CSGMesh new_tile = (CSGMesh)selection_square_scene.Instance();
                     AddChild(new_tile);

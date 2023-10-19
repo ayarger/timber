@@ -9,6 +9,7 @@ public class FOWLitArea : Sprite
     public Spatial follow;
     public FogOfWar parent;
     public float baseRadius = 5f;
+    public bool isLow = false;
     float timer = 0f;
 
     // Called when the node enters the scene tree for the first time.
@@ -21,7 +22,7 @@ public class FOWLitArea : Sprite
     public override void _Process(float delta)
     {
         timer += delta;
-        float radius = baseRadius * (1f + .075f * Mathf.Sin(2f*timer));
+        float radius = isLow ? baseRadius * 1.3f : baseRadius * (1f + .075f * Mathf.Sin(2f*timer));
 
         if (follow == null)
         {

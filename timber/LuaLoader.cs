@@ -114,6 +114,7 @@ public class LuaLoader : Node
 		int x = 0;
 		int z = 0;
 		//May move tile data elsewhere
+		//Possibly load tile width
 		var tileData = new List<List<TileData>>();
 		tileData.Add(new List<TileData>());
 		for(int i = 0; i < layout_file_contents.Length; i++)
@@ -153,13 +154,13 @@ public class LuaLoader : Node
                 mat.SetShaderParam("albedo_texture", scene_tile_texture);
 				mat.SetShaderParam("visibility_texture", fog_of_war_visibility_texture);
 				AddChild(new_tile);
-				new_tile.GlobalTranslation = new Vector3(x * 2, -1, z * 2);
+				new_tile.GlobalTranslation = new Vector3(x * Grid.tileWidth, -1, z * Grid.tileWidth);
 			}
 
 			if(map_code_to_actor_config.ContainsKey(current_char))
             {
 				ActorConfig config = map_code_to_actor_config[current_char];
-				Vector3 spawn_pos = new Vector3(x * 2, 0, z * 2);
+				Vector3 spawn_pos = new Vector3(x * Grid.tileWidth, 0, z * Grid.tileWidth);
 				SpawnActorOfType(config, spawn_pos);
 
 				if (config.team.ToLower().Trim() == "player")
@@ -177,7 +178,7 @@ public class LuaLoader : Node
 		height = z;
 
 		/* Configure fog of war */
-		Viewport viewport = GetParent().GetNode<Viewport>("FogOfWar/Viewport");
+		Viewport viewport = GetParent().GetNode<Viewport>("FogOfWar/HighVisibility");
 		
 
 		//viewport.RenderTargetClearMode = Godot.Viewport.ClearMode.Never;
@@ -209,7 +210,7 @@ public class LuaLoader : Node
         //GD.Print("fog_of_war_visibility_texture.size() " + fog_of_war_visibility_texture.GetSize());
 
 
-        Sprite visibility_marker = GetParent().GetNode<Sprite>("FogOfWar/Viewport/Sprite");
+        Sprite visibility_marker = GetParent().GetNode<Sprite>("FogOfWar/HighVisibility/Sprite");
 		visibility_marker.Position = new_marker_pos;
 
 		yield return null;
