@@ -13,15 +13,19 @@ public class Actor : Spatial
 
     ActorConfig config;
 
-    Spatial view; // Good for scaling operations.
+    public Spatial view { get; private set; } // Good for scaling operations.
     MeshInstance character_view;
     SpatialMaterial character_material;
     MeshInstance shadow_view;
+    StateManager state_manager;
 
     IsSelectable selectable;
 
     Texture idle_sprite;
-    Vector3 initial_scale = Vector3.One;
+    //Initial animation variables
+    public bool initial_load = false;
+    public Vector3 initial_scale { get; private set; } = Vector3.One;
+    public Vector3 initial_rotation { get; private set; } = Vector3.Zero;
 
     public TileData currentTile;
 
@@ -29,13 +33,14 @@ public class Actor : Spatial
     public override void _Ready()
     {
         view = (Spatial)GetNode("view");
+        state_manager = (StateManager)GetNode("StateManager");
         character_view = (MeshInstance)GetNode("view/mesh");
         selectable = GetNode<IsSelectable>("IsSelectable");
         time = GlobalTranslation.x + GlobalTranslation.z;
         animation_offset = GD.Randf() * 100.0f;
         EventBus.Subscribe<TileDataLoadedEvent>((TileDataLoadedEvent e) =>
         {
-            TileData td = Grid.Get(new Coord(Mathf.RoundToInt(GlobalTranslation.x / 2f), Mathf.RoundToInt(GlobalTranslation.z / 2f)));
+            TileData td = Grid.Get(GlobalTranslation);
             currentTile = td;
             td.actor = this;
         });
@@ -66,7 +71,9 @@ public class Actor : Spatial
                 /* Scale */
                 view.Scale = new Vector3(tex.GetWidth(), tex.GetHeight(), 1.0f) * 0.01f;
                 view.Scale = view.Scale * config.aesthetic_scale_factor;
+                initial_load = true;
                 initial_scale = view.Scale;
+                initial_rotation = view.Rotation;
 
                 shadow_view.Scale = new Vector3(Mathf.Min(2.0f, view.Scale.x), shadow_view.Scale.y, shadow_view.Scale.z);
 
@@ -97,11 +104,11 @@ public class Actor : Spatial
     float time = 0.0f;
     void ProcessAnimation()
     {
-        /* idle animation */
-        float idle_scale_impact = (1.0f + Mathf.Sin(time * 4 + animation_offset) * 0.025f);
+        ///* idle animation */
+        //float idle_scale_impact = (1.0f + Mathf.Sin(time * 4 + animation_offset) * 0.025f);
 
-        /* apply */
-        view.Scale = new Vector3(initial_scale.x, initial_scale.y * idle_scale_impact, initial_scale.z);
+        ///* apply */
+        //view.Scale = new Vector3(initial_scale.x, initial_scale.y * idle_scale_impact, initial_scale.z);
     }
 
     void ProcessColor()

@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 
 public class StateManager : Node
@@ -12,6 +13,7 @@ public class StateManager : Node
     // Called when the node enters the scene tree for the first time.
 
     public Dictionary<string,ActorState> states;
+    Actor actor;
     HashSet<ActorState> activeStates;
 
     public override void _Ready()
@@ -22,15 +24,30 @@ public class StateManager : Node
             var actorState = state as ActorState;
             if (actorState != null) states[actorState.name] = actorState;
         }
+        if (!states.ContainsKey("Idle"))
+        {
+            states.Add("Idle", new IdleState());
+            states["Idle"].actor = GetParent<Actor>();
+            states["Idle"].manager = this;
+            AddChild(states["Idle"]);
+        }
         activeStates = new HashSet<ActorState>();
+        actor = GetParent<Actor>();
     }
 
     public override void _Process(float delta)
     {
-        foreach( var state in activeStates)
+        if (activeStates.Count == 0)
+        {
+            EnableState("Idle");
+        }
+        ResetAnimation();
+        foreach ( var state in new HashSet<ActorState>(activeStates))
         {
             state.Update(delta);
+            state.Animate(delta);
         }
+
     }
 
     public void EnableState(string state)
@@ -63,6 +80,26 @@ public class StateManager : Node
             states[state].Stop();
         }
 
+    }
+
+    //If no animations are using these values, reset them. (Subject to change)
+    Vector3 oldRotation = Vector3.Zero;
+    Vector3 oldScale = Vector3.One;
+    void ResetAnimation()
+    {
+        if (!actor.initial_load) return;
+        //May be a better way to do this. Ref variables don't work.
+        if (oldRotation == actor.view.Rotation)
+        {
+            actor.view.Rotation = .8f * actor.view.Rotation + .2f * actor.initial_rotation;
+        }
+        if (oldScale == actor.view.Scale)
+        {
+            actor.view.Scale = .8f * actor.view.Scale + .2f * actor.initial_scale;
+        }
+
+        oldRotation = actor.view.Rotation;
+        oldScale = actor.view.Scale;
     }
 
 
