@@ -53,3 +53,5 @@ margin_bottom = 82.0
 texture = ExtResource( 2 )
 expand = true
 stretch_mode = 7
+
+[node name="UITween" type="Tween" parent="."]
