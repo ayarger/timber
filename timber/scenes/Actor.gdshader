@@ -23,8 +23,12 @@ float hash(vec2 p) {
 }
 
 void fragment() {
+	float visibility_value = texture(fowTexture,vec2((world_position.x-screenPosX)/screenWidth,((world_position.z-screenPosZ)/screenHeight))).r;
     vec4 tex_color = texture(texture_albedo, UV);
-	ALBEDO = vec3(tex_color.r, tex_color.g, tex_color.b) * texture(fowTexture,vec2((world_position.x-screenPosX)/screenWidth,((world_position.z-screenPosZ)/screenHeight))).r;
+	ALBEDO = vec3(tex_color.r, tex_color.g, tex_color.b) * visibility_value;
+	
+	if(visibility_value < 0.001f)
+		discard;
 	
     // Perform alpha cutout
     ALPHA_SCISSOR = alpha_cutout_threshold;
