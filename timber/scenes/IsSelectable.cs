@@ -84,7 +84,7 @@ public class IsSelectable : Node
         return selection_region.IsPointWithinRegion(parent.GlobalTranslation);
     }
 
-    bool am_i_selected = false;
+    public bool am_i_selected = false;
     void OnEventSelectionFinished(EventSelectionFinished e)
     {
         if (e.selection_region.IsPointWithinRegion(parent.GlobalTranslation))

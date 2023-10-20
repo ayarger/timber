@@ -17,6 +17,7 @@ public class UIBar : Control
     Tween ui_tween;
 
     public float scaling_factor = 6f;
+    bool selected;
 
     public override void _Ready()
     {
@@ -66,22 +67,7 @@ public class UIBar : Control
         float characterSize = target_mesh.Scale.y;
         float newScale = (characterSize / distance) * scaling_factor;
         RectScale = new Vector2(newScale, newScale);
-        if (index > 0)
-        {
-            RectScale = new Vector2(newScale * 0.8f, newScale * 0.8f);
-
-            if (index == 1)
-            {
-                RectGlobalPosition = new Vector2(RectGlobalPosition.x - 7.5f, RectGlobalPosition.y + 10);
-            }
-
-            else
-            {
-                RectGlobalPosition = new Vector2(RectGlobalPosition.x - 7.5f, RectGlobalPosition.y + 10 + 6);
-            
-            }
-        }
-        tex_progress.Value = target_data.health_ratio * 100;
+        tex_progress.Value = target_data.Stats[data_name].Ratio * 100;
     }
 
     /// <summary>
@@ -92,7 +78,9 @@ public class UIBar : Control
     public static UIBar Create(HasStats stats, string stat_name, int index)
     {
         // load scene
-        PackedScene scene = (PackedScene)ResourceLoader.Load("res://scenes/UIBar.tscn");
+        //PackedScene scene = (PackedScene)ResourceLoader.Load("res://scenes/UIBar.tscn");
+        // ui bar test scene
+        PackedScene scene = (PackedScene)ResourceLoader.Load("res://temp_scenes/UIBars.tscn");
         UIBar new_bar = (UIBar)scene.Instance();
         new_bar.Configure(stats, stat_name, index);
         new_bar.Name = stat_name + " bar";

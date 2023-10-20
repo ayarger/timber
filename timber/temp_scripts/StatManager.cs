@@ -32,22 +32,7 @@ public class StatManager : Node
                 stats.AddStat("mana", 0, 100, 80, true);
             }
 
-            else if (eventKey.Scancode == (int)KeyList.J)
-            {
-                stats.ApplyDamage(10);  // Decrease health by 10
-            }
-            else if (eventKey.Scancode == (int)KeyList.K)
-            {
-                stats.ApplyHeal(10);  // Increase health by 10
-            }
-            else if (eventKey.Scancode == (int)KeyList.U)
-            {
-                stats.DecreaseMaxHealth(10);
-            }
-            else if (eventKey.Scancode == (int)KeyList.I)
-            {
-                stats.IncreaseMaxHealth(10);
-            }
+            // toggle visibility
         }
     }
 }

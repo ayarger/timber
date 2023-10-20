@@ -150,14 +150,17 @@ public class HasStats : Node
     {
         // TODO: UI_count max = 3
         // Prompt player to change display settings if > 3
+        if(display && Stats_With_Bar.Count == 0)
+        {
+            // create UI Bar container
+            BarContainer containter = BarContainer.Create(this);
+        }
         if (display && Stats_With_Bar.Count < 3)
         {
             Stats_With_Bar.Add(name);
             int index = Stats_With_Bar.Count - 1;
-            UIBar bar = UIBar.Create(this, name, index);
-            //TODO change bar color
+            // TODO create bars
         }
-
 
         else
             Stats[name] = new Stat(name, min, max, initial, display);
