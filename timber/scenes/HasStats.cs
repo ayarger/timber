@@ -25,7 +25,8 @@ public class Stat
     public float maxVal { get; set; }
     public float currVal { get; set; }
     public bool displayOn { get; set; }
-    public Color barColo { get; set; }
+    public Color barColor { get; set; }
+
     // TODO UI styling info
     // maybe bar colors?
     public float Ratio = 1;
@@ -87,6 +88,19 @@ public class Stat
         ClampCurrentValue();
     }
 
+    public void toggleUI()
+    {
+        if (displayOn)
+        {
+            displayOn = false;
+        }
+
+        else
+        {
+            displayOn = true;
+        }
+    }
+
     private void ClampCurrentValue()
     {
         currVal = Mathf.Clamp(currVal, minVal, maxVal);
@@ -140,7 +154,8 @@ public class HasStats : Node
         {
             Stats_With_Bar.Add(name);
             int index = Stats_With_Bar.Count - 1;
-            UIBar.Create(this, name, index);
+            UIBar bar = UIBar.Create(this, name, index);
+            //TODO change bar color
         }
 
 

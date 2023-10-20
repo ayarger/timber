@@ -16,7 +16,7 @@ public class UIBar : Control
 
     Tween ui_tween;
 
-    public float scaling_factor = 8f;
+    public float scaling_factor = 6f;
 
     public override void _Ready()
     {
@@ -68,18 +68,17 @@ public class UIBar : Control
         RectScale = new Vector2(newScale, newScale);
         if (index > 0)
         {
-
-            // RectScale = Vector2.One * 0.12f;
+            RectScale = new Vector2(newScale * 0.8f, newScale * 0.8f);
 
             if (index == 1)
             {
-                RectGlobalPosition = new Vector2(screenPosition.x - 7.5f, screenPosition.y + 10);
-               
+                RectGlobalPosition = new Vector2(RectGlobalPosition.x - 7.5f, RectGlobalPosition.y + 10);
             }
+
             else
             {
-                RectGlobalPosition = new Vector2(screenPosition.x - 7.5f, screenPosition.y + 10 + 6);
-                tex_progress.SelfModulate = new Color(0.3f, 0.5f, 0, 1);
+                RectGlobalPosition = new Vector2(RectGlobalPosition.x - 7.5f, RectGlobalPosition.y + 10 + 6);
+            
             }
         }
         tex_progress.Value = target_data.health_ratio * 100;
@@ -109,11 +108,19 @@ public class UIBar : Control
         {
             Vector2 init_pos = new_bar.RectPosition;
             new_bar.RectPosition = new Vector2(init_pos.x, init_pos.y - 40);
+            if(index == 1)
+            {
+                new_bar.tex_progress.SelfModulate = new Color(0, 0.3f, 0.6f, 1);
+            }
+            else
+            {
+                new_bar.tex_progress.SelfModulate = new Color(0.3f, 0.5f, 0, 1);
+            }
         }
         return new_bar;
     }
 
-    public void changeColor(Color _color)
+    public void ChangeColor(Color _color)
     {
         tex_progress.SelfModulate = _color;
     }
