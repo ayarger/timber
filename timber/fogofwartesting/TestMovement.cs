@@ -13,7 +13,6 @@ public class TestMovement : Node
 	// private int a = 2;
 	// private string b = "text";
 
-	bool isPressed = false;
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
@@ -23,7 +22,7 @@ public class TestMovement : Node
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(float delta)
 	{
-		if (!isPressed && Input.IsKeyPressed((int)KeyList.Y))
+		if (Input.IsActionJustPressed("right_click"))
 		{
 			//From SelectionSystem.cs
 			var from = GameplayCamera.GetGameplayCamera().ProjectRayOrigin(SelectionSystem.GetCursorWindowPosition());
@@ -55,7 +54,6 @@ public class TestMovement : Node
 				}
 			}
 		}
-		//isPressed = Input.IsKeyPressed((int)KeyList.Y);
 	}
 	public static List<Vector3> PathFind(Vector3 cur, Vector3 dest)
 	{

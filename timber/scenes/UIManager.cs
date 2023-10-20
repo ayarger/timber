@@ -159,7 +159,7 @@ public class UIManager : Node
 
     void SettingsMenu()
     {
-        List<string> options = new List<string>() { "Discord", "Credits2", "Quit", "debug_victory", "debug_lose", "debug_open_webgl_build", "debug_webgl_upload", "debug_webgl_upload_opt", "debug_change_title_screen", "debug_change_title_audio", "debug_test_image_upload", "debug_test_fullscreen" };
+        List<string> options = new List<string>() { "Discord", "Credits2", "Quit", "debug_victory", "debug_lose", "debug_open_webgl_build", "debug_webgl_upload", "debug_webgl_upload_opt", "compress_canvas_minigame", "debug_change_title_screen", "debug_change_title_audio", "debug_test_image_upload", "debug_test_fullscreen" };
         List<System.Action> actions = new List<Action>()
         {
             () => { OS.ShellOpen(@"https://discord.gg/2GZ3SxVA7Q"); },
@@ -170,6 +170,7 @@ public class UIManager : Node
             () => { WebBuildUploader.OpenWebBuild(); },
             () => { WebBuildUploader.UploadWebBuild(); },
             () => { WebBuildUploader.UploadOptimizedWebBuild(); },
+            () => { CanvasBuilder.PerformBuild(); },
             () => {
                 ArborCoroutine.StartCoroutine(ArborResource.Upload<Texture>("images/title_screen_background.png"));
             },

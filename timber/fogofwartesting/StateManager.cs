@@ -95,7 +95,7 @@ public class StateManager : Node
         }
         if (oldScale == actor.view.Scale)
         {
-            actor.view.Scale = .8f * actor.view.Scale + .2f * actor.initial_scale;
+            actor.view.Scale = .8f * actor.view.Scale + .2f * actor.initial_view_scale;
         }
 
         oldRotation = actor.view.Rotation;

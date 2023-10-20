@@ -15,7 +15,7 @@ public class MovementState : ActorState
         get { return "MovementState"; }
     }
     public List<Vector3> waypoints = new List<Vector3>();
-    float mvmSpeed = 6f; //Pull from HasStats
+    float mvmSpeed = 4f; //Pull from HasStats
 
 
     // Called when the node enters the scene tree for the first time.
@@ -91,7 +91,23 @@ public class MovementState : ActorState
     public override void Animate(float delta)
     {
         timer += delta;
-        actor.view.Rotation = actor.initial_rotation + new Vector3(0, 0, .1f*Mathf.Sin(timer * 6));
+
+        /* Rotation */
+        const float rot_frequency = 10f;
+        const float rot_amplitude = 0.1f;
+        actor.view.Rotation = actor.initial_rotation + new Vector3(0, 0, rot_amplitude * Mathf.Sin(timer * rot_frequency));
+
+        /* Position */
+        const float pos_amplitude = 0.5f;
+        const float posfrequency = 10f;
+        float signal = Mathf.Abs(Mathf.Sin(timer * posfrequency)) * pos_amplitude;
+        Vector3 desired_position = Vector3.Up * signal;
+        actor.view.Translation += (desired_position -= actor.view.Translation) * 0.4f;
+
+        /* Paper Turning */
+        float current_scale_x = actor.view.Scale.x;
+        current_scale_x += (actor.GetDesiredScaleX() - current_scale_x) * 0.2f;
+        actor.view.Scale = new Vector3(current_scale_x, actor.view.Scale.y, actor.view.Scale.z);
     }
 
     IEnumerator MoveToNearestTile()

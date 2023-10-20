@@ -24,14 +24,18 @@ public class Actor : Spatial
     Texture idle_sprite;
     //Initial animation variables
     public bool initial_load = false;
-    public Vector3 initial_scale { get; private set; } = Vector3.One;
+    public Vector3 initial_view_scale { get; private set; } = Vector3.One;
     public Vector3 initial_rotation { get; private set; } = Vector3.Zero;
-
     public TileData currentTile;
+
+    float desired_scale_x = 1.0f;
+    public float GetDesiredScaleX() { return desired_scale_x; }
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
+        previous_position = GlobalTranslation;
+
         view = (Spatial)GetNode("view");
         state_manager = (StateManager)GetNode("StateManager");
         character_view = (MeshInstance)GetNode("view/mesh");
@@ -44,7 +48,6 @@ public class Actor : Spatial
             currentTile = td;
             td.actor = this;
         });
-
     }
 
     public void Configure(ActorConfig info)
@@ -72,7 +75,8 @@ public class Actor : Spatial
                 view.Scale = new Vector3(tex.GetWidth(), tex.GetHeight(), 1.0f) * 0.01f;
                 view.Scale = view.Scale * config.aesthetic_scale_factor;
                 initial_load = true;
-                initial_scale = view.Scale;
+                initial_view_scale = view.Scale;
+                desired_scale_x = initial_view_scale.x;
                 initial_rotation = view.Rotation;
 
                 shadow_view.Scale = new Vector3(Mathf.Min(2.0f, view.Scale.x), shadow_view.Scale.y, shadow_view.Scale.z);
@@ -94,22 +98,31 @@ public class Actor : Spatial
     public override void _Process(float delta)
     {
         time += delta;
-        ProcessAnimation();
         ProcessColor();
         SetShaderParams();
+
+        ComputeSharedAnimationData();
+    }
+
+    Vector3 previous_position = Vector3.Zero;
+    void ComputeSharedAnimationData()
+    {
+
+        /* Determine which direction the actor would generally prefer to look in. */
+        Vector3 position_delta = GlobalTranslation - previous_position;
+        GD.Print("COMPUTE ANIM!!! " + GlobalTranslation.x + " vs " + previous_position.x);
+
+        if (position_delta.x > 0.01f)
+            desired_scale_x = initial_view_scale.x;
+        if (position_delta.x < -0.01f)
+            desired_scale_x = -initial_view_scale.x;
+
+        previous_position = GlobalTranslation;
     }
 
     float animation_offset = 0;
 
     float time = 0.0f;
-    void ProcessAnimation()
-    {
-        ///* idle animation */
-        //float idle_scale_impact = (1.0f + Mathf.Sin(time * 4 + animation_offset) * 0.025f);
-
-        ///* apply */
-        //view.Scale = new Vector3(initial_scale.x, initial_scale.y * idle_scale_impact, initial_scale.z);
-    }
 
     void ProcessColor()
     {
