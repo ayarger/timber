@@ -15,6 +15,7 @@ public class FogOfWar : Viewport
     [Export] public float screenPosZ;
 
     [Export] public bool isActorViewport;
+    [Export] public bool isHighVisibility;
     [Export] public Texture actorFOWTexture;
 
 
@@ -74,7 +75,14 @@ public class FogOfWar : Viewport
         //texture.Lock();
         if (isActorViewport) return;
 
-        (shader as ShaderMaterial).SetShaderParam("fowTexture",GetTexture());
+        if (isHighVisibility)
+        {
+            (shader as ShaderMaterial).SetShaderParam("fowTexture", GetTexture());
+        }
+        else
+        {
+            (shader as ShaderMaterial).SetShaderParam("lowVisibility_texture", GetTexture());
+        }
         (shader as ShaderMaterial).SetShaderParam("screenWidth", screenWidth);
         (shader as ShaderMaterial).SetShaderParam("screenHeight", screenHeight);
         (shader as ShaderMaterial).SetShaderParam("screenPosX", screenPosX);
@@ -90,6 +98,10 @@ public class FogOfWar : Viewport
         if (isActorViewport)
         {
             newArea.Texture = actorFOWTexture;
+        }
+        else if (!isHighVisibility)
+        {
+            newArea.isLow = true;
         }
         newArea.follow = e.spatial;
         newArea.parent = this;

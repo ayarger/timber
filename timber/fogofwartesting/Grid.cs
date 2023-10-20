@@ -5,6 +5,7 @@ using System;
 public class Grid
 {
     public static TileData[][] tiledata;
+    public static float tileWidth = 3.0f;
 
     public static int width
     {
@@ -37,9 +38,18 @@ public class Grid
     }
     public static TileData Get(Vector3 worldPos)
     {
-        int x = Mathf.RoundToInt(worldPos.x / 2.0f);
-        int z = Mathf.RoundToInt(worldPos.z / 2.0f);
+        int x = Mathf.RoundToInt(worldPos.x / tileWidth);
+        int z = Mathf.RoundToInt(worldPos.z / tileWidth);
         return Get(x, z);
+    }
+
+    public static Coord ConvertToCoord(Vector3 worldPos)
+    {
+        return new Coord(Mathf.RoundToInt(worldPos.x / tileWidth), Mathf.RoundToInt(worldPos.z / tileWidth));
+    }
+    public static Vector3 LockToGrid(Vector3 worldPos)
+    {
+        return new Vector3(Mathf.RoundToInt(worldPos.x / tileWidth) * tileWidth, worldPos.y, Mathf.RoundToInt(worldPos.z / tileWidth) * tileWidth);
     }
 }
 
@@ -75,7 +85,7 @@ public class TileData
     {
         get
         {
-            return new Vector3(coord.x * 2f, 0f, coord.z * 2f);
+            return new Vector3(coord.x * Grid.tileWidth, 0f, coord.z * Grid.tileWidth);
         }
     }
 

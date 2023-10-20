@@ -2,6 +2,7 @@ shader_type spatial;
 
 uniform sampler2D albedo_texture;
 uniform sampler2D visibility_texture;
+uniform sampler2D lowVisibility_texture;
 
 varying vec3 world_position;
 
@@ -45,9 +46,10 @@ void fragment() {
     // For example, let's say the visibility texture's red channel stores the visibility factor
     vec4 final_color = albedo; //* visibility.r;
 	vec4 fowSample = texture(fowTexture,vec2((world_position.x-screenPosX)/screenWidth,((world_position.z-screenPosZ)/screenHeight)));
-	final_color.r *= fowSample.r;
-	final_color.g *= fowSample.g;
-	final_color.b *= fowSample.b;
+	vec4 lvSample = texture(lowVisibility_texture,vec2((world_position.x-screenPosX)/screenWidth,((world_position.z-screenPosZ)/screenHeight)));
+	final_color.r *= .2f*lvSample.r+fowSample.r;
+	final_color.g *= .2f*lvSample.g+fowSample.g;
+	final_color.b *= .2f*lvSample.b+fowSample.b;
 
     // Assign the final color to the output
 	ALBEDO = vec3(0.0, 0.0, 0.0);

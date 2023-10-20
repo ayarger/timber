@@ -26,7 +26,7 @@ flags_unshaded = true
 [sub_resource type="QuadMesh" id=3]
 
 [sub_resource type="ViewportTexture" id=16]
-viewport_path = NodePath("FogOfWar/Viewport")
+viewport_path = NodePath("FogOfWar/HighVisibility")
 
 [sub_resource type="ShaderMaterial" id=11]
 
@@ -148,11 +148,11 @@ mesh = SubResource( 3 )
 script = ExtResource( 6 )
 PerformTrace = false
 
+[node name="FogOfWar" parent="." instance=ExtResource( 16 )]
+
 [node name="Node" type="Spatial" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.55476, 0 )
 script = ExtResource( 9 )
-
-[node name="FogOfWar" parent="." instance=ExtResource( 16 )]
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
