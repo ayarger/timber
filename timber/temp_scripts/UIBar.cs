@@ -17,7 +17,7 @@ public class UIBar : Control
     Tween ui_tween;
 
     public float scaling_factor = 6f;
-    bool selected;
+
 
     public override void _Ready()
     {

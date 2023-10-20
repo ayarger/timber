@@ -134,11 +134,14 @@ public class HasStats : Node
     //TODO: max 3 overhead progress bar can be stacked together
     [Signal] public delegate void stat_change(string stat_name);
 
+    BarContainer container;
+
     public override void _Ready()
     {
         statChangeEvent = EventBus.Subscribe<StatChangeEvent>(OnStatChange);
         // TODO:
-        // UIOrb.Create(this);
+        // UIOrb.Create(this)
+        container = BarContainer.Create(this);
     }
 
     public void OnStatChange(StatChangeEvent e)
@@ -148,23 +151,31 @@ public class HasStats : Node
 
     public void AddStat(string name, int min, int max, int initial, bool display)
     {
-        // TODO: UI_count max = 3
-        // Prompt player to change display settings if > 3
-        if(display && Stats_With_Bar.Count == 0)
-        {
-            // create UI Bar container
-            BarContainer containter = BarContainer.Create(this);
-        }
+
         if (display && Stats_With_Bar.Count < 3)
         {
             Stats_With_Bar.Add(name);
             int index = Stats_With_Bar.Count - 1;
+            
             // TODO create bars
+            if (name == "health")
+            {
+                Bar bar = container.CreatePrimary(name);
+            }
+            else
+            {
+                Bar bar =  container.CreateSecondary(name);
+                if (index == 2)
+                {
+                    GD.Print("green");
+                    bar.ChangeColor(new Color(0.33f, 0.63f, 0.35f, 1));
+                }
+            }
         }
+        // TODO Prompt player to change display settings if > 3
 
         else
             Stats[name] = new Stat(name, min, max, initial, display);
-        GD.Print("new stat created: " + name);
     }
 
     // TODO: remove stat

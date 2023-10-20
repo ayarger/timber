@@ -17,6 +17,7 @@ public class BarContainer : Control
         {
             target_mesh = target_data.GetParent().GetNode<MeshInstance>("view/mesh");
             target_selection = target_data.GetParent().GetNode<IsSelectable>("IsSelectable");
+            GD.Print("container created " + "fecthing selection " + target_selection);
         }
     }
 
@@ -28,14 +29,9 @@ public class BarContainer : Control
     public override void _Process(float delta)
     {
 
-        displayOn = target_selection.am_i_selected;
-        if (!displayOn)
-        {
-            Visible = false;
-        }
-
+        displayOn = target_selection.am_i_selected || target_selection.AmIHovered();
+        Visible = displayOn;
         if (IsInstanceValid(target_data))
-            if(displayOn)
                 PursueTarget();
         else
             QueueFree();
@@ -83,14 +79,20 @@ public class BarContainer : Control
         Bar new_bar = (Bar)bar.Instance();
         new_bar.Configure(target_data, data_name);
         VBoxContainer container1 = GetNode<VBoxContainer>("container1");
-
+        container1.AddChild(new_bar);
+        // move the primary bar to top
+        new_bar.GetParent().MoveChild(new_bar, 0);
+        return new_bar;
     }
 
     public Bar CreateSecondary(string data_name)
     {
-        PackedScene bar2 = (PackedScene)ResourceLoader.Load("res://temp_scenes/barw.tscn");
+        PackedScene bar2 = (PackedScene)ResourceLoader.Load("res://temp_scenes/bar2.tscn");
         Bar new_bar = (Bar)bar2.Instance();
         new_bar.Configure(target_data, data_name);
-        VBoxContainer container2 = GetNode<VBoxContainer>("container1/containter2");
+        VBoxContainer container2 = GetNode<VBoxContainer>("container1/container2");
+        container2.Visible = true;
+        container2.AddChild(new_bar);
+        return new_bar;
     }
 }

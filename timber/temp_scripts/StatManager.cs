@@ -19,17 +19,20 @@ public class StatManager : Node
         {
             if (eventKey.Scancode == (int)KeyList.Q)
             {
+                GD.Print("adding health");
                 stats.AddStat("health", 0, 100, 100, true);
             }
 
             else if (eventKey.Scancode == (int)KeyList.E)
             {
+                GD.Print("adding shield");
                 stats.AddStat("shield", 0, 100, 50, true);
             }
 
             else if (eventKey.Scancode == (int)KeyList.R)
             {
-                stats.AddStat("mana", 0, 100, 80, true);
+                GD.Print("adding xp");
+                stats.AddStat("xp", 0, 100, 80, true);
             }
 
             // toggle visibility

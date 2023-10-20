@@ -21,7 +21,7 @@ public class Bar : Control
         // get target_tween
         ui_tween = GetNode<Tween>("UITween");
         // connect stats change event here
-        target_data.Connect("stat_change", this, nameof(OnUIStatChange));
+        //target_data.Connect("stat_change", this, nameof(OnUIStatChange));
     }
 
     public void Configure(HasStats _target, string _data_name)
@@ -33,6 +33,11 @@ public class Bar : Control
     public void ChangeColor(Color _color)
     {
         tex_progress.SelfModulate = _color;
+    }
+
+    public void toggleVisible(bool visible)
+    {
+        Visible = visible;
     }
 
     /// <summary>
