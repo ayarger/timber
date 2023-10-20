@@ -16,7 +16,7 @@ public class UIBar : Control
 
     Tween ui_tween;
 
-    // TODO: adjust barUI so it can handle 1-3 stats
+    public float scaling_factor = 8f;
 
     public override void _Ready()
     {
@@ -54,22 +54,27 @@ public class UIBar : Control
         Camera cam = (Camera)GameplayCamera.GetGameplayCamera();
         Vector3 desired_position = target_data.GetParent<Spatial>().GlobalTranslation;
 
+        // TODO: UI position should be based on the top of the character
         if (IsInstanceValid(target_mesh))
             desired_position = target_mesh.GlobalTransform.Xform(new Vector3(0, 1, 0));
 
         var screenPosition = cam.UnprojectPosition(desired_position);
         RectGlobalPosition = screenPosition;
         RectScale = Vector2.One * 0.15f;
-
+        //scaling
+        float distance = target_mesh.GlobalTransform.origin.DistanceTo(cam.GlobalTransform.origin);
+        float characterSize = target_mesh.Scale.y;
+        float newScale = (characterSize / distance) * scaling_factor;
+        RectScale = new Vector2(newScale, newScale);
         if (index > 0)
         {
 
-            RectScale = Vector2.One * 0.12f;
+            // RectScale = Vector2.One * 0.12f;
 
             if (index == 1)
             {
                 RectGlobalPosition = new Vector2(screenPosition.x - 7.5f, screenPosition.y + 10);
-                tex_progress.SelfModulate = new Color(0, 0.3f, 0.6f, 1);
+               
             }
             else
             {
@@ -77,9 +82,6 @@ public class UIBar : Control
                 tex_progress.SelfModulate = new Color(0.3f, 0.5f, 0, 1);
             }
         }
-
-
-
         tex_progress.Value = target_data.health_ratio * 100;
     }
 
@@ -96,7 +98,13 @@ public class UIBar : Control
         new_bar.Configure(stats, stat_name, index);
         new_bar.Name = stat_name + " bar";
         PrimaryCanvas.AddChildNode(new_bar);
-        // TODO resize UIbar& bar pos based on bar index
+
+        // TODO: create container upon adding the first UI bar
+        if (index == 0)
+        {
+            Node newContainer = new Container();
+        }
+        // resize UIbar& bar pos based on bar index
         if (index > 0)
         {
             Vector2 init_pos = new_bar.RectPosition;
@@ -105,12 +113,17 @@ public class UIBar : Control
         return new_bar;
     }
 
+    public void changeColor(Color _color)
+    {
+        tex_progress.SelfModulate = _color;
+    }
+
     /// <summary>
     /// Update UI on health change
     /// </summary>
     public void OnUIStatChange(string stat_name)
     {
-        GD.Print("curr_stat_name: " + data_name , " incoming singal name: " + stat_name);
+        GD.Print("curr_stat_name: " + data_name, " incoming singal name: " + stat_name);
         if (stat_name == data_name)
         {
             float target_value = target_data.health_ratio * 100;
