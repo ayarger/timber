@@ -17,7 +17,6 @@ public class MovementState : ActorState
     public List<Vector3> waypoints = new List<Vector3>();
     float mvmSpeed = 4f; //Pull from HasStats
 
-
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
@@ -29,6 +28,7 @@ public class MovementState : ActorState
         timer = 0.0f;
         inclusiveStates = new HashSet<string>();
         waypoints = new List<Vector3>();
+        ArborCoroutine.StopCoroutinesOnNode(this);
 
     }
 
@@ -83,6 +83,7 @@ public class MovementState : ActorState
 
     public override void Stop()
     {
+        ArborCoroutine.StopCoroutinesOnNode(this);
         ArborCoroutine.StartCoroutine(MoveToNearestTile(), this);
         //Place actor in tilemap
     }

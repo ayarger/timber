@@ -110,7 +110,7 @@ public class Actor : Spatial
 
         /* Determine which direction the actor would generally prefer to look in. */
         Vector3 position_delta = GlobalTranslation - previous_position;
-        GD.Print("COMPUTE ANIM!!! " + GlobalTranslation.x + " vs " + previous_position.x);
+        //GD.Print("COMPUTE ANIM!!! " + GlobalTranslation.x + " vs " + previous_position.x);
 
         if (position_delta.x > 0.01f)
             desired_scale_x = initial_view_scale.x;

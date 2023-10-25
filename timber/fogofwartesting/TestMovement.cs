@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Security.Cryptography;
 using Priority_Queue;
 using Newtonsoft.Json.Serialization;
+using System.Net;
 
 public class TestMovement : Node
 {
@@ -47,9 +48,16 @@ public class TestMovement : Node
 					if (!sm.states.ContainsKey("MovementState")) continue;
 					if (team != "player") continue;
 
-					sm.EnableState("MovementState");
-					List<Vector3> points = PathFind(actor.GlobalTranslation, rounded_point);
-					(sm.states["MovementState"] as MovementState).waypoints = points; //override previous waypoints
+					MovementState b = (sm.states["MovementState"] as MovementState);
+
+					ArborCoroutine.StopCoroutinesOnNode(b);
+                    ArborCoroutine.StartCoroutine(PathFindAsync(actor.GlobalTranslation, rounded_point, (List<Vector3> a) => { 
+						if(a.Count > 0)
+                        {
+                            sm.EnableState("MovementState");
+							b.waypoints = a;
+                        }
+                    }), b);
 
 				}
 			}
@@ -57,91 +65,10 @@ public class TestMovement : Node
 	}
 	public static List<Vector3> PathFind(Vector3 cur, Vector3 dest)
 	{
-		//Theta* https://en.wikipedia.org/wiki/Theta*
-		//Priority Queue https://github.com/BlueRaja/High-Speed-Priority-Queue-for-C-Sharp
-		Coord curCoord = Grid.ConvertToCoord(cur);
-
-		Coord destCoord = Grid.ConvertToCoord(dest);
-
-		//LuaLoader.tileData;
-
-		FastPriorityQueue<ThetaNode> open = new FastPriorityQueue<ThetaNode>(10000);
-		ThetaNode origin = new ThetaNode(curCoord, null);
-		origin.gScore = 0f;
-		open.Enqueue(origin, 0f);
-		HashSet<ThetaNode> closed = new HashSet<ThetaNode>();
-		Dictionary<Coord, ThetaNode> createdNodes = new Dictionary<Coord, ThetaNode>();
-		createdNodes[curCoord] = origin;
-
-
-		List<Coord> directions = new List<Coord>
-		{
-			new Coord(-1, 0),
-			new Coord(1, 0),
-			new Coord(0, -1),
-			new Coord(0, 1)
-		};
-
-		while (open.Count > 0)
-		{
-			ThetaNode curNode = open.Dequeue();
-			if (curNode.x == destCoord.x && curNode.z == destCoord.z)
-			{
-				List<Vector3> ans = new List<Vector3>();
-				while (curNode.parent != null)
-				{
-					ans.Add(new Vector3(curNode.x * Grid.tileWidth, cur.y, curNode.z * Grid.tileWidth));
-					curNode = curNode.parent;
-				}
-				ans.Reverse();
-				return ans;
-			}
-			closed.Add(curNode);
-
-			foreach (var dir in directions)
-			{
-				Coord neighbor = curNode.coord + dir;
-				if (neighbor.x < 0 || neighbor.z < 0 || neighbor.x > Grid.width - 1 || neighbor.z > Grid.height - 1) continue;
-				if (Grid.tiledata[neighbor.z][neighbor.x].value != '.') continue;
-
-				if (!createdNodes.ContainsKey(neighbor))
-				{
-					createdNodes[neighbor] = new ThetaNode(neighbor, curNode);
-				}
-
-				//Update Node
-				ThetaNode neighborNode = createdNodes[neighbor];
-
-				if (closed.Contains(neighborNode)) continue;
-
-				if (curNode.parent != null
-					&& curNode.parent.gScore + (curNode.parent.coord - neighbor).Mag() < neighborNode.gScore
-					&& LineOfSight(curNode.parent.coord, neighbor))
-				{
-					neighborNode.gScore = curNode.parent.gScore + (curNode.parent.coord - neighbor).Mag();
-					neighborNode.parent = curNode.parent;
-					if (open.Contains(neighborNode))
-					{
-						open.Remove(neighborNode);
-					}
-					open.Enqueue(neighborNode, neighborNode.gScore + (destCoord - neighbor).Mag());
-				}
-				else if (curNode.gScore + (curNode.coord - neighbor).Mag() < neighborNode.gScore)
-				{
-					neighborNode.gScore = curNode.gScore + (curNode.coord - neighbor).Mag();
-					neighborNode.parent = curNode;
-					if (open.Contains(neighborNode))
-					{
-						open.Remove(neighborNode);
-					}
-					open.Enqueue(neighborNode, neighborNode.gScore + (destCoord - neighbor).Mag());
-				}
-
-			}
-
-		}
-
-		return new List<Vector3>();
+		List<Vector3> ans = new List<Vector3>();
+		IEnumerator i = PathFindAsync(cur, dest, (List<Vector3> a) => { ans = a; });
+		while (i.MoveNext()) { }
+		return ans;
 
 	}
 
@@ -161,7 +88,6 @@ public class TestMovement : Node
 			a = b;
 			b = temp;
 		}
-
 		float slope = (b.z - a.z) / (float)(b.x - a.x);
 		float curZ = a.z;
 		bool isUp = slope > 0;
@@ -192,25 +118,141 @@ public class TestMovement : Node
 		return ray.start + t * ray.direction;
 	}
 
-	//IEnumerator MoveCharacter(Actor actor, List<Vector3> points, float mvmSpeed) //mvmSpeed should be a stat
-	//{
-	//    for (int i = 0; i < points.Count; i++)
-	//    {
-	//        Vector3 dest = points[i];
-	//        while (actor.GlobalTranslation != dest)
-	//        {
-	//            Vector3 disp = dest - actor.GlobalTranslation;
-	//            if (disp.Length() < mvmSpeed)
-	//            {
-	//                actor.GlobalTranslation = dest;
-	//                break;
-	//            }
-	//            actor.GlobalTranslation += mvmSpeed * disp.Normalized();
-	//            yield return null;
-	//        }
-	//    }
 
-	//}
+    public static IEnumerator PathFindAsync(Vector3 cur, Vector3 dest, System.Action<List<Vector3>> action) //Fake async, run this in a coroutine.
+    {
+		yield return null;
+        //Theta* https://en.wikipedia.org/wiki/Theta*
+        //Priority Queue https://github.com/BlueRaja/High-Speed-Priority-Queue-for-C-Sharp
+        Coord curCoord = Grid.ConvertToCoord(cur);
+
+        Coord destCoord = Grid.ConvertToCoord(dest);
+		if (Grid.Get(destCoord).value == 'e')
+		{
+			action.Invoke(new List<Vector3>());
+			yield break;
+		}
+
+        //LuaLoader.tileData;
+
+        FastPriorityQueue<ThetaNode> open = new FastPriorityQueue<ThetaNode>(10000);
+        ThetaNode origin = new ThetaNode(curCoord, null);
+        origin.gScore = 0f;
+        open.Enqueue(origin, 0f);
+        HashSet<ThetaNode> closed = new HashSet<ThetaNode>();
+        Dictionary<Coord, ThetaNode> createdNodes = new Dictionary<Coord, ThetaNode>();
+        createdNodes[curCoord] = origin;
+
+
+        List<Coord> directions = new List<Coord>
+        {
+            new Coord(-1, 0),
+            new Coord(1, 0),
+            new Coord(0, -1),
+            new Coord(0, 1)
+        };
+
+		int count = 0;
+
+        while (open.Count > 0)
+        {
+			count++;
+			if (count >= 300)
+			{
+				yield return null;
+				count = 0;
+			}
+            ThetaNode curNode = open.Dequeue();
+            if (curNode.x == destCoord.x && curNode.z == destCoord.z)
+            {
+                List<Vector3> ans = new List<Vector3>();
+				ans.Add(new Vector3(curNode.x * Grid.tileWidth, cur.y, curNode.z * Grid.tileWidth));
+				curNode = curNode.parent;
+				if (curNode == null)
+				{
+					action.Invoke(ans);
+					yield break;
+				}
+                while (curNode.parent != null)
+                {
+					if (!LineOfSight(Grid.ConvertToCoord(ans[ans.Count-1]), curNode.parent.coord))
+                    {
+                        ans.Add(new Vector3(curNode.x * Grid.tileWidth, cur.y, curNode.z * Grid.tileWidth));
+                    }
+                    curNode = curNode.parent;
+                }
+                ans.Reverse();
+                action.Invoke(ans);
+				yield break;
+            }
+            closed.Add(curNode);
+
+            foreach (var dir in directions)
+            {
+                Coord neighbor = curNode.coord + dir;
+                if (neighbor.x < 0 || neighbor.z < 0 || neighbor.x > Grid.width - 1 || neighbor.z > Grid.height - 1) continue;
+                if (Grid.tiledata[neighbor.z][neighbor.x].value != '.') continue;
+
+                if (!createdNodes.ContainsKey(neighbor))
+                {
+                    createdNodes[neighbor] = new ThetaNode(neighbor, curNode);
+                }
+
+                //Update Node
+                ThetaNode neighborNode = createdNodes[neighbor];
+
+                if (closed.Contains(neighborNode)) continue;
+
+                //if (curNode.parent != null
+                //    && curNode.parent.gScore + (curNode.parent.coord - neighbor).Mag() < neighborNode.gScore
+                //    && LineOfSight(curNode.parent.coord, neighbor))
+                //{
+                //    neighborNode.gScore = curNode.parent.gScore + (curNode.parent.coord - neighbor).Mag();
+                //    neighborNode.parent = curNode.parent;
+                //    if (open.Contains(neighborNode))
+                //    {
+                //        open.Remove(neighborNode);
+                //    }
+                //    open.Enqueue(neighborNode, neighborNode.gScore + (destCoord - neighbor).Mag());
+                //}
+                //else
+				if (curNode.gScore + (curNode.coord - neighbor).Mag() < neighborNode.gScore)
+                {
+                    neighborNode.gScore = curNode.gScore + (curNode.coord - neighbor).Mag();
+                    neighborNode.parent = curNode;
+                    if (open.Contains(neighborNode))
+                    {
+                        open.Remove(neighborNode);
+                    }
+                    open.Enqueue(neighborNode, neighborNode.gScore + (destCoord - neighbor).Mag());
+                }
+			}
+		}
+
+        action.Invoke(new List<Vector3>());
+        yield break;
+    }
+
+
+    //IEnumerator MoveCharacter(Actor actor, List<Vector3> points, float mvmSpeed) //mvmSpeed should be a stat
+    //{
+    //    for (int i = 0; i < points.Count; i++)
+    //    {
+    //        Vector3 dest = points[i];
+    //        while (actor.GlobalTranslation != dest)
+    //        {
+    //            Vector3 disp = dest - actor.GlobalTranslation;
+    //            if (disp.Length() < mvmSpeed)
+    //            {
+    //                actor.GlobalTranslation = dest;
+    //                break;
+    //            }
+    //            actor.GlobalTranslation += mvmSpeed * disp.Normalized();
+    //            yield return null;
+    //        }
+    //    }
+
+    //}
 }
 
 
@@ -229,5 +271,6 @@ class ThetaNode : FastPriorityQueueNode
 		this.parent = _parent;
 	}
 }
+
 
 
