@@ -121,7 +121,7 @@ public class Stat
 public class HasStats : Node
 {
     // subsription for statChangeEvent
-    Subscription<StatChangeEvent> statChangeEvent;
+
     /// <summary>
     /// Stats Dictionary
     /// </summary>
@@ -138,44 +138,38 @@ public class HasStats : Node
 
     public override void _Ready()
     {
-        statChangeEvent = EventBus.Subscribe<StatChangeEvent>(OnStatChange);
         // TODO:
         // UIOrb.Create(this)
         container = BarContainer.Create(this);
     }
 
-    public void OnStatChange(StatChangeEvent e)
-    {
-        EmitSignal("stat_change", e.stat_name);
-    }
-
     public void AddStat(string name, int min, int max, int initial, bool display)
     {
-
+        // Add new stat into the dictionary
         if (display && Stats_With_Bar.Count < 3)
         {
             Stats_With_Bar.Add(name);
             int index = Stats_With_Bar.Count - 1;
             
             // TODO create bars
-            if (name == "health")
+
+            if (name == "health" && !Stats.ContainsKey(name))
             {
                 Bar bar = container.CreatePrimary(name);
             }
+
             else
             {
                 Bar bar =  container.CreateSecondary(name);
                 if (index == 2)
                 {
-                    GD.Print("green");
+                    //GD.Print("green");
                     bar.ChangeColor(new Color(0.33f, 0.63f, 0.35f, 1));
                 }
             }
         }
         // TODO Prompt player to change display settings if > 3
-
-        else
-            Stats[name] = new Stat(name, min, max, initial, display);
+        Stats[name] = new Stat(name, min, max, initial, display);
     }
 
     // TODO: remove stat
@@ -185,61 +179,6 @@ public class HasStats : Node
         if (Stats.ContainsKey(name))
             return Stats[name];
         return null;
-    }
-
-    public void ApplyDamage(int damageAmount)
-    {
-        var health = GetStat("health");
-        curr_health -= damageAmount;
-        if (curr_health < 0)
-            curr_health = 0;
-
-        if (curr_health == 0)
-        {
-            // Handle death or other related logic here
-            GD.Print("death event!");
-        }
-
-        //update ratio
-        health_ratio = curr_health / max_health;
-        //signal for UI/sound 
-        EmitSignal("stat_change", "health");
-    }
-
-    public void ApplyHeal(float healAmount)
-    {
-        curr_health += healAmount;
-        if (curr_health > max_health)
-            curr_health = max_health;
-
-        //update ratio
-        health_ratio = curr_health / max_health;
-        //signal for UI/sound 
-        EmitSignal("stat_change", "health");
-    }
-
-    public void IncreaseMaxHealth(float amount)
-    {
-        max_health += amount;
-        //update ratio
-        health_ratio = curr_health / max_health;
-        //signal for UI/sound 
-        EmitSignal("stat_change", "health");
-    }
-
-    public void DecreaseMaxHealth(float amount)
-    {
-        max_health -= amount;
-        if (max_health < 0)
-            max_health = 0;
-        //adjust curr_health
-        if (curr_health > max_health)
-            curr_health = max_health;
-
-        //update ratio
-        health_ratio = curr_health / max_health;
-        //signal for UI/sound 
-        EmitSignal("stat_change", "health");
     }
 
 

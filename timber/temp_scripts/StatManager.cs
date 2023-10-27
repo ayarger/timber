@@ -7,6 +7,7 @@ public class StatManager : Node
     [Export]
     public string node_name = "HasStats";
     private HasStats stats;
+    private Random random = new Random();
 
     public override void _Ready()
     {
@@ -17,23 +18,44 @@ public class StatManager : Node
     {
         if (@event is InputEventKey eventKey && eventKey.Pressed && !eventKey.Echo)
         {
-            if (eventKey.Scancode == (int)KeyList.Q)
+            if (eventKey.Scancode == (int)KeyList.Key1)
             {
-                GD.Print("adding health");
+                //GD.Print("adding health");
                 stats.AddStat("health", 0, 100, 100, true);
             }
 
-            else if (eventKey.Scancode == (int)KeyList.E)
+            else if (eventKey.Scancode == (int)KeyList.Key2)
             {
-                GD.Print("adding shield");
+                //GD.Print("adding shield");
                 stats.AddStat("shield", 0, 100, 50, true);
             }
 
-            else if (eventKey.Scancode == (int)KeyList.R)
+            else if (eventKey.Scancode == (int)KeyList.Key3)
             {
-                GD.Print("adding xp");
+                //GD.Print("adding xp");
                 stats.AddStat("xp", 0, 100, 80, true);
             }
+
+            else if (eventKey.Scancode == (int)KeyList.Key8)
+            {
+                Stat health = stats.GetStat("health");
+                if (health != null)
+                {
+                    GD.Print(health.currVal);
+                    health.IncreaseCurrentValue(random.Next(10, 100));
+                }
+            }
+
+            else if (eventKey.Scancode == (int)KeyList.Key7)
+            {
+                Stat health = stats.GetStat("health");
+                if (health != null)
+                {
+                    GD.Print(health.currVal);
+                    health.DecreaseCurrentValue(random.Next(10, 100));
+                }
+            }
+
 
             // toggle visibility
         }

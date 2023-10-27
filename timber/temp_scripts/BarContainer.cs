@@ -32,7 +32,7 @@ public class BarContainer : Control
         displayOn = target_selection.am_i_selected || target_selection.AmIHovered();
         Visible = displayOn;
         if (IsInstanceValid(target_data))
-                PursueTarget();
+            PursueTarget();
         else
             QueueFree();
     }
@@ -47,7 +47,8 @@ public class BarContainer : Control
 
         // TODO: UI position should be based on the top of the character
         if (IsInstanceValid(target_mesh))
-            desired_position = target_mesh.GlobalTransform.Xform(new Vector3(0, 1, 0));
+
+            desired_position = target_mesh.GlobalTransform.Xform(new Vector3(0, 0.93f, 0));
 
         var screenPosition = cam.UnprojectPosition(desired_position);
         RectGlobalPosition = screenPosition;
@@ -82,6 +83,7 @@ public class BarContainer : Control
         container1.AddChild(new_bar);
         // move the primary bar to top
         new_bar.GetParent().MoveChild(new_bar, 0);
+        new_bar.OnCreate();
         return new_bar;
     }
 
@@ -93,6 +95,60 @@ public class BarContainer : Control
         VBoxContainer container2 = GetNode<VBoxContainer>("container1/container2");
         container2.Visible = true;
         container2.AddChild(new_bar);
+        new_bar.OnCreate();
+
         return new_bar;
+    }
+
+    //TODO remove bars
+    public void RemovePrimary()
+    {
+        VBoxContainer container1 = GetNode<VBoxContainer>("container1");
+        Bar child = (Bar)container1.GetChild(0);
+        child.FadeOut(0.5f);
+        if (child.Modulate.a == 0)
+        {
+            RemoveChild(child);
+            child.QueueFree();
+        }
+
+    }
+
+    public void RemoveSecondary(int index)
+    {
+        VBoxContainer container2 = GetNode<VBoxContainer>("container1/container2");
+        if (index < (container2.GetChildCount()))
+        {
+            Bar child = (Bar)container2.GetChild(index);
+            child.FadeOut(0.3f);
+            if (child.Modulate.a == 0)
+            {
+                RemoveChild(child);
+                child.QueueFree();
+            }
+        }
+
+    }
+
+    // Testing
+    public override void _Input(InputEvent @event)
+    {
+        if (@event is InputEventKey eventKey && eventKey.Pressed && !eventKey.Echo)
+        {
+            if (eventKey.Scancode == (int)KeyList.Key4)
+            {
+                RemovePrimary();
+            }
+
+            else if (eventKey.Scancode == (int)KeyList.Key5)
+            {
+                RemoveSecondary(0);
+            }
+
+            else if(eventKey.Scancode == (int)KeyList.Key6)
+            {
+                RemoveSecondary(1);
+            }
+        }
     }
 }
