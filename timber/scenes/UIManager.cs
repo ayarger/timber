@@ -64,8 +64,14 @@ public class UIManager : Node
 
     void SettingsMenu()
     {
+        DynamicMenu.Configure(bgColor: new Color(41.0f / 255.0f, 41.0f / 255.0f, 69.0f / 255.0f, 1.0f),
+            secondaryColor: new Color(255.0f / 255.0f, 255.0f / 255.0f, 255.0f / 255.0f, 1.0f),
+            font: "res://UI/Oxanium-Regular.ttf",
+            textColor: new Color(169.0f / 255.0f, 180.0f / 255.0f, 194.0f / 255.0f, 1.0f),
+            buttonImg: "res://UI/default_tex.png",
+            panelImg: "res://UI/default_tex.png");
         //List<string> options = new List<string>() { "Discord", "Credits2", "Quit", "debug_victory", "debug_lose", "debug_open_webgl_build", "debug_webgl_upload", "debug_webgl_upload_opt", "debug_change_title_screen", "debug_change_title_audio", "debug_test_image_upload", "debug_test_fullscreen" };
-        List<System.Action> actions = new List<Action>()
+        List <System.Action> actions = new List<Action>()
         {
             () => { OS.ShellOpen(@"https://discord.gg/2GZ3SxVA7Q"); },
             () => {  },
@@ -134,8 +140,6 @@ public class UIManager : Node
         DynamicMenu settings;
         settings = new DynamicMenu(currMenu, content);
         currMenu = settings;
-        settings.Configure(bgColor: new Color(237.0f / 255.0f, 219.0f / 255.0f, 255.0f / 255.0f, 1.0f),
-            secondaryColor: new Color(163.0f / 255.0f, 127.0f / 255.0f, 199.0f / 255.0f, 1.0f));
         settings.CreateMenu();
         GD.Print("Creating new menu");
 

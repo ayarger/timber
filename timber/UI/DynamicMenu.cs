@@ -7,8 +7,6 @@ public class DynamicMenu : Control
 {
     public VBoxContainer header;
     public VBoxContainer content;
-    public Vector2? _size;
-    public Vector2? _location;
     public DynamicMenu _parent;
     public bool _disabled = false;
     public ColorRect overlay;
@@ -16,32 +14,36 @@ public class DynamicMenu : Control
     private Action OnMenuClose;
     private Control[] _components;
 
-    public DynamicMenu(Vector2? location, Vector2? size, DynamicMenu parent, params Control[] components)
+    public DynamicMenu(DynamicMenu parent, params Control[] components)
     {
-        _size = size;
-        _location = location;
         _parent = parent;
         _components = components;
     }
 
-    public DynamicMenu(Vector2 location, Vector2 size, params Control[] components) : this(location, size, null, components) { }
-
-    public DynamicMenu(DynamicMenu parent, params Control[] components) : this(null, null, parent, components) { }
-
-    public DynamicMenu(params Control[] components) : this(null, null, null, components) { }
+    public DynamicMenu(params Control[] components) : this(null, components) { }
 
     // Style variables
-    private Color _bgColor = new Color(40.0f / 255.0f, 36.0f / 255.0f, 44.0f / 255.0f, 1.0f);
-    private Color _shadowColor = new Color(0.0f, 0.0f, 0.0f, 0.5f);
-    private Color _overlayColor = new Color(0, 0, 0, 0.5f);
-    private Color _secondaryColor = new Color(72.0f / 255.0f, 67.0f / 255.0f, 77.0f / 255.0f, 1.0f);
+    public static Vector2? _size;
+    public static Vector2? _location;
 
-    private string _font = "res://fonts/Roboto-Regular.ttf";
-    private Color _textColor = new Color(1, 1, 1, 1);
+    private static string _panelImg = null;
+    private static Color _bgColor = new Color(40.0f / 255.0f, 36.0f / 255.0f, 44.0f / 255.0f, 1.0f);
+    private static Color _shadowColor = new Color(0.0f, 0.0f, 0.0f, 0.5f);
+    private static Color _overlayColor = new Color(0, 0, 0, 0.5f);
+    private static Color _secondaryColor = new Color(72.0f / 255.0f, 67.0f / 255.0f, 77.0f / 255.0f, 1.0f);
 
-    public void Configure(Color? bgColor = null, Color? shadowColor = null, Color? overlayColor = null, Color? secondaryColor = null, 
-        string font = "res://fonts/Roboto-Regular.ttf", Color? textColor = null)
+    private static string _buttonImg = "res://UI/default_tex.png";
+    private static string _font = "res://fonts/Roboto-Regular.ttf";
+    private static Color _textColor = new Color(1, 1, 1, 1);
+
+    public static void Configure(Vector2? location = null, Vector2? size = null,
+        Color? bgColor = null, Color? shadowColor = null, Color? overlayColor = null, Color? secondaryColor = null, 
+        string font = "res://fonts/Roboto-Regular.ttf", Color? textColor = null,
+        string panelImg = null, string buttonImg = "res://UI/default_tex.png")
     {
+        _size = size ?? new Vector2(400.0f, 650.0f);
+        _location = location ?? OS.WindowSize * 0.5f - _size * 0.5f;
+
         _bgColor = bgColor ?? _bgColor;
         _shadowColor = shadowColor ?? _shadowColor;
         _overlayColor = overlayColor ?? _overlayColor;
@@ -49,6 +51,9 @@ public class DynamicMenu : Control
 
         _font = font;
         _textColor = textColor ?? _textColor;
+
+        _panelImg = panelImg;
+        _buttonImg = buttonImg;
     }
 
     public void CreateMenu()
@@ -59,13 +64,7 @@ public class DynamicMenu : Control
             component.SizeFlagsVertical = (int)Control.SizeFlags.ExpandFill;
             component.SizeFlagsHorizontal = (int)Control.SizeFlags.ExpandFill;
             component.RectMinSize = new Vector2(_size.Value.x, (_size.Value.y - 50.0f) / 8.0f);
-
-            if(component.GetType() == Type.GetType("CustomButton"))
-            {
-                StyleBoxFlat style = new StyleBoxFlat();
-                style.BgColor = _secondaryColor;
-                component.AddStyleboxOverride("normal", style);
-            }
+            GD.Print(component.RectMinSize);
             content.AddChild(component);
         }
     }
@@ -88,9 +87,6 @@ public class DynamicMenu : Control
             //_parent.Visible = false;
         }
 
-        _size = _size ?? new Vector2(400.0f, 650.0f);
-        _location = _location ?? OS.WindowSize * 0.5f - _size * 0.5f;
-
         UIManager.instance.AddChild(this);
 
         // Create a MarginContainer to position the Panel
@@ -103,14 +99,36 @@ public class DynamicMenu : Control
         // Create a Panel to serve as a background
         Panel panel = new Panel();
         panel.RectSize = (Vector2)_size;
-        StyleBoxFlat styleBox = new StyleBoxFlat();
-        styleBox.ShadowColor = _shadowColor;
-        styleBox.BgColor = _bgColor;
-        styleBox.ShadowOffset = new Vector2(10, 10); // Shadow offset (10px to the right and down)
-        styleBox.ShadowSize = 10;
+        if (_panelImg != null)
+        {
+            StyleBoxTexture style = new StyleBoxTexture();
+            style.Texture = (Texture)GD.Load(_panelImg);
+            panel.AddStyleboxOverride("normal", style);
 
-        // Set the StyleBoxFlat to the panel
-        panel.AddStyleboxOverride("panel", styleBox);
+            // "Tint" the panel image (only works on white images rn)
+            ShaderMaterial tintMaterial = new ShaderMaterial();
+            tintMaterial.Shader = ResourceLoader.Load("res://UI/tint.gdshader") as Shader;
+            tintMaterial.SetShaderParam("tint_color", _bgColor);
+            panel.Material = tintMaterial;
+
+            // Add shadow behind panel
+            Panel shadow = new Panel();
+            StyleBoxFlat shadowStyle = new StyleBoxFlat();
+            shadowStyle.ShadowOffset = new Vector2(10, 10);
+            shadowStyle.ShadowColor = _shadowColor;
+            panel.AddChild(shadow);
+            shadow.ShowBehindParent = true;
+        }
+        else
+        {
+            StyleBoxFlat style = new StyleBoxFlat();
+            style.ShadowColor = _shadowColor;
+            style.BgColor = _bgColor;
+            style.ShadowOffset = new Vector2(10, 10); // Shadow offset (10px to the right and down)
+            style.ShadowSize = 10;
+            panel.AddStyleboxOverride("panel", style);
+        }
+
 
         marginContainer.AddChild(panel);
 
@@ -138,9 +156,9 @@ public class DynamicMenu : Control
         closeButton.Align = Button.TextAlign.Center;
         closeButton.AnchorRight = 1.0f;
         closeButton.AnchorLeft = 0.9f;
-        StyleBoxFlat style = new StyleBoxFlat();
-        style.BgColor = _secondaryColor;
-        closeButton.AddStyleboxOverride("normal", style);
+        StyleBoxFlat styleBox = new StyleBoxFlat();
+        styleBox.BgColor = _secondaryColor;
+        closeButton.AddStyleboxOverride("normal", styleBox);
         closeButton.Connect("pressed", this, nameof(CloseMenu));
         headerContainer.AddChild(closeButton);
 
@@ -201,25 +219,75 @@ public class DynamicMenu : Control
         label.Valign = Label.VAlign.Center;
 
         DynamicFont font = new DynamicFont();
-        font.FontData = (DynamicFontData)GD.Load("res://fonts/Roboto-Regular.ttf");
+        font.FontData = (DynamicFontData)GD.Load(_font);
         font.Size = fontSize;
         label.AddFontOverride("font", font);
+        label.AddColorOverride("font_color", _textColor);
 
         label.Text = text;
         return label;
     }
 
     // Buttons (Text, action - on press)
-    public static CustomButton MenuButton(string text, Action onPress, int fontSize = 20)
+    public static CustomButton MenuButton(string text, Action onPress, string img = null, int fontSize = 20)
     {
         CustomButton button = new CustomButton(onPress);
+        button.Expand = true;
+        button.RectMinSize = new Vector2(_size.Value.x, (_size.Value.y - 50.0f) / 8.0f);
+        button.AnchorRight = 1;
+        button.AnchorBottom = 1;
+        button.MarginRight = 0;
+        button.MarginBottom = 0;
+
+        // Initialize StyleBoxTexture
+        StyleBoxTexture styleBoxTexture = new StyleBoxTexture();
+        styleBoxTexture.Texture = (Texture)GD.Load(_buttonImg);
+        GD.Print(_buttonImg);
+
+        // Define the 9-slice margins
+        /*styleBoxTexture.MarginLeft = 10;
+        styleBoxTexture.MarginRight = 10;
+        styleBoxTexture.MarginTop = 10;
+        styleBoxTexture.MarginBottom = 10;*/
+
+        //button.AddStyleboxOverride("normal", styleBoxTexture);
+        button.Set("custom_styles/normal", styleBoxTexture);
+
+        Texture texture = (Texture)GD.Load(_buttonImg);
+        GD.Print(button.RectMinSize);
+
+        Vector2 textureSize = new Vector2(texture.GetWidth(), texture.GetHeight());
+
+        if (button.RectMinSize.x < textureSize.x || button.RectMinSize.y < textureSize.y)
+        {
+            GD.Print("Button is smaller than the texture.");
+        }
+        else
+        {
+            GD.Print("Button is larger or equal to the texture.");
+        }
+
+        button.SelfModulate = _secondaryColor;
+
+        // Add text
+        Label label = new Label();
+        label.SizeFlagsVertical = (int)Control.SizeFlags.ExpandFill;
+        label.SizeFlagsHorizontal = (int)Control.SizeFlags.ExpandFill;
+        label.AnchorRight = 1; 
+        label.AnchorBottom = 1;   
+        label.MarginRight = 0;      
+        label.MarginBottom = 0;
+        label.Align = Label.AlignEnum.Center;
+        label.Valign = Label.VAlign.Center;
 
         DynamicFont font = new DynamicFont();
-        font.FontData = (DynamicFontData)GD.Load("res://fonts/Roboto-Regular.ttf");
+        font.FontData = (DynamicFontData)GD.Load(_font);
         font.Size = fontSize;
-        button.AddFontOverride("font", font);
+        label.AddFontOverride("font", font);
+        label.AddColorOverride("font_color", _textColor);
 
-        button.Text = text;
+        label.Text = text;
+        button.AddChild(label);
         return button;
     }
 
@@ -293,7 +361,7 @@ public class DynamicMenu : Control
     }
 }
 
-public class CustomButton : Button
+public class CustomButton : TextureButton
 {
     private readonly Action _action;
 
