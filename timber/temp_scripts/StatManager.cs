@@ -12,6 +12,8 @@ public class StatManager : Node
     public override void _Ready()
     {
         stats = GetNode<HasStats>("../" + node_name);
+        stats.AddStat("health", 0, 100, 100, true);
+
     }
 
     public override void _Input(InputEvent @event)
@@ -20,33 +22,17 @@ public class StatManager : Node
         {
             if (eventKey.Scancode == (int)KeyList.Key1)
             {
-                //GD.Print("adding health");
-                stats.AddStat("health", 0, 100, 100, true);
-            }
-
-            else if (eventKey.Scancode == (int)KeyList.Key2)
-            {
                 //GD.Print("adding shield");
                 stats.AddStat("shield", 0, 100, 50, true);
             }
 
-            else if (eventKey.Scancode == (int)KeyList.Key3)
+            else if (eventKey.Scancode == (int)KeyList.Key2)
             {
                 //GD.Print("adding xp");
                 stats.AddStat("xp", 0, 100, 80, true);
             }
 
-            else if (eventKey.Scancode == (int)KeyList.Key8)
-            {
-                Stat health = stats.GetStat("health");
-                if (health != null)
-                {
-                    GD.Print(health.currVal);
-                    health.IncreaseCurrentValue(random.Next(10, 100));
-                }
-            }
-
-            else if (eventKey.Scancode == (int)KeyList.Key7)
+            else if (eventKey.Scancode == (int)KeyList.Key6)
             {
                 Stat health = stats.GetStat("health");
                 if (health != null)
@@ -56,8 +42,17 @@ public class StatManager : Node
                 }
             }
 
+            else if (eventKey.Scancode == (int)KeyList.Key7)
+            {
+                Stat health = stats.GetStat("health");
+                if (health != null)
+                {
+                    GD.Print(health.currVal);
+                    health.IncreaseCurrentValue(random.Next(10, 100));
+                }
+            }
 
-            // toggle visibility
+            // toggle visibility testing  inside container 
         }
     }
 }

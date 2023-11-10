@@ -60,6 +60,14 @@ public class BarContainer : Control
         RectScale = new Vector2(newScale, newScale);
     }
 
+    void ToggleVisibilityOn()
+    {
+
+    }
+
+    // Editing Mode Functionality
+    // Create & Remove Bars
+
     /// <summary>
     /// Create UIBar
     /// </summary>
@@ -100,7 +108,6 @@ public class BarContainer : Control
         return new_bar;
     }
 
-    //TODO remove bars
     public void RemovePrimary()
     {
         VBoxContainer container1 = GetNode<VBoxContainer>("container1");
@@ -135,17 +142,17 @@ public class BarContainer : Control
     {
         if (@event is InputEventKey eventKey && eventKey.Pressed && !eventKey.Echo)
         {
-            if (eventKey.Scancode == (int)KeyList.Key4)
+            if (eventKey.Scancode == (int)KeyList.Key3)
             {
                 RemovePrimary();
             }
 
-            else if (eventKey.Scancode == (int)KeyList.Key5)
+            else if (eventKey.Scancode == (int)KeyList.Key4)
             {
                 RemoveSecondary(0);
             }
 
-            else if(eventKey.Scancode == (int)KeyList.Key6)
+            else if(eventKey.Scancode == (int)KeyList.Key5)
             {
                 RemoveSecondary(1);
             }
