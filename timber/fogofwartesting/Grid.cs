@@ -5,7 +5,7 @@ using System;
 public class Grid
 {
     public static TileData[][] tiledata;
-    public static float tileWidth = 3.0f;
+    public static float tileWidth = 2.0f;
 
     public static int width
     {

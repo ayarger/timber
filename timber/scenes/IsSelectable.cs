@@ -78,13 +78,13 @@ public class IsSelectable : Node
             shadow_material.AlbedoColor = new Color(1, 1, 1, 0.4f);
     }
 
-    bool AmIHovered()
+   public bool AmIHovered()
     {
         SelectionRegion selection_region = SelectionSystem.GetCurrentSelectionRegion();
         return selection_region.IsPointWithinRegion(parent.GlobalTranslation);
     }
 
-    bool am_i_selected = false;
+    public bool am_i_selected = false;
     void OnEventSelectionFinished(EventSelectionFinished e)
     {
         if (e.selection_region.IsPointWithinRegion(parent.GlobalTranslation))

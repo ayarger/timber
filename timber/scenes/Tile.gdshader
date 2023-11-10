@@ -47,9 +47,9 @@ void fragment() {
     vec4 final_color = albedo; //* visibility.r;
 	vec4 fowSample = texture(fowTexture,vec2((world_position.x-screenPosX)/screenWidth,((world_position.z-screenPosZ)/screenHeight)));
 	vec4 lvSample = texture(lowVisibility_texture,vec2((world_position.x-screenPosX)/screenWidth,((world_position.z-screenPosZ)/screenHeight)));
-	final_color.r *= .2f*lvSample.r+fowSample.r;
-	final_color.g *= .2f*lvSample.g+fowSample.g;
-	final_color.b *= .2f*lvSample.b+fowSample.b;
+	final_color.r *= .8f*lvSample.r+fowSample.r;
+	final_color.g *= .8f*lvSample.g+fowSample.g;
+	final_color.b *= .8f*lvSample.b+fowSample.b;
 
     // Assign the final color to the output
 	ALBEDO = vec3(0.0, 0.0, 0.0);

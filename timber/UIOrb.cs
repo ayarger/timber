@@ -9,11 +9,20 @@ public class UIOrb : Control
 
     MeshInstance target_mesh;
 
+    Tween ui_tween;
+
     public override void _Ready()
     {
+        // get tex_progress
         tex_progress = GetNode<TextureProgress>("FrontProgress");
+        // get target_mesh
         if(IsInstanceValid(target_data) && IsInstanceValid(target_data.GetParent()))
             target_mesh = target_data.GetParent().GetNode<MeshInstance>("view/mesh");
+        // get target_tween
+        ui_tween = GetNode<Tween>("UITween");
+
+        // connect stats change event here
+        target_data.Connect("health_change", this, nameof(OnHealthChange));
     }
 
     public void Configure(HasStats _target)
@@ -29,6 +38,9 @@ public class UIOrb : Control
             QueueFree();
     }
 
+    /// <summary>
+    /// Move to UIOrb to the target
+    /// </summary>
     void PursueTarget()
     {
         Camera cam = (Camera)GameplayCamera.GetGameplayCamera();
@@ -41,9 +53,14 @@ public class UIOrb : Control
         RectGlobalPosition = screenPosition;
         RectScale = Vector2.One * 0.15f;
 
-        tex_progress.Value = target_data.health;
+        tex_progress.Value = target_data.health_ratio * 100;
     }
 
+    /// <summary>
+    /// Create UIorb
+    /// </summary>
+    /// <param name="stats"></param>
+    /// <returns></returns>
     public static UIOrb Create(HasStats stats)
     {
         PackedScene scene = (PackedScene)ResourceLoader.Load("res://scenes/UIOrb.tscn");
@@ -51,5 +68,27 @@ public class UIOrb : Control
         new_orb.Configure(stats);
         PrimaryCanvas.AddChildNode(new_orb);
         return new_orb;
+    }
+
+    /// <summary>
+    /// Update UI on health change
+    /// </summary>
+    public void OnHealthChange()
+    {
+        float target_value = target_data.health_ratio * 100;
+        // Stop any ongoing tween operation.
+        ui_tween.StopAll();
+        //GD.Print(tex_progress.Value);
+        ui_tween.InterpolateProperty(
+            tex_progress,
+            "value",
+            tex_progress.Value,
+            target_value,
+            2f,
+            Tween.TransitionType.Linear,
+            Tween.EaseType.InOut
+        );
+        // start tween 
+        ui_tween.Start();
     }
 }
