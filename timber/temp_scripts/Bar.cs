@@ -89,7 +89,7 @@ public class Bar : Control
     public void FadeIn(float duration)
     {
         Color currentColor = Modulate;
-        ui_tween.InterpolateProperty(this, "modulate:a", currentColor.a, 1, duration, Tween.TransitionType.Linear, Tween.EaseType.In);
+        ui_tween.InterpolateProperty(this, "modulate:a", currentColor.a, 1, duration, Tween.TransitionType.Linear, Tween.EaseType.Out);
         ui_tween.Start();
     }
 

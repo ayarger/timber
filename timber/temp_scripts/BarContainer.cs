@@ -6,7 +6,10 @@ public class BarContainer : Control
 
     HasStats target_data;
     MeshInstance target_mesh;
+    MeshInstance target_shadow;
     IsSelectable target_selection;
+    Vector3 relativeToshadow;
+    int count = 0;
     public float scaling_factor = 6f;
     bool displayOn;
 
@@ -16,13 +19,20 @@ public class BarContainer : Control
         if (IsInstanceValid(target_data) && IsInstanceValid(target_data.GetParent()))
         {
             target_mesh = target_data.GetParent().GetNode<MeshInstance>("view/mesh");
+            target_shadow = target_data.GetParent().GetNode<MeshInstance>("shadow");
             target_selection = target_data.GetParent().GetNode<IsSelectable>("IsSelectable");
-            GD.Print("container created " + "fecthing selection " + target_selection);
+            Vector3 shadow_position = target_shadow.GlobalTranslation;
+            AABB aabb = target_mesh.GetAabb();
+            float localHeight = aabb.Size.y;
+            Vector3 globalScale = target_mesh.GlobalTransform.basis.Scale;
+            float GlobalHeight = localHeight * globalScale.y;
+            Vector3 mesh_position = target_mesh.GlobalTransform.Xform(new Vector3(0, GlobalHeight + 3.2f, 0)); ;
+            relativeToshadow = mesh_position - shadow_position;
         }
     }
 
-    public void Configure(HasStats _target)
-    {
+    public void Configure(HasStats _target) { 
+       
         target_data = _target;
     }
 
@@ -46,15 +56,14 @@ public class BarContainer : Control
         Vector3 desired_position = target_data.GetParent<Spatial>().GlobalTranslation;
 
         // TODO: UI position should be based on the top of the character
-        if (IsInstanceValid(target_mesh))
-
-            desired_position = target_mesh.GlobalTransform.Xform(new Vector3(0, 0.93f, 0));
+        if (IsInstanceValid(target_shadow))
+            desired_position = (target_shadow.GlobalTranslation + relativeToshadow);
 
         var screenPosition = cam.UnprojectPosition(desired_position);
         RectGlobalPosition = screenPosition;
         RectScale = Vector2.One * 0.15f;
         //scaling
-        float distance = target_mesh.GlobalTransform.origin.DistanceTo(cam.GlobalTransform.origin);
+        float distance = target_mesh.GlobalTranslation.DistanceTo(cam.GlobalTranslation);
         float characterSize = target_mesh.Scale.y;
         float newScale = (characterSize / distance) * scaling_factor;
         RectScale = new Vector2(newScale, newScale);
@@ -62,7 +71,45 @@ public class BarContainer : Control
 
     void ToggleVisibilityOn()
     {
+        // TODO:FadeIn
+        Bar child, child1, child2;
+        VBoxContainer container1 = GetNode<VBoxContainer>("container1");
+        child = (Bar)container1.GetChild(0);
+        child.FadeIn(0.2f);
 
+        VBoxContainer container2 = GetNode<VBoxContainer>("container1/container2");
+        if((Bar)container2.GetChild(0)!= null)
+        {
+            child1 = (Bar)container2.GetChild(0);
+            child1.FadeIn(0.2f);
+        }
+
+        if((Bar)container2.GetChild(0) != null)
+        {
+            child2 = (Bar)container2.GetChild(1);
+            child2.FadeIn(0.2f);
+        }
+    }
+
+    void ToggleVisibilityOff()
+    {
+        Bar child, child1, child2;
+        VBoxContainer container1 = GetNode<VBoxContainer>("container1");
+        child = (Bar)container1.GetChild(0);
+        child.FadeOut(0.2f);
+
+        VBoxContainer container2 = GetNode<VBoxContainer>("container1/container2");
+        if ((Bar)container2.GetChild(0) != null)
+        {
+            child1 = (Bar)container2.GetChild(0);
+            child1.FadeOut(0.2f);
+        }
+
+        if ((Bar)container2.GetChild(0) != null)
+        {
+            child2 = (Bar)container2.GetChild(1);
+            child2.FadeOut(0.2f);
+        }
     }
 
     // Editing Mode Functionality
@@ -155,6 +202,16 @@ public class BarContainer : Control
             else if(eventKey.Scancode == (int)KeyList.Key5)
             {
                 RemoveSecondary(1);
+            }
+
+            else if(eventKey.Scancode == (int)KeyList.Key8)
+            {
+                ToggleVisibilityOff();
+            }
+
+            else if (eventKey.Scancode == (int)KeyList.Key9)
+            {
+                ToggleVisibilityOn();
             }
         }
     }

@@ -1,0 +1,62 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://spot_hud_face.png" type="Texture" id=2]
+[ext_resource path="res://scenes/UIBar.tscn" type="PackedScene" id=3]
+[ext_resource path="res://temp_texture/mask_shadermaterial.tres" type="Material" id=4]
+[ext_resource path="res://gradient256.png" type="Texture" id=5]
+
+[sub_resource type="ShaderMaterial" id=11]
+
+[node name="HUD" type="Control"]
+margin_right = 40.0
+margin_bottom = 40.0
+
+[node name="bottom_gradient" type="TextureRect" parent="."]
+visible = false
+modulate = Color( 0, 0, 0, 1 )
+anchor_top = 0.9
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = 936.0
+margin_right = 40.0
+margin_bottom = 976.0
+texture = ExtResource( 5 )
+expand = true
+
+[node name="UIBar" parent="." instance=ExtResource( 3 )]
+margin_left = 326.0
+margin_top = 972.0
+margin_right = 326.0
+margin_bottom = 972.0
+rect_scale = Vector2( -0.369967, 0.463009 )
+script = null
+
+[node name="PlayerProfile" type="Control" parent="."]
+margin_left = 41.0
+margin_top = -5.0
+margin_right = 81.0
+margin_bottom = 35.0
+
+[node name="HudeFaceLeft_shadow" type="TextureRect" parent="PlayerProfile"]
+self_modulate = Color( 0, 0, 0, 1 )
+material = SubResource( 11 )
+anchor_top = 1.0
+anchor_bottom = 1.0
+margin_left = -31.0
+margin_top = 792.0
+margin_right = 225.0
+margin_bottom = 1048.0
+texture = ExtResource( 2 )
+stretch_mode = 7
+
+[node name="HudeFaceLeft" type="TextureRect" parent="PlayerProfile"]
+material = ExtResource( 4 )
+anchor_top = 1.0
+anchor_bottom = 1.0
+margin_left = -41.0
+margin_top = 782.0
+margin_right = 215.0
+margin_bottom = 1038.0
+texture = ExtResource( 2 )
+expand = true
+stretch_mode = 6
