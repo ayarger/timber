@@ -14,6 +14,19 @@ public class StatChangeEvent
         stat_name = _stat_name;
     }
 }
+
+/// <summary>
+/// Options to display the stat & how it is displayed
+/// </summary>
+
+public enum DisplayOptions
+{
+    None,
+    Overhead,
+    HUD,
+    OverheadAndHUD
+}
+
 /// <summary>
 /// Generic stat class with minimum, current, maximum value and stat specific UI info
 /// </summary>
