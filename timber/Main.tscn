@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=2]
+[gd_scene load_steps=38 format=2]
 
 [ext_resource path="res://scenes/GameManager.tscn" type="PackedScene" id=1]
 [ext_resource path="res://DebugSphere.cs" type="Script" id=2]
@@ -17,6 +17,14 @@
 [ext_resource path="res://scenes/UIOrb.tscn" type="PackedScene" id=15]
 [ext_resource path="res://fogofwartesting/FogOfWar.tscn" type="PackedScene" id=16]
 [ext_resource path="res://fogofwartesting/TestMovement.cs" type="Script" id=17]
+[ext_resource path="res://addons/gdyarn/core/variable_storage.gd" type="Script" id=18]
+[ext_resource path="res://addons/gdyarn/yarn_runner.gd" type="Script" id=19]
+[ext_resource path="res://addons/gdyarn/yarn_gui.gd" type="Script" id=20]
+[ext_resource path="res://addons/gdyarn/compiled_yarn_program.gd" type="Script" id=21]
+[ext_resource path="res://Dialogue/Beaver.png" type="Texture" id=22]
+[ext_resource path="res://Dialogue/Dialogue.cs" type="Script" id=23]
+[ext_resource path="res://Dialogue/DialogueManager.gd" type="Script" id=24]
+[ext_resource path="res://UI/Oxanium-Regular.ttf" type="DynamicFontData" id=25]
 
 [sub_resource type="GDScript" id=2]
 
@@ -110,6 +118,31 @@ shader_param/start_angle = 0.0
 shader_param/aa_edge_softness = 0.01
 shader_param/start_color = Color( 1, 0, 0, 1 )
 shader_param/end_color = Color( 0, 1, 1, 1 )
+
+[sub_resource type="StyleBoxFlat" id=21]
+content_margin_left = 20.0
+content_margin_right = 20.0
+content_margin_top = 20.0
+content_margin_bottom = 20.0
+bg_color = Color( 0, 0, 0, 0.392157 )
+
+[sub_resource type="DynamicFont" id=19]
+size = 50
+font_data = ExtResource( 25 )
+
+[sub_resource type="DynamicFont" id=18]
+size = 40
+font_data = ExtResource( 25 )
+
+[sub_resource type="DynamicFont" id=20]
+size = 40
+font_data = ExtResource( 25 )
+
+[sub_resource type="Resource" id=17]
+script = ExtResource( 21 )
+_programName = "compiled_yarn_program"
+_directory = "res://"
+_yarnPrograms = [ "res://Dialogue/intro.yarn" ]
 
 [node name="Main" type="Spatial"]
 script = SubResource( 2 )
@@ -226,5 +259,110 @@ script = ExtResource( 10 )
 
 [node name="TestMovement" type="Node" parent="."]
 script = ExtResource( 17 )
+
+[node name="DialogueManager" type="Node" parent="."]
+script = ExtResource( 24 )
+yarn_gui_path = NodePath("YarnDisplay")
+
+[node name="YarnDisplay" type="Control" parent="DialogueManager"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_right = 2.0
+margin_bottom = -2.0
+script = ExtResource( 20 )
+_yarnRunner = NodePath("../YarnRunner")
+_text = NodePath("PanelContainer/VBoxContainer/Text")
+_namePlate = NodePath("PanelContainer/VBoxContainer/Name")
+_options = [ NodePath("Choices/Button"), NodePath("Choices/Button2") ]
+_textSpeed = 5
+
+[node name="PanelContainer" type="PanelContainer" parent="DialogueManager/YarnDisplay"]
+anchor_left = 0.249
+anchor_top = 0.762
+anchor_right = 0.865
+anchor_bottom = 0.988
+size_flags_horizontal = 0
+size_flags_vertical = 0
+custom_styles/panel = SubResource( 21 )
+
+[node name="VBoxContainer" type="VBoxContainer" parent="DialogueManager/YarnDisplay/PanelContainer"]
+margin_left = 20.0
+margin_top = 20.0
+margin_right = 1163.95
+margin_bottom = 223.628
+
+[node name="Name" type="Label" parent="DialogueManager/YarnDisplay/PanelContainer/VBoxContainer"]
+margin_right = 1143.0
+margin_bottom = 51.0
+rect_min_size = Vector2( 0, 50 )
+custom_fonts/font = SubResource( 19 )
+text = "Name"
+autowrap = true
+script = ExtResource( 23 )
+
+[node name="Text" type="Label" parent="DialogueManager/YarnDisplay/PanelContainer/VBoxContainer"]
+margin_top = 55.0
+margin_right = 1143.0
+margin_bottom = 96.0
+custom_fonts/font = SubResource( 18 )
+text = "Hello"
+autowrap = true
+script = ExtResource( 23 )
+
+[node name="TextureRect" type="TextureRect" parent="DialogueManager/YarnDisplay"]
+anchor_left = 0.563
+anchor_top = -0.092
+anchor_right = 0.581
+anchor_bottom = 0.054
+margin_left = 362.332
+margin_top = 719.812
+margin_right = 2002.33
+margin_bottom = 3079.81
+rect_scale = Vector2( 0.3, 0.3 )
+size_flags_horizontal = 0
+size_flags_vertical = 0
+texture = ExtResource( 22 )
+stretch_mode = 5
+
+[node name="Choices" type="VBoxContainer" parent="DialogueManager/YarnDisplay"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 600.0
+margin_top = 300.0
+margin_right = -600.0
+margin_bottom = -500.0
+alignment = 1
+
+[node name="Button" type="Button" parent="DialogueManager/YarnDisplay/Choices"]
+margin_right = 722.0
+margin_bottom = 110.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_fonts/font = SubResource( 20 )
+text = "Choice 1"
+
+[node name="Control" type="Control" parent="DialogueManager/YarnDisplay/Choices"]
+margin_top = 114.0
+margin_right = 722.0
+margin_bottom = 164.0
+rect_min_size = Vector2( 0, 50 )
+
+[node name="Button2" type="Button" parent="DialogueManager/YarnDisplay/Choices"]
+margin_top = 168.0
+margin_right = 722.0
+margin_bottom = 278.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_fonts/font = SubResource( 20 )
+text = "Choice 2"
+
+[node name="YarnRunner" type="Node" parent="DialogueManager"]
+script = ExtResource( 19 )
+_autoStart = true
+_variableStorage = NodePath("VariableStorage")
+_compiledYarnProgram = SubResource( 17 )
+
+[node name="VariableStorage" type="Node" parent="DialogueManager/YarnRunner"]
+script = ExtResource( 18 )
 
 [editable path="FogOfWar"]

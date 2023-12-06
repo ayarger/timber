@@ -1,11 +1,11 @@
 title: Start
-tags: 
+tags:
 colorID: 0
 position: 120,-245
 ---
-Do you like Godot?
--> Yes
-    Right on!
--> No
-    Well, thats unfortunate...
+Do you like Godot? #line:7d0d96d 
+-> Yes #line:5a3dd7d5 
+    Right on! #line:515f5806 
+-> No #line:b6c02e0 
+    Well, thats unfortunate... #line:97f72e11 
 ===

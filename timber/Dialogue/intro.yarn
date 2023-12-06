@@ -1,0 +1,24 @@
+title: Start
+tags:
+colorID: 0
+position: -1125,-922
+---
+Ahoy there! Welcome to Timber. #line:2803271b 
+My name is (Chippy? Sawyer? Tom? Justin Beaver?). What brings you to this neighborhood? #line:138ec0e 
+[[I'm looking for a job.|LookingForJob]] #line:70fb4673 
+[[I'm robbing you!|RobbingYou]] #line:ac5647f1 
+===
+title: RobbingYou
+tags:
+colorID: 0
+position: -801,-761
+---
+Golly gee willikers, you're robbing little ole me? I ain't nothing but a semi-aquatic rodent! #line:75deb6ee 
+===
+title: LookingForJob
+tags:
+colorID: 0
+position: -800,-993
+---
+Well I'll hire ya if you can saw---these old teeth ain't what they used to be! #line:5fc400 
+===

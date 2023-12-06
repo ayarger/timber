@@ -65,9 +65,6 @@ margin_top = 49.0
 margin_right = 1.0
 margin_bottom = -2.0
 script = ExtResource( 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
 _text = NodePath("VBoxContainer/TextPanel/VBoxContainer/TextContainer/Text")
 _namePlate = NodePath("VBoxContainer/TextPanel/VBoxContainer/Name")
 _options = [ NodePath("VBoxContainer/HBoxContainer/VBoxContainer/option0"), NodePath("VBoxContainer/HBoxContainer/VBoxContainer/option1"), NodePath("VBoxContainer/HBoxContainer/VBoxContainer/option2"), NodePath("VBoxContainer/HBoxContainer/VBoxContainer/option3") ]
