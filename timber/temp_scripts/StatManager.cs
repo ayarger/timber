@@ -8,12 +8,14 @@ public class StatManager : Node
     public string node_name = "HasStats";
     private HasStats stats;
     private Random random = new Random();
+    Control hud;
 
     public override void _Ready()
     {
         stats = GetNode<HasStats>("../" + node_name);
         stats.AddStat("health", 0, 100, 100, true);
-
+        hud = GetParent().GetParent().GetParent().GetNode<CanvasLayer>("CanvasLayer").GetNode<Control>("HUD");
+        hud.GetNode<hudEffect>("PlayerProfile").health = stats.GetStat("health");
     }
 
     public override void _Input(InputEvent @event)
