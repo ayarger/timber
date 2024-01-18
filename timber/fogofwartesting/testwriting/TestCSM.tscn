@@ -5,7 +5,6 @@
 
 [node name="CustomScriptManager" type="Node"]
 script = ExtResource( 1 )
-fpsCounter = NodePath("../../RichTextLabel")
 
 [node name="CustomScript" type="Node" parent="."]
 script = ExtResource( 2 )
