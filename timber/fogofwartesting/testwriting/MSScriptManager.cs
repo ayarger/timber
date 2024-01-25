@@ -78,14 +78,19 @@ public class MSScriptManager : Node
         script.DoString($"setmetatable({name}, {{__index = {className}}})");
         DNDStressTest.LogTimeOfEvent(() =>
         {
-            //Copy lua template to new object
-            script.DoString($"{name}:ready()");
-            //for (int i = 0; i < 10000; i++)
-            //{
-            //    DynValue res = script.Call(script.Globals[$"{name}:ready()"], 4);
-            //    script.Globals[name].
-            //}
+        for (int i = 0; i < 1000; i++)
+        {
+
+                //Copy lua template to new object
+                script.DoString($"{name}:ready()");
+                //for (int i = 0; i < 10000; i++)
+                //{
+                //    DynValue res = script.Call(script.Globals[$"{name}:ready()"], 4);
+                //    script.Globals[name].
+                //}
+            }
         });
+
     }
 }
 
