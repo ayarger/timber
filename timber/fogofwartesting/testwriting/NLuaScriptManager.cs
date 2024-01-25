@@ -24,7 +24,7 @@ public class NLuaScriptManager : Node
 
     public static void Print(object a)
     {
-        GD.Print(a);
+        //GD.Print(a);
     }
     public override void _Ready()
     {
@@ -74,8 +74,11 @@ public class NLuaScriptManager : Node
         luaState.DoString($"setmetatable({name}, {{__index = {className}}})");
         DNDStressTest.LogTimeOfEvent(() =>
         {
-            //Copy lua template to new object
+            for(int i = 0; i < 1000; i++)
+            {
             luaState.DoString($"{name}:ready()");
+            }
+            //Copy lua template to new object
             //for (int i = 0; i < 10000; i++)
             //{
             //    DynValue res = script.Call(script.Globals[$"{name}:ready()"], 4);
