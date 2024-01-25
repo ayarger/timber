@@ -25,11 +25,11 @@ end
 
 function otherscript:ready()
 	--local parent = self:get_node("../../CustomScriptManager")
-	for i=1,1000000 do 
+	--for i=1,10000 do 
 		local x = 5+5
 		--parent.testData = ""..i;
 		print(x)
-	end
+	--end
 end
 
 -- UNSEEN CODE --

@@ -1,21 +1,18 @@
 using Godot;
 using NAudio.Codecs;
-using MoonSharp.Interpreter;
+using NLua;
 using System;
 using System.Collections;
-using Script = MoonSharp.Interpreter.Script;
 
-public class MSScriptManager : Node
+public class NLuaScriptManager : Node
 {
 
-    Script script;
+    Lua luaState;
     // Declare member variables here. Examples:
     // private int a = 2;
     // private string b = "text";
 
     // Called when the node enters the scene tree for the first time.
-    int amt = 900;
-    DateTime prevdateTime = DateTime.Now;
     string className;
 
     public static int id = 0;
@@ -27,13 +24,12 @@ public class MSScriptManager : Node
 
     public static void Print(object a)
     {
-        int x = 5 + 5;
-        //GD.Print(a);
+        GD.Print(a);
     }
     public override void _Ready()
     {
-        script = new Script();
-        script.Globals["print"] = (Action<object>)Print;
+        luaState = new Lua();
+        luaState.RegisterFunction("print", typeof(NLuaScriptManager).GetMethod("Print"));
 
         //Initialize global lua template
         className = "otherscript";
@@ -41,7 +37,7 @@ public class MSScriptManager : Node
         x.Open($"fogofwartesting/testwriting/{className}.lua", Godot.File.ModeFlags.Read);
         String master = x.GetAsText();
         GD.Print(master);
-        var obj = script.DoString(master);
+        luaState.DoString(master);
 
         for (int i = 0; i < 10000; i++)
         {
@@ -73,21 +69,13 @@ public class MSScriptManager : Node
     // called every frame. 'delta' is the elapsed time since the previous frame.
     public override void _Process(float delta)
     {
-        DNDStressTest.LogTimeOfEvent(() =>
-        {
-            for(int i = 0; i < 100000; i++)
-            {
-                int x = 5 + 5;
-                GD.Print("LOL");
-            }
-        });
         string name = GenerateObjectName();
-        script.DoString($"{name} = {{}}");
-        script.DoString($"setmetatable({name}, {{__index = {className}}})");
+        luaState.DoString($"{name} = {{}}");
+        luaState.DoString($"setmetatable({name}, {{__index = {className}}})");
         DNDStressTest.LogTimeOfEvent(() =>
         {
             //Copy lua template to new object
-            script.DoString($"{name}:ready()");
+            luaState.DoString($"{name}:ready()");
             //for (int i = 0; i < 10000; i++)
             //{
             //    DynValue res = script.Call(script.Globals[$"{name}:ready()"], 4);
