@@ -1,4 +1,4 @@
-local otherscript = {}
+otherscript = {}
 
 local mt = {}
 
@@ -20,17 +20,16 @@ function WaitForSeconds(secs)
 	coroutine.yield("W"..secs)
 end
 
-otherscript.awaitaction = signal('arg1')
 
 -- UNSEEN CODE --
 
 function otherscript:ready()
-	local parent = self:get_node("../../CustomScriptManager")
-	--print("Other script running!")
-	self:emit_signal('awaitaction', 'W')
-	local x = 5+5
-	parent.testData = ""..i;
-	self:emit_signal('awaitaction', "E")
+	--local parent = self:get_node("../../CustomScriptManager")
+	for i=1,1000000 do 
+		local x = 5+5
+		--parent.testData = ""..i;
+		print(x)
+	end
 end
 
 -- UNSEEN CODE --
@@ -39,11 +38,6 @@ end
 
 local coros = {};
 
-function otherscript:init()
-	local parent = self:get_node("../../CustomScriptManager")
-	parent:connect('ResumeCoroutine',self,'collectdata')
-	--print("Lua Scirpt Initialized")
-end
 
 
 function otherscript:startcoro(key)
@@ -58,6 +52,3 @@ end
 function otherscript:collectdata(data)
 	self.data=data;
 end
-
-return otherscript
-
