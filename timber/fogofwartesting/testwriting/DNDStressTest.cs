@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Diagnostics;
 
 public class DNDStressTest : Node
 {
@@ -32,4 +33,14 @@ public class DNDStressTest : Node
         //  {
         //      
         //  }
+
+    public static void LogTimeOfEvent(Action action)
+    { 
+
+        Stopwatch sw = new Stopwatch();
+        sw.Start();
+        action.Invoke();
+        sw.Stop();
+        GD.PushWarning($"Elapsed Time: {sw.Elapsed}");
     }
+}
