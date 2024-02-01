@@ -1,4 +1,4 @@
-otherscript = {}
+testluaobject = {}
 
 local mt = {}
 
@@ -14,7 +14,7 @@ mt.__newindex = function(self, key, value)
   rawset(self, key, value)
 end
 
-setmetatable(otherscript, mt)
+setmetatable(testluaobject, mt)
 
 function WaitForSeconds(secs)
 	coroutine.yield("W"..secs)
@@ -23,13 +23,26 @@ end
 
 -- UNSEEN CODE --
 
-function otherscript:ready()
+function testluaobject:ready()
 	--local parent = self:get_node("../../CustomScriptManager")
 	--for i=1,10 do 
 		local x = 5+5
 		--parent.testData = ""..i;
-		--print(x)
+		print(x)
 	--end
+end
+
+value = 0
+
+function testluaobject:on_second()
+	if value==0 then
+		value = 1
+	elseif value==1 then
+		value = -1
+	elseif value==-1 then
+		value = 0
+	end
+	return "M"..value
 end
 
 -- UNSEEN CODE --
@@ -40,15 +53,15 @@ local coros = {};
 
 
 
-function otherscript:startcoro(key)
+function testluaobject:startcoro(key)
 	coros[key] = coroutine.create(self.ready)
 end
 
-function otherscript:runcoro(key)
+function testluaobject:runcoro(key)
 	local code, res = coroutine.resume(coros[key],self)
 	return res
 end
 
-function otherscript:collectdata(data)
+function testluaobject:collectdata(data)
 	self.data=data;
 end

@@ -1,12 +1,10 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://ArborCoroutine.cs" type="Script" id=1]
 [ext_resource path="res://fogofwartesting/Actor.lua" type="Script" id=2]
-[ext_resource path="res://fogofwartesting/testwriting/testloadafterwrite2.lua" type="Script" id=3]
+[ext_resource path="res://fogofwartesting/testwriting/luaobjects/ConfigLoader.cs" type="Script" id=3]
 [ext_resource path="res://fogofwartesting/testwriting/NLuaScriptManager.cs" type="Script" id=4]
-[ext_resource path="res://fogofwartesting/LuaWriter.cs" type="Script" id=6]
-
-[sub_resource type="SpatialMaterial" id=1]
+[ext_resource path="res://fogofwartesting/testwriting/FPSCounter.cs" type="Script" id=5]
 
 [node name="Spatial" type="Spatial"]
 
@@ -16,21 +14,11 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 10 )
 [node name="Actor" type="Node" parent="."]
 script = ExtResource( 2 )
 
-[node name="View" type="CSGSphere" parent="Actor"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.0616129 )
-material_override = SubResource( 1 )
-
 [node name="CustomScriptManager" type="Node" parent="Actor"]
 script = ExtResource( 4 )
 
 [node name="DirectionalLight" type="DirectionalLight" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0534896, 2.42604 )
-
-[node name="Node" type="Node" parent="."]
-script = ExtResource( 6 )
-
-[node name="Node" type="Node" parent="Node"]
-script = ExtResource( 3 )
 
 [node name="Node2" type="Node" parent="."]
 script = ExtResource( 1 )
@@ -40,3 +28,7 @@ margin_right = 504.0
 margin_bottom = 114.0
 rect_scale = Vector2( 5, 5 )
 text = "sdfdsfsfkjldl"
+script = ExtResource( 5 )
+
+[node name="SimpleConfigLoader" type="Node" parent="."]
+script = ExtResource( 3 )
