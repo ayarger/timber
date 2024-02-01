@@ -9,8 +9,6 @@ public class canDisplayStatsChange : TextureProgress
     // can be modified; will be used to fetch the corresponding player data
     public String data_name;
 
-    int index;
-
     TextureProgress tex_progress;
 
     Tween ui_tween;
@@ -21,9 +19,9 @@ public class canDisplayStatsChange : TextureProgress
     {
         data_name = "health";
         // get tex_progress
-        tex_progress = GetNode<TextureProgress>("orgProgress");
+        tex_progress = this;
         // get target_tween
-        ui_tween = GetNode<Tween>("UITween");
+        ui_tween = GetNode<Tween>("Tween");
         statChangeEvent = EventBus.Subscribe<StatChangeEvent>(OnUIStatChange);
     }
 
