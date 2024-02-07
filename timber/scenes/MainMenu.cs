@@ -3,7 +3,6 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections;
-using LuaExperiment.Scenes;
 
 public class MainMenu : Control
 {
