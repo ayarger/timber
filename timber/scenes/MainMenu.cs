@@ -3,11 +3,24 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections;
+using LuaExperiment.Scenes;
 
 public class MainMenu : Control
 {
-	public override void _Ready()
+	public override async void _Ready()
 	{
+		
+		if (await Utilities.IsConnectedToInternet(this))
+		{
+			GD.Print("Internet connection detected. Launching game...");
+		}
+		else
+		{
+			GD.Print("No internet connection detected.");
+			// TODO: show a message to warn the player about missing internet connection
+			return;
+		}
+		
 		ArborResource.UseResource(
 			"sounds/bgm_title.ogg", 
 			(AudioStream audio) => {
