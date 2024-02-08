@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://square.png" type="Texture" id=1]
 [ext_resource path="res://spot_hud_face.png" type="Texture" id=2]
@@ -6,6 +6,7 @@
 [ext_resource path="res://temp_texture/mask_shadermaterial.tres" type="Material" id=4]
 [ext_resource path="res://gradient256.png" type="Texture" id=5]
 [ext_resource path="res://temp_scenes/hudEffect.cs" type="Script" id=6]
+[ext_resource path="res://temp_scenes/ConsoleManager.cs" type="Script" id=7]
 [ext_resource path="res://temp_scenes/canDisplayStatsChange.cs" type="Script" id=8]
 [ext_resource path="res://circle_256_ring.png" type="Texture" id=9]
 [ext_resource path="res://circle_256.png" type="Texture" id=11]
@@ -167,3 +168,35 @@ rect_scale = Vector2( 1.01896, 1 )
 texture = ExtResource( 3 )
 
 [node name="Tween" type="Tween" parent="HBoxContainer/orb2/orbProgress"]
+
+[node name="TempConsole" type="Control" parent="."]
+margin_right = 40.0
+margin_bottom = 40.0
+
+[node name="ConsolePanel" type="Panel" parent="TempConsole"]
+visible = false
+margin_top = -11.0
+margin_right = 438.0
+margin_bottom = 29.0
+
+[node name="Input" type="LineEdit" parent="TempConsole/ConsolePanel"]
+pause_mode = 2
+margin_right = 438.0
+margin_bottom = 40.0
+placeholder_text = "Type in a command"
+placeholder_alpha = 0.347
+caret_blink = true
+caret_blink_speed = 0.81
+
+[node name="Output" type="TextEdit" parent="TempConsole/ConsolePanel"]
+margin_top = 40.0
+margin_right = 439.0
+margin_bottom = 227.0
+readonly = true
+wrap_enabled = true
+
+[node name="ConsoleManager" type="Control" parent="TempConsole"]
+pause_mode = 2
+margin_right = 40.0
+margin_bottom = 40.0
+script = ExtResource( 7 )
