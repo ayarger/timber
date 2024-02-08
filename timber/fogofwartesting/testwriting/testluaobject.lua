@@ -16,9 +16,6 @@ end
 
 setmetatable(testluaobject, mt)
 
-function WaitForSeconds(secs)
-	coroutine.yield("W"..secs)
-end
 
 
 -- UNSEEN CODE --
@@ -26,42 +23,12 @@ end
 function testluaobject:ready()
 	--local parent = self:get_node("../../CustomScriptManager")
 	--for i=1,10 do 
-		local x = 5+5
-		--parent.testData = ""..i;
-		print(x)
+	
+	WaitForSeconds(1)
+	SetDestination(self,-3)
+	WaitForSeconds(2)
+	SetDestination(self,3)
+	--parent.testData = ""..i;
+	print("Completed Ready")
 	--end
-end
-
-value = 0
-
-function testluaobject:on_second()
-	if value==0 then
-		value = 1
-	elseif value==1 then
-		value = -1
-	elseif value==-1 then
-		value = 0
-	end
-	return "M"..value
-end
-
--- UNSEEN CODE --
-
-
-
-local coros = {};
-
-
-
-function testluaobject:startcoro(key)
-	coros[key] = coroutine.create(self.ready)
-end
-
-function testluaobject:runcoro(key)
-	local code, res = coroutine.resume(coros[key],self)
-	return res
-end
-
-function testluaobject:collectdata(data)
-	self.data=data;
 end

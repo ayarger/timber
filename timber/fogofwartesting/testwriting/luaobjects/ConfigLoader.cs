@@ -50,8 +50,12 @@ public class ConfigLoader : Node
         loading_scene = false;
 
         //Test code:
-        Spatial a = InstantiateActor('s', 0, 0);
         NLuaScriptManager nlsm = NLuaScriptManager.Instance;
+        Spatial a = InstantiateActor('q', 0, 0);
+        nlsm.CreateActor(NLuaScriptManager.testClassName, NLuaScriptManager.GenerateObjectName(), a);
+        a = InstantiateActor('m', 1, 0);
+        nlsm.CreateActor(NLuaScriptManager.testClassName, NLuaScriptManager.GenerateObjectName(), a);
+        a = InstantiateActor('c', -1, 0);
         nlsm.CreateActor(NLuaScriptManager.testClassName, NLuaScriptManager.GenerateObjectName(), a);
     }
 

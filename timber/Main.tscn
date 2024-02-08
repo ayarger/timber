@@ -17,7 +17,7 @@
 [ext_resource path="res://scenes/UIOrb.tscn" type="PackedScene" id=15]
 [ext_resource path="res://fogofwartesting/FogOfWar.tscn" type="PackedScene" id=16]
 [ext_resource path="res://fogofwartesting/TestMovement.cs" type="Script" id=17]
-[ext_resource path="res://fogofwartesting/LuaWriter.cs" type="Script" id=18]
+[ext_resource path="res://fogofwartesting/testwriting/NLuaScriptManager.cs" type="Script" id=19]
 
 [sub_resource type="GDScript" id=2]
 
@@ -150,7 +150,6 @@ script = ExtResource( 6 )
 PerformTrace = false
 
 [node name="FogOfWar" parent="." instance=ExtResource( 16 )]
-script = ExtResource( 18 )
 
 [node name="Node" type="Spatial" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.55476, 0 )
@@ -228,5 +227,8 @@ script = ExtResource( 10 )
 
 [node name="TestMovement" type="Node" parent="."]
 script = ExtResource( 17 )
+
+[node name="NLuaManager" type="Node" parent="."]
+script = ExtResource( 19 )
 
 [editable path="FogOfWar"]

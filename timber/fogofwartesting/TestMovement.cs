@@ -7,6 +7,7 @@ using System.Security.Cryptography;
 using Priority_Queue;
 using Newtonsoft.Json.Serialization;
 using System.Net;
+using static Amazon.S3.Util.S3EventNotification;
 
 public class TestMovement : Node
 {
@@ -43,26 +44,35 @@ public class TestMovement : Node
 				if (typeof(Actor).IsAssignableFrom(entity.GetParent().GetType()))
 				{
 					var actor = (Actor)entity.GetParent();
-					StateManager sm = actor.FindNode("StateManager") as StateManager;
-					string team = actor.GetNode<HasTeam>("HasTeam").team;
-					if (!sm.states.ContainsKey("MovementState")) continue;
-					if (team != "player") continue;
-
-					MovementState b = (sm.states["MovementState"] as MovementState);
-
-					ArborCoroutine.StopCoroutinesOnNode(b);
-                    ArborCoroutine.StartCoroutine(PathFindAsync(actor.GlobalTranslation, rounded_point, (List<Vector3> a) => { 
-						if(a.Count > 0)
-                        {
-                            sm.EnableState("MovementState");
-							b.waypoints = a;
-                        }
-                    }), b);
+                    string team = actor.GetNode<HasTeam>("HasTeam").team;
+                    if (team != "player") return;
+                    SetDestination(actor, rounded_point);
 
 				}
 			}
 		}
 	}
+	public static void SetDestination(Actor actor, Vector3 dest)
+    {
+        //DebugSphere.VisualizePoint(intersection_point);
+
+        /* Round */
+        Vector3 rounded_point = Grid.LockToGrid(dest);
+        StateManager sm = actor.FindNode("StateManager") as StateManager;
+		if (!sm.states.ContainsKey("MovementState")) return;
+
+        MovementState b = (sm.states["MovementState"] as MovementState);
+
+        ArborCoroutine.StopCoroutinesOnNode(b);
+        ArborCoroutine.StartCoroutine(PathFindAsync(actor.GlobalTranslation, rounded_point, (List<Vector3> a) => {
+            if (a.Count > 0)
+            {
+                sm.EnableState("MovementState");
+                b.waypoints = a;
+            }
+        }), b);
+    }
+
 	public static List<Vector3> PathFind(Vector3 cur, Vector3 dest)
 	{
 		List<Vector3> ans = new List<Vector3>();

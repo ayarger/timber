@@ -1,5 +1,6 @@
 using Godot;
 using NAudio.Codecs;
+using Newtonsoft.Json.Linq.JsonPath;
 using NLua;
 using System;
 using System.Collections;
@@ -61,8 +62,9 @@ public class NLuaScriptManager : Node
 
         try
         {
-            luaState.DoString($"{objectName} = {{}}");
-            luaState.DoString($"setmetatable({objectName}, {{__index = {className}}})");
+            luaState.DoString($"{objectName} = {{}}\n" +
+                $"setmetatable({objectName}, {{__index = {className}}})\n" +
+                $"global:register_object({objectName}, \"{objectName}\")");
             luaObjects.Add(objectName);
         }
         catch (NLua.Exceptions.LuaScriptException e)
@@ -87,6 +89,38 @@ public class NLuaScriptManager : Node
         luaActors[objectName] = actor;
     }
 
+    public void RunUntilCompletion(string function, List<string> prms = null)
+    {
+        string res = "Start";
+        luaState.DoString($"timber_runner = coroutine.create({function})\n");
+        List<string> args = prms ?? new List<string>();
+        while (res != "")
+        {
+            string prm = "";
+            foreach(string arg in args)
+            {
+                prm += ","+arg;
+            }
+
+            res = luaState.DoString($"local co, res = coroutine.resume(timber_runner,global {prm})\n" +
+                "return res")[0] as string;
+            if (res == "" || res == null) break;
+            GD.Print("Got response: "+res);
+            foreach (string cmd in res.Split('\n'))
+            {
+                if (cmd == "") continue;
+                string name = cmd.Split(':')[0];
+                string command = cmd.Split(':')[1];
+                if (command.StartsWith("M"))
+                {
+                    int amt = int.Parse(command.Substring(1));
+                    TestMovement.SetDestination(luaActors[name] as Actor, luaActors[name].GlobalTranslation + new Vector3(Grid.tileWidth * amt, 0, 0));
+                }
+            }
+        }
+    }
+
+
     public static string GenerateObjectName()
     {
         id++;
@@ -97,8 +131,10 @@ public class NLuaScriptManager : Node
     {
         GD.Print(a);
     }
+
     public override void _Ready()
     {
+        GD.Print("Lua initialized");
         Instance = this;
         luaState = new Lua();
         registeredClasses = new HashSet<string>();
@@ -109,11 +145,9 @@ public class NLuaScriptManager : Node
         //Initialize global Lua manager. Make global a "global object"?
         //https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Overview/Variables/Global_Variables.htm
 
-        /*
         Godot.File global = new Godot.File();
         global.Open($"fogofwartesting/testwriting/{globalClass}.lua", Godot.File.ModeFlags.Read);
         luaState.DoString(global.GetAsText());
-        */
 
         //FOR TESTING
         Godot.File x = new Godot.File();
@@ -121,7 +155,8 @@ public class NLuaScriptManager : Node
         RegisterClass(x, testClassName);
         string objectName = GenerateObjectName();
 
-
+        GD.Print("Lua initialized");
+        GD.Print($"{luaState.DoString("return 5+20")}");
 
 
 
@@ -149,29 +184,22 @@ public class NLuaScriptManager : Node
     // called every frame. 'delta' is the elapsed time since the previous frame.
     public override void _Process(float delta)
     {
-        //To be migrated to global.lua.
+        RunUntilCompletion("global.tick", new List<string> { $"{delta}" });
+
+        //Test code to run ready every frame
         timer -= delta;
-        if(timer <= 0)
+        if (timer <= 0)
         {
-            timer = 1f;
-            foreach (string obj in luaObjects)
-            {
-                var res = luaState.DoString($"return {obj}:on_second()")[0] as string;
-                GD.Print(res);
-                int amt = int.Parse(res.Substring(1));
-                luaActors[obj].GlobalTranslation = new Vector3(amt, 0, 0);
-            }
+            timer = 5f;
+                DNDStressTest.LogTimeOfEvent(() =>
+                {
+                    RunUntilCompletion("global.receive", new List<string> { "\"ready\"" });
+                });
+
+                //int amt = int.Parse(res.Substring(1));
+                //luaActors[obj].GlobalTranslation = new Vector3(amt, 0, 0);
         }
     }
-}
-
-/// <summary>
-/// Represents an instance of a lua script.
-/// There can be multiple LuaObjects per Lua script, achieveing OOP.
-/// However, all objects need a unique name (objectName). NLuaScriptManager.GenerateObjectName() can help with this.
-/// </summary>
-public class LuaObject
-{
 }
 
 public class LuaExceptionEvent

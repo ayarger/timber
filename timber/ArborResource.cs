@@ -248,6 +248,8 @@ public class ArborResource : Node
         new_request.Connect("request_completed", instance, nameof(OnRequestCompleted), extra_params);
         string web_url = @"https://arborinteractive.com/squirrel_rts/mods/" + GetCurrentModID() + @"/resources/" + resource;
 
+        GD.Print(web_url);
+
         if (instance.assets_currently_loading.Contains(resource))
             return;
         instance.assets_currently_loading.Add(resource);
