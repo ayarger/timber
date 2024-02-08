@@ -41,7 +41,7 @@ public class NLuaScriptManager : Node
         {
             luaState.DoString(rootFile.GetAsText());
         }
-        catch (Exception e)
+        catch (InterpreterException e)
         {
             GD.PushError($"Exception caught in {className}\n{e.Message}");
             //Case of exception
@@ -68,7 +68,7 @@ public class NLuaScriptManager : Node
                 $"global:register_object({objectName}, \"{objectName}\")");
             luaObjects.Add(objectName);
         }
-        catch (Exception e)
+        catch (InterpreterException e)
         {
             GD.PushError($"Exception caught in {className}\n{e.Message}");
             //Case of exception
