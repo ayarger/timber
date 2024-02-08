@@ -1,18 +1,19 @@
 using Godot;
 using NAudio.Codecs;
 using Newtonsoft.Json.Linq.JsonPath;
-using NLua;
+using MoonSharp.Interpreter;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Security.AccessControl;
 using System.Xml.Linq;
+using Script = MoonSharp.Interpreter.Script;
 
 public class NLuaScriptManager : Node
 {
 
     public static int id = 0;
-    public static Lua luaState;
+    public static Script luaState;
     public static HashSet<string> registeredClasses;
     public static string globalClass = "global";
     public static NLuaScriptManager Instance;
@@ -40,7 +41,7 @@ public class NLuaScriptManager : Node
         {
             luaState.DoString(rootFile.GetAsText());
         }
-        catch (NLua.Exceptions.LuaScriptException e)
+        catch (Exception e)
         {
             GD.PushError($"Exception caught in {className}\n{e.Message}");
             //Case of exception
@@ -67,7 +68,7 @@ public class NLuaScriptManager : Node
                 $"global:register_object({objectName}, \"{objectName}\")");
             luaObjects.Add(objectName);
         }
-        catch (NLua.Exceptions.LuaScriptException e)
+        catch (Exception e)
         {
             GD.PushError($"Exception caught in {className}\n{e.Message}");
             //Case of exception
@@ -103,7 +104,7 @@ public class NLuaScriptManager : Node
             }
 
             res = luaState.DoString($"local co, res = coroutine.resume(timber_runner,global {prm})\n" +
-                "return res")[0] as string;
+                "return res").String;
             if (res == "" || res == null) break;
             GD.Print("Got response: "+res);
             foreach (string cmd in res.Split('\n'))
@@ -136,11 +137,11 @@ public class NLuaScriptManager : Node
     {
         GD.Print("Lua initialized");
         Instance = this;
-        luaState = new Lua();
+        luaState = new Script();
         registeredClasses = new HashSet<string>();
         luaObjects = new HashSet<string>();
         luaActors = new Dictionary<string, Spatial>();
-        luaState.RegisterFunction("print", typeof(NLuaScriptManager).GetMethod("Print"));
+        luaState.Globals["print"] = (Action<object>)Print;
 
         //Initialize global Lua manager. Make global a "global object"?
         //https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Overview/Variables/Global_Variables.htm
