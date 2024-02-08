@@ -17,7 +17,7 @@
 [ext_resource path="res://scenes/UIOrb.tscn" type="PackedScene" id=15]
 [ext_resource path="res://fogofwartesting/FogOfWar.tscn" type="PackedScene" id=16]
 [ext_resource path="res://fogofwartesting/TestMovement.cs" type="Script" id=17]
-[ext_resource path="res://fogofwartesting/testwriting/NLuaScriptManager.cs" type="Script" id=19]
+[ext_resource path="res://LuaEngine/NLuaScriptManager.cs" type="Script" id=19]
 
 [sub_resource type="GDScript" id=2]
 

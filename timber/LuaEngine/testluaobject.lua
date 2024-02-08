@@ -20,6 +20,7 @@ setmetatable(testluaobject, mt)
 
 -- UNSEEN CODE --
 
+-- For testing purposes, this is getting run every 5 seconds
 function testluaobject:ready()
 	--local parent = self:get_node("../../CustomScriptManager")
 	--for i=1,10 do 

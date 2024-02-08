@@ -5,7 +5,7 @@
 [ext_resource path="res://scenes/WebBuildUploader.tscn" type="PackedScene" id=3]
 [ext_resource path="res://gradient256.png" type="Texture" id=4]
 [ext_resource path="res://scenes/HookesButton.tscn" type="PackedScene" id=5]
-[ext_resource path="res://fogofwartesting/testwriting/NLuaScriptManager.cs" type="Script" id=6]
+[ext_resource path="res://LuaEngine/NLuaScriptManager.cs" type="Script" id=6]
 [ext_resource path="res://scenes/MainMenu.cs" type="Script" id=7]
 
 [sub_resource type="CanvasItemMaterial" id=1]

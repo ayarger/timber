@@ -147,12 +147,12 @@ public class NLuaScriptManager : Node
         //https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Overview/Variables/Global_Variables.htm
 
         Godot.File global = new Godot.File();
-        global.Open($"fogofwartesting/testwriting/{globalClass}.lua", Godot.File.ModeFlags.Read);
+        global.Open($"LuaEngine/{globalClass}.lua", Godot.File.ModeFlags.Read);
         luaState.DoString(global.GetAsText());
 
         //FOR TESTING
         Godot.File x = new Godot.File();
-        x.Open($"fogofwartesting/testwriting/{testClassName}.lua", Godot.File.ModeFlags.Read);
+        x.Open($"LuaEngine/{testClassName}.lua", Godot.File.ModeFlags.Read);
         RegisterClass(x, testClassName);
         string objectName = GenerateObjectName();
 
@@ -187,7 +187,7 @@ public class NLuaScriptManager : Node
     {
         RunUntilCompletion("global.tick", new List<string> { $"{delta}" });
 
-        //Test code to run ready every frame
+        //Test code to run ready every 5 seconds
         timer -= delta;
         if (timer <= 0)
         {

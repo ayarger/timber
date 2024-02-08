@@ -2,8 +2,8 @@
 
 [ext_resource path="res://ArborCoroutine.cs" type="Script" id=1]
 [ext_resource path="res://fogofwartesting/Actor.lua" type="Script" id=2]
-[ext_resource path="res://fogofwartesting/testwriting/testloadafterwrite2.lua" type="Script" id=3]
-[ext_resource path="res://fogofwartesting/testwriting/DNDStressTest.cs" type="Script" id=4]
+[ext_resource path="res://LuaEngine/testloadafterwrite2.lua" type="Script" id=3]
+[ext_resource path="res://LuaEngine/DNDStressTest.cs" type="Script" id=4]
 [ext_resource path="res://fogofwartesting/LuaWriter.cs" type="Script" id=6]
 
 [sub_resource type="SpatialMaterial" id=1]
