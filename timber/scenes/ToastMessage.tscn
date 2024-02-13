@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://Roboto-Regular.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://scenes/ToastMessage.cs" type="Script" id=2]
@@ -8,20 +8,77 @@ size = 90
 outline_color = Color( 0.592157, 0.341176, 0.341176, 1 )
 font_data = ExtResource( 1 )
 
+[sub_resource type="Animation" id=2]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:rect_position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 0, -309 ) ]
+}
+
+[sub_resource type="Animation" id=3]
+resource_name = "hide_animation"
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:rect_position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.2, 0.6 ),
+"transitions": PoolRealArray( 1, 2.14355, 1 ),
+"update": 0,
+"values": [ Vector2( 0, 5 ), Vector2( 0, 116 ), Vector2( 0, -301 ) ]
+}
+
+[sub_resource type="Animation" id=4]
+resource_name = "show_animation"
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:rect_position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.2, 0.4, 0.7 ),
+"transitions": PoolRealArray( 1, 0.535887, 0.574349, 2.14355 ),
+"update": 0,
+"values": [ Vector2( 0, -309 ), Vector2( 0, 62 ), Vector2( 0, -81 ), Vector2( 0, 5 ) ]
+}
+
 [node name="Control" type="Control"]
+margin_top = -309.0
+margin_bottom = -309.0
+mouse_filter = 2
 script = ExtResource( 2 )
 
 [node name="ColorRect" type="ColorRect" parent="."]
-margin_right = 1920.0
-margin_bottom = 300.0
+margin_left = 427.0
+margin_top = 44.0
+margin_right = 1493.0
+margin_bottom = 256.0
 color = Color( 0.34902, 0.34902, 0.34902, 1 )
 
 [node name="Label" type="Label" parent="."]
-margin_right = 1920.0
-margin_bottom = 300.0
+margin_left = 429.0
+margin_top = 45.0
+margin_right = 1491.0
+margin_bottom = 255.0
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 custom_fonts/font = SubResource( 1 )
 text = "No internet connection"
 align = 1
 valign = 1
 autowrap = true
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+anims/RESET = SubResource( 2 )
+anims/hide_animation = SubResource( 3 )
+anims/show_animation = SubResource( 4 )
