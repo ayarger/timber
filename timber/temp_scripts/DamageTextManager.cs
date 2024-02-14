@@ -39,7 +39,7 @@ public class DamageTextManager : Control
         Control text = (Control)instance.scene.Instance();
         text.GetNode<Label>("Control/Label").Text = num.ToString();
         Vector2 pos = GameplayCamera.GetGameplayCamera().UnprojectPosition(actor.GlobalTranslation);
-        text.SetPosition(pos + Vector2.Up * textDisplayOffset);
+        text.SetPosition(pos + Vector2.Up * textDisplayOffset * GD.Randf());
 
         instance.AddChild(text);
 

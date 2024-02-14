@@ -10,7 +10,7 @@ public class CombatState : ActorState
     // private int a = 2;
     // private string b = "text";
     int attackRange = 3;
-    float attackCooldown = 1f;
+    float attackCooldown = 2f;
     bool attackable = true;
     Actor TargetActor;
 
