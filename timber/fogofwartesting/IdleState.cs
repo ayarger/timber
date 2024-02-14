@@ -35,4 +35,26 @@ public class IdleState : ActorState
         current_scale_x += (actor.GetDesiredScaleX() - current_scale_x) * 0.2f;
         actor.view.Scale = new Vector3(current_scale_x, actor.initial_view_scale.y * idle_scale_impact, actor.view.Scale.z);
     }
+
+    int detectionRange = 3;
+    public override void Update(float delta)
+    {
+        if(actor.GetNode<HasTeam>("HasTeam").team == "enemy")
+        {
+            foreach (var actors in GetNode<LuaLoader>("/root/Main/LuaLoader").GetChildren())
+            {
+                var actorInRange = actors as Actor;
+                if (actorInRange != null && actorInRange.GetNode<HasTeam>("HasTeam").team == "player")
+                {
+                    Coord actorPos = Grid.ConvertToCoord(actorInRange.GlobalTranslation);
+                    Coord cur = Grid.ConvertToCoord(actor.GlobalTranslation);
+                    if ((cur-actorPos).Mag() < detectionRange)
+                    {
+                        manager.EnableState("CombatState");
+                    }
+                }
+            }
+        }
+        
+    }
 }

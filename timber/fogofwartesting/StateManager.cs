@@ -23,6 +23,7 @@ public class StateManager : Node
         {
             var actorState = state as ActorState;
             if (actorState != null) states[actorState.name] = actorState;
+
         }
         if (!states.ContainsKey("Idle"))
         {
