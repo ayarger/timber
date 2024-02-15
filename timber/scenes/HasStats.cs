@@ -101,6 +101,18 @@ public class Stat
         ClampCurrentValue();
     }
 
+    public void SetVal(int amount)
+    {
+        currVal = amount;
+        ClampCurrentValue();
+    }
+
+    public void SetMaxVal(int amount)
+    {
+        maxVal = amount;
+        ClampCurrentValue();
+    }
+
     public void toggleUI()
     {
         if (displayOn)
@@ -156,6 +168,8 @@ public class HasStats : Node
         container = BarContainer.Create(this);
     }
 
+
+    // Refactor AddStat to send signals to BarContainer/UI Manager.
     public void AddStat(string name, int min, int max, int initial, bool display)
     {
         // Add new stat into the dictionary

@@ -14,9 +14,9 @@
 [ext_resource path="res://lives_tex.png" type="Texture" id=12]
 [ext_resource path="res://spot_hud_face.png" type="Texture" id=13]
 [ext_resource path="res://square.png" type="Texture" id=14]
-[ext_resource path="res://scenes/UIOrb.tscn" type="PackedScene" id=15]
 [ext_resource path="res://fogofwartesting/FogOfWar.tscn" type="PackedScene" id=16]
 [ext_resource path="res://fogofwartesting/TestMovement.cs" type="Script" id=17]
+[ext_resource path="res://temp_scenes/HUD.tscn" type="PackedScene" id=18]
 
 [sub_resource type="GDScript" id=2]
 
@@ -165,6 +165,7 @@ texture = SubResource( 16 )
 stretch_mode = 1
 
 [node name="bottom_gradient" type="TextureRect" parent="CanvasLayer"]
+visible = false
 modulate = Color( 0, 0, 0, 1 )
 anchor_top = 0.9
 anchor_right = 1.0
@@ -175,6 +176,7 @@ texture = ExtResource( 11 )
 expand = true
 
 [node name="HudeFaceLeft_shadow" type="TextureRect" parent="CanvasLayer"]
+visible = false
 self_modulate = Color( 0, 0, 0, 1 )
 material = SubResource( 11 )
 anchor_top = 1.0
@@ -187,6 +189,7 @@ texture = ExtResource( 13 )
 stretch_mode = 7
 
 [node name="HudeFaceLeft" type="TextureRect" parent="CanvasLayer"]
+visible = false
 material = SubResource( 11 )
 anchor_top = 1.0
 anchor_bottom = 1.0
@@ -196,9 +199,8 @@ texture = ExtResource( 13 )
 expand = true
 stretch_mode = 6
 
-[node name="UIOrb" parent="CanvasLayer" instance=ExtResource( 15 )]
-
 [node name="TextureRect2" type="TextureRect" parent="CanvasLayer"]
+visible = false
 material = SubResource( 14 )
 margin_left = 347.0
 margin_top = 984.0
@@ -215,6 +217,8 @@ margin_right = 140.0
 margin_bottom = 141.0
 rect_scale = Vector2( 0.5, 0.5 )
 texture = ExtResource( 12 )
+
+[node name="HUD" parent="CanvasLayer" instance=ExtResource( 18 )]
 
 [node name="DirectionalLight2" type="DirectionalLight" parent="."]
 transform = Transform( 0.766044, 0.454519, -0.454519, 0, 0.707107, 0.707107, 0.642788, -0.541675, 0.541675, 0, 0, 0 )

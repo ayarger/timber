@@ -48,7 +48,7 @@ public class Bar : Control
     /// </summary>
     public void OnUIStatChange(StatChangeEvent e)
     {
-        GD.Print("curr_stat_name: " + data_name, " incoming singal name: " + e.stat_name);
+        //GD.Print("curr_stat_name: " + data_name, " incoming singal name: " + e.stat_name);
         if (e.stat_name == data_name)
         {
             float target_value = target_data.Stats[data_name].Ratio * 100;
