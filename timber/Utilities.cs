@@ -41,7 +41,7 @@ public static class Utilities
             caller.GetTree().Root.AddChild(msg);
 
             // msg.ShowMessage("No internet connection detected.", 3.0f);
-            msg.ShowMessage("This is a very very very very very very very very very very loooooooooooooooooooooooooooooooooooooong message.", 3.0f);
+            msg.ShowMessage("Example error message\n Two roads diverged in a yellow wood,\n And sorry I could not travel both", 3.0f);
         }
 
         return isConnected;

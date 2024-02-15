@@ -17,13 +17,13 @@ public class ToastMessage : Control
 		_messageLabel.Autowrap = true; // Enable autowrap
 		_messageBoxSize = _messageLabel.RectSize;
 
-		// Assuming ColorRect is the node you want to detect hover over.
-		var colorRect = GetNode<ColorRect>("ColorRect");
-		colorRect.Connect("mouse_entered", this, nameof(OnMouseEntered));
-		colorRect.Connect("mouse_exited", this, nameof(OnMouseExited));
+		// Assuming Panel is the node you want to detect hover over.
+		var panel = GetNode<Panel>("Panel");
+		panel.Connect("mouse_entered", this, nameof(OnMouseEntered));
+		panel.Connect("mouse_exited", this, nameof(OnMouseExited));
 
 		// Setup for mouse filter to ensure it captures mouse enter/exit events
-		colorRect.MouseFilter = Control.MouseFilterEnum.Stop;
+		panel.MouseFilter = Control.MouseFilterEnum.Stop;
 	}
 
 	public void ShowMessage(string message, float duration = 2.0f, int previewLength = 50)
@@ -66,18 +66,15 @@ public class ToastMessage : Control
 	{
 		if (!_isMouseHovering)
 		{
-			GetNode<ColorRect>("ColorRect").MouseFilter = Control.MouseFilterEnum.Ignore;
+			GetNode<Panel>("Panel").MouseFilter = Control.MouseFilterEnum.Ignore;
 			_animationPlayer.Play("hide_animation");
 			GetTree().CreateTimer(0.5f).Connect("timeout", this, nameof(HideToast), null, (uint)ConnectFlags.Oneshot);
 		}
 	}
 
-	private void HideToast(string animName)
+	private void HideToast()
 	{
-		if (animName == "hide_animation")
-		{
-			Visible = false;
-		}
+		Visible = false;
 	}
 
 	private float CalculateLabelHeight(string message, bool isPreview)
