@@ -119,7 +119,7 @@ tracks/8/keys = {
 "times": PoolRealArray( 0 ),
 "transitions": PoolRealArray( 1 ),
 "update": 0,
-"values": [ Vector2( 67, 101 ) ]
+"values": [ Vector2( 74.375, 108.375 ) ]
 }
 tracks/9/type = "value"
 tracks/9/path = NodePath("Panel/ColorPanel/Sprite:scale")
@@ -131,7 +131,7 @@ tracks/9/keys = {
 "times": PoolRealArray( 0 ),
 "transitions": PoolRealArray( 1 ),
 "update": 0,
-"values": [ Vector2( 0.18457, 0.18457 ) ]
+"values": [ Vector2( 0.213, 0.213 ) ]
 }
 
 [sub_resource type="Animation" id=5]
@@ -405,7 +405,7 @@ custom_styles/panel = ExtResource( 4 )
 
 [node name="Sprite" type="Sprite" parent="Panel/ColorPanel"]
 position = Vector2( 67, 101 )
-scale = Vector2( 0.18457, 0.18457 )
+scale = Vector2( 0.213, 0.213 )
 texture = ExtResource( 5 )
 
 [node name="Label" type="Label" parent="."]

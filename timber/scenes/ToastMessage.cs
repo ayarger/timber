@@ -1,8 +1,14 @@
 using Godot;
 using System;
 
-// TODO: Add more selectable styles eg warning
-// TODO: make text selectable and copiable
+// Make several different style draft to choose from?
+// Add more selectable styles (eg. warning/notification)
+// make text selectable and copiable for player to debug
+// make the size according to the length of the text
+// TODO:
+// queue up req wait until the latest toast to go off
+// detect the same msg
+// make toast show message public static (write a toast manager)
 
 public class ToastMessage : Control
 {
