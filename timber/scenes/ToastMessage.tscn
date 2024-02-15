@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://Roboto-Regular.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://scenes/ToastMessage.cs" type="Script" id=2]
@@ -21,6 +21,33 @@ tracks/0/keys = {
 "transitions": PoolRealArray( 1 ),
 "update": 0,
 "values": [ Vector2( 0, -309 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("ColorRect:rect_size")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 1066, 212 ) ]
+}
+
+[sub_resource type="Animation" id=5]
+resource_name = "expand_animation"
+tracks/0/type = "value"
+tracks/0/path = NodePath("ColorRect:rect_size")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.3 ),
+"transitions": PoolRealArray( 1, 0.189464 ),
+"update": 0,
+"values": [ Vector2( 1066, 212 ), Vector2( 1066, 1080 ) ]
 }
 
 [sub_resource type="Animation" id=3]
@@ -53,6 +80,21 @@ tracks/0/keys = {
 "values": [ Vector2( 0, -309 ), Vector2( 0, 62 ), Vector2( 0, -81 ), Vector2( 0, 5 ) ]
 }
 
+[sub_resource type="Animation" id=6]
+resource_name = "shrink_animation"
+tracks/0/type = "value"
+tracks/0/path = NodePath("ColorRect:rect_size")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.3 ),
+"transitions": PoolRealArray( 1, 0.0717938 ),
+"update": 0,
+"values": [ Vector2( 1066, 1080 ), Vector2( 1066, 212 ) ]
+}
+
 [node name="Control" type="Control"]
 margin_top = -309.0
 margin_bottom = -309.0
@@ -61,16 +103,14 @@ script = ExtResource( 2 )
 
 [node name="ColorRect" type="ColorRect" parent="."]
 margin_left = 427.0
-margin_top = 44.0
 margin_right = 1493.0
-margin_bottom = 256.0
-color = Color( 0.662745, 0.556863, 0.294118, 1 )
+margin_bottom = 212.0
+color = Color( 1, 0.901961, 0.654902, 0.552941 )
 
 [node name="Label" type="Label" parent="."]
-margin_left = 429.0
-margin_top = 45.0
-margin_right = 1491.0
-margin_bottom = 255.0
+margin_left = 427.0
+margin_right = 1489.0
+margin_bottom = 215.0
 custom_colors/font_color = Color( 0, 0, 0, 1 )
 custom_fonts/font = SubResource( 1 )
 text = "ERROR
@@ -81,5 +121,7 @@ autowrap = true
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/RESET = SubResource( 2 )
+anims/expand_animation = SubResource( 5 )
 anims/hide_animation = SubResource( 3 )
 anims/show_animation = SubResource( 4 )
+anims/shrink_animation = SubResource( 6 )
