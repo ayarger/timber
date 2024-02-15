@@ -1,6 +1,9 @@
 using Godot;
 using System;
 
+// TODO: Add more selectable styles eg warning
+// TODO: make text selectable and copiable
+
 public class ToastMessage : Control
 {
 	private AnimationPlayer _animationPlayer;
@@ -17,19 +20,18 @@ public class ToastMessage : Control
 		_messageLabel.Autowrap = true; // Enable autowrap
 		_messageBoxSize = _messageLabel.RectSize;
 
-		// Assuming Panel is the node you want to detect hover over.
 		var panel = GetNode<Panel>("Panel");
 		panel.Connect("mouse_entered", this, nameof(OnMouseEntered));
 		panel.Connect("mouse_exited", this, nameof(OnMouseExited));
 
-		// Setup for mouse filter to ensure it captures mouse enter/exit events
+		// Setup mouse filter
 		panel.MouseFilter = Control.MouseFilterEnum.Stop;
 	}
 
 	public void ShowMessage(string message, float duration = 2.0f, int previewLength = 50)
 	{
 		_fullMessage = message;
-		// Generate a preview of the message. Adjust logic as needed.
+		// Generate a preview of the message.
 		_previewMessage = message.Length <= previewLength ? message : message.Substring(0, previewLength) + "...";
 		_messageLabel.Text = _previewMessage;
 
@@ -47,7 +49,6 @@ public class ToastMessage : Control
 		_isMouseHovering = true;
 		_animationPlayer.Play("expand_animation");
 		_messageLabel.Text = _fullMessage; // Show full message
-		// Consider adjusting the size if necessary
 		_messageLabel.RectMinSize = new Vector2(_messageLabel.RectMinSize.x, CalculateLabelHeight(_fullMessage, false));
 
 	}
@@ -58,8 +59,10 @@ public class ToastMessage : Control
 		_messageLabel.Text = _previewMessage; // Revert to preview message
 		_animationPlayer.Play("shrink_animation");
 		_messageLabel.RectMinSize = new Vector2(_messageLabel.RectMinSize.x, CalculateLabelHeight(_previewMessage, true));
+		
+		// Start hiding animation directly or after a delay
 		GetTree().CreateTimer(0.5f).Connect("timeout", this, nameof(StartHideAnimation), null, (uint)ConnectFlags.Oneshot);
-		// StartHideAnimation(); // Optionally start hiding animation directly or after a delay
+		
 	}
 
 	private void StartHideAnimation()
