@@ -17,6 +17,7 @@ public class ToastMessage : Control
 	private void OnMouseEntered()
 	{
 		_isMouseHovering = true;
+		Raise(); // make sure it is on the top of the UI layer
 		// GD.Print("Mouse entered!");
 	}
 
@@ -28,12 +29,13 @@ public class ToastMessage : Control
 	}
 
 
-	public void ShowMessage(string message, float duration = 2.0f)
+	public void ShowMessage(string message, string heading = "", float duration = 2.0f)
 	{
 		Label messageLabel = GetNode<Label>("Label");
-		messageLabel.Text = message;
+		messageLabel.Text = heading.Length > 0 ? heading + '\n' + message : message;
 
 		Visible = true;
+		Raise();
 		// Play the show animation
 		_animationPlayer.Play("show_animation");
 

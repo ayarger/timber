@@ -64,16 +64,17 @@ margin_left = 427.0
 margin_top = 44.0
 margin_right = 1493.0
 margin_bottom = 256.0
-color = Color( 0.34902, 0.34902, 0.34902, 1 )
+color = Color( 0.662745, 0.556863, 0.294118, 1 )
 
 [node name="Label" type="Label" parent="."]
 margin_left = 429.0
 margin_top = 45.0
 margin_right = 1491.0
 margin_bottom = 255.0
-custom_colors/font_color = Color( 1, 1, 1, 1 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
 custom_fonts/font = SubResource( 1 )
-text = "No internet connection"
+text = "ERROR
+No Internet Connection"
 align = 1
 valign = 1
 autowrap = true
