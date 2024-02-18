@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=2]
+[gd_scene load_steps=27 format=2]
 
 [ext_resource path="res://scenes/GameManager.tscn" type="PackedScene" id=1]
 [ext_resource path="res://DebugSphere.cs" type="Script" id=2]
@@ -17,6 +17,7 @@
 [ext_resource path="res://scenes/UIOrb.tscn" type="PackedScene" id=15]
 [ext_resource path="res://fogofwartesting/FogOfWar.tscn" type="PackedScene" id=16]
 [ext_resource path="res://fogofwartesting/TestMovement.cs" type="Script" id=17]
+[ext_resource path="res://fogofwartesting/TestAttack.cs" type="Script" id=18]
 [ext_resource path="res://temp_scripts/DamageTextManager.cs" type="Script" id=19]
 
 [sub_resource type="GDScript" id=2]
@@ -218,8 +219,6 @@ rect_scale = Vector2( 0.5, 0.5 )
 texture = ExtResource( 12 )
 
 [node name="DamageTextManager" type="Control" parent="CanvasLayer"]
-margin_right = 1917.0
-margin_bottom = 1082.0
 script = ExtResource( 19 )
 
 [node name="DirectionalLight2" type="DirectionalLight" parent="."]
@@ -232,5 +231,8 @@ script = ExtResource( 10 )
 
 [node name="TestMovement" type="Node" parent="."]
 script = ExtResource( 17 )
+
+[node name="TestAttack" type="Node" parent="."]
+script = ExtResource( 18 )
 
 [editable path="FogOfWar"]

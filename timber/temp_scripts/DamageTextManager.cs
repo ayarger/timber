@@ -11,7 +11,8 @@ public class DamageTextManager : Control
 
     PackedScene scene;
 
-    static float textDisplayOffset = 100;
+    static float textDisplayOffsetY = 200;
+    static float textDisplayOffsetX = 100;
 
     public override void _Ready()
     {
@@ -36,12 +37,28 @@ public class DamageTextManager : Control
 
     public static void DrawText(int num, Actor actor)
     {
-        Control text = (Control)instance.scene.Instance();
-        text.GetNode<Label>("Control/Label").Text = num.ToString();
-        Vector2 pos = GameplayCamera.GetGameplayCamera().UnprojectPosition(actor.GlobalTranslation);
-        text.SetPosition(pos + Vector2.Up * textDisplayOffset * GD.Randf());
+        Control damageText = (Control)instance.scene.Instance();
+        Label text = damageText.GetNode<Label>("Control/Label");
+        text.Text = num.ToString();
 
-        instance.AddChild(text);
+
+        Vector2 pos = GameplayCamera.GetGameplayCamera().UnprojectPosition(actor.GlobalTranslation);
+        damageText.SetPosition(pos + Vector2.Up * textDisplayOffsetY * GD.Randf() + Vector2.Left * textDisplayOffsetX * GD.Randf());
+
+        instance.AddChild(damageText);
+
+        if (num <= 20)
+        {
+            damageText.RectScale = new Vector2(1, 1);
+        }
+        else if (num <= 50)
+        {
+            damageText.RectScale = new Vector2(1.25f, 1.25f);
+        }
+        else
+        {
+            damageText.RectScale = new Vector2(1.5f, 1.5f);
+        }
 
     }
 }

@@ -155,6 +155,14 @@ public class Actor : Spatial
         char_mat.SetShaderParam("screenPosZ", FogOfWar.instance.screenPosZ);
     }
 
+    public void Hurt()
+    {
+        DamageTextManager.DrawText((int)(GD.Randf() * 100), this);
+        //animate hurt - change to red color for a duration
+        //deal damage
+        ArborCoroutine.StartCoroutine(HurtAnimation(), this);
+    }
+
     public void Kill()
     {
         PackedScene scene = (PackedScene)ResourceLoader.Load("res://scenes/ActorKO.tscn");
@@ -165,5 +173,12 @@ public class Actor : Spatial
         new_ko.Scale = Scale;
         Visible = false;
         new_ko.Configure(ArborResource.Get<Texture>("images/" + config.pre_ko_sprite_filename), ArborResource.Get<Texture>("images/" + config.ko_sprite_filename));
+    }
+
+    IEnumerator HurtAnimation()//TODO add actual animation
+    {
+        //turn color
+        yield return ArborCoroutine.WaitForSeconds(1);
+        //unturn color
     }
 }

@@ -50,6 +50,8 @@ public class IdleState : ActorState
                     Coord cur = Grid.ConvertToCoord(actor.GlobalTranslation);
                     if ((cur-actorPos).Mag() < detectionRange)
                     {
+                        CombatState cs = manager.states["CombatState"] as CombatState;
+                        cs.TargetActor = actorInRange;
                         manager.EnableState("CombatState");
                     }
                 }

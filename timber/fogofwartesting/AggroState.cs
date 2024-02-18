@@ -4,20 +4,20 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-public class CombatState : ActorState
+public class AggroState : ActorState
 {
     // Declare member variables here. Examples:
     // private int a = 2;
     // private string b = "text";
-    int attackRange = 2;//number of grids
+    int attackRange = 3;//number of grids
 
     float attackWindup = 0.5f;//animation before attack
     float attackRecovery = 0.125f;//anim after attack
     float attackCooldown = 0.5f;
 
     bool attackable = true;
+
     bool attacking = false;
-    bool moving = false;
 
     public Actor TargetActor;
 
@@ -27,7 +27,7 @@ public class CombatState : ActorState
 
     public override string name
     {
-        get { return "CombatState"; }
+        get { return "AggroState"; }
     }
 
     // Called when the node enters the scene tree for the first time.
@@ -42,46 +42,39 @@ public class CombatState : ActorState
         ArborCoroutine.StopCoroutinesOnNode(this);
         animation_offset = GD.Randf() * 100.0f;
         team = actor.GetNode<HasTeam>("HasTeam").team;
-        attackable = true;
-        GD.Print(attackable);
 
     }
 
     public override void Update(float delta)
     {
-        if (TargetActor != null)//TODO check if actor is dead
+        if(TargetActor != null)//TODO check if actor is dead
         {
             Vector3 dest = Grid.LockToGrid(TargetActor.GlobalTranslation);
             MovementState b = (manager.states["MovementState"] as MovementState);
 
             float dist = (Grid.ConvertToCoord(actor.GlobalTranslation) - Grid.ConvertToCoord(dest)).Mag();
 
-            if (dist > attackRange && attackable)
+            if(dist > attackRange)
             {
-                if (b.waypoints.Count == 0)
-                {
-                    ArborCoroutine.StopCoroutinesOnNode(b);
-                    ArborCoroutine.StartCoroutine(TestMovement.PathFindAsync(actor.GlobalTranslation, dest, (List<Vector3> a) =>
+                ArborCoroutine.StopCoroutinesOnNode(b);
+                ArborCoroutine.StartCoroutine(TestMovement.PathFindAsync(actor.GlobalTranslation, dest, (List<Vector3> a) => {
+                    if (a.Count > 0)
                     {
-                        if (a.Count > 0)
-                        {
-                            manager.EnableState("MovementState");
-                            b.waypoints = a;
-                        }
-                    }), b);
-                    manager.DisableState("CombatState");
-                    return;
-                }
+                        manager.EnableState("MovementState");
+                        b.waypoints = a;
+                    }
+                }), b);
             }
-            else if (attackable)
+            else
             {
-                ArborCoroutine.StartCoroutine(attackAnimation(), this);
+                manager.EnableState("CombatState");
+                manager.DisableState("AggroState");
             }
+            
         }
         else
         {
-            manager.DisableState("CombatState");
-            return;
+            manager.DisableState("AggroState");
         }
     }
 
@@ -89,7 +82,6 @@ public class CombatState : ActorState
     {
         attacking = true;
         attackable = false;
-        GD.Print("attack");
         yield return ArborCoroutine.WaitForSeconds(attackWindup);
         TargetActor.Hurt();
         attacking = false;
@@ -97,9 +89,8 @@ public class CombatState : ActorState
         yield return ArborCoroutine.WaitForSeconds(attackRecovery);
         rotateTime = 0.0f;
         yield return ArborCoroutine.WaitForSeconds(attackCooldown);
-        GD.Print("end attack");
         attackable = true;
-        
+
     }
 
     float animation_offset = 0;
@@ -121,11 +112,8 @@ public class CombatState : ActorState
         {
             rotateTime += delta;
             const float rot_amplitude = 5f;
-            int direction = -1;
-            if (TargetActor.GlobalTranslation.x < actor.GlobalTranslation.x) direction = 1;
-
-            actor.view.Rotation = actor.initial_rotation + new Vector3(0, 0, direction * rot_amplitude * rotateTime * (rotateTime - 0.5f));
+            actor.view.Rotation = actor.initial_rotation + new Vector3(0, 0, -rot_amplitude * rotateTime * (rotateTime - 0.5f));
         }
-        
+
     }
 }
