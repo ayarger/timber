@@ -1,20 +1,21 @@
 testluaobject = {}
 
-local mt = {}
+global_mt = {}
+testluaobject.object_name = "lmao"
 
-mt.__index = function(self, key) 
+global_mt.__index = function(self, key) 
   if key=="x" then
-	return "4"
+	return GetValue(rawget(self,"object_name"),key)
   else
 	return rawget(self, key)
   end
 end
 
-mt.__newindex = function(self, key, value)
+global_mt.__newindex = function(self, key, value)
   rawset(self, key, value)
 end
 
-setmetatable(testluaobject, mt)
+setmetatable(testluaobject, global_mt)
 
 
 
@@ -29,7 +30,8 @@ function testluaobject:ready()
 	SetDestination(self,-3)
 	WaitForSeconds(2)
 	SetDestination(self,3)
+	print(self.x)
 	--parent.testData = ""..i;
-	print("Completed Ready")
+	Print("Completed Ready")
 	--end
 end

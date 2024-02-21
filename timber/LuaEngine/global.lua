@@ -19,6 +19,16 @@ function SetDestination(obj, xdelta)
 	coroutine.yield(obj.object_name..":M"..xdelta)
 end
 
+function Print(str)
+	coroutine.yield("global:P"..str)
+end
+
+--Just float currently
+function GetValue(obj,key)
+	local coroutine_data = {coroutine.yield(obj..":R"..key)}
+	return coroutine_data[#coroutine_data]
+end
+
 -- For anything relating to process
 function global:tick(delta)
 	global.delta_time = delta
@@ -37,7 +47,7 @@ function global:receive(message)
 		if global.game_objects[i]==nil then
 			table.insert(to_remove,i)
 		else
-			if global.game_objects[i].ready~=nil then --REPLACE READY LATER
+			if type(global.game_objects[i][message])=="function" then --REPLACE READY LATER
 				table.insert(new_coroutines,{global.game_objects[i],coroutine.create(global.game_objects[i].ready)})
 			end
 		end
@@ -53,11 +63,13 @@ end
 
 function global:advance_coroutines(coroutine_list)
 	--run coroutines until completion or "N"
+	local data = {}
 	while #coroutine_list>0 do
 		local commands = ''
 		local to_remove = {}
 		for i=1,#coroutine_list do
-			local code, res = coroutine.resume(coroutine_list[i][2],coroutine_list[i][1])
+			local return_data = data[coroutine_list[i][1].object_name]==nil and 0 or data[coroutine_list[i][1].object_name]
+			local code, res = coroutine.resume(coroutine_list[i][2],coroutine_list[i][1], return_data)
 			if res then
 				if res=="N" then
 					table.insert(global.awaiting_coroutines,coroutine_list[i])
@@ -73,8 +85,10 @@ function global:advance_coroutines(coroutine_list)
 			-- Clear coroutines that just finished
 			table.remove(coroutine_list,to_remove[i]-i+1)
 		end
-		-- to be submitted back to C#
-		coroutine.yield(commands)
+		-- to be submitted back to C#, last return element is data
+		local coroutine_data = {coroutine.yield(commands)}
+		data = coroutine_data[#coroutine_data]
+		
 	end
 end
 

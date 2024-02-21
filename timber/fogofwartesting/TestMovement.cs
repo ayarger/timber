@@ -63,7 +63,7 @@ public class TestMovement : Node
 
         MovementState b = (sm.states["MovementState"] as MovementState);
 
-        ArborCoroutine.StopCoroutinesOnNode(b);
+        //ArborCoroutine.StopCoroutinesOnNode(b);
         ArborCoroutine.StartCoroutine(PathFindAsync(actor.GlobalTranslation, rounded_point, (List<Vector3> a) => {
             if (a.Count > 0)
             {
@@ -240,7 +240,6 @@ public class TestMovement : Node
 		}
 
         action.Invoke(new List<Vector3>());
-        yield break;
     }
 
 

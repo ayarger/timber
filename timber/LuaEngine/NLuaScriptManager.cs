@@ -64,7 +64,7 @@ public class NLuaScriptManager : Node
         try
         {
             luaState.DoString($"{objectName} = {{}}\n" +
-                $"setmetatable({objectName}, {{__index = {className}}})\n" +
+                $"setmetatable({objectName}, {{__index = function(self, key) \r\n  if key==\"x\" then\r\n\treturn GetValue(rawget(self,\"object_name\"),key)\r\n  else\r\n\treturn rawget({className}, key)\r\n  end\r\nend}})\n" +
                 $"global:register_object({objectName}, \"{objectName}\")");
             luaObjects.Add(objectName);
         }
@@ -95,6 +95,7 @@ public class NLuaScriptManager : Node
         string res = "Start";
         luaState.DoString($"timber_runner = coroutine.create({function})\n");
         List<string> args = prms ?? new List<string>();
+        string data = "";
         while (res != "")
         {
             string prm = "";
@@ -103,19 +104,34 @@ public class NLuaScriptManager : Node
                 prm += ","+arg;
             }
 
-            res = luaState.DoString($"local co, res = coroutine.resume(timber_runner,global {prm})\n" +
+            res = luaState.DoString($"local co, res = coroutine.resume(timber_runner,global {prm}, {{{data}}})\n" +
                 "return res").String;
             if (res == "" || res == null) break;
             GD.Print("Got response: "+res);
+            data = "";
+            //THIS DOESN'T WORK IF PRINT HAS NEWLINES OR COLONS! (but this will be refactored later so idc)
             foreach (string cmd in res.Split('\n'))
             {
                 if (cmd == "") continue;
                 string name = cmd.Split(':')[0];
                 string command = cmd.Split(':')[1];
+                //Parse commands. Will need to refactor to a better system.
                 if (command.StartsWith("M"))
                 {
                     int amt = int.Parse(command.Substring(1));
                     TestMovement.SetDestination(luaActors[name] as Actor, luaActors[name].GlobalTranslation + new Vector3(Grid.tileWidth * amt, 0, 0));
+                }
+                else if (command.StartsWith("P"))
+                {
+                    //Replace with toast later
+                    GD.Print(command.Substring(1));
+                }
+                else if (command.StartsWith("R"))
+                {
+                    //Same deal with newlines
+                    //Get data, just x position rn for demonstration
+                    data += name + "=" + luaActors[name].GlobalTranslation.x;
+                    data += ",";
                 }
             }
         }
