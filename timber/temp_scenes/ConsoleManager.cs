@@ -14,6 +14,9 @@ public class ConsoleManager : Control
     private string lastCommand;
     [Export]
     List<string> commands = new List<string>();
+
+    [Export]
+    public Dictionary<string, Actor> ActorDict;
     //autoComplete multiple matches
     private List<string> matchingCommands = new List<string>();
     private int autocompleteIndex = -1;
@@ -24,12 +27,23 @@ public class ConsoleManager : Control
         consolePanel = GetNode<Panel>("../ConsolePanel");
         consoleInput = GetNode<LineEdit>("../ConsolePanel/Input");
         consoleOutput = GetNode<TextEdit>("../ConsolePanel/Output");
+        // Initialize actor dictionary
+        ActorDict = GetAllActors();
         consoleInput.Connect("text_entered", this, nameof(OnCommandEntered));
         consoleInput.Connect("text_changed", this, nameof(OnSuggestionSelected));
         GetAllCommands();
+        InstantiateCommands();
         // make sure the console is accessible when the game is on pause
         PauseMode = PauseModeEnum.Process;
         consolePanel.PauseMode = PauseModeEnum.Process;
+    }
+
+    public void InstantiateCommands()
+    {
+        PackedScene scene = (PackedScene)ResourceLoader.Load("res://Commands/StatCommand.tscn");
+        StatCommand statCommand = (StatCommand)scene.Instance();
+        statCommand.Name = "StatCommand";
+        AddChild(statCommand);
     }
 
     public override void _Input(InputEvent @event)
@@ -42,12 +56,12 @@ public class ConsoleManager : Control
                 GD.Print("console toggle");
                 consolePanel.Visible = !consolePanel.Visible;
                 //automatically focus on the lineEdit when console is visible
-                if(consolePanel.Visible) consoleInput.GrabFocus();
+                if (consolePanel.Visible) consoleInput.GrabFocus();
                 // Pause the game while accessing the command console
                 GetTree().Paused = consolePanel.Visible;
             }
 
-            if(eventKey.Scancode == (uint)KeyList.Up && consolePanel.Visible)
+            if (eventKey.Scancode == (uint)KeyList.Up && consolePanel.Visible)
             {
                 consoleInput.Text = lastCommand;
                 consoleInput.CaretPosition = lastCommand.Length;
@@ -59,6 +73,32 @@ public class ConsoleManager : Control
                 consoleInput.CaretPosition = consoleInput.Text.Length;
             }
         }
+    }
+
+    /// <summary>
+    /// Get all Actor nodes and names and store in a dictionary
+    /// </summary>
+    /// <returns></returns>
+    private Dictionary<string, Actor> GetAllActors()
+    {
+        Dictionary<string, Actor> foundNodes = new Dictionary<string, Actor>();
+        Node rootNode = GetTree().Root;
+
+        //Recursion
+        void FindNodes(Node node)
+        {
+            if (node is Actor typedNode)
+            {
+                foundNodes[node.Name.ToLower()] = typedNode;
+            }
+            foreach (Node child in node.GetChildren())
+            {
+                FindNodes(child);
+            }
+        }
+
+        FindNodes(rootNode);
+        return foundNodes;
     }
 
     private void GetAllCommands()

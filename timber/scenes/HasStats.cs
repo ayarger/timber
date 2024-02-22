@@ -41,7 +41,6 @@ public class Stat
     public Color barColor { get; set; }
 
     // TODO UI styling info
-    // maybe bar colors?
     public float Ratio = 1;
 
 
@@ -133,16 +132,12 @@ public class Stat
         // publish statChange event when clamp function is called
         EventBus.Publish<StatChangeEvent>(new StatChangeEvent(name));
         GD.Print(name + "stat change event published");
-
-        // Can't emit signal from here since stat is not a node
-        if (displayOn)
-        {
-            // TODO: maybe use event bus to publish stat_change event
-            // Inside has stats class, emit health_change signal with the stat_name 
-        }
     }
 }
 
+/// <summary>
+/// Character stats system
+/// </summary>
 public class HasStats : Node
 {
     // subsription for statChangeEvent
@@ -150,6 +145,7 @@ public class HasStats : Node
     /// <summary>
     /// Stats Dictionary
     /// </summary>
+    /// 
     public Dictionary<string, Stat> Stats = new Dictionary<string, Stat>();
     public List<string> Stats_With_Bar = new List<string>();
 
@@ -163,8 +159,6 @@ public class HasStats : Node
 
     public override void _Ready()
     {
-        // TODO:
-        // UIOrb.Create(this)
         container = BarContainer.Create(this);
     }
 
