@@ -64,11 +64,4 @@ public class TestAttack : Node
 		float t = -(plane_normal.Dot(ray.start)) / (plane_normal.Dot(ray.direction));
 		return ray.start + t * ray.direction;
 	}
-
-	IEnumerator refreshCooldown()
-	{
-		attackable = false;
-		yield return ArborCoroutine.WaitForSeconds(attackCooldown);
-		attackable = true;
-	}
 }

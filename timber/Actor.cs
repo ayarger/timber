@@ -155,11 +155,28 @@ public class Actor : Spatial
         char_mat.SetShaderParam("screenPosZ", FogOfWar.instance.screenPosZ);
     }
 
-    public void Hurt()
+    public void Hurt(int damage, bool isCritical)
     {
-        DamageTextManager.DrawText((int)(GD.Randf() * 100), this);
+        if (isCritical)
+        {
+            DamageTextManager.DrawText(damage*2, this, "criticalDamage");
+        }
+        else
+        {
+            DamageTextManager.DrawText(damage, this, "damage");
+        }
         //animate hurt - change to red color for a duration
         //deal damage
+        HasStats health = GetNode<HasStats>("HasStats");
+        if(health != null)
+        {
+            health.ApplyDamage(10);
+        }
+        else
+        {
+            Kill();
+        }
+
         ArborCoroutine.StartCoroutine(HurtAnimation(), this);
     }
 
@@ -178,7 +195,10 @@ public class Actor : Spatial
     IEnumerator HurtAnimation()//TODO add actual animation
     {
         //turn color
-        yield return ArborCoroutine.WaitForSeconds(1);
+        ShaderMaterial char_mat = (ShaderMaterial)character_view.GetSurfaceMaterial(0);
+        char_mat.SetShaderParam("apply_red_tint", 1);
+        yield return ArborCoroutine.WaitForSeconds(0.2f);
+        char_mat.SetShaderParam("apply_red_tint", 0);
         //unturn color
     }
 }

@@ -35,7 +35,7 @@ public class DamageTextManager : Control
         }
     }
 
-    public static void DrawText(int num, Actor actor)
+    public static void DrawText(int num, Actor actor, string type)
     {
         Control damageText = (Control)instance.scene.Instance();
         Label text = damageText.GetNode<Label>("Control/Label");
@@ -47,18 +47,12 @@ public class DamageTextManager : Control
 
         instance.AddChild(damageText);
 
-        if (num <= 20)
-        {
-            damageText.RectScale = new Vector2(1, 1);
-        }
-        else if (num <= 50)
-        {
-            damageText.RectScale = new Vector2(1.25f, 1.25f);
-        }
-        else
+        if (type == "criticalDamage")
         {
             damageText.RectScale = new Vector2(1.5f, 1.5f);
+            text.Modulate = Colors.OrangeRed;
         }
+        
 
     }
 }

@@ -2,26 +2,28 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/heroine_continue.png-d368dbd00be735c254693f9d1f9d4d21.stex"
+path.s3tc="res://.import/heroine_continue.png-d368dbd00be735c254693f9d1f9d4d21.s3tc.stex"
+path.etc="res://.import/heroine_continue.png-d368dbd00be735c254693f9d1f9d4d21.etc.stex"
 metadata={
-"vram_texture": false
+"imported_formats": [ "s3tc", "etc" ],
+"vram_texture": true
 }
 
 [deps]
 
 source_file="res://heroine_continue.png"
-dest_files=[ "res://.import/heroine_continue.png-d368dbd00be735c254693f9d1f9d4d21.stex" ]
+dest_files=[ "res://.import/heroine_continue.png-d368dbd00be735c254693f9d1f9d4d21.s3tc.stex", "res://.import/heroine_continue.png-d368dbd00be735c254693f9d1f9d4d21.etc.stex" ]
 
 [params]
 
-compress/mode=0
+compress/mode=2
 compress/lossy_quality=0.7
 compress/hdr_mode=0
 compress/bptc_ldr=0
 compress/normal_map=0
-flags/repeat=0
+flags/repeat=true
 flags/filter=true
-flags/mipmaps=false
+flags/mipmaps=true
 flags/anisotropic=false
 flags/srgb=2
 process/fix_alpha_border=true
@@ -31,5 +33,5 @@ process/invert_color=false
 process/normal_map_invert_y=false
 stream=false
 size_limit=0
-detect_3d=true
+detect_3d=false
 svg/scale=1.0

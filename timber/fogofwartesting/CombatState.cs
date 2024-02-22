@@ -10,18 +10,17 @@ public class CombatState : ActorState
     // private int a = 2;
     // private string b = "text";
     int attackRange = 2;//number of grids
+    int attackDamage = 2;
+    float criticalHitRate = 0.3f;
 
     float attackWindup = 0.5f;//animation before attack
     float attackRecovery = 0.125f;//anim after attack
-    float attackCooldown = 0.5f;
+    float attackCooldown = 1f;
 
     bool attackable = true;
     bool attacking = false;
-    bool moving = false;
 
     public Actor TargetActor;
-
-    string team;
 
     float time = 0.0f, rotateTime = 0.0f;
 
@@ -41,9 +40,7 @@ public class CombatState : ActorState
         inclusiveStates = new HashSet<string>();
         ArborCoroutine.StopCoroutinesOnNode(this);
         animation_offset = GD.Randf() * 100.0f;
-        team = actor.GetNode<HasTeam>("HasTeam").team;
         attackable = true;
-        GD.Print(attackable);
 
     }
 
@@ -89,15 +86,19 @@ public class CombatState : ActorState
     {
         attacking = true;
         attackable = false;
-        GD.Print("attack");
         yield return ArborCoroutine.WaitForSeconds(attackWindup);
-        TargetActor.Hurt();
+
+        if(GD.Randf() < criticalHitRate)
+        {
+            TargetActor.Hurt(attackDamage, true);
+        }
+        else TargetActor.Hurt(attackDamage, false);
+
         attacking = false;
 
         yield return ArborCoroutine.WaitForSeconds(attackRecovery);
         rotateTime = 0.0f;
         yield return ArborCoroutine.WaitForSeconds(attackCooldown);
-        GD.Print("end attack");
         attackable = true;
         
     }
@@ -126,6 +127,7 @@ public class CombatState : ActorState
 
             actor.view.Rotation = actor.initial_rotation + new Vector3(0, 0, direction * rot_amplitude * rotateTime * (rotateTime - 0.5f));
         }
+        
         
     }
 }

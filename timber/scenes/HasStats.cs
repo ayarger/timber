@@ -199,7 +199,7 @@ public class HasStats : Node
             // Handle death or other related logic here
             GD.Print("death event!");
         }
-
+        GD.Print("damage dealt");
         //update ratio
         health_ratio = curr_health / max_health;
         //signal for UI/sound 

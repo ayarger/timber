@@ -11,3 +11,4 @@ shader_param/screenHeight = 5.0
 shader_param/screenWidth = 5.0
 shader_param/alpha_cutout_threshold = 0.5
 shader_param/static_amount = 0.8
+shader_param/apply_red_tint = 0.0
