@@ -119,7 +119,7 @@ public class NLuaScriptManager : Node
                 if (command.StartsWith("M"))
                 {
                     int amt = int.Parse(command.Substring(1));
-                    TestMovement.SetDestination(luaActors[name] as Actor, luaActors[name].GlobalTranslation + new Vector3(Grid.tileWidth * amt, 0, 0));
+                    TestMovement.SetDestination(luaActors[name] as Actor,  new Vector3(Grid.tileWidth * amt, luaActors[name].GlobalTranslation.y, luaActors[name].GlobalTranslation.z));
                 }
                 else if (command.StartsWith("P"))
                 {
@@ -130,7 +130,7 @@ public class NLuaScriptManager : Node
                 {
                     //Same deal with newlines
                     //Get data, just x position rn for demonstration
-                    data += name + "=" + luaActors[name].GlobalTranslation.x;
+                    data += name + "=" + luaActors[name].GlobalTranslation.x/Grid.tileWidth;
                     data += ",";
                 }
             }
