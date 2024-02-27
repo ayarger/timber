@@ -404,7 +404,7 @@ margin_bottom = 212.0
 custom_styles/panel = ExtResource( 4 )
 
 [node name="Sprite" type="Sprite" parent="Panel/ColorPanel"]
-position = Vector2( 67, 101 )
+position = Vector2( 74.375, 108.375 )
 scale = Vector2( 0.213, 0.213 )
 texture = ExtResource( 5 )
 
@@ -416,6 +416,18 @@ custom_colors/font_color = Color( 0, 0, 0, 1 )
 custom_fonts/font = SubResource( 1 )
 text = "ERROR
 No Internet Connection"
+align = 1
+valign = 1
+autowrap = true
+
+[node name="NumOccurred" type="Label" parent="."]
+margin_left = 1323.0
+margin_top = 9.0
+margin_right = 1472.0
+margin_bottom = 82.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_fonts/font = SubResource( 1 )
+text = "1"
 align = 1
 valign = 1
 autowrap = true
