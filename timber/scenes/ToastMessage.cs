@@ -53,6 +53,7 @@ public class ToastMessage : Control
 	private string _previewMessage;
 	private bool _isMouseHovering = false;
 	private Vector2 _messageBoxSize;
+	private Timer _visibilityTimer; // Declare the timer member
 
 	public override void _Ready()
 	{
@@ -61,7 +62,10 @@ public class ToastMessage : Control
 		_messageLabel.Autowrap = true; // Enable autowrap
 		_numOccurredLabel = GetNode<Label>("NumOccurred");
 		_numOccurredLabel.Autowrap = true;
+		_numOccurredLabel.Text = "";
 		_messageBoxSize = _messageLabel.RectSize;
+		_visibilityTimer = GetNode<Timer>("Timer");
+		_visibilityTimer.Connect("timeout", this, nameof(StartHideAnimation));
 
 		var panel = GetNode<Panel>("Panel");
 		panel.Connect("mouse_entered", this, nameof(OnMouseEntered));
@@ -75,30 +79,32 @@ public class ToastMessage : Control
 		
 	}
 
-	public void ShowMessage(ToastObject msgObj, int previewLength = 50)
+	private void MessageObjContentDisplay(ToastObject msgObj, int previewLength = 50)
 	{
-		// string message, float duration = 2.0f, 
 		_fullMessage = msgObj.content;
-		// Generate a preview of the message.
 		_previewMessage = _fullMessage.Length <= previewLength ? 
 			_fullMessage : _fullMessage.Substring(0, previewLength) + "...";
 		_messageLabel.Text = _previewMessage;
-		_numOccurredLabel.Text = msgObj.numOccurred.ToString();
-
-		Visible = true;
-		_animationPlayer.Play("show_animation");
-
-		// Reset hover state in case of rapid reuse
-		_isMouseHovering = false;
-		GetTree().CreateTimer(msgObj.duration).Connect("timeout", this, 
-														nameof(StartHideAnimation), 
-														null, (uint)ConnectFlags.Oneshot);
+		if (msgObj.numOccurred > 1) _numOccurredLabel.Text = msgObj.numOccurred.ToString();
 	}
 	
+	public void ShowMessage(ToastObject msgObj, int previewLength = 50)
+	{
+		MessageObjContentDisplay(msgObj);
+		Visible = true;
+		_animationPlayer.Play("show_animation");
+		_isMouseHovering = false;
+		ResetAndStartTimer(msgObj.duration);
+		// GetTree().CreateTimer(msgObj.duration).Connect("timeout", this, 
+		// 												nameof(StartHideAnimation), 
+		// 												null, (uint)ConnectFlags.Oneshot);
+	}
+
 	void UpdateToast(EventToastUpdate e)
 	{
-		_numOccurredLabel.Text = e.obj.numOccurred.ToString();
+		MessageObjContentDisplay(e.obj);
 		_messageLabel.Text = e.obj.content;
+		ResetAndStartTimer(e.obj.duration);
 	}
 
 	private void OnMouseEntered()
@@ -135,7 +141,7 @@ public class ToastMessage : Control
 	private void HideToast()
 	{
 		Visible = false;
-		QueueFree(); // Optionally, remove the toast from the scene tree to clean up
+		QueueFree(); // Remove the toast from the scene tree to clean up
 		ToastManager.SetToastVisibility(false);
 	}
 
@@ -149,5 +155,13 @@ public class ToastMessage : Control
 		{
 			return _messageBoxSize.y * 3;
 		}
+	}
+	
+	private void ResetAndStartTimer(float duration)
+	{
+		_visibilityTimer.Stop(); // Stop the current timer if it's running
+		_visibilityTimer.WaitTime = duration;
+		_visibilityTimer.OneShot = true;
+		_visibilityTimer.Start();
 	}
 }

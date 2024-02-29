@@ -27,20 +27,16 @@ public static class ToastManager
     // Called by other scripts to send a toast message
     public static void ShowToastMessage(Node caller, string content, float duration=3.0f, ToastMessage.ToastType type = ToastMessage.ToastType.Error)
     {
-        // Create a new ToastMsg object
         ToastMessage.ToastObject _newMsg = new ToastMessage.ToastObject(caller, content, duration, type);
         
-        // Check if there is a toast on the screen
         if (isShowing)
         {
-            // Check if it is the same as current toastMsg
             if (_newMsg.Equals(currentToast))
             {
                 currentToast.numOccurred++;
                 EventBus.Publish(new EventToastUpdate(currentToast));
                 return; 
             }
-            // check if it is the same as other toastMsg in the queue
             for (int i = 0; i < _toastQueue.Count; i++)
             {
                 ToastMessage.ToastObject t = _toastQueue[i];
@@ -74,8 +70,8 @@ public static class ToastManager
     {
         if (!visible && _toastQueue.Count > 0)
         {
-            var firstElement = _toastQueue[0]; // Get the first element
-            _toastQueue.RemoveAt(0); // Remove it from the list, mimicking dequeuing
+            var firstElement = _toastQueue[0]; 
+            _toastQueue.RemoveAt(0); 
             ShowToast(firstElement);
         }
         else

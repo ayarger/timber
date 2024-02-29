@@ -438,3 +438,6 @@ anims/expand_animation = SubResource( 5 )
 anims/hide_animation = SubResource( 3 )
 anims/show_animation = SubResource( 4 )
 anims/shrink_animation = SubResource( 6 )
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 3.0
