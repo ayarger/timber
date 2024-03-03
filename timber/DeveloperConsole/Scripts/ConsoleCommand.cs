@@ -35,7 +35,7 @@ public abstract class ConsoleCommand : Node
     /// </summary>
     /// <param name="args"></param>
     /// <returns></returns>
-    public abstract bool ParseCommand(string[] args);
+    public abstract bool Process(string[] args);
 
 
 

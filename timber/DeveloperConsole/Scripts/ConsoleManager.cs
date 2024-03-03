@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 
 public class ConsoleManager : Control
 {
@@ -12,11 +13,16 @@ public class ConsoleManager : Control
     private TextEdit consoleOutput;
     private Spatial curr_actor;
     private string lastCommand;
+
     [Export]
     List<string> commands = new List<string>();
 
     [Export]
-    public Dictionary<string, Actor> ActorDict;
+    List<ConsoleCommand> commandList = new List<ConsoleCommand>();
+
+    [Export]
+    // this is configured through actor.cs when actors were loaded into the scene tree
+    public Dictionary<string, Actor> ActorDict = new Dictionary<string, Actor>();
     //autoComplete multiple matches
     private List<string> matchingCommands = new List<string>();
     private int autocompleteIndex = -1;
@@ -27,23 +33,47 @@ public class ConsoleManager : Control
         consolePanel = GetNode<Panel>("../ConsolePanel");
         consoleInput = GetNode<LineEdit>("../ConsolePanel/Input");
         consoleOutput = GetNode<TextEdit>("../ConsolePanel/Output");
-        // Initialize actor dictionary
-        ActorDict = GetAllActors();
         consoleInput.Connect("text_entered", this, nameof(OnCommandEntered));
-        consoleInput.Connect("text_changed", this, nameof(OnSuggestionSelected));
-        GetAllCommands();
-        InstantiateCommands();
+        //consoleInput.Connect("text_changed", this, nameof(OnSuggestionSelected));
+        //GetAllCommands();
+        //hoInstantiateCommands();
+        LoadCommands("DeveloperConsole/Commands/");
         // make sure the console is accessible when the game is on pause
-        PauseMode = PauseModeEnum.Process;
-        consolePanel.PauseMode = PauseModeEnum.Process;
+        // TODO Pause cases
+        //PauseMode = PauseModeEnum.Process;
+        //consolePanel.PauseMode = PauseModeEnum.Process;
     }
 
-    public void InstantiateCommands()
+    //TODO iterate through the folder to find all command.tscn
+    public void LoadCommands(string folderPath)
     {
-        PackedScene scene = (PackedScene)ResourceLoader.Load("res://Commands/StatCommand.tscn");
-        StatCommand statCommand = (StatCommand)scene.Instance();
-        statCommand.Name = "StatCommand";
-        AddChild(statCommand);
+        var systemFolderPath = ProjectSettings.GlobalizePath(folderPath);
+
+        // Ensure the folder exists
+        if (System.IO.Directory.Exists(systemFolderPath))
+        {
+            foreach (var filePath in System.IO.Directory.GetFiles(systemFolderPath))
+            {
+                if (filePath.EndsWith(".tscn"))
+                {
+                    var scenePath = "res://" + filePath;
+                    var scene = (PackedScene)GD.Load(scenePath);
+                    if (scene != null)
+                    {
+                        ConsoleCommand curr_command = (ConsoleCommand)scene.Instance();
+                        AddChild(curr_command);
+                        GD.Print(curr_command.GetType());
+                        commandList.Add(curr_command);
+                    }
+                }
+            }
+        }
+
+        else
+        {
+            GD.Print("Folder not found: ", folderPath);
+        }
+
     }
 
     public override void _Input(InputEvent @event)
@@ -58,47 +88,27 @@ public class ConsoleManager : Control
                 //automatically focus on the lineEdit when console is visible
                 if (consolePanel.Visible) consoleInput.GrabFocus();
                 // Pause the game while accessing the command console
-                GetTree().Paused = consolePanel.Visible;
+                // TODO some of the functionality should remain accessible
+                //GetTree().Paused = consolePanel.Visible;
             }
 
+            // fetch last command entered
             if (eventKey.Scancode == (uint)KeyList.Up && consolePanel.Visible)
             {
                 consoleInput.Text = lastCommand;
+                consoleInput.GrabFocus();
                 consoleInput.CaretPosition = lastCommand.Length;
+                GD.Print(consoleInput.CaretPosition);
             }
 
+            // autocompletion
             if (eventKey.Scancode == (uint)KeyList.Tab && consolePanel.Visible)
             {
                 consoleInput.Text = consoleOutput.Text;
+                consoleInput.GrabFocus();
                 consoleInput.CaretPosition = consoleInput.Text.Length;
             }
         }
-    }
-
-    /// <summary>
-    /// Get all Actor nodes and names and store in a dictionary
-    /// </summary>
-    /// <returns></returns>
-    private Dictionary<string, Actor> GetAllActors()
-    {
-        Dictionary<string, Actor> foundNodes = new Dictionary<string, Actor>();
-        Node rootNode = GetTree().Root;
-
-        //Recursion
-        void FindNodes(Node node)
-        {
-            if (node is Actor typedNode)
-            {
-                foundNodes[node.Name.ToLower()] = typedNode;
-            }
-            foreach (Node child in node.GetChildren())
-            {
-                FindNodes(child);
-            }
-        }
-
-        FindNodes(rootNode);
-        return foundNodes;
     }
 
     private void GetAllCommands()
@@ -115,11 +125,12 @@ public class ConsoleManager : Control
         //clear last input
         consoleInput.GrabFocus();
         consoleInput.Clear();
-        consoleOutput.Text = "";
+        //consoleOutput.Text = "";
         GD.Print("Command entered: " + input);
-        //TODO parsing and
+
         lastCommand = input;
-        ParseCommand(input);
+        //ParseCommand(input);
+        ProcessCommand(input);
     }
 
     private void OnSuggestionSelected(string inputText)
@@ -128,6 +139,42 @@ public class ConsoleManager : Control
         if (!string.IsNullOrEmpty(match))
         {
             consoleOutput.Text = $"{match}\n";
+        }
+    }
+
+    public void ProcessCommand (string input)
+    {
+        if(input.ToLower() == "help")
+        {
+            ShowHelp();
+            return;
+        }
+
+        string[] input_string = input.Split(' ');
+        consoleOutput.Text += $"Command: {input}\n";
+        string input_command = input_string[0]; //parse command
+        string[] args = new string[input_string.Length - 1];// the rest are arguments
+        Array.Copy(input_string, 1, args, 0, input_string.Length - 1);
+        GD.Print(args);
+        //starts comparing input to commandList
+        foreach(var command in commandList)
+        {
+            if (!input_command.Equals(command.CommandWord, StringComparison.OrdinalIgnoreCase))
+            {
+                consoleOutput.Text = $"invalid command\n {consoleOutput.Text}";
+                return;
+            }
+
+            if (command.Process(args))
+            {
+                //update consoleOutput based on process result
+                consoleOutput.Text = $"{command.CommandOutput}\n {consoleOutput.Text}";
+            }
+
+            else
+            {
+                consoleOutput.Text = $"invalid arguments\n {consoleOutput.Text}";
+            }
         }
     }
 
@@ -210,19 +257,9 @@ public class ConsoleManager : Control
 
         }
 
-        //TODO: health handler
-        // LuaLoader/Spot
-
-        void ShowHelp()
-        {
-            commands.ForEach(item => consoleOutput.Text += $"{item}\n");
-            consoleOutput.Text += $"stat increase [string]node_name [string]stat_name [int]amount \n";
-            consoleOutput.Text += $"stat decrease [string]node_name [string]stat_name [int]amount \n";
-            consoleOutput.Text += $"stat change [string]node_name [string]stat_name [int]amount \n";
-            consoleOutput.Text += $"stat max [string]node_name [string]stat_name [int]amount \n";
-            consoleOutput.Text += $"stat create [string]node_name [string]stat_name [int]amount \n";
-            consoleOutput.Text += $"stat get [string]node_name \n";
-        }
-
+    }
+    void ShowHelp()
+    {
+        commandList.ForEach(item => consoleOutput.Text += $"{item.Usage}\n");
     }
 }

@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=2]
+[gd_scene load_steps=26 format=2]
 
 [ext_resource path="res://scenes/GameManager.tscn" type="PackedScene" id=1]
 [ext_resource path="res://DebugSphere.cs" type="Script" id=2]
@@ -14,6 +14,7 @@
 [ext_resource path="res://lives_tex.png" type="Texture" id=12]
 [ext_resource path="res://spot_hud_face.png" type="Texture" id=13]
 [ext_resource path="res://square.png" type="Texture" id=14]
+[ext_resource path="res://temp_scenes/TempConsole.tscn" type="PackedScene" id=15]
 [ext_resource path="res://fogofwartesting/FogOfWar.tscn" type="PackedScene" id=16]
 [ext_resource path="res://fogofwartesting/TestMovement.cs" type="Script" id=17]
 [ext_resource path="res://temp_scenes/HUD.tscn" type="PackedScene" id=18]
@@ -219,6 +220,8 @@ rect_scale = Vector2( 0.5, 0.5 )
 texture = ExtResource( 12 )
 
 [node name="HUD" parent="CanvasLayer" instance=ExtResource( 18 )]
+
+[node name="TempConsole" parent="CanvasLayer" instance=ExtResource( 15 )]
 
 [node name="DirectionalLight2" type="DirectionalLight" parent="."]
 transform = Transform( 0.766044, 0.454519, -0.454519, 0, 0.707107, 0.707107, 0.642788, -0.541675, 0.541675, 0, 0, 0 )

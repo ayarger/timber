@@ -15,23 +15,28 @@ public class StatCommand : ConsoleCommand
     {
         List<string> args = new List<string> { "increase", "decrease", "change", "max", "create","get" };
         return args;
-    }
+    }     
 
-    public override bool ParseCommand(string[] args)
+    public override bool Process(string[] args)
     {
-        if(args.Length >= 3)
+        GD.Print(args);
+
+        if (args.Length >= 3)
         {
             string arg = args[0].ToLower();
             string actorName = args[1].ToLower();
             string statName = args[2].ToLower();
             Actor curr_actor = GetActorByName(actorName);
-
             if (args.Length == 3)
             {
-                if(arg == "get")
+                if (arg == "get")
                 {
                     Stat curr_stat = curr_actor.GetNode<HasStats>("HasStats").GetStat(statName);
-                    commandOutput = $"{actorName} {statName} :  {curr_stat.currVal} / {curr_stat.maxVal}";
+                    if (curr_stat != null)
+                    {
+                        commandOutput = $"{actorName} {statName} :  {curr_stat.currVal} / {curr_stat.maxVal}";
+                        return true;
+                    }
                 }
             }
 
@@ -44,6 +49,10 @@ public class StatCommand : ConsoleCommand
                     Stat curr_stat = curr_actor.GetNode<HasStats>("HasStats").GetStat(statName);
                     switch (arg)
                     {
+                        default:
+                            commandOutput = "invalid arguments";
+                            return false;
+
                         case "increase":
                             curr_stat.IncreaseCurrentValue(amount);
                             break;
@@ -61,13 +70,15 @@ public class StatCommand : ConsoleCommand
                             curr_stat = curr_actor.GetNode<HasStats>("HasStats").GetStat(args[2]);
                             break;
                     }
-                    commandOutput = $"{actorName} {statName} changed to {curr_stat.currVal} / {curr_stat.maxVal}";
 
+                    commandOutput = $"{actorName} {statName} changed to: {curr_stat.currVal} / {curr_stat.maxVal}";
                     return true;
+
                 }
             }
-            
+
         }
         return false;
     }
+
 }
