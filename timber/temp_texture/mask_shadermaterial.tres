@@ -1,0 +1,19 @@
+[gd_resource type="ShaderMaterial" load_steps=3 format=2]
+
+[ext_resource path="res://temp_texture/AvatarMask.png" type="Texture" id=1]
+
+[sub_resource type="Shader" id=1]
+code = "shader_type canvas_item;
+
+uniform sampler2D mask_texture;
+void fragment() {
+    vec4 mask = texture(mask_texture, UV);
+    vec4 tex = texture(TEXTURE, UV);
+
+    COLOR = vec4(tex.rgb, tex.a * mask.a);
+}
+"
+
+[resource]
+shader = SubResource( 1 )
+shader_param/mask_texture = ExtResource( 1 )

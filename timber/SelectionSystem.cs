@@ -243,8 +243,8 @@ public class SelectionRegion
 
     public SelectionRegion(Vector3 point_a, Vector3 point_b)
     {
-        top_left_coordinate = new Vector3(Mathf.Min(point_a.x, point_b.x), 0.1f, Mathf.Min(point_a.z, point_b.z));   // smallest x, smallest z
-        bottom_right_coordinate = new Vector3(Mathf.Max(point_a.x, point_b.x), 0.1f, Mathf.Max(point_a.z, point_b.z)); // largest x, largest z
+        top_left_coordinate = new Vector3(Mathf.Min(point_a.x,point_b.x) - Grid.tileWidth / 2f, 0.1f, Mathf.Min(point_a.z, point_b.z) - Grid.tileWidth / 2f);   // smallest x, smallest z
+        bottom_right_coordinate = new Vector3(Mathf.Max(point_a.x, point_b.x)+ Grid.tileWidth / 2f, 0.1f, Mathf.Max(point_a.z, point_b.z)+ Grid.tileWidth / 2f); // largest x, largest z
     }
 
     public bool IsPointWithinRegion (Vector3 point)

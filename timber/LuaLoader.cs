@@ -34,6 +34,7 @@ public class LuaLoader : Node
 	{
 		return instance.loading_scene;
 	}
+
 	IEnumerator Load()
 	{
 		loading_scene = true;
@@ -43,7 +44,7 @@ public class LuaLoader : Node
 		yield return ArborResource.WaitFor("game.config");
         GameConfig game_config = ArborResource.Get<GameConfig>("game.config");
 
-        yield return LoadActorConfigs();
+		yield return LoadActorConfigs();
         yield return LoadScene(game_config.initial_scene_file);
 
         loading_scene = false;
@@ -161,10 +162,17 @@ public class LuaLoader : Node
             {
 				ActorConfig config = map_code_to_actor_config[current_char];
 				Vector3 spawn_pos = new Vector3(x * Grid.tileWidth, 0, z * Grid.tileWidth);
-				SpawnActorOfType(config, spawn_pos);
+				Actor new_actor = SpawnActorOfType(config, spawn_pos);
 
 				if (config.team.ToLower().Trim() == "player")
 					player_actor_spawn_positions.Add(spawn_pos);
+
+				//Test Code:
+				if(current_char == 'm' || current_char == 'q')
+				{
+                    NLuaScriptManager.Instance
+						.CreateActor(NLuaScriptManager.testClassName, NLuaScriptManager.GenerateObjectName(), new_actor);
+                }
 			}
 
 			x++;
@@ -230,7 +238,7 @@ public class LuaLoader : Node
 	}
 
 
-	void SpawnActorOfType(ActorConfig config, Vector3 position)
+	Actor SpawnActorOfType(ActorConfig config, Vector3 position)
     {
 		/* Spawn actor scene */
 		PackedScene actor_scene = (PackedScene)ResourceLoader.Load("res://scenes/actor.tscn");
@@ -252,6 +260,7 @@ public class LuaLoader : Node
 			string source_path = System.IO.Directory.GetCurrentDirectory() + @"\resources\scripts\" + script_name + ".gd";
 			LoadScriptAtLocation(source_path, new_actor);
 		}
+		return actor_script;
 	}
 
 	void LoadScriptAtLocation(string location, Node owning_actor)

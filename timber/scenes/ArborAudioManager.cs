@@ -17,6 +17,10 @@ public class ArborAudioManager : Node
     static AudioStreamPlayer bgm_audio_player1 = new AudioStreamPlayer();
     static AudioStreamPlayer bgm_audio_player2 = new AudioStreamPlayer();
     static bool bgm_audio_flipper = false;
+
+    public static float master_volume = 1;
+    static float min_volume = -60; // Volume goes from min_volume to 0
+
     static AudioStreamPlayer GetCurrentBGMPlayer()
     {
         if (!bgm_audio_flipper)
@@ -55,6 +59,7 @@ public class ArborAudioManager : Node
 
         /* Add a new audio player */
         AudioStreamPlayer new_audio_player = new AudioStreamPlayer();
+        new_audio_player.VolumeDb = min_volume + master_volume * (-min_volume);
         instance.AddChild(new_audio_player);
         sfx_audio_players.Add(new_audio_player);
         return new_audio_player;
@@ -71,24 +76,24 @@ public class ArborAudioManager : Node
         return sfx_audio_player;
     }
 
-    public static AudioStreamPlayer RequestBGM(AudioStream stream, bool loop=true)
+    public static AudioStreamPlayer RequestBGM(AudioStream stream, bool start_loud=false,  bool loop=true)
     {
         AudioStreamPlayer current_bgm_player = GetCurrentBGMPlayer();
         AudioStreamPlayer other_bgm_player = GetOtherBGMPlayer();
         bgm_audio_flipper = !bgm_audio_flipper;
 
-        ArborCoroutine.StartCoroutine(DoRequestBGM(current_bgm_player, other_bgm_player, stream, loop), instance);
+        ArborCoroutine.StartCoroutine(DoRequestBGM(current_bgm_player, other_bgm_player, stream, start_loud, loop), instance);
 
         return current_bgm_player;
     }
 
-    static IEnumerator DoRequestBGM(AudioStreamPlayer current_bgm_player, AudioStreamPlayer other_bgm_player, AudioStream stream, bool loop) 
+    static IEnumerator DoRequestBGM(AudioStreamPlayer current_bgm_player, AudioStreamPlayer other_bgm_player, AudioStream stream, bool start_loud, bool loop) 
     {
         ArborCoroutine.StartCoroutine(FadeOut(other_bgm_player), instance);
 
         yield return ArborCoroutine.WaitForSeconds(0.25f);
 
-        ArborCoroutine.StartCoroutine(FadeIn(current_bgm_player, stream, start_loud: true, loop: loop), instance);
+        ArborCoroutine.StartCoroutine(FadeIn(current_bgm_player, stream, start_loud: start_loud, loop: loop), instance);
 
     }
 
@@ -109,14 +114,15 @@ public class ArborAudioManager : Node
         player.Stop();
         player.Stream = stream;
         if(!start_loud)
-            player.VolumeDb = -50;
+            player.VolumeDb = min_volume;
         player.Play();
 
         if(!start_loud)
         {
             void DoIncreaseVolume(float progress)
             {
-                player.VolumeDb = -50.0f + progress * 50.0f;
+                player.VolumeDb = (min_volume + master_volume * (-min_volume) * (progress));
+                GD.Print("Fade in: " + player.VolumeDb);
             }
             yield return ArborCoroutine.DoOverTime(DoIncreaseVolume, 1.0f);
         }
@@ -126,11 +132,28 @@ public class ArborAudioManager : Node
     {
         void DoDecreaseVolume(float progress)
         {
-            player.VolumeDb = progress * -50.0f;
+            player.VolumeDb = min_volume + (-min_volume) * master_volume + (min_volume * master_volume) * (progress);
         }
         yield return ArborCoroutine.DoOverTime(DoDecreaseVolume, 1.0f);
 
-        player.VolumeDb = 0;
+        player.VolumeDb = min_volume;
         player.Stop();
     }
+
+    public static void SetMasterVolume(float volume)
+    {
+        master_volume = volume / 100;
+
+        foreach (AudioStreamPlayer audio_player in sfx_audio_players)
+        {
+            audio_player.VolumeDb = min_volume + master_volume * (-min_volume);
+        }
+
+        AudioStreamPlayer current_bgm_player = GetCurrentBGMPlayer();
+        AudioStreamPlayer other_bgm_player = GetOtherBGMPlayer();
+
+        current_bgm_player.VolumeDb = min_volume + master_volume * (-min_volume);
+        other_bgm_player.VolumeDb = min_volume + master_volume * (-min_volume);
+    }
+
 }

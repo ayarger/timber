@@ -18,6 +18,7 @@ public class Actor : Spatial
     SpatialMaterial character_material;
     MeshInstance shadow_view;
     StateManager state_manager;
+   
 
     IsSelectable selectable;
 
@@ -48,6 +49,8 @@ public class Actor : Spatial
             currentTile = td;
             td.actor = this;
         });
+        // update ActorDict after actor is loaded into the scene
+        UpdateActorDict();
     }
 
     public void Configure(ActorConfig info)
@@ -191,6 +194,12 @@ public class Actor : Spatial
         new_ko.Scale = Scale;
         Visible = false;
         new_ko.Configure(ArborResource.Get<Texture>("images/" + config.pre_ko_sprite_filename), ArborResource.Get<Texture>("images/" + config.ko_sprite_filename));
+    }
+
+   public void UpdateActorDict()
+    {
+        ConsoleManager console_manager = GetParent().GetNode<ConsoleManager>("../CanvasLayer/TempConsole/ConsoleManager");
+        console_manager.ActorDict[this.Name.ToLower()] = this;
     }
 
     IEnumerator HurtAnimation()//TODO add actual animation

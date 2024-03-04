@@ -22,7 +22,7 @@ public class UIOrb : Control
         ui_tween = GetNode<Tween>("UITween");
 
         // connect stats change event here
-        target_data.Connect("health_change", this, nameof(OnHealthChange));
+        //target_data.Connect("health_change", this, nameof(OnHealthChange));
     }
 
     public void Configure(HasStats _target)

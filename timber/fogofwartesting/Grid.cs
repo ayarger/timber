@@ -51,6 +51,7 @@ public class Grid
     {
         return new Vector3(Mathf.RoundToInt(worldPos.x / tileWidth) * tileWidth, worldPos.y, Mathf.RoundToInt(worldPos.z / tileWidth) * tileWidth);
     }
+
 }
 
 public class TileData
@@ -99,6 +100,18 @@ public class TileData
     {
         value = _value;
         coord = new Coord(x,z);
+    }
+    public Vector3[] GetCorners()
+    {
+        Vector3 gt = GlobalTranslation;
+        Vector3[] ans = new Vector3[]
+        {
+            new Vector3(gt.x-Grid.tileWidth/2f,gt.y,gt.z-Grid.tileWidth/2f),
+            new Vector3(gt.x+Grid.tileWidth/2f,gt.y,gt.z-Grid.tileWidth/2f),
+            new Vector3(gt.x+Grid.tileWidth/2f,gt.y,gt.z+Grid.tileWidth/2f),
+            new Vector3(gt.x-Grid.tileWidth/2f,gt.y,gt.z+Grid.tileWidth/2f)
+        };
+        return ans;
     }
 }
 public class Coord
