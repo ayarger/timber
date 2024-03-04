@@ -38,6 +38,7 @@ public class CombatState : ActorState
     public override void Start()
     {
         inclusiveStates = new HashSet<string>();
+        inclusiveStates.Add("AggroState");
         ArborCoroutine.StopCoroutinesOnNode(this);
         animation_offset = GD.Randf() * 100.0f;
         attackable = true;
@@ -55,6 +56,22 @@ public class CombatState : ActorState
 
             if (dist > attackRange && attackable)
             {
+                //check if there are closer target
+                foreach(var actors in GetNode<LuaLoader>("/root/Main/LuaLoader").GetChildren())
+                {
+                    var actorInRange = actors as Actor;
+                    if (actorInRange != null && actorInRange.GetNode<HasTeam>("HasTeam").team != actor.GetNode<HasTeam>("HasTeam").team)
+                    {
+                        Coord actorPos = Grid.ConvertToCoord(actorInRange.GlobalTranslation);
+                        Coord cur = Grid.ConvertToCoord(actor.GlobalTranslation);
+                        if ((cur - actorPos).Mag() < attackRange)
+                        {
+                            TargetActor = actorInRange;
+                            return;
+                        }
+                    }
+                }
+
                 if (b.waypoints.Count == 0)
                 {
                     ArborCoroutine.StopCoroutinesOnNode(b);
@@ -95,6 +112,15 @@ public class CombatState : ActorState
         else TargetActor.Hurt(attackDamage, false);
 
         attacking = false;
+
+        //setting target to attack actor
+        StateManager sm = TargetActor.FindNode("StateManager") as StateManager;
+        if (sm.states.ContainsKey("CombatState") && sm.IsStateActive("Idle"))
+        {
+            CombatState cs = sm.states["CombatState"] as CombatState;
+            cs.TargetActor = actor;
+            sm.EnableState("CombatState");
+        }
 
         yield return ArborCoroutine.WaitForSeconds(attackRecovery);
         rotateTime = 0.0f;

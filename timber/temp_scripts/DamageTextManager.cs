@@ -52,6 +52,10 @@ public class DamageTextManager : Control
             damageText.RectScale = new Vector2(1.5f, 1.5f);
             text.Modulate = Colors.OrangeRed;
         }
+        else if (type == "healing")
+        {
+            text.Modulate = Colors.GreenYellow;
+        }
         
 
     }

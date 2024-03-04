@@ -36,24 +36,21 @@ public class IdleState : ActorState
         actor.view.Scale = new Vector3(current_scale_x, actor.initial_view_scale.y * idle_scale_impact, actor.view.Scale.z);
     }
 
-    int detectionRange = 3;
+    int detectionRange = 2;
     public override void Update(float delta)
     {
-        if(actor.GetNode<HasTeam>("HasTeam").team == "enemy")
+        foreach (var actors in GetNode<LuaLoader>("/root/Main/LuaLoader").GetChildren())
         {
-            foreach (var actors in GetNode<LuaLoader>("/root/Main/LuaLoader").GetChildren())
+            var actorInRange = actors as Actor;
+            if (actorInRange != null && actorInRange.GetNode<HasTeam>("HasTeam").team != actor.GetNode<HasTeam>("HasTeam").team)
             {
-                var actorInRange = actors as Actor;
-                if (actorInRange != null && actorInRange.GetNode<HasTeam>("HasTeam").team == "player")
+                Coord actorPos = Grid.ConvertToCoord(actorInRange.GlobalTranslation);
+                Coord cur = Grid.ConvertToCoord(actor.GlobalTranslation);
+                if ((cur-actorPos).Mag() <= detectionRange)
                 {
-                    Coord actorPos = Grid.ConvertToCoord(actorInRange.GlobalTranslation);
-                    Coord cur = Grid.ConvertToCoord(actor.GlobalTranslation);
-                    if ((cur-actorPos).Mag() < detectionRange)
-                    {
-                        CombatState cs = manager.states["CombatState"] as CombatState;
-                        cs.TargetActor = actorInRange;
-                        manager.EnableState("CombatState");
-                    }
+                    CombatState cs = manager.states["CombatState"] as CombatState;
+                    cs.TargetActor = actorInRange;
+                    manager.EnableState("CombatState");
                 }
             }
         }

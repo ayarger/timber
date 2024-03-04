@@ -183,6 +183,7 @@ public class Actor : Spatial
     public void Kill()
     {
         PackedScene scene = (PackedScene)ResourceLoader.Load("res://scenes/ActorKO.tscn");
+        GD.Print("Killed!!");
         ActorKO new_ko = (ActorKO)scene.Instance();
         GetParent().AddChild(new_ko);
         new_ko.GlobalTranslation = GlobalTranslation;

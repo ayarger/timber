@@ -198,6 +198,7 @@ public class HasStats : Node
         {
             // Handle death or other related logic here
             GD.Print("death event!");
+            GetParent<Actor>().Kill();
         }
         GD.Print("damage dealt");
         //update ratio

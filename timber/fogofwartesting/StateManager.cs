@@ -104,5 +104,8 @@ public class StateManager : Node
         oldScale = actor.view.Scale;
     }
 
-
+    public bool IsStateActive(string state)
+    {
+        return activeStates.Contains(states[state]);
+    }
 }
