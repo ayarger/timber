@@ -13,9 +13,51 @@ _global_script_classes=[ {
 "class": "ActorComponent",
 "language": "GDScript",
 "path": "res://ActorComponent.gd"
+}, {
+"base": "Resource",
+"class": "CompiledYarnProgram",
+"language": "GDScript",
+"path": "res://addons/gdyarn/compiled_yarn_program.gd"
+}, {
+"base": "Reference",
+"class": "MarkupRegion",
+"language": "GDScript",
+"path": "res://addons/gdyarn/core/dialogue/markup_regions.gd"
+}, {
+"base": "Reference",
+"class": "Value",
+"language": "GDScript",
+"path": "res://addons/gdyarn/core/value.gd"
+}, {
+"base": "Node",
+"class": "VariableStorage",
+"language": "GDScript",
+"path": "res://addons/gdyarn/core/variable_storage.gd"
+}, {
+"base": "Control",
+"class": "YarnDisplay",
+"language": "GDScript",
+"path": "res://addons/gdyarn/yarn_gui.gd"
+}, {
+"base": "Resource",
+"class": "YarnFile",
+"language": "GDScript",
+"path": "res://addons/gdyarn/yarnfile.gd"
+}, {
+"base": "EditorImportPlugin",
+"class": "YarnImporter",
+"language": "GDScript",
+"path": "res://addons/gdyarn/yarn_importer.gd"
 } ]
 _global_script_class_icons={
-"ActorComponent": ""
+"ActorComponent": "",
+"CompiledYarnProgram": "",
+"MarkupRegion": "",
+"Value": "",
+"VariableStorage": "res://addons/gdyarn/assets/storage.png",
+"YarnDisplay": "res://addons/gdyarn/assets/display.PNG",
+"YarnFile": "",
+"YarnImporter": ""
 }
 
 [application]
@@ -40,10 +82,16 @@ PrimaryCanvas="*res://scenes/PrimaryCanvas.tscn"
 UiManager="*res://scenes/UIManager.tscn"
 WebBuildUploader="*res://scenes/WebBuildUploader.tscn"
 
+[debug]
+
+debug_collision_shapes=true
+debug_navigation=true
+
 [display]
 
 window/size/width=1920
 window/size/height=1080
+window/dpi/allow_hidpi=true
 window/stretch/mode="2d"
 window/stretch/aspect="expand"
 

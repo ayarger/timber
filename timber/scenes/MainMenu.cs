@@ -6,17 +6,16 @@ using System.Collections;
 
 public class MainMenu : Control
 {
-	public override void _Ready()
-	{
-		ArborResource.UseResource(
-			"sounds/bgm_title.ogg", 
-			(AudioStream audio) => {
-				GD.Print("playing title music.");
-				ArborAudioManager.RequestBGM(audio);
-			},
-			this
-		);
-
+    public override void _Ready()
+    {
+        ArborResource.UseResource(
+            "sounds/bgm_title.ogg", 
+            (AudioStream audio) => {
+                GD.Print("playing title music.");
+                ArborAudioManager.RequestBGM(audio, true);
+            },
+            this
+        );
 		ArborResource.UseResource(
 			"images/diamond-g7915c1180_1280.png",
 			(Texture texture) => {
