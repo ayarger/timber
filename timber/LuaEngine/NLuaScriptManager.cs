@@ -20,7 +20,7 @@ public class NLuaScriptManager : Node
 
     //Global references to all objects. 
     public static HashSet<string> luaObjects;
-    public static Dictionary<string,Spatial> luaActors;
+    public static Dictionary<string,Spatial> luaActors; //This can have duplicate actors, if actors have more than one script.
 
     public static string testClassName = "testluaobject";
 
@@ -81,6 +81,7 @@ public class NLuaScriptManager : Node
 
     //Create objects of a class, that hosts an actor. Should be the only "front facing" function for users.
     //Will probably replace Actor with ActorConfig.
+    //This can and should be called multiple times on the same actor to have multiple scripts per actor.
     public void CreateActor(string className, string objectName, Spatial actor)
     {
         if (!CreateObject(className, objectName))
