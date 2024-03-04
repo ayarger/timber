@@ -34,6 +34,7 @@ public class LuaLoader : Node
 	{
 		return instance.loading_scene;
 	}
+
 	IEnumerator Load()
 	{
 		loading_scene = true;
@@ -43,7 +44,7 @@ public class LuaLoader : Node
 		yield return ArborResource.WaitFor("game.config");
         GameConfig game_config = ArborResource.Get<GameConfig>("game.config");
 
-        yield return LoadActorConfigs();
+		yield return LoadActorConfigs();
         yield return LoadScene(game_config.initial_scene_file);
 
         loading_scene = false;

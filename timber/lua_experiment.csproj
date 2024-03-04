@@ -10,4 +10,7 @@
     <PackageReference Include="AWSSDK.S3" Version="3.7.103.50" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="temp_scenes\" />
+  </ItemGroup>
 </Project>

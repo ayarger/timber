@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=2]
 
-[ext_resource path="res://temp_scenes/BarContainer.cs" type="Script" id=3]
+[ext_resource path="res://temp_scripts/BarContainer.cs" type="Script" id=3]
 
 [node name="BarContainter" type="Control"]
 margin_left = 310.0
