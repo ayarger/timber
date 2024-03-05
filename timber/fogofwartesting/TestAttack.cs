@@ -49,6 +49,11 @@ public class TestAttack : Node
 						//Grid.Get(cur).actor.Hurt();
 						//ArborCoroutine.StartCoroutine(refreshCooldown(), this);
 						CombatState cs = sm.states["CombatState"] as CombatState;
+						if(sm.IsStateActive("CombatState") && cs.TargetActor != Grid.Get(cur).actor)
+                        {
+							sm.DisableState("CombatState");
+							GD.Print("switch target");
+                        }
 						cs.TargetActor = Grid.Get(cur).actor;
 						sm.EnableState("CombatState");
 					}

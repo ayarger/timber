@@ -170,14 +170,21 @@ public class Actor : Spatial
         }
         //animate hurt - change to red color for a duration
         //deal damage
-        HasStats health = GetNode<HasStats>("HasStats");
-        if(health != null)
+        HasStats stat = GetNode<HasStats>("HasStats");
+        if(stat != null)
         {
-            health.ApplyDamage(10);
+            //health.ApplyDamage(10);
+            stat.GetStat("health").DecreaseCurrentValue(isCritical ? damage * 2 : damage);
+            if(stat.GetStat("health").currVal <= 0)
+            {
+                Kill();
+                return;
+            }
         }
         else
         {
             Kill();
+            return;
         }
 
         ArborCoroutine.StartCoroutine(HurtAnimation(), this);

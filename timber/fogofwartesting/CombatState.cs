@@ -10,7 +10,7 @@ public class CombatState : ActorState
     // private int a = 2;
     // private string b = "text";
     int attackRange = 2;//number of grids
-    int attackDamage = 2;
+    int attackDamage = 10;
     float criticalHitRate = 0.3f;
 
     float attackWindup = 0.5f;//animation before attack

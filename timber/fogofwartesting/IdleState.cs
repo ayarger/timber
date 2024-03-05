@@ -1,5 +1,7 @@
 using Godot;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 
 public class IdleState : ActorState
 {
@@ -39,21 +41,24 @@ public class IdleState : ActorState
     int detectionRange = 2;
     public override void Update(float delta)
     {
-        foreach (var actors in GetNode<LuaLoader>("/root/Main/LuaLoader").GetChildren())
+        if (actor.GetNode<HasTeam>("HasTeam").team == "enemy")
         {
-            var actorInRange = actors as Actor;
-            if (actorInRange != null && actorInRange.GetNode<HasTeam>("HasTeam").team != actor.GetNode<HasTeam>("HasTeam").team)
+            foreach (var actors in GetNode<LuaLoader>("/root/Main/LuaLoader").GetChildren())
             {
-                Coord actorPos = Grid.ConvertToCoord(actorInRange.GlobalTranslation);
-                Coord cur = Grid.ConvertToCoord(actor.GlobalTranslation);
-                if ((cur-actorPos).Mag() <= detectionRange)
+                var actorInRange = actors as Actor;
+                if (actorInRange != null && actorInRange.GetNode<HasTeam>("HasTeam").team != actor.GetNode<HasTeam>("HasTeam").team)
                 {
-                    CombatState cs = manager.states["CombatState"] as CombatState;
-                    cs.TargetActor = actorInRange;
-                    manager.EnableState("CombatState");
+                    Coord actorPos = Grid.ConvertToCoord(actorInRange.GlobalTranslation);
+                    Coord cur = Grid.ConvertToCoord(actor.GlobalTranslation);
+                    if ((cur - actorPos).Mag() <= detectionRange)
+                    {
+                        CombatState cs = manager.states["CombatState"] as CombatState;
+                        cs.TargetActor = actorInRange;
+                        manager.EnableState("CombatState");
+                    }
                 }
             }
         }
-        
+
     }
 }

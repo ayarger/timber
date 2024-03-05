@@ -40,7 +40,7 @@ public class DamageTextManager : Control
         Control damageText = (Control)instance.scene.Instance();
         Label text = damageText.GetNode<Label>("Control/Label");
         text.Text = num.ToString();
-
+        GD.Print("deal damage!");
 
         Vector2 pos = GameplayCamera.GetGameplayCamera().UnprojectPosition(actor.GlobalTranslation);
         damageText.SetPosition(pos + Vector2.Up * textDisplayOffsetY * GD.Randf() + Vector2.Left * textDisplayOffsetX * GD.Randf());

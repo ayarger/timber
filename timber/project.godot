@@ -47,11 +47,6 @@ YarnGlobals="*res://addons/gdyarn/autoloads/execution_states.gd"
 debug_collision_shapes=true
 debug_navigation=true
 
-[debug]
-
-debug_collision_shapes=true
-debug_navigation=true
-
 [display]
 
 window/size/width=1920
