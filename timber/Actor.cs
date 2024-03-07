@@ -200,7 +200,9 @@ public class Actor : Spatial
         new_ko.GlobalRotation = GlobalRotation;
         new_ko.Scale = Scale;
         Visible = false;
+        state_manager.DisableAllState();
         new_ko.Configure(ArborResource.Get<Texture>("images/" + config.pre_ko_sprite_filename), ArborResource.Get<Texture>("images/" + config.ko_sprite_filename));
+        
     }
 
    public void UpdateActorDict()
@@ -218,4 +220,5 @@ public class Actor : Spatial
         char_mat.SetShaderParam("apply_red_tint", 0);
         //unturn color
     }
+
 }

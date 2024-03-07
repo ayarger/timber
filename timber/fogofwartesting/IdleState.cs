@@ -38,7 +38,7 @@ public class IdleState : ActorState
         actor.view.Scale = new Vector3(current_scale_x, actor.initial_view_scale.y * idle_scale_impact, actor.view.Scale.z);
     }
 
-    int detectionRange = 2;
+    int detectionRange = 3;
     public override void Update(float delta)
     {
         if (actor.GetNode<HasTeam>("HasTeam").team == "enemy")
@@ -50,6 +50,9 @@ public class IdleState : ActorState
                 {
                     Coord actorPos = Grid.ConvertToCoord(actorInRange.GlobalTranslation);
                     Coord cur = Grid.ConvertToCoord(actor.GlobalTranslation);
+                    float dist = Math.Abs(actorPos.x - cur.x)
+                + Math.Abs(actorPos.z - cur.z);
+
                     if ((cur - actorPos).Mag() <= detectionRange)
                     {
                         CombatState cs = manager.states["CombatState"] as CombatState;

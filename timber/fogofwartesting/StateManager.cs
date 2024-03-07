@@ -15,6 +15,7 @@ public class StateManager : Node
     public Dictionary<string,ActorState> states;
     Actor actor;
     HashSet<ActorState> activeStates;
+    string defaultState = "Idle";
 
     public override void _Ready()
     {
@@ -40,7 +41,7 @@ public class StateManager : Node
     {
         if (activeStates.Count == 0)
         {
-            EnableState("Idle");
+            EnableState(defaultState);
         }
         ResetAnimation();
         foreach ( var state in new HashSet<ActorState>(activeStates))
@@ -107,5 +108,13 @@ public class StateManager : Node
     public bool IsStateActive(string state)
     {
         return activeStates.Contains(states[state]);
+    }
+
+    public void DisableAllState()
+    {
+        foreach(ActorState state in activeStates)
+        {
+            DisableState(state.name);
+        }
     }
 }

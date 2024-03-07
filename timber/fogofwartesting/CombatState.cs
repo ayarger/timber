@@ -85,7 +85,12 @@ public class CombatState : ActorState
                     }), b);
                     manager.DisableState("CombatState");
                     return;
+
+
                 }
+                //b.TargetActor = TargetActor;
+                //manager.EnableState("ChaseState");
+                //manager.DisableState("CombatState");
             }
             else if (attackable)
             {
@@ -105,13 +110,12 @@ public class CombatState : ActorState
         attackable = false;
         yield return ArborCoroutine.WaitForSeconds(attackWindup);
 
+        attacking = false;
         if(GD.Randf() < criticalHitRate)
         {
             TargetActor.Hurt(attackDamage, true);
         }
         else TargetActor.Hurt(attackDamage, false);
-
-        attacking = false;
 
         //setting target to attack actor
         StateManager sm = TargetActor.FindNode("StateManager") as StateManager;
