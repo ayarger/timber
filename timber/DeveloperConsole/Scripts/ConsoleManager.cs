@@ -23,6 +23,11 @@ public class ConsoleManager : Control
     [Export]
     // this is configured through actor.cs when actors were loaded into the scene tree
     public Dictionary<string, Actor> ActorDict = new Dictionary<string, Actor>();
+
+    [Export]
+    ConsoleCommand curr_match;
+
+    [Export]
     //autoComplete multiple matches
     private List<string> matchingCommands = new List<string>();
     private int autocompleteIndex = -1;
@@ -34,14 +39,20 @@ public class ConsoleManager : Control
         consoleInput = GetNode<LineEdit>("../ConsolePanel/Input");
         consoleOutput = GetNode<TextEdit>("../ConsolePanel/Output");
         consoleInput.Connect("text_entered", this, nameof(OnCommandEntered));
-        //consoleInput.Connect("text_changed", this, nameof(OnSuggestionSelected));
+        consoleInput.Connect("text_changed", this, nameof(OnSuggestionSelected));
         //GetAllCommands();
         //hoInstantiateCommands();
         LoadCommands("DeveloperConsole/Commands/");
+
         // make sure the console is accessible when the game is on pause
         // TODO Pause cases
         //PauseMode = PauseModeEnum.Process;
         //consolePanel.PauseMode = PauseModeEnum.Process;
+        curr_match = commandList.FirstOrDefault(cmd => cmd.CommandWord.StartsWith(""));
+        foreach (string arg in curr_match.ValidArgs())
+        {
+            consoleOutput.Text += $"{curr_match.CommandWord} {arg}\n";
+        }
     }
 
     //TODO iterate through the folder to find all command.tscn
@@ -89,7 +100,7 @@ public class ConsoleManager : Control
                 if (consolePanel.Visible) consoleInput.GrabFocus();
                 // Pause the game while accessing the command console
                 // TODO some of the functionality should remain accessible
-                //GetTree().Paused = consolePanel.Visible;
+                GetTree().Paused = consolePanel.Visible;
             }
 
             // fetch last command entered
@@ -104,9 +115,10 @@ public class ConsoleManager : Control
             // autocompletion
             if (eventKey.Scancode == (uint)KeyList.Tab && consolePanel.Visible)
             {
-                consoleInput.Text = consoleOutput.Text;
+                consoleInput.Text = curr_match.CommandWord;
                 consoleInput.GrabFocus();
                 consoleInput.CaretPosition = consoleInput.Text.Length;
+
             }
         }
     }
@@ -133,12 +145,21 @@ public class ConsoleManager : Control
         ProcessCommand(input);
     }
 
+    //TODO Show auto complete suggestion in a different window
     private void OnSuggestionSelected(string inputText)
     {
-        string match = commands.FirstOrDefault(cmd => cmd.StartsWith(inputText));
-        if (!string.IsNullOrEmpty(match))
+        curr_match = commandList.FirstOrDefault(cmd => cmd.CommandWord.StartsWith(inputText));
+        string[] input_string = inputText.Split(' ');
+        string[] curr_args = new string[input_string.Length - 1];
+        GD.Print(curr_args.Length);
+
+        if (curr_args.Length > 0)
         {
-            consoleOutput.Text = $"{match}\n";
+            matchingCommands = curr_match.FindMatchingCommands(curr_args);
+            foreach (string match in matchingCommands)
+            {
+                consoleOutput.Text = $"{curr_match.CommandWord} {match}";
+            }
         }
     }
 
@@ -151,29 +172,29 @@ public class ConsoleManager : Control
         }
 
         string[] input_string = input.Split(' ');
-        consoleOutput.Text += $"Command: {input}\n";
+        consoleOutput.Text = $"Command: {input}\n{consoleOutput.Text}";
         string input_command = input_string[0]; //parse command
-        string[] args = new string[input_string.Length - 1];// the rest are arguments
-        Array.Copy(input_string, 1, args, 0, input_string.Length - 1);
-        GD.Print(args);
+        string[] curr_args = new string[input_string.Length - 1];// the rest are arguments
+        Array.Copy(input_string, 1, curr_args, 0, input_string.Length - 1);
+        GD.Print(curr_args);
         //starts comparing input to commandList
         foreach(var command in commandList)
         {
             if (!input_command.Equals(command.CommandWord, StringComparison.OrdinalIgnoreCase))
             {
-                consoleOutput.Text = $"invalid command\n {consoleOutput.Text}";
+                consoleOutput.Text = $"invalid command\n{consoleOutput.Text}";
                 return;
             }
 
-            if (command.Process(args))
+            if (command.Process(curr_args))
             {
                 //update consoleOutput based on process result
-                consoleOutput.Text = $"{command.CommandOutput}\n {consoleOutput.Text}";
+                consoleOutput.Text = $"{command.CommandOutput}\n{consoleOutput.Text}";
             }
 
             else
             {
-                consoleOutput.Text = $"invalid arguments\n {consoleOutput.Text}";
+                consoleOutput.Text = $"invalid arguments\n{consoleOutput.Text}";
             }
         }
     }
@@ -258,8 +279,18 @@ public class ConsoleManager : Control
         }
 
     }
+
     void ShowHelp()
     {
-        commandList.ForEach(item => consoleOutput.Text += $"{item.Usage}\n");
+        commandList.ForEach(item => consoleOutput.Text = $"{item.Usage} \n {consoleOutput.Text}");
+    }
+
+    //TODO: show Actors in a popup or make the name tag available
+    void ShowActors()
+    {
+        foreach (string key in ActorDict.Keys)
+        {
+            consoleOutput.Text = $"{key}\n{consoleOutput.Text}";
+        }
     }
 }
