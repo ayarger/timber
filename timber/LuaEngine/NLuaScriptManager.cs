@@ -1,6 +1,7 @@
 using Godot;
 using NAudio.Codecs;
 using Newtonsoft.Json.Linq.JsonPath;
+using Newtonsoft.Json;
 using MoonSharp.Interpreter;
 using System;
 using System.Collections;
@@ -108,27 +109,27 @@ public class NLuaScriptManager : Node
 
             res = luaState.DoString($"local co, res = coroutine.resume(timber_runner,global {prm}, {{{data}}})\n" +
                 "return res").String;
-            if (res == "" || res == null) break;
+            if (res == "{}" || res == ""||res == null) break;
             GD.Print("Got response: "+res);
             data = "";
+            Dictionary<string, object>[] cmds = JsonConvert.DeserializeObject<Dictionary<string,object>[]>(res);
             //THIS DOESN'T WORK IF PRINT HAS NEWLINES OR COLONS! (but this will be refactored later so idc)
-            foreach (string cmd in res.Split('\n'))
+            foreach (Dictionary<string, object> cmd in cmds)
             {
-                if (cmd == "") continue;
-                string name = cmd.Split(':')[0];
-                string command = cmd.Split(':')[1];
+                string name = Convert.ToString(cmd["obj"]);
+                string command = Convert.ToString(cmd["type"]);
                 //Parse commands. Will need to refactor to a better system.
-                if (command.StartsWith("M"))
+                if (command=="M")
                 {
-                    int amt = int.Parse(command.Substring(1));
+                    int amt = Convert.ToInt32(cmd["param"]);
                     TestMovement.SetDestination(luaActors[name] as Actor,  new Vector3(Grid.tileWidth * amt, luaActors[name].GlobalTranslation.y, luaActors[name].GlobalTranslation.z));
                 }
-                else if (command.StartsWith("P"))
+                else if (command=="P")
                 {
                     //Replace with toast later
-                    GD.Print(command.Substring(1));
+                    GD.Print(Convert.ToString(cmd["param"]));
                 }
-                else if (command.StartsWith("R"))
+                else if (command=="R")
                 {
                     //Same deal with newlines
                     //Get data, just x position rn for demonstration
