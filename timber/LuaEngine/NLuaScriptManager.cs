@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Security.AccessControl;
 using System.Xml.Linq;
 using Script = MoonSharp.Interpreter.Script;
+using MoonSharp.Interpreter.Loaders;
 
 public class NLuaScriptManager : Node
 {
@@ -155,6 +156,9 @@ public class NLuaScriptManager : Node
         GD.Print("Lua initialized");
         Instance = this;
         luaState = new Script();
+        luaState.Options.ScriptLoader = new FileSystemScriptLoader();
+        string abspath = "C:/Users/dt800/Documents/Timber/timber/timber/LuaEngine/testmodules/";
+        ((ScriptLoaderBase)luaState.Options.ScriptLoader).ModulePaths = new string[] { abspath+"?", $"{abspath}?.lua", $"{abspath}/lunajson/?", $"{abspath}/lunajson/?.lua" };
         registeredClasses = new HashSet<string>();
         luaObjects = new HashSet<string>();
         luaActors = new Dictionary<string, Spatial>();
