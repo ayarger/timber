@@ -168,10 +168,10 @@ public class NLuaScriptManager : Node
         luaState.DoString(global.GetAsText());
 
         //FOR TESTING
-        Godot.File x = new Godot.File();
-        x.Open($"LuaEngine/{testClassName}.lua", Godot.File.ModeFlags.Read);
-        RegisterClass(x, testClassName);
-        string objectName = GenerateObjectName();
+        //Godot.File x = new Godot.File();
+        //x.Open($"LuaEngine/{testClassName}.lua", Godot.File.ModeFlags.Read);
+        //RegisterClass(x, testClassName);
+        //string objectName = GenerateObjectName();
 
         GD.Print("Lua initialized");
         GD.Print($"{luaState.DoString("return 5+20")}");
@@ -179,7 +179,7 @@ public class NLuaScriptManager : Node
 
 
         //ArborCoroutine.StartCoroutine(SimulateCoro(0));
-        x.Close();
+        //x.Close();
     }
 
     //IEnumerator SimulateCoro(int id)

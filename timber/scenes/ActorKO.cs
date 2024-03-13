@@ -11,6 +11,8 @@ public class ActorKO : Spatial
     Texture pre_ko_texture;
     Texture ko_texture;
 
+    bool endGame;
+
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
@@ -19,11 +21,12 @@ public class ActorKO : Spatial
         ArborCoroutine.StartCoroutine(DoAnimation());
     }
 
-    public void Configure(Texture pre_ko_tex, Texture ko_tex)
+    public void Configure(Texture pre_ko_tex, Texture ko_tex, bool gameOver = false)
     {
         Name = "actor_ko";
         pre_ko_texture = pre_ko_tex;
         ko_texture = ko_tex;
+        endGame = gameOver;
     }
 
     IEnumerator DoAnimation()
@@ -48,7 +51,16 @@ public class ActorKO : Spatial
         }
 
         yield return ArborCoroutine.DoOverTime(DoFade, 2.0f);
-        GameOver.PerformGameOver(new GameOverRequest());
+
+        if (endGame)
+        {
+            GameOver.PerformGameOver(new GameOverRequest());
+        }
+        else
+        {
+            QueueFree();
+        }
+        
     }
     float velocity = 0.0f;
 

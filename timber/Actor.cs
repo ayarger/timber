@@ -5,6 +5,15 @@ using System.Collections;
 using Amazon.S3.Model;
 using static System.Net.Mime.MediaTypeNames;
 
+public class actorDeathEvent
+{
+    public string actor_name;
+    public actorDeathEvent(string _actor_name)
+    {
+         actor_name = _actor_name;
+    }
+}
+
 public class Actor : Spatial
 {
     // Declare member variables here. Examples:
@@ -18,7 +27,7 @@ public class Actor : Spatial
     SpatialMaterial character_material;
     MeshInstance shadow_view;
     StateManager state_manager;
-   
+    
 
     IsSelectable selectable;
 
@@ -190,19 +199,20 @@ public class Actor : Spatial
         ArborCoroutine.StartCoroutine(HurtAnimation(), this);
     }
 
-    public void Kill()
+    public void Kill()//TODO needs clean up in combatState, fogofwar, barcontainer
     {
         PackedScene scene = (PackedScene)ResourceLoader.Load("res://scenes/ActorKO.tscn");
-        GD.Print("Killed!!");
         ActorKO new_ko = (ActorKO)scene.Instance();
         GetParent().AddChild(new_ko);
         new_ko.GlobalTranslation = GlobalTranslation;
         new_ko.GlobalRotation = GlobalRotation;
         new_ko.Scale = Scale;
-        Visible = false;
+        Visible = true;
+        QueueFree();
         state_manager.DisableAllState();
-        new_ko.Configure(ArborResource.Get<Texture>("images/" + config.pre_ko_sprite_filename), ArborResource.Get<Texture>("images/" + config.ko_sprite_filename));
-        
+
+        bool endGame = GetNode<HasTeam>("HasTeam").team == "player";
+        new_ko.Configure(ArborResource.Get<Texture>("images/" + config.pre_ko_sprite_filename), ArborResource.Get<Texture>("images/" + config.ko_sprite_filename), endGame);
     }
 
    public void UpdateActorDict()
