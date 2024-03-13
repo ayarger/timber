@@ -48,7 +48,10 @@ public class ToastMessage : Control
 	
 	private AnimationPlayer _animationPlayer;
 	private Label _messageLabel;
-	private Label _numOccurredLabel;
+	private Label _numOccurredLabelFull;
+	private Label _numOccurredLabelShort;
+	private Label _numMsgLabelFull;
+	private Label _numMsgLabelShort;
 	private string _fullMessage;
 	private string _previewMessage;
 	private bool _isMouseHovering = false;
@@ -58,12 +61,28 @@ public class ToastMessage : Control
 	public override void _Ready()
 	{
 		_animationPlayer = GetNode<AnimationPlayer>("AnimationPlayer");
-		_messageLabel = GetNode<Label>("Label");
+		_messageLabel = GetNode<Label>("Panel/Label");
 		_messageLabel.Autowrap = true; // Enable autowrap
-		_numOccurredLabel = GetNode<Label>("NumOccurred");
-		_numOccurredLabel.Autowrap = true;
-		_numOccurredLabel.Text = "";
 		_messageBoxSize = _messageLabel.RectSize;
+		
+		_numOccurredLabelFull = GetNode<Label>("Panel/NumOccurred_full");
+		_numOccurredLabelFull.Autowrap = true;	
+		_numOccurredLabelFull.Visible = false;
+		_numOccurredLabelFull.Text = "";
+		
+		_numMsgLabelFull = GetNode<Label>("Panel/NumMsg_full");
+		_numMsgLabelFull.Autowrap = true;
+		_numMsgLabelFull.Visible = false;
+		_numMsgLabelFull.Text = "";
+		
+		_numMsgLabelShort = GetNode<Label>("Panel/NumMsg_short");
+		_numMsgLabelShort.Autowrap = true;
+		_numMsgLabelShort.Text = "";	
+		
+		_numOccurredLabelShort = GetNode<Label>("Panel/NumOccurred_short");
+		_numOccurredLabelShort.Autowrap = true;
+		_numOccurredLabelShort.Text = "";
+		
 		_visibilityTimer = GetNode<Timer>("Timer");
 		_visibilityTimer.Connect("timeout", this, nameof(StartHideAnimation));
 
@@ -85,7 +104,11 @@ public class ToastMessage : Control
 		_previewMessage = _fullMessage.Length <= previewLength ? 
 			_fullMessage : _fullMessage.Substring(0, previewLength) + "...";
 		_messageLabel.Text = _previewMessage;
-		if (msgObj.numOccurred > 1) _numOccurredLabel.Text = msgObj.numOccurred.ToString();
+		int numMsg = ToastManager.GetNumMsgInQueue();
+		if (numMsg > 0) _numMsgLabelShort.Text = numMsg.ToString() + " more";
+		if (numMsg > 0) _numMsgLabelFull.Text = numMsg.ToString() + " more message";
+		if (msgObj.numOccurred > 1) _numOccurredLabelFull.Text = "Occurred " + (msgObj.numOccurred).ToString() + " times";
+		if (msgObj.numOccurred > 1) _numOccurredLabelShort.Text = (msgObj.numOccurred).ToString() + " occurred";
 	}
 	
 	public void ShowMessage(ToastObject msgObj, int previewLength = 50)
@@ -111,6 +134,10 @@ public class ToastMessage : Control
 	{
 		_isMouseHovering = true;
 		_animationPlayer.Play("expand_animation");
+		_numMsgLabelShort.Visible = false;
+		_numOccurredLabelShort.Visible = false;
+		_numMsgLabelFull.Visible = true;
+		_numOccurredLabelFull.Visible = true;
 		_messageLabel.Text = _fullMessage; // Show full message
 		_messageLabel.RectMinSize = new Vector2(_messageLabel.RectMinSize.x, CalculateLabelHeight(_fullMessage, false));
 
@@ -120,6 +147,10 @@ public class ToastMessage : Control
 	{
 		_isMouseHovering = false;
 		_messageLabel.Text = _previewMessage; // Revert to preview message
+		_numMsgLabelShort.Visible = true;
+		_numOccurredLabelShort.Visible = true;
+		_numMsgLabelFull.Visible = false;
+		_numOccurredLabelFull.Visible = false;
 		_animationPlayer.Play("shrink_animation");
 		_messageLabel.RectMinSize = new Vector2(_messageLabel.RectMinSize.x, CalculateLabelHeight(_previewMessage, true));
 		

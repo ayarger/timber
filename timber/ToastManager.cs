@@ -16,11 +16,13 @@ using System.Threading.Tasks;
 public static class ToastManager
 {
     private static List<ToastMessage.ToastObject> _toastQueue;
+    private static List<ToastMessage.ToastObject> _toastHistory;
     private static ToastMessage.ToastObject currentToast;
     private static bool isShowing;
     static ToastManager()
     {
         _toastQueue = new List<ToastMessage.ToastObject>();
+        _toastHistory = new List<ToastMessage.ToastObject>();
         isShowing = false;
     }
 
@@ -28,6 +30,7 @@ public static class ToastManager
     public static void ShowToastMessage(Node caller, string content, float duration=3.0f, ToastMessage.ToastType type = ToastMessage.ToastType.Error)
     {
         ToastMessage.ToastObject _newMsg = new ToastMessage.ToastObject(caller, content, duration, type);
+        _toastHistory.Add(_newMsg);
         
         if (isShowing)
         {
@@ -78,6 +81,21 @@ public static class ToastManager
         {
             isShowing = visible;
         }
+    }
+
+    public static int GetNumMsgInQueue()
+    {
+        return _toastQueue.Count();
+    }
+    
+    public static List<ToastMessage.ToastObject> GetToastHistory()
+    {
+        return _toastHistory;
+    }
+
+    public static void ClearToastHistory()
+    {
+        _toastHistory.Clear();
     }
 
 }
