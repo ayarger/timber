@@ -56,14 +56,14 @@ public class ToastMessage : Control
 	private bool _isShowngHistory = false;
 	private Vector2 _messageBoxSize;
 	private Timer _visibilityTimer;
+	private RichTextLabel labelTemplate;
 
 	public override void _Ready()
 	{
 		_animationPlayer = GetNode<AnimationPlayer>("AnimationPlayer");
-		_messageBoxSize = _messageLabel.RectSize;
-		
 		_messageLabel = GetNode<Label>("Panel/Label");
 		_messageLabel.Autowrap = true;
+		_messageBoxSize = _messageLabel.RectSize;
 
 		_numMsgLabelShort = GetNode<Label>("Panel/NumMsg_short");
 		_numMsgLabelShort.Autowrap = true;
@@ -83,7 +83,7 @@ public class ToastMessage : Control
 		_closeButton.Connect("mouse_entered", this, nameof(OnMouseEnterButton));
 		_closeButton.Connect("mouse_exited", this, nameof(OnMouseExitButton));
 		_closeButton.Connect("pressed", this, nameof(OnMousePressCloseButton));
-		_clearHistoryButton.Visible = false;
+		_closeButton.Visible = false;
 		
 		var panel = GetNode<Panel>("Panel");
 		panel.MouseFilter = Control.MouseFilterEnum.Stop;
@@ -95,6 +95,7 @@ public class ToastMessage : Control
 		_historyScrollVBoxContainer.Connect("mouse_entered", this, nameof(OnMouseEnterHistory));
 		_historyScrollVBoxContainer.Connect("mouse_exited", this, nameof(OnMouseExitHistory));
 		
+		labelTemplate = (RichTextLabel)_historyScrollVBoxContainer.GetNode<RichTextLabel>("VBoxContainer/LabelTemplate").Duplicate();
 		EventBus.Subscribe<EventToastUpdate>(UpdateToast);
 	}
 
@@ -133,7 +134,7 @@ public class ToastMessage : Control
 	/// </summary>
 	private async void OnMouseEntered()
 	{
-		GD.Print("Mouse enter attempt.");
+		// GD.Print("Mouse enter attempt.");
 		_mouseEnterCount++;
 
 		await Task.Delay(TimeSpan.FromMilliseconds(100));
@@ -141,19 +142,20 @@ public class ToastMessage : Control
 		{
 			return;
 		}
-		GD.Print("Mouse enter.");
+		// GD.Print("Mouse enter.");
 		
 		_animationPlayer.Play("expand_animation");
 		_isMouseHovering = true;
 		_numMsgLabelShort.Visible = false;
 		_clearHistoryButton.Visible = true;
+		_closeButton.Visible = true;
 		_historyScrollVBoxContainer.Visible = true;
-		ShowToastHistoryUI();
-
 		_messageLabel.Visible = false;
 		_messageLabel.Text = _fullMessage; // Show full message
 		_messageLabel.RectMinSize = new Vector2(_messageLabel.RectMinSize.x, CalculateLabelHeight(_fullMessage, false));
 
+		await Task.Delay(TimeSpan.FromMilliseconds(300));
+		ShowToastHistoryUI();
 	}
 	
 	private float CalculateLabelHeight(string message, bool isPreview)
@@ -201,7 +203,6 @@ public class ToastMessage : Control
 		_isShowngHistory = true;
 		List<ToastObject> history = ToastManager.GetToastHistory();
 		var temp = _historyScrollVBoxContainer.GetNode<VBoxContainer>("VBoxContainer");
-		RichTextLabel labelTemplate = temp.GetNode<RichTextLabel>("LabelTemplate");
 
 		foreach (Node child in temp.GetChildren())
 		{
@@ -218,6 +219,10 @@ public class ToastMessage : Control
 			label.RectPosition = new Vector2(0, totalHeight);
 			totalHeight += label.RectSize.y;
 			totalHeight += 5;
+			// if (toast.Equals(ToastManager.currentToast))
+			// {
+			// 	label.Modulate = new Color(0, 0, 0, 1);
+			// }
 			temp.AddChild(label);
 		}
 		
@@ -240,6 +245,7 @@ public class ToastMessage : Control
 		_messageLabel.Text = _previewMessage;
 		_numMsgLabelShort.Visible = true;
 		_historyScrollVBoxContainer.Visible = false;
+		_closeButton.Visible = false;
 		_clearHistoryButton.Visible = false;
 		_animationPlayer.Play("shrink_animation");
 
@@ -251,25 +257,25 @@ public class ToastMessage : Control
 	
 	private void OnMouseEnterHistory()
 	{
-		GD.Print("Mouse enter history.");
+		// GD.Print("Mouse enter history.");
 		_mouseEnterCount++;
 	}
 	
 	private void OnMouseExitHistory()
 	{
-		GD.Print("Mouse exit history.");
+		// GD.Print("Mouse exit history.");
 		_mouseEnterCount--;
 	}
 	
 	private void OnMouseEnterButton()
 	{
-		GD.Print("Mouse enter clear button.");
+		// GD.Print("Mouse enter clear button.");
 		_mouseEnterCount++;
 	}
 	
 	private void OnMouseExitButton()
 	{
-		GD.Print("Mouse exit clear button.");
+		// GD.Print("Mouse exit clear button.");
 		_mouseEnterCount--;
 	}
 }

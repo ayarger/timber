@@ -4,26 +4,44 @@ using System.Linq;
 using Godot;
 using System.Threading.Tasks;
 
-// a queue records all the msgs awaits for showing
-// a record of the current msg
-
-// creates a struct
-// check if it is the same with current toast
-// if yes, ...
-// if not, push to queue
-// when a toast leaves the screen, call a function to push an object from queue and shows it on the screen
+// Todo for future
+// important: move it above the black screen
+// keyboard short cut
+// audio
+// Todo for 3.14-3.21
+// Tiny fixes and look on other things to do
 
 public static class ToastManager
 {
     private static List<ToastMessage.ToastObject> _toastQueue;
     private static List<ToastMessage.ToastObject> _toastHistory;
-    private static ToastMessage.ToastObject currentToast;
+    public static ToastMessage.ToastObject currentToast;
     private static bool isShowing;
+    private static Node _rootNode;
+
     static ToastManager()
     {
         _toastQueue = new List<ToastMessage.ToastObject>();
         _toastHistory = new List<ToastMessage.ToastObject>();
         isShowing = false;
+    }
+    
+    // TODO: fix this method
+    public static void Initialize(Node rootNode)
+    {
+        _rootNode = rootNode;
+        rootNode.SetProcessInput(true);
+    }
+
+    public static void HandleInput(InputEvent @event)
+    {
+        if (@event is InputEventKey keyEvent)
+        {
+            if (keyEvent.Pressed && ((keyEvent.Scancode == (int)KeyList.M && Input.IsKeyPressed((int)KeyList.Control)) || (keyEvent.Scancode == (int)KeyList.M && Input.IsKeyPressed((int)KeyList.Meta))))
+            {
+                ShowToastMessage(_rootNode, "Called Message History.");
+            }
+        }
     }
 
     // Called by other scripts to send a toast message
@@ -94,6 +112,8 @@ public static class ToastManager
         {
             count += toast.numOccurred;
         }
+
+        count += currentToast.numOccurred - 1;
         return count;
     }
     
