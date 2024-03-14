@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 // important: move it above the black screen
 // keyboard short cut
 // audio
+// make the scroll bar more visible
 // Todo for 3.14-3.21
 // Tiny fixes and look on other things to do
 
