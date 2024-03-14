@@ -11,7 +11,6 @@
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
     <PackageReference Include="System.Text.Json" Version="8.0.0" />
   </ItemGroup>
-<<<<<<< HEAD
   <Target Name="AddAliasesToReferences" BeforeTargets="FindReferenceAssembliesForReferences;ResolveReferences">
     <ItemGroup>
       <ReferencePath Condition="'%(FileName)' == 'System.Runtime.CompilerServices.Unsafe'">
@@ -20,9 +19,7 @@
     </ItemGroup>
   </Target>
   <Import Project="addons\YarnSpinner-Godot\YarnSpinner-Godot.props" />
-=======
   <ItemGroup>
     <Folder Include="temp_scenes\" />
   </ItemGroup>
->>>>>>> 51c7edb58d5a5ead47a9695975f5d3be4ee8b478
 </Project>

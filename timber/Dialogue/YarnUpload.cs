@@ -13,10 +13,11 @@ static class YarnManager
 public class YarnUpload : Button
 {
     private FileDialog fileDialog;
+    [Export] NodePath fileDialogPath;
 
     public override void _Ready()
     {
-        fileDialog = GetNode<FileDialog>("FileDialog");
+        fileDialog = GetNode<FileDialog>(fileDialogPath);
     }
 
     private void _on_Button_pressed()

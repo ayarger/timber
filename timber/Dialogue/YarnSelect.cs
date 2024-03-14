@@ -5,12 +5,12 @@ using YarnSpinnerGodot;
 public class YarnSelect : Button
 {
     private PopupMenu projectSelect;
+    [Export] NodePath popupPath;
 
     public override void _Ready()
     {
-        projectSelect = GetNode<PopupMenu>("PopupMenu");
+        projectSelect = GetNode<PopupMenu>(popupPath);
         projectSelect.Name = "Yarn Projects";
-        projectSelect.Connect("id_pressed", this, nameof(OnProjectSelected));
     }
 
     private void OnProjectSelected(int id)
@@ -24,6 +24,7 @@ public class YarnSelect : Button
     {
         if (YarnManager.projects.Keys.Count > 0)
         {
+            projectSelect.Clear();
             foreach (string key in YarnManager.projects.Keys)
             {
                 int id = projectSelect.GetItemCount();

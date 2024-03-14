@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-[gd_scene load_steps=38 format=2]
-=======
-[gd_scene load_steps=27 format=2]
->>>>>>> 51c7edb58d5a5ead47a9695975f5d3be4ee8b478
+[gd_scene load_steps=40 format=2]
 
 [ext_resource path="res://scenes/GameManager.tscn" type="PackedScene" id=1]
 [ext_resource path="res://DebugSphere.cs" type="Script" id=2]
@@ -21,10 +17,10 @@
 [ext_resource path="res://temp_scenes/TempConsole.tscn" type="PackedScene" id=15]
 [ext_resource path="res://fogofwartesting/FogOfWar.tscn" type="PackedScene" id=16]
 [ext_resource path="res://fogofwartesting/TestMovement.cs" type="Script" id=17]
-<<<<<<< HEAD
-[ext_resource path="res://addons/YarnSpinner-Godot/Runtime/LineProviders/TextLineProvider.cs" type="Script" id=18]
-[ext_resource path="res://addons/YarnSpinner-Godot/Runtime/Views/OptionsListView.cs" type="Script" id=19]
+[ext_resource path="res://temp_scenes/HUD.tscn" type="PackedScene" id=18]
+[ext_resource path="res://LuaEngine/NLuaScriptManager.cs" type="Script" id=19]
 [ext_resource path="res://addons/YarnSpinner-Godot/Runtime/InMemoryVariableStorage.cs" type="Script" id=20]
+[ext_resource path="res://addons/YarnSpinner-Godot/Runtime/Views/OptionsListView.cs" type="Script" id=21]
 [ext_resource path="res://addons/YarnSpinner-Godot/Runtime/DialogueRunner.cs" type="Script" id=22]
 [ext_resource path="res://addons/YarnSpinner-Godot/Runtime/Views/LineView.cs" type="Script" id=23]
 [ext_resource path="res://Dialogue/YarnSelect.cs" type="Script" id=24]
@@ -32,10 +28,7 @@
 [ext_resource path="res://Dialogue/OptionView.tscn" type="PackedScene" id=26]
 [ext_resource path="res://Dialogue/StartDialogueButton.cs" type="Script" id=27]
 [ext_resource path="res://UI/Oxanium-Regular.ttf" type="DynamicFontData" id=28]
-=======
-[ext_resource path="res://temp_scenes/HUD.tscn" type="PackedScene" id=18]
-[ext_resource path="res://LuaEngine/NLuaScriptManager.cs" type="Script" id=19]
->>>>>>> 51c7edb58d5a5ead47a9695975f5d3be4ee8b478
+[ext_resource path="res://addons/YarnSpinner-Godot/Runtime/LineProviders/TextLineProvider.cs" type="Script" id=29]
 
 [sub_resource type="GDScript" id=2]
 
@@ -264,7 +257,6 @@ script = ExtResource( 10 )
 [node name="TestMovement" type="Node" parent="."]
 script = ExtResource( 17 )
 
-<<<<<<< HEAD
 [node name="Dialogue" type="Control" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -322,7 +314,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 margin_right = 40.0
 margin_bottom = 40.0
-color = Color( 0.282353, 0.0745098, 0.0745098, 1 )
+color = Color( 0.545098, 0.545098, 0.545098, 0.32549 )
 
 [node name="CharacterNameText" type="RichTextLabel" parent="Dialogue/CanvasLayer/LineView/ViewControl"]
 anchor_top = 0.844
@@ -339,7 +331,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 margin_right = 40.0
 margin_bottom = 40.0
-color = Color( 0.643137, 0.254902, 0.254902, 1 )
+color = Color( 0.545098, 0.545098, 0.545098, 0.694118 )
 
 [node name="ContinueButton" type="Button" parent="Dialogue/CanvasLayer/LineView/ViewControl"]
 anchor_left = 0.712
@@ -362,7 +354,7 @@ anchor_bottom = 0.925
 margin_right = 40.0
 margin_bottom = 40.0
 mouse_filter = 2
-script = ExtResource( 19 )
+script = ExtResource( 21 )
 optionViewPrefab = ExtResource( 26 )
 lastLineTextPath = NodePath("LastLineText")
 viewControlPath = NodePath("VBoxContainer")
@@ -388,7 +380,7 @@ script = ExtResource( 20 )
 debugTextViewPath = NodePath("../VariableDebugText")
 
 [node name="TextLineProvider" type="Node2D" parent="Dialogue/CanvasLayer"]
-script = ExtResource( 18 )
+script = ExtResource( 29 )
 
 [node name="Button" type="Button" parent="Dialogue/CanvasLayer"]
 anchor_left = 0.683
@@ -413,6 +405,7 @@ margin_right = 12.0
 margin_bottom = 20.0
 text = "Upload"
 script = ExtResource( 25 )
+fileDialogPath = NodePath("FileDialog")
 
 [node name="FileDialog" type="FileDialog" parent="Dialogue/CanvasLayer/Upload yarn project"]
 margin_left = -1202.28
@@ -434,6 +427,7 @@ margin_right = -4.0
 margin_bottom = -138.0
 text = "Select"
 script = ExtResource( 24 )
+popupPath = NodePath("PopupMenu")
 
 [node name="PopupMenu" type="PopupMenu" parent="Dialogue/CanvasLayer/Select yarn project"]
 anchor_left = -7.546
@@ -446,13 +440,13 @@ margin_right = -989.0
 margin_bottom = -603.592
 rect_scale = Vector2( 2, 2 )
 
+[node name="NLuaManager" type="Node" parent="."]
+script = ExtResource( 19 )
+
 [connection signal="pressed" from="Dialogue/CanvasLayer/Button" to="Dialogue/CanvasLayer/Button" method="_on_Button_pressed"]
 [connection signal="pressed" from="Dialogue/CanvasLayer/Upload yarn project" to="Dialogue/CanvasLayer/Upload yarn project" method="_on_Button_pressed"]
 [connection signal="file_selected" from="Dialogue/CanvasLayer/Upload yarn project/FileDialog" to="Dialogue/CanvasLayer/Upload yarn project" method="_on_FileDialog_file_selected"]
 [connection signal="pressed" from="Dialogue/CanvasLayer/Select yarn project" to="Dialogue/CanvasLayer/Select yarn project" method="ShowPopupMenu"]
-=======
-[node name="NLuaManager" type="Node" parent="."]
-script = ExtResource( 19 )
->>>>>>> 51c7edb58d5a5ead47a9695975f5d3be4ee8b478
+[connection signal="id_pressed" from="Dialogue/CanvasLayer/Select yarn project/PopupMenu" to="Dialogue/CanvasLayer/Select yarn project" method="OnProjectSelected"]
 
 [editable path="FogOfWar"]
