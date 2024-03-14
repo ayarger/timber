@@ -341,6 +341,8 @@ namespace YarnSpinnerGodot
 
         public RichTextLabel characterNameText = null;
 
+        [Export] public bool alwaysShowCharacterNameView;
+
         /// <summary>
         /// Controls whether the text of <see cref="lineText"/> should be
         /// gradually revealed over time.
@@ -567,23 +569,31 @@ namespace YarnSpinnerGodot
             }
             else
             {
-                if (characterNameText.BbcodeEnabled)
+                if(!alwaysShowCharacterNameView && dialogueLine.CharacterName == null)
                 {
-                    characterNameText.Text = dialogueLine.CharacterName;
-                }
-                else
+                    characterNameText.Hide();
+                } else
                 {
-                    characterNameText.Text = dialogueLine.CharacterName;
-                }
+                    characterNameText.Show();
+                    if (characterNameText.BbcodeEnabled)
+                    {
+                        characterNameText.Text = dialogueLine.CharacterName;
+                    }
+                    else
+                    {
+                        characterNameText.Text = dialogueLine.CharacterName;
+                    }
 
-                if (lineText.BbcodeEnabled)
-                {
-                    lineText.Text = dialogueLine.TextWithoutCharacterName.Text;
+                    if (lineText.BbcodeEnabled)
+                    {
+                        lineText.Text = dialogueLine.TextWithoutCharacterName.Text;
+                    }
+                    else
+                    {
+                        lineText.Text = dialogueLine.TextWithoutCharacterName.Text;
+                    }
                 }
-                else
-                {
-                    lineText.Text = dialogueLine.TextWithoutCharacterName.Text;
-                }
+                
             }
 
             // Show the entire line's text immediately.
@@ -638,6 +648,14 @@ namespace YarnSpinnerGodot
                     // text view.
                     characterNameText.Text = dialogueLine.CharacterName;
                     lineText.Text = dialogueLine.TextWithoutCharacterName.Text;
+                    if (!alwaysShowCharacterNameView && dialogueLine.CharacterName == null)
+                    {
+                        characterNameText.Hide();
+                    }
+                    else
+                    {
+                        characterNameText.Show();
+                    }
                 }
                 else
                 {
