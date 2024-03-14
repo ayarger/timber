@@ -45,59 +45,49 @@ public class ToastMessage : Control
 	
 	private AnimationPlayer _animationPlayer;
 	private Label _messageLabel;
-	// private Label _numOccurredLabelFull;
-	// private Label _numOccurredLabelShort;
-	// private Label _numMsgLabelFull;
 	private Label _numMsgLabelShort;
 	private Button _clearHistoryButton;
+	private Button _closeButton;
 	private ScrollContainer _historyScrollVBoxContainer;
 	private string _fullMessage;
 	private string _previewMessage;
-	private int mouseEnterCount = 0;
+	private int _mouseEnterCount = 0;
 	private bool _isMouseHovering = false;
-	private bool _mouseOnHistory = false;
-	private bool _mouseEnterFronHistory = false;
+	private bool _isShowngHistory = false;
 	private Vector2 _messageBoxSize;
-	private Timer _visibilityTimer; // Declare the timer member
+	private Timer _visibilityTimer;
 
 	public override void _Ready()
 	{
 		_animationPlayer = GetNode<AnimationPlayer>("AnimationPlayer");
-		_messageLabel = GetNode<Label>("Panel/Label");
-		_messageLabel.Autowrap = true; // Enable autowrap
 		_messageBoxSize = _messageLabel.RectSize;
 		
-		// _numOccurredLabelFull = GetNode<Label>("Panel/NumOccurred_full");
-		// _numOccurredLabelFull.Autowrap = true;	
-		// _numOccurredLabelFull.Visible = false;
-		// _numOccurredLabelFull.Text = "";
-		//
-		// _numMsgLabelFull = GetNode<Label>("Panel/NumMsg_full");
-		// _numMsgLabelFull.Autowrap = true;
-		// _numMsgLabelFull.Visible = false;
-		// _numMsgLabelFull.Text = "";
-		
+		_messageLabel = GetNode<Label>("Panel/Label");
+		_messageLabel.Autowrap = true;
+
 		_numMsgLabelShort = GetNode<Label>("Panel/NumMsg_short");
 		_numMsgLabelShort.Autowrap = true;
 		_numMsgLabelShort.Text = "";	
 		
-		// _numOccurredLabelShort = GetNode<Label>("Panel/NumOccurred_short");
-		// _numOccurredLabelShort.Autowrap = true;
-		// _numOccurredLabelShort.Text = "";
-		
 		_visibilityTimer = GetNode<Timer>("Timer");
+		// default animation in case the mouse never enters
 		_visibilityTimer.Connect("timeout", this, nameof(StartHideAnimation));
 
 		_clearHistoryButton = GetNode<Button>("Panel/ClearHistoryButton");
-		_clearHistoryButton.Connect("mouse_entered", this, nameof(OnMouseEnterClearButton));
-		_clearHistoryButton.Connect("mouse_exited", this, nameof(OnMouseExitClearButton));
+		_clearHistoryButton.Connect("mouse_entered", this, nameof(OnMouseEnterButton));
+		_clearHistoryButton.Connect("mouse_exited", this, nameof(OnMouseExitButton));
 		_clearHistoryButton.Connect("pressed", this, nameof(OnMousePressClearButton));
+		_clearHistoryButton.Visible = false;
+		
+		_closeButton = GetNode<Button>("Panel/CloseButton");
+		_closeButton.Connect("mouse_entered", this, nameof(OnMouseEnterButton));
+		_closeButton.Connect("mouse_exited", this, nameof(OnMouseExitButton));
+		_closeButton.Connect("pressed", this, nameof(OnMousePressCloseButton));
 		_clearHistoryButton.Visible = false;
 		
 		var panel = GetNode<Panel>("Panel");
 		panel.MouseFilter = Control.MouseFilterEnum.Stop;
 		panel.Connect("mouse_entered", this, nameof(OnMouseEntered));
-		panel.Connect("mouse_exited", this, nameof(OnMouseExited));
 
 		_historyScrollVBoxContainer = GetNode<ScrollContainer>("Panel/HistoryScrollContainer");
 		_historyScrollVBoxContainer.Visible = false;
@@ -108,6 +98,9 @@ public class ToastMessage : Control
 		EventBus.Subscribe<EventToastUpdate>(UpdateToast);
 	}
 
+	/// <summary>
+	/// Content Display Section
+	/// </summary>
 	private void MessageObjContentDisplay(ToastObject msgObj, int previewLength = 50)
 	{
 		_fullMessage = msgObj.content;
@@ -116,9 +109,6 @@ public class ToastMessage : Control
 		_messageLabel.Text = _previewMessage;
 		int numMsg = ToastManager.GetNumMsgInQueue();
 		if (numMsg > 0) _numMsgLabelShort.Text = numMsg.ToString() + " more";
-		// if (numMsg > 0) _numMsgLabelFull.Text = numMsg.ToString() + " more message";
-		// if (msgObj.numOccurred > 1) _numOccurredLabelFull.Text = "Occurred " + (msgObj.numOccurred).ToString() + " times";
-		// if (msgObj.numOccurred > 1) _numOccurredLabelShort.Text = (msgObj.numOccurred).ToString() + " occurred";
 	}
 	
 	public void ShowMessage(ToastObject msgObj, int previewLength = 50)
@@ -128,9 +118,6 @@ public class ToastMessage : Control
 		_animationPlayer.Play("show_animation");
 		_isMouseHovering = false;
 		ResetAndStartTimer(msgObj.duration);
-		// GetTree().CreateTimer(msgObj.duration).Connect("timeout", this, 
-		// 												nameof(StartHideAnimation), 
-		// 												null, (uint)ConnectFlags.Oneshot);
 	}
 
 	void UpdateToast(EventToastUpdate e)
@@ -138,15 +125,19 @@ public class ToastMessage : Control
 		MessageObjContentDisplay(e.obj);
 		_messageLabel.Text = e.obj.content;
 		ResetAndStartTimer(e.obj.duration);
+		if (_isShowngHistory) ShowToastHistoryUI();
 	}
-
+	
+	/// <summary>
+	/// Animation Section
+	/// </summary>
 	private async void OnMouseEntered()
 	{
 		GD.Print("Mouse enter attempt.");
-		mouseEnterCount++;
+		_mouseEnterCount++;
 
 		await Task.Delay(TimeSpan.FromMilliseconds(100));
-		if (mouseEnterCount != 1 || _isMouseHovering)
+		if (_mouseEnterCount != 1 || _isMouseHovering)
 		{
 			return;
 		}
@@ -156,9 +147,6 @@ public class ToastMessage : Control
 		_isMouseHovering = true;
 		_numMsgLabelShort.Visible = false;
 		_clearHistoryButton.Visible = true;
-		// _numOccurredLabelShort.Visible = false;
-		// _numMsgLabelFull.Visible = true;
-		// _numOccurredLabelFull.Visible = true;
 		_historyScrollVBoxContainer.Visible = true;
 		ShowToastHistoryUI();
 
@@ -167,34 +155,17 @@ public class ToastMessage : Control
 		_messageLabel.RectMinSize = new Vector2(_messageLabel.RectMinSize.x, CalculateLabelHeight(_fullMessage, false));
 
 	}
-
-	private async void OnMouseExited()
+	
+	private float CalculateLabelHeight(string message, bool isPreview)
 	{
-		GD.Print("Mouse exit attempt.");
-		await Task.Delay(TimeSpan.FromMilliseconds(100));
-		mouseEnterCount--;
-		if (mouseEnterCount != 0)
+		if (isPreview)
 		{
-			return;
+			return _messageBoxSize.y;
 		}
-		GD.Print("Mouse exit.");
-		_isMouseHovering = false;
-		_mouseEnterFronHistory = false;
-		_messageLabel.Text = _previewMessage; // Revert to preview message
-		_numMsgLabelShort.Visible = true;
-		// _numOccurredLabelShort.Visible = true;
-		// _numMsgLabelFull.Visible = false;
-		// _numOccurredLabelFull.Visible = false;
-		_historyScrollVBoxContainer.Visible = false;
-		_clearHistoryButton.Visible = false;
-		_animationPlayer.Play("shrink_animation");
-
-		_messageLabel.Visible = true;
-		_messageLabel.RectMinSize = new Vector2(_messageLabel.RectMinSize.x, CalculateLabelHeight(_previewMessage, true));
-		
-		// Start hiding animation directly or after a delay
-		GetTree().CreateTimer(0.5f).Connect("timeout", this, nameof(StartHideAnimation), null, (uint)ConnectFlags.Oneshot);
-
+		else
+		{
+			return _messageBoxSize.y * 3;
+		}
 	}
 
 	private void StartHideAnimation()
@@ -210,33 +181,24 @@ public class ToastMessage : Control
 	private void HideToast()
 	{
 		Visible = false;
-		QueueFree(); // Remove the toast from the scene tree to clean up
+		QueueFree();
 		ToastManager.SetToastVisibility(false);
 	}
 
-	private float CalculateLabelHeight(string message, bool isPreview)
-	{
-		if (isPreview)
-		{
-			return _messageBoxSize.y;
-		}
-		else
-		{
-			return _messageBoxSize.y * 3;
-		}
-	}
-	
 	private void ResetAndStartTimer(float duration)
 	{
-		_visibilityTimer.Stop(); // Stop the current timer if it's running
+		_visibilityTimer.Stop();
 		_visibilityTimer.WaitTime = duration;
 		_visibilityTimer.OneShot = true;
 		_visibilityTimer.Start();
 	}
-
+	
+	/// <summary>
+	/// Toast History Section
+	/// </summary>
 	private void ShowToastHistoryUI()
 	{
-		// Retrieve toast history
+		_isShowngHistory = true;
 		List<ToastObject> history = ToastManager.GetToastHistory();
 		var temp = _historyScrollVBoxContainer.GetNode<VBoxContainer>("VBoxContainer");
 		RichTextLabel labelTemplate = temp.GetNode<RichTextLabel>("LabelTemplate");
@@ -259,38 +221,55 @@ public class ToastMessage : Control
 			temp.AddChild(label);
 		}
 		
-		// clear toast queue
 		ToastManager.ClearToastQueue();
 	}
 
-	private void OnMouseEnterHistory()
-	{
-		GD.Print("Mouse enter history.");
-		mouseEnterCount++;
-	}
-	
-	private void OnMouseExitHistory()
-	{
-		GD.Print("Mouse exit history.");
-		mouseEnterCount--;
-	}
-	
-	private void OnMouseEnterClearButton()
-	{
-		GD.Print("Mouse enter clear button.");
-		mouseEnterCount++;
-	}
-	
-	private void OnMouseExitClearButton()
-	{
-		GD.Print("Mouse exit clear button.");
-		mouseEnterCount--;
-	}
-	
 	private void OnMousePressClearButton()
 	{
 		if (!_isMouseHovering) return;
 		ToastManager.ClearToastHistory();
 		ShowToastHistoryUI();
+	}
+	
+	private void OnMousePressCloseButton()
+	{
+		if (!_isMouseHovering) return;
+		_isShowngHistory = false;
+		GetNode<Panel>("Panel").MouseFilter = Control.MouseFilterEnum.Ignore;
+		_isMouseHovering = false;
+		_messageLabel.Text = _previewMessage;
+		_numMsgLabelShort.Visible = true;
+		_historyScrollVBoxContainer.Visible = false;
+		_clearHistoryButton.Visible = false;
+		_animationPlayer.Play("shrink_animation");
+
+		_messageLabel.Visible = true;
+		_messageLabel.RectMinSize = new Vector2(_messageLabel.RectMinSize.x, CalculateLabelHeight(_previewMessage, true));
+		
+		GetTree().CreateTimer(0.5f).Connect("timeout", this, nameof(StartHideAnimation), null, (uint)ConnectFlags.Oneshot);
+	}
+	
+	private void OnMouseEnterHistory()
+	{
+		GD.Print("Mouse enter history.");
+		_mouseEnterCount++;
+	}
+	
+	private void OnMouseExitHistory()
+	{
+		GD.Print("Mouse exit history.");
+		_mouseEnterCount--;
+	}
+	
+	private void OnMouseEnterButton()
+	{
+		GD.Print("Mouse enter clear button.");
+		_mouseEnterCount++;
+	}
+	
+	private void OnMouseExitButton()
+	{
+		GD.Print("Mouse exit clear button.");
+		_mouseEnterCount--;
 	}
 }

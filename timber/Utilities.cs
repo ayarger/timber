@@ -37,7 +37,7 @@ public static class Utilities
         if (!isConnected)
         {
             ShowToastMessage(caller, "No internet connection detected.");
-            ShowToastMessage(caller, "Testing toast queue.");
+            ShowToastMessage(caller, "Testing toast queue.", type: ToastMessage.ToastType.Notification);
         }
 
         return isConnected;

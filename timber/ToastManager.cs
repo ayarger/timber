@@ -37,20 +37,24 @@ public static class ToastManager
             if (_newMsg.Equals(currentToast))
             {
                 currentToast.numOccurred++;
-                EventBus.Publish(new EventToastUpdate(currentToast));
-                return; 
             }
-            for (int i = 0; i < _toastQueue.Count; i++)
+            else
             {
-                ToastMessage.ToastObject t = _toastQueue[i];
-                if (t.Equals(_newMsg))
+                bool found = false;
+                for (int i = 0; i < _toastQueue.Count; i++)
                 {
-                    t.numOccurred++;
-                    _toastQueue[i] = t;
-                    return;
+                    ToastMessage.ToastObject t = _toastQueue[i];
+                    if (t.Equals(_newMsg))
+                    {
+                        t.numOccurred++;
+                        _toastQueue[i] = t;
+                        found = true;
+                        break;
+                    }
                 }
+                if (!found) _toastQueue.Add(_newMsg);
             }
-            _toastQueue.Add(_newMsg);
+            EventBus.Publish(new EventToastUpdate(currentToast));
         }
         else
         {
