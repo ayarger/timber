@@ -138,4 +138,12 @@ public class UIBar : Control
             ui_tween.Start();
         }
     }
+
+    public void OnCreate(float duration)
+    {
+        tex_progress.SelfModulate = new Color(tex_progress.SelfModulate.r, tex_progress.SelfModulate.g, tex_progress.SelfModulate.b, 0);
+        Color currentColor = tex_progress.SelfModulate;
+        ui_tween.InterpolateProperty(tex_progress, "modulate:a", currentColor.a, 1, duration, Tween.TransitionType.Linear, Tween.EaseType.In);
+        ui_tween.Start();
+    }
 }

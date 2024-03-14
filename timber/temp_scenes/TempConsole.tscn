@@ -1,0 +1,38 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://DeveloperConsole/Scripts/ConsoleManager.cs" type="Script" id=1]
+
+[node name="TempConsole" type="Control"]
+margin_top = 12.0
+margin_right = 40.0
+margin_bottom = 52.0
+
+[node name="ConsolePanel" type="Panel" parent="."]
+visible = false
+margin_top = -11.0
+margin_right = 400.0
+margin_bottom = 29.0
+rect_scale = Vector2( 1.2, 1.2 )
+
+[node name="Input" type="LineEdit" parent="ConsolePanel"]
+pause_mode = 2
+margin_right = 400.0
+margin_bottom = 40.0
+virtual_keyboard_enabled = false
+placeholder_text = "Type in \"help\" to see all available commands"
+placeholder_alpha = 0.347
+caret_blink = true
+caret_blink_speed = 0.81
+
+[node name="Output" type="TextEdit" parent="ConsolePanel"]
+margin_top = 40.0
+margin_right = 400.0
+margin_bottom = 340.0
+readonly = true
+wrap_enabled = true
+
+[node name="ConsoleManager" type="Control" parent="."]
+pause_mode = 2
+margin_right = 40.0
+margin_bottom = 40.0
+script = ExtResource( 1 )
