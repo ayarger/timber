@@ -7,10 +7,10 @@ using static System.Net.Mime.MediaTypeNames;
 
 public class actorDeathEvent
 {
-    public string actor_name;
-    public actorDeathEvent(string _actor_name)
+    public Actor actor;
+    public actorDeathEvent(Actor a)
     {
-         actor_name = _actor_name;
+         actor = a;
     }
 }
 
@@ -27,7 +27,7 @@ public class Actor : Spatial
     SpatialMaterial character_material;
     MeshInstance shadow_view;
     StateManager state_manager;
-    
+   
 
     IsSelectable selectable;
 
@@ -208,11 +208,15 @@ public class Actor : Spatial
         new_ko.GlobalRotation = GlobalRotation;
         new_ko.Scale = Scale;
         Visible = true;
-        QueueFree();
-        state_manager.DisableAllState();
+
+        EventBus.Publish<actorDeathEvent>(new actorDeathEvent(this));
 
         bool endGame = GetNode<HasTeam>("HasTeam").team == "player";
+        GD.Print(endGame);
         new_ko.Configure(ArborResource.Get<Texture>("images/" + config.pre_ko_sprite_filename), ArborResource.Get<Texture>("images/" + config.ko_sprite_filename), endGame);
+
+        QueueFree();
+        state_manager.DisableAllState();
     }
 
    public void UpdateActorDict()

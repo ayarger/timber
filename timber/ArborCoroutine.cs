@@ -64,7 +64,7 @@ public class ArborCoroutine : Node
             dead_coroutines.Clear();
             new_ienumerators.Clear();
 
-            if(m == null) /* If the node is destroyed, deactivate all coroutines */
+            if(m == null || !IsInstanceValid(m)) /* If the node is destroyed, deactivate all coroutines */
             {
                 dead_coroutines = new HashSet<IEnumerator>(coroutines_on_monobehavior);
             }

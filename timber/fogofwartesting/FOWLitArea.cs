@@ -16,6 +16,11 @@ public class FOWLitArea : Sprite
     public override void _Ready()
     {
         timer = 0f;
+        EventBus.Subscribe<actorDeathEvent>((actorDeathEvent e) =>
+        {
+            if (e.actor == follow)
+                follow = null;
+        });
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -24,14 +29,8 @@ public class FOWLitArea : Sprite
         timer += delta;
         float radius = isLow ? baseRadius * 1.3f : baseRadius * (1f + .075f * Mathf.Sin(2f*timer));
 
-        if (follow.IsQueuedForDeletion())
-        {
-            return;
-        }
-
         if (follow == null)
         {
-            QueueFree();
             return;
         }
 

@@ -84,7 +84,8 @@ public class MovementState : ActorState
     public override void Stop()
     {
         ArborCoroutine.StopCoroutinesOnNode(this);
-        ArborCoroutine.StartCoroutine(MoveToNearestTile(), this);
+        if(!actor.IsQueuedForDeletion())
+            ArborCoroutine.StartCoroutine(MoveToNearestTile(), this);
         //Place actor in tilemap
     }
 

@@ -32,11 +32,7 @@ public class CombatState : ActorState
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
-        if(actor.GetNode<HasTeam>("HasTeam").team == "player")//Hardcode different actor stats
-        {
-            attackDamage = 20;
-            attackCooldown = 0.75f;
-        }
+        
         base._Ready();
     }
 
@@ -48,11 +44,24 @@ public class CombatState : ActorState
         animation_offset = GD.Randf() * 100.0f;
         attackable = true;
 
+        if (actor.GetNode<HasTeam>("HasTeam").team == "player")//Hardcode different actor stats
+        {
+            attackDamage = 20;
+            attackCooldown = 0.75f;
+        }
+
+        EventBus.Subscribe<actorDeathEvent>((actorDeathEvent e) =>
+        {
+            if (e.actor == TargetActor)
+            {
+                TargetActor = null;
+            }
+        });
     }
 
     public override void Update(float delta)
     {
-        if (!TargetActor.IsQueuedForDeletion() || TargetActor != null)//TODO check if actor is dead
+        if (TargetActor != null)//TODO check if actor is dead
         {
             Vector3 dest = Grid.LockToGrid(TargetActor.GlobalTranslation);
             MovementState b = (manager.states["MovementState"] as MovementState);
@@ -107,6 +116,11 @@ public class CombatState : ActorState
             manager.DisableState("CombatState");
             return;
         }
+    }
+
+    public override void Stop()
+    {
+        rotateTime = 0;
     }
 
     IEnumerator attackAnimation()
