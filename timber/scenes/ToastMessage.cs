@@ -49,6 +49,7 @@ public class ToastMessage : Control
 	// private Label _numOccurredLabelShort;
 	// private Label _numMsgLabelFull;
 	private Label _numMsgLabelShort;
+	private Button _clearHistoryButton;
 	private ScrollContainer _historyScrollVBoxContainer;
 	private string _fullMessage;
 	private string _previewMessage;
@@ -87,6 +88,12 @@ public class ToastMessage : Control
 		_visibilityTimer = GetNode<Timer>("Timer");
 		_visibilityTimer.Connect("timeout", this, nameof(StartHideAnimation));
 
+		_clearHistoryButton = GetNode<Button>("Panel/ClearHistoryButton");
+		_clearHistoryButton.Connect("mouse_entered", this, nameof(OnMouseEnterClearButton));
+		_clearHistoryButton.Connect("mouse_exited", this, nameof(OnMouseExitClearButton));
+		_clearHistoryButton.Connect("pressed", this, nameof(OnMousePressClearButton));
+		_clearHistoryButton.Visible = false;
+		
 		var panel = GetNode<Panel>("Panel");
 		panel.MouseFilter = Control.MouseFilterEnum.Stop;
 		panel.Connect("mouse_entered", this, nameof(OnMouseEntered));
@@ -144,10 +151,11 @@ public class ToastMessage : Control
 			return;
 		}
 		GD.Print("Mouse enter.");
-
-		_isMouseHovering = true;
+		
 		_animationPlayer.Play("expand_animation");
+		_isMouseHovering = true;
 		_numMsgLabelShort.Visible = false;
+		_clearHistoryButton.Visible = true;
 		// _numOccurredLabelShort.Visible = false;
 		// _numMsgLabelFull.Visible = true;
 		// _numOccurredLabelFull.Visible = true;
@@ -178,6 +186,7 @@ public class ToastMessage : Control
 		// _numMsgLabelFull.Visible = false;
 		// _numOccurredLabelFull.Visible = false;
 		_historyScrollVBoxContainer.Visible = false;
+		_clearHistoryButton.Visible = false;
 		_animationPlayer.Play("shrink_animation");
 
 		_messageLabel.Visible = true;
@@ -264,5 +273,24 @@ public class ToastMessage : Control
 	{
 		GD.Print("Mouse exit history.");
 		mouseEnterCount--;
+	}
+	
+	private void OnMouseEnterClearButton()
+	{
+		GD.Print("Mouse enter clear button.");
+		mouseEnterCount++;
+	}
+	
+	private void OnMouseExitClearButton()
+	{
+		GD.Print("Mouse exit clear button.");
+		mouseEnterCount--;
+	}
+	
+	private void OnMousePressClearButton()
+	{
+		if (!_isMouseHovering) return;
+		ToastManager.ClearToastHistory();
+		ShowToastHistoryUI();
 	}
 }
