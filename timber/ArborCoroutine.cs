@@ -105,6 +105,12 @@ public class ArborCoroutine : Node
                 }
             }
 
+            //Will occur if stop all coroutines is called during a coroutine.
+            if (!coroutines.ContainsKey(m))
+            {
+                continue;
+            }
+
             foreach (IEnumerator new_ie in new_ienumerators)
             {
                 coroutines[m].Add(new_ie);

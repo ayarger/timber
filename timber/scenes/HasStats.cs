@@ -14,6 +14,19 @@ public class StatChangeEvent
         stat_name = _stat_name;
     }
 }
+
+/// <summary>
+/// Options to display the stat & how it is displayed
+/// </summary>
+
+public enum DisplayOptions
+{
+    None,
+    Overhead,
+    HUD,
+    OverheadAndHUD
+}
+
 /// <summary>
 /// Generic stat class with minimum, current, maximum value and stat specific UI info
 /// </summary>
@@ -28,7 +41,6 @@ public class Stat
     public Color barColor { get; set; }
 
     // TODO UI styling info
-    // maybe bar colors?
     public float Ratio = 1;
 
 
@@ -88,6 +100,18 @@ public class Stat
         ClampCurrentValue();
     }
 
+    public void SetVal(int amount)
+    {
+        currVal = amount;
+        ClampCurrentValue();
+    }
+
+    public void SetMaxVal(int amount)
+    {
+        maxVal = amount;
+        ClampCurrentValue();
+    }
+
     public void toggleUI()
     {
         if (displayOn)
@@ -108,23 +132,20 @@ public class Stat
         // publish statChange event when clamp function is called
         EventBus.Publish<StatChangeEvent>(new StatChangeEvent(name));
         GD.Print(name + "stat change event published");
-
-        // Can't emit signal from here since stat is not a node
-        if (displayOn)
-        {
-            // TODO: maybe use event bus to publish stat_change event
-            // Inside has stats class, emit health_change signal with the stat_name 
-        }
     }
 }
 
+/// <summary>
+/// Character stats system
+/// </summary>
 public class HasStats : Node
 {
     // subsription for statChangeEvent
-    Subscription<StatChangeEvent> statChangeEvent;
+
     /// <summary>
     /// Stats Dictionary
     /// </summary>
+    /// 
     public Dictionary<string, Stat> Stats = new Dictionary<string, Stat>();
     public List<string> Stats_With_Bar = new List<string>();
 
@@ -138,44 +159,38 @@ public class HasStats : Node
 
     public override void _Ready()
     {
-        statChangeEvent = EventBus.Subscribe<StatChangeEvent>(OnStatChange);
-        // TODO:
-        // UIOrb.Create(this)
         container = BarContainer.Create(this);
     }
 
-    public void OnStatChange(StatChangeEvent e)
-    {
-        EmitSignal("stat_change", e.stat_name);
-    }
 
+    // Refactor AddStat to send signals to BarContainer/UI Manager.
     public void AddStat(string name, int min, int max, int initial, bool display)
     {
-
+        // Add new stat into the dictionary
         if (display && Stats_With_Bar.Count < 3)
         {
             Stats_With_Bar.Add(name);
             int index = Stats_With_Bar.Count - 1;
             
             // TODO create bars
-            if (name == "health")
+
+            if (name == "health" && !Stats.ContainsKey(name))
             {
                 Bar bar = container.CreatePrimary(name);
             }
+
             else
             {
                 Bar bar =  container.CreateSecondary(name);
                 if (index == 2)
                 {
-                    GD.Print("green");
+                    //GD.Print("green");
                     bar.ChangeColor(new Color(0.33f, 0.63f, 0.35f, 1));
                 }
             }
         }
         // TODO Prompt player to change display settings if > 3
-
-        else
-            Stats[name] = new Stat(name, min, max, initial, display);
+        Stats[name] = new Stat(name, min, max, initial, display);
     }
 
     // TODO: remove stat
@@ -185,61 +200,6 @@ public class HasStats : Node
         if (Stats.ContainsKey(name))
             return Stats[name];
         return null;
-    }
-
-    public void ApplyDamage(int damageAmount)
-    {
-        var health = GetStat("health");
-        curr_health -= damageAmount;
-        if (curr_health < 0)
-            curr_health = 0;
-
-        if (curr_health == 0)
-        {
-            // Handle death or other related logic here
-            GD.Print("death event!");
-        }
-
-        //update ratio
-        health_ratio = curr_health / max_health;
-        //signal for UI/sound 
-        EmitSignal("stat_change", "health");
-    }
-
-    public void ApplyHeal(float healAmount)
-    {
-        curr_health += healAmount;
-        if (curr_health > max_health)
-            curr_health = max_health;
-
-        //update ratio
-        health_ratio = curr_health / max_health;
-        //signal for UI/sound 
-        EmitSignal("stat_change", "health");
-    }
-
-    public void IncreaseMaxHealth(float amount)
-    {
-        max_health += amount;
-        //update ratio
-        health_ratio = curr_health / max_health;
-        //signal for UI/sound 
-        EmitSignal("stat_change", "health");
-    }
-
-    public void DecreaseMaxHealth(float amount)
-    {
-        max_health -= amount;
-        if (max_health < 0)
-            max_health = 0;
-        //adjust curr_health
-        if (curr_health > max_health)
-            curr_health = max_health;
-
-        //update ratio
-        health_ratio = curr_health / max_health;
-        //signal for UI/sound 
-        EmitSignal("stat_change", "health");
     }
 
 
