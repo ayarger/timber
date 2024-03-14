@@ -958,9 +958,10 @@ namespace YarnSpinnerGodot.Editor
             var projects = new List<YarnProject>();
             CleanUpMovedOrDeletedProjects();
             var allProjects = (Godot.Collections.Array) ProjectSettings.GetSetting(YARN_PROJECT_PATHS_SETTING_KEY);
-            foreach (var path in allProjects)
+            foreach (var path in YarnManager.projects.Values)
             {
-                projects.Add(ResourceLoader.Load<YarnProject>(path.ToString()));
+                //projects.Add(ResourceLoader.Load<YarnProject>(path.ToString()));
+                projects.Add(path);
             }
 
             return projects;

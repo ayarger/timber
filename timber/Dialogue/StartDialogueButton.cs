@@ -1,22 +1,25 @@
 using Godot;
 using System;
+using Yarn;
+using YarnSpinnerGodot;
 
-public class Dialogue : Label
+public class StartDialogueButton : Button
 {
     // Declare member variables here. Examples:
     // private int a = 2;
     // private string b = "text";
+    [Export] public NodePath dialogueRunner;
 
-    
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
         
     }
 
-    public void set_text(string text)
+    private void _on_Button_pressed()
     {
-        this.Text = text;
+        GetNode<DialogueRunner>(dialogueRunner).StartDialogue(GetNode<DialogueRunner>(dialogueRunner).startNode);
+        this.Hide();
     }
 
     //  // Called every frame. 'delta' is the elapsed time since the previous frame.

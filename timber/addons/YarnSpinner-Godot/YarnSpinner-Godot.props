@@ -12,9 +12,9 @@
         <Reference Include="Yarn.System.Memory">
             <HintPath>addons\YarnSpinner-Godot\Runtime\DLLs\Yarn.System.Memory.dll</HintPath>
         </Reference>
-        <!-- <Reference Include="Yarn.System.Runtime.CompilerServices.Unsafe">
+        <Reference Include="Yarn.System.Runtime.CompilerServices.Unsafe">
             <HintPath>addons\YarnSpinner-Godot\Runtime\DLLs\Yarn.System.Runtime.CompilerServices.Unsafe.dll</HintPath>
-        </Reference> -->
+        </Reference>
         <Reference Include="Yarn.System.Numerics.Vectors">
             <HintPath>addons\YarnSpinner-Godot\Runtime\DLLs\Yarn.System.Numerics.Vectors.dll</HintPath>
         </Reference>

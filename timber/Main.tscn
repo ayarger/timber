@@ -17,14 +17,16 @@
 [ext_resource path="res://scenes/UIOrb.tscn" type="PackedScene" id=15]
 [ext_resource path="res://fogofwartesting/FogOfWar.tscn" type="PackedScene" id=16]
 [ext_resource path="res://fogofwartesting/TestMovement.cs" type="Script" id=17]
-[ext_resource path="res://addons/gdyarn/core/variable_storage.gd" type="Script" id=18]
-[ext_resource path="res://addons/gdyarn/yarn_runner.gd" type="Script" id=19]
-[ext_resource path="res://addons/gdyarn/yarn_gui.gd" type="Script" id=20]
-[ext_resource path="res://addons/gdyarn/compiled_yarn_program.gd" type="Script" id=21]
-[ext_resource path="res://Dialogue/Beaver.png" type="Texture" id=22]
-[ext_resource path="res://Dialogue/Dialogue.cs" type="Script" id=23]
-[ext_resource path="res://Dialogue/DialogueManager.gd" type="Script" id=24]
-[ext_resource path="res://UI/Oxanium-Regular.ttf" type="DynamicFontData" id=25]
+[ext_resource path="res://addons/YarnSpinner-Godot/Runtime/LineProviders/TextLineProvider.cs" type="Script" id=18]
+[ext_resource path="res://addons/YarnSpinner-Godot/Runtime/Views/OptionsListView.cs" type="Script" id=19]
+[ext_resource path="res://addons/YarnSpinner-Godot/Runtime/InMemoryVariableStorage.cs" type="Script" id=20]
+[ext_resource path="res://addons/YarnSpinner-Godot/Runtime/DialogueRunner.cs" type="Script" id=22]
+[ext_resource path="res://addons/YarnSpinner-Godot/Runtime/Views/LineView.cs" type="Script" id=23]
+[ext_resource path="res://Dialogue/YarnSelect.cs" type="Script" id=24]
+[ext_resource path="res://Dialogue/YarnUpload.cs" type="Script" id=25]
+[ext_resource path="res://Dialogue/OptionView.tscn" type="PackedScene" id=26]
+[ext_resource path="res://Dialogue/StartDialogueButton.cs" type="Script" id=27]
+[ext_resource path="res://UI/Oxanium-Regular.ttf" type="DynamicFontData" id=28]
 
 [sub_resource type="GDScript" id=2]
 
@@ -119,30 +121,17 @@ shader_param/aa_edge_softness = 0.01
 shader_param/start_color = Color( 1, 0, 0, 1 )
 shader_param/end_color = Color( 0, 1, 1, 1 )
 
-[sub_resource type="StyleBoxFlat" id=21]
-content_margin_left = 20.0
-content_margin_right = 20.0
-content_margin_top = 20.0
-content_margin_bottom = 20.0
-bg_color = Color( 0, 0, 0, 0.392157 )
-
-[sub_resource type="DynamicFont" id=19]
-size = 50
-font_data = ExtResource( 25 )
-
-[sub_resource type="DynamicFont" id=18]
+[sub_resource type="DynamicFont" id=30]
 size = 40
-font_data = ExtResource( 25 )
+font_data = ExtResource( 28 )
 
-[sub_resource type="DynamicFont" id=20]
+[sub_resource type="DynamicFont" id=28]
 size = 40
-font_data = ExtResource( 25 )
+font_data = ExtResource( 28 )
 
-[sub_resource type="Resource" id=17]
-script = ExtResource( 21 )
-_programName = "compiled_yarn_program"
-_directory = "res://"
-_yarnPrograms = [ "res://Dialogue/intro.yarn" ]
+[sub_resource type="DynamicFont" id=29]
+size = 40
+font_data = ExtResource( 28 )
 
 [node name="Main" type="Spatial"]
 script = SubResource( 2 )
@@ -260,109 +249,190 @@ script = ExtResource( 10 )
 [node name="TestMovement" type="Node" parent="."]
 script = ExtResource( 17 )
 
-[node name="DialogueManager" type="Node" parent="."]
-script = ExtResource( 24 )
-yarn_gui_path = NodePath("YarnDisplay")
-
-[node name="YarnDisplay" type="Control" parent="DialogueManager"]
+[node name="Dialogue" type="Control" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_right = 2.0
-margin_bottom = -2.0
-script = ExtResource( 20 )
-_yarnRunner = NodePath("../YarnRunner")
-_text = NodePath("PanelContainer/VBoxContainer/Text")
-_namePlate = NodePath("PanelContainer/VBoxContainer/Name")
-_options = [ NodePath("Choices/Button"), NodePath("Choices/Button2") ]
-_textSpeed = 5
 
-[node name="PanelContainer" type="PanelContainer" parent="DialogueManager/YarnDisplay"]
-anchor_left = 0.249
-anchor_top = 0.762
-anchor_right = 0.865
-anchor_bottom = 0.988
-size_flags_horizontal = 0
-size_flags_vertical = 0
-custom_styles/panel = SubResource( 21 )
+[node name="CanvasLayer" type="CanvasLayer" parent="Dialogue"]
 
-[node name="VBoxContainer" type="VBoxContainer" parent="DialogueManager/YarnDisplay/PanelContainer"]
-margin_left = 20.0
-margin_top = 20.0
-margin_right = 1163.95
-margin_bottom = 223.628
+[node name="DialogueRunner" type="Node" parent="Dialogue/CanvasLayer"]
+script = ExtResource( 22 )
+variableStoragePath = NodePath("../InMemoryVariableStorage")
+dialogueViewPaths = [ NodePath("../LineView"), NodePath("../OptionsListView") ]
+startNode = "Start"
+startAutomatically = false
+lineProviderPath = NodePath("../TextLineProvider")
 
-[node name="Name" type="Label" parent="DialogueManager/YarnDisplay/PanelContainer/VBoxContainer"]
-margin_right = 1143.0
-margin_bottom = 51.0
-rect_min_size = Vector2( 0, 50 )
-custom_fonts/font = SubResource( 19 )
+[node name="VariableDebugText" type="RichTextLabel" parent="Dialogue/CanvasLayer"]
+margin_right = 40.0
+margin_bottom = 40.0
+
+[node name="LineView" type="Control" parent="Dialogue/CanvasLayer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_right = -539.0
+margin_bottom = -295.0
+script = ExtResource( 23 )
+viewControlPath = NodePath("ViewControl")
+useFadeEffect = false
+lineTextPath = NodePath("ViewControl/LineText")
+characterNameTextPath = NodePath("ViewControl/CharacterNameText")
+typewriterEffectSpeed = 240.0
+continueButtonPath = NodePath("ViewControl/ContinueButton")
+
+[node name="ViewControl" type="Control" parent="Dialogue/CanvasLayer/LineView"]
+anchor_left = 0.348
+anchor_top = 0.31
+anchor_right = 0.977
+anchor_bottom = 1.0
+margin_top = 30.0
+margin_right = 59.0
+margin_bottom = 40.0
+
+[node name="LineText" type="RichTextLabel" parent="Dialogue/CanvasLayer/LineView/ViewControl"]
+anchor_top = 1.52
+anchor_right = 1.0
+anchor_bottom = 1.982
+margin_left = -23.0
+margin_top = -253.508
+margin_right = 17.3511
+margin_bottom = -257.37
+custom_fonts/normal_font = SubResource( 30 )
+text = "Dialogue text goes here"
+
+[node name="ColorRect" type="ColorRect" parent="Dialogue/CanvasLayer/LineView/ViewControl/LineText"]
+show_behind_parent = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_right = 40.0
+margin_bottom = 40.0
+color = Color( 0.282353, 0.0745098, 0.0745098, 1 )
+
+[node name="CharacterNameText" type="RichTextLabel" parent="Dialogue/CanvasLayer/LineView/ViewControl"]
+anchor_top = 0.844
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -22.0
+margin_right = 18.0
+custom_fonts/normal_font = SubResource( 28 )
 text = "Name"
-autowrap = true
-script = ExtResource( 23 )
 
-[node name="Text" type="Label" parent="DialogueManager/YarnDisplay/PanelContainer/VBoxContainer"]
-margin_top = 55.0
-margin_right = 1143.0
-margin_bottom = 96.0
-custom_fonts/font = SubResource( 18 )
-text = "Hello"
-autowrap = true
-script = ExtResource( 23 )
-
-[node name="TextureRect" type="TextureRect" parent="DialogueManager/YarnDisplay"]
-anchor_left = 0.563
-anchor_top = -0.092
-anchor_right = 0.581
-anchor_bottom = 0.054
-margin_left = 362.332
-margin_top = 719.812
-margin_right = 2002.33
-margin_bottom = 3079.81
-rect_scale = Vector2( 0.3, 0.3 )
-size_flags_horizontal = 0
-size_flags_vertical = 0
-texture = ExtResource( 22 )
-stretch_mode = 5
-
-[node name="Choices" type="VBoxContainer" parent="DialogueManager/YarnDisplay"]
+[node name="ColorRect" type="ColorRect" parent="Dialogue/CanvasLayer/LineView/ViewControl/CharacterNameText"]
+show_behind_parent = true
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = 600.0
-margin_top = 300.0
-margin_right = -600.0
-margin_bottom = -500.0
-alignment = 1
+margin_right = 40.0
+margin_bottom = 40.0
+color = Color( 0.643137, 0.254902, 0.254902, 1 )
 
-[node name="Button" type="Button" parent="DialogueManager/YarnDisplay/Choices"]
-margin_right = 722.0
-margin_bottom = 110.0
-size_flags_horizontal = 3
-size_flags_vertical = 3
-custom_fonts/font = SubResource( 20 )
-text = "Choice 1"
+[node name="ContinueButton" type="Button" parent="Dialogue/CanvasLayer/LineView/ViewControl"]
+anchor_left = 0.712
+anchor_top = 1.104
+anchor_right = 1.0
+anchor_bottom = 1.418
+margin_left = 137.514
+margin_top = 87.9783
+margin_right = -24.6489
+margin_bottom = -19.2398
+custom_fonts/font = SubResource( 29 )
+text = "->"
+__meta__ = {
+"_editor_description_": ""
+}
 
-[node name="Control" type="Control" parent="DialogueManager/YarnDisplay/Choices"]
-margin_top = 114.0
-margin_right = 722.0
-margin_bottom = 164.0
-rect_min_size = Vector2( 0, 50 )
-
-[node name="Button2" type="Button" parent="DialogueManager/YarnDisplay/Choices"]
-margin_top = 168.0
-margin_right = 722.0
-margin_bottom = 278.0
-size_flags_horizontal = 3
-size_flags_vertical = 3
-custom_fonts/font = SubResource( 20 )
-text = "Choice 2"
-
-[node name="YarnRunner" type="Node" parent="DialogueManager"]
+[node name="OptionsListView" type="Control" parent="Dialogue/CanvasLayer"]
+anchor_right = 0.963
+anchor_bottom = 0.925
+margin_right = 40.0
+margin_bottom = 40.0
+mouse_filter = 2
 script = ExtResource( 19 )
-_autoStart = true
-_variableStorage = NodePath("VariableStorage")
-_compiledYarnProgram = SubResource( 17 )
+optionViewPrefab = ExtResource( 26 )
+lastLineTextPath = NodePath("LastLineText")
+viewControlPath = NodePath("VBoxContainer")
+boxContainerPath = NodePath("VBoxContainer")
 
-[node name="VariableStorage" type="Node" parent="DialogueManager/YarnRunner"]
+[node name="VBoxContainer" type="VBoxContainer" parent="Dialogue/CanvasLayer/OptionsListView"]
+anchor_left = 0.33
+anchor_top = 0.262
+anchor_right = 0.623
+anchor_bottom = 0.76
+margin_right = 40.0
+margin_bottom = 40.0
+
+[node name="LastLineText" type="RichTextLabel" parent="Dialogue/CanvasLayer/OptionsListView"]
+margin_right = 40.0
+
+[node name="ColorRect" type="ColorRect" parent="Dialogue/CanvasLayer/OptionsListView/LastLineText"]
+margin_right = 40.0
+margin_bottom = 40.0
+
+[node name="InMemoryVariableStorage" type="Node" parent="Dialogue/CanvasLayer"]
+script = ExtResource( 20 )
+debugTextViewPath = NodePath("../VariableDebugText")
+
+[node name="TextLineProvider" type="Node2D" parent="Dialogue/CanvasLayer"]
 script = ExtResource( 18 )
+
+[node name="Button" type="Button" parent="Dialogue/CanvasLayer"]
+anchor_left = 0.683
+anchor_top = 0.218
+anchor_right = 0.683
+anchor_bottom = 0.252
+margin_left = 445.0
+margin_top = 460.0
+margin_right = 595.0
+margin_bottom = 510.0
+rect_min_size = Vector2( 150, 50 )
+text = "Start Dialogue"
+script = ExtResource( 27 )
+dialogueRunner = NodePath("../DialogueRunner")
+
+[node name="Upload yarn project" type="Button" parent="Dialogue/CanvasLayer"]
+anchor_left = 0.884
+anchor_top = 0.896
+anchor_right = 0.992
+anchor_bottom = 0.968
+margin_right = 12.0
+margin_bottom = 20.0
+text = "Upload"
+script = ExtResource( 25 )
+
+[node name="FileDialog" type="FileDialog" parent="Dialogue/CanvasLayer/Upload yarn project"]
+margin_left = -1202.28
+margin_top = -744.68
+margin_right = -786.28
+margin_bottom = -549.68
+rect_min_size = Vector2( 400, 140 )
+rect_scale = Vector2( 2, 2 )
+window_title = "Open a File"
+mode = 0
+access = 2
+
+[node name="Select yarn project" type="Button" parent="Dialogue/CanvasLayer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 1694.0
+margin_top = 830.0
+margin_right = -4.0
+margin_bottom = -138.0
+text = "Select"
+script = ExtResource( 24 )
+
+[node name="PopupMenu" type="PopupMenu" parent="Dialogue/CanvasLayer/Select yarn project"]
+anchor_left = -7.546
+anchor_top = -7.304
+anchor_right = 1.0
+anchor_bottom = 2.166
+margin_left = 470.212
+margin_top = 290.048
+margin_right = -989.0
+margin_bottom = -603.592
+rect_scale = Vector2( 2, 2 )
+
+[connection signal="pressed" from="Dialogue/CanvasLayer/Button" to="Dialogue/CanvasLayer/Button" method="_on_Button_pressed"]
+[connection signal="pressed" from="Dialogue/CanvasLayer/Upload yarn project" to="Dialogue/CanvasLayer/Upload yarn project" method="_on_Button_pressed"]
+[connection signal="file_selected" from="Dialogue/CanvasLayer/Upload yarn project/FileDialog" to="Dialogue/CanvasLayer/Upload yarn project" method="_on_FileDialog_file_selected"]
+[connection signal="pressed" from="Dialogue/CanvasLayer/Select yarn project" to="Dialogue/CanvasLayer/Select yarn project" method="ShowPopupMenu"]
 
 [editable path="FogOfWar"]
