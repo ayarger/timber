@@ -85,7 +85,12 @@ public static class ToastManager
 
     public static int GetNumMsgInQueue()
     {
-        return _toastQueue.Count();
+        int count = 0;
+        foreach (var toast in _toastQueue)
+        {
+            count += toast.numOccurred;
+        }
+        return count;
     }
     
     public static List<ToastMessage.ToastObject> GetToastHistory()
@@ -96,6 +101,11 @@ public static class ToastManager
     public static void ClearToastHistory()
     {
         _toastHistory.Clear();
+    }
+    
+    public static void ClearToastQueue()
+    {
+        _toastQueue.Clear();
     }
 
 }

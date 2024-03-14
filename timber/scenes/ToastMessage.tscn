@@ -12,7 +12,7 @@ outline_color = Color( 0.592157, 0.341176, 0.341176, 1 )
 font_data = ExtResource( 1 )
 
 [sub_resource type="DynamicFont" id=12]
-size = 23
+size = 32
 font_data = ExtResource( 1 )
 
 [sub_resource type="Animation" id=7]
@@ -75,7 +75,7 @@ tracks/4/keys = {
 "times": PoolRealArray( 0 ),
 "transitions": PoolRealArray( 1 ),
 "update": 0,
-"values": [ 40 ]
+"values": [ 20 ]
 }
 tracks/5/type = "value"
 tracks/5/path = NodePath("Panel/ColorPanel:custom_styles/panel:corner_radius_top_right")
@@ -111,7 +111,7 @@ tracks/7/keys = {
 "times": PoolRealArray( 0 ),
 "transitions": PoolRealArray( 1 ),
 "update": 0,
-"values": [ 40 ]
+"values": [ 20 ]
 }
 tracks/8/type = "value"
 tracks/8/path = NodePath("Panel/ColorPanel/Sprite:position")
@@ -137,6 +137,30 @@ tracks/9/keys = {
 "update": 0,
 "values": [ Vector2( 0.146973, 0.146973 ) ]
 }
+tracks/10/type = "value"
+tracks/10/path = NodePath("Panel:margin_left")
+tracks/10/interp = 1
+tracks/10/loop_wrap = true
+tracks/10/imported = false
+tracks/10/enabled = true
+tracks/10/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 590.0 ]
+}
+tracks/11/type = "value"
+tracks/11/path = NodePath("Panel:margin_right")
+tracks/11/interp = 1
+tracks/11/loop_wrap = true
+tracks/11/imported = false
+tracks/11/enabled = true
+tracks/11/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 1330.0 ]
+}
 
 [sub_resource type="Animation" id=8]
 resource_name = "expand_animation"
@@ -150,7 +174,7 @@ tracks/0/keys = {
 "times": PoolRealArray( 0, 0.3 ),
 "transitions": PoolRealArray( 1, 1 ),
 "update": 0,
-"values": [ Vector2( 740, 108 ), Vector2( 740, 400 ) ]
+"values": [ Vector2( 740, 108 ), Vector2( 1480, 400 ) ]
 }
 tracks/1/type = "value"
 tracks/1/path = NodePath("Panel/ColorPanel:rect_size")
@@ -186,7 +210,7 @@ tracks/3/keys = {
 "times": PoolRealArray( 0, 0.3 ),
 "transitions": PoolRealArray( 1, 1 ),
 "update": 0,
-"values": [ 40, 20 ]
+"values": [ 20, 20 ]
 }
 tracks/4/type = "value"
 tracks/4/path = NodePath("Panel/ColorPanel:custom_styles/panel:corner_radius_top_right")
@@ -222,7 +246,7 @@ tracks/6/keys = {
 "times": PoolRealArray( 0, 0.3 ),
 "transitions": PoolRealArray( 1, 1 ),
 "update": 0,
-"values": [ 40, 20 ]
+"values": [ 20, 20 ]
 }
 tracks/7/type = "value"
 tracks/7/path = NodePath("Panel/ColorPanel/Sprite:position")
@@ -247,6 +271,42 @@ tracks/8/keys = {
 "transitions": PoolRealArray( 1, 1 ),
 "update": 0,
 "values": [ Vector2( 0.146973, 0.146973 ), Vector2( 0.113281, 0.113281 ) ]
+}
+tracks/9/type = "value"
+tracks/9/path = NodePath("Panel:rect_position")
+tracks/9/interp = 1
+tracks/9/loop_wrap = true
+tracks/9/imported = false
+tracks/9/enabled = false
+tracks/9/keys = {
+"times": PoolRealArray( 0, 0.3 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Vector2( 590, 183 ), Vector2( 220, 183 ) ]
+}
+tracks/10/type = "value"
+tracks/10/path = NodePath("Panel:margin_left")
+tracks/10/interp = 1
+tracks/10/loop_wrap = true
+tracks/10/imported = false
+tracks/10/enabled = true
+tracks/10/keys = {
+"times": PoolRealArray( 0, 0.3 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ 590.0, 220.0 ]
+}
+tracks/11/type = "value"
+tracks/11/path = NodePath("Panel:margin_right")
+tracks/11/interp = 1
+tracks/11/loop_wrap = true
+tracks/11/imported = false
+tracks/11/enabled = true
+tracks/11/keys = {
+"times": PoolRealArray( 0, 0.3 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ 1330.0, 1700.0 ]
 }
 
 [sub_resource type="Animation" id=9]
@@ -339,7 +399,7 @@ tracks/4/keys = {
 "times": PoolRealArray( 0, 0.3 ),
 "transitions": PoolRealArray( 1, 1 ),
 "update": 0,
-"values": [ Vector2( 740, 400 ), Vector2( 740, 108 ) ]
+"values": [ Vector2( 1480, 400 ), Vector2( 740, 108 ) ]
 }
 tracks/5/type = "value"
 tracks/5/path = NodePath("Panel/ColorPanel:custom_styles/panel:corner_radius_top_left")
@@ -351,7 +411,7 @@ tracks/5/keys = {
 "times": PoolRealArray( 0, 0.3 ),
 "transitions": PoolRealArray( 1, 1 ),
 "update": 0,
-"values": [ 20, 40 ]
+"values": [ 20, 20 ]
 }
 tracks/6/type = "value"
 tracks/6/path = NodePath("Panel/ColorPanel:custom_styles/panel:corner_radius_top_right")
@@ -387,7 +447,43 @@ tracks/8/keys = {
 "times": PoolRealArray( 0, 0.3 ),
 "transitions": PoolRealArray( 1, 1 ),
 "update": 0,
-"values": [ 20, 40 ]
+"values": [ 20, 20 ]
+}
+tracks/9/type = "value"
+tracks/9/path = NodePath("Panel:rect_position")
+tracks/9/interp = 1
+tracks/9/loop_wrap = true
+tracks/9/imported = false
+tracks/9/enabled = false
+tracks/9/keys = {
+"times": PoolRealArray( 0, 0.3 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Vector2( 220, 183 ), Vector2( 590, 183 ) ]
+}
+tracks/10/type = "value"
+tracks/10/path = NodePath("Panel:margin_left")
+tracks/10/interp = 1
+tracks/10/loop_wrap = true
+tracks/10/imported = false
+tracks/10/enabled = true
+tracks/10/keys = {
+"times": PoolRealArray( 0, 0.3 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ 220.0, 590.0 ]
+}
+tracks/11/type = "value"
+tracks/11/path = NodePath("Panel:margin_right")
+tracks/11/interp = 1
+tracks/11/loop_wrap = true
+tracks/11/imported = false
+tracks/11/enabled = true
+tracks/11/keys = {
+"times": PoolRealArray( 0, 0.3 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ 1700.0, 1330.0 ]
 }
 
 [node name="Control" type="Control"]
@@ -418,7 +514,7 @@ texture = ExtResource( 5 )
 margin_left = 146.0
 margin_top = 12.0
 margin_right = 604.0
-margin_bottom = 110.0
+margin_bottom = 97.0
 custom_colors/font_color = Color( 0, 0, 0, 1 )
 custom_fonts/font = SubResource( 1 )
 text = "ERROR
@@ -428,6 +524,7 @@ valign = 1
 autowrap = true
 
 [node name="NumMsg_full" type="Label" parent="Panel"]
+visible = false
 margin_top = 92.0
 margin_right = 146.0
 margin_bottom = 171.0
@@ -439,6 +536,7 @@ valign = 1
 autowrap = true
 
 [node name="NumOccurred_full" type="Label" parent="Panel"]
+visible = false
 margin_left = 9.0
 margin_top = 180.0
 margin_right = 141.0
@@ -463,6 +561,7 @@ valign = 1
 autowrap = true
 
 [node name="NumOccurred_short" type="Label" parent="Panel"]
+visible = false
 margin_left = 566.0
 margin_top = 27.0
 margin_right = 735.0
@@ -475,22 +574,24 @@ valign = 1
 autowrap = true
 
 [node name="HistoryScrollContainer" type="ScrollContainer" parent="Panel"]
-margin_left = 159.0
-margin_top = 1.0
-margin_right = 688.0
-margin_bottom = 400.0
+margin_left = 142.0
+margin_top = 22.0
+margin_right = 1449.0
+margin_bottom = 372.0
 mouse_filter = 1
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Panel/HistoryScrollContainer"]
-margin_right = 156.0
-margin_bottom = 28.0
+margin_right = 1307.0
+margin_bottom = 50.0
 mouse_filter = 2
 
-[node name="LabelTemplate" type="Label" parent="Panel/HistoryScrollContainer/VBoxContainer"]
-margin_right = 156.0
-margin_bottom = 28.0
-custom_colors/font_color = Color( 0, 0, 0, 1 )
-custom_fonts/font = SubResource( 12 )
+[node name="LabelTemplate" type="RichTextLabel" parent="Panel/HistoryScrollContainer/VBoxContainer"]
+margin_right = 1307.0
+margin_bottom = 50.0
+rect_min_size = Vector2( 1307, 50 )
+mouse_filter = 2
+custom_colors/default_color = Color( 0, 0, 0, 1 )
+custom_fonts/normal_font = SubResource( 12 )
 text = "Toast history 1"
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]

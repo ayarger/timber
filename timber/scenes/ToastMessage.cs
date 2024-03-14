@@ -3,13 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-// Make several different style draft to choose from?
-// Add more selectable styles (eg. warning/notification)
-// make text selectable and copiable for player to debug
-// make the size according to the length of the text
-// TODO:
-// queue up req wait until the latest toast to go off
-// detect the same msg
 
 public class ToastMessage : Control
 {
@@ -20,6 +13,7 @@ public class ToastMessage : Control
 		public float duration;
 		public ToastType type;
 		public int numOccurred;
+		public DateTime time;
 
 		public ToastObject (Node _caller, string _content, float _duration, ToastType _type)
 		{
@@ -28,6 +22,7 @@ public class ToastMessage : Control
 			duration = _duration;
 			type = _type;
 			numOccurred = 1;
+			time = DateTime.Now;
 		}
 		
 		public override bool Equals(object obj) 
@@ -50,9 +45,9 @@ public class ToastMessage : Control
 	
 	private AnimationPlayer _animationPlayer;
 	private Label _messageLabel;
-	private Label _numOccurredLabelFull;
-	private Label _numOccurredLabelShort;
-	private Label _numMsgLabelFull;
+	// private Label _numOccurredLabelFull;
+	// private Label _numOccurredLabelShort;
+	// private Label _numMsgLabelFull;
 	private Label _numMsgLabelShort;
 	private ScrollContainer _historyScrollVBoxContainer;
 	private string _fullMessage;
@@ -71,23 +66,23 @@ public class ToastMessage : Control
 		_messageLabel.Autowrap = true; // Enable autowrap
 		_messageBoxSize = _messageLabel.RectSize;
 		
-		_numOccurredLabelFull = GetNode<Label>("Panel/NumOccurred_full");
-		_numOccurredLabelFull.Autowrap = true;	
-		_numOccurredLabelFull.Visible = false;
-		_numOccurredLabelFull.Text = "";
-		
-		_numMsgLabelFull = GetNode<Label>("Panel/NumMsg_full");
-		_numMsgLabelFull.Autowrap = true;
-		_numMsgLabelFull.Visible = false;
-		_numMsgLabelFull.Text = "";
+		// _numOccurredLabelFull = GetNode<Label>("Panel/NumOccurred_full");
+		// _numOccurredLabelFull.Autowrap = true;	
+		// _numOccurredLabelFull.Visible = false;
+		// _numOccurredLabelFull.Text = "";
+		//
+		// _numMsgLabelFull = GetNode<Label>("Panel/NumMsg_full");
+		// _numMsgLabelFull.Autowrap = true;
+		// _numMsgLabelFull.Visible = false;
+		// _numMsgLabelFull.Text = "";
 		
 		_numMsgLabelShort = GetNode<Label>("Panel/NumMsg_short");
 		_numMsgLabelShort.Autowrap = true;
 		_numMsgLabelShort.Text = "";	
 		
-		_numOccurredLabelShort = GetNode<Label>("Panel/NumOccurred_short");
-		_numOccurredLabelShort.Autowrap = true;
-		_numOccurredLabelShort.Text = "";
+		// _numOccurredLabelShort = GetNode<Label>("Panel/NumOccurred_short");
+		// _numOccurredLabelShort.Autowrap = true;
+		// _numOccurredLabelShort.Text = "";
 		
 		_visibilityTimer = GetNode<Timer>("Timer");
 		_visibilityTimer.Connect("timeout", this, nameof(StartHideAnimation));
@@ -114,9 +109,9 @@ public class ToastMessage : Control
 		_messageLabel.Text = _previewMessage;
 		int numMsg = ToastManager.GetNumMsgInQueue();
 		if (numMsg > 0) _numMsgLabelShort.Text = numMsg.ToString() + " more";
-		if (numMsg > 0) _numMsgLabelFull.Text = numMsg.ToString() + " more message";
-		if (msgObj.numOccurred > 1) _numOccurredLabelFull.Text = "Occurred " + (msgObj.numOccurred).ToString() + " times";
-		if (msgObj.numOccurred > 1) _numOccurredLabelShort.Text = (msgObj.numOccurred).ToString() + " occurred";
+		// if (numMsg > 0) _numMsgLabelFull.Text = numMsg.ToString() + " more message";
+		// if (msgObj.numOccurred > 1) _numOccurredLabelFull.Text = "Occurred " + (msgObj.numOccurred).ToString() + " times";
+		// if (msgObj.numOccurred > 1) _numOccurredLabelShort.Text = (msgObj.numOccurred).ToString() + " occurred";
 	}
 	
 	public void ShowMessage(ToastObject msgObj, int previewLength = 50)
@@ -153,9 +148,9 @@ public class ToastMessage : Control
 		_isMouseHovering = true;
 		_animationPlayer.Play("expand_animation");
 		_numMsgLabelShort.Visible = false;
-		_numOccurredLabelShort.Visible = false;
-		_numMsgLabelFull.Visible = true;
-		_numOccurredLabelFull.Visible = true;
+		// _numOccurredLabelShort.Visible = false;
+		// _numMsgLabelFull.Visible = true;
+		// _numOccurredLabelFull.Visible = true;
 		_historyScrollVBoxContainer.Visible = true;
 		ShowToastHistoryUI();
 
@@ -179,9 +174,9 @@ public class ToastMessage : Control
 		_mouseEnterFronHistory = false;
 		_messageLabel.Text = _previewMessage; // Revert to preview message
 		_numMsgLabelShort.Visible = true;
-		_numOccurredLabelShort.Visible = true;
-		_numMsgLabelFull.Visible = false;
-		_numOccurredLabelFull.Visible = false;
+		// _numOccurredLabelShort.Visible = true;
+		// _numMsgLabelFull.Visible = false;
+		// _numOccurredLabelFull.Visible = false;
 		_historyScrollVBoxContainer.Visible = false;
 		_animationPlayer.Play("shrink_animation");
 
@@ -235,7 +230,7 @@ public class ToastMessage : Control
 		// Retrieve toast history
 		List<ToastObject> history = ToastManager.GetToastHistory();
 		var temp = _historyScrollVBoxContainer.GetNode<VBoxContainer>("VBoxContainer");
-		Label labelTemplate = temp.GetNode<Label>("LabelTemplate");
+		RichTextLabel labelTemplate = temp.GetNode<RichTextLabel>("LabelTemplate");
 
 		foreach (Node child in temp.GetChildren())
 		{
@@ -247,25 +242,16 @@ public class ToastMessage : Control
 
 		foreach (ToastObject toast in history)
 		{
-			// Duplicate the label template
-			Label label = (Label)labelTemplate.Duplicate();
-
-			// Adjust properties for each message
-			label.Text = $"{toast.content} - {toast.type.ToString()}";
-
-			// Set the position of the label
+			RichTextLabel label = (RichTextLabel)labelTemplate.Duplicate();
+			label.Text = $"{toast.time}: [{toast.type.ToString()}] {toast.content}";
 			label.RectPosition = new Vector2(0, totalHeight);
-
-			// Add the height of the current label to the total height
 			totalHeight += label.RectSize.y;
-
-			// Add some additional spacing between labels
-			totalHeight += 5; // Adjust as needed for spacing
-
-			// Add the label to the container
+			totalHeight += 5;
 			temp.AddChild(label);
-			
 		}
+		
+		// clear toast queue
+		ToastManager.ClearToastQueue();
 	}
 
 	private void OnMouseEnterHistory()
