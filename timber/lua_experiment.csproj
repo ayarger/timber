@@ -9,5 +9,7 @@
     <PackageReference Include="AWSSDK.CloudFront" Version="3.7.105.35" />
     <PackageReference Include="AWSSDK.S3" Version="3.7.103.50" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
+    <PackageReference Include="System.Text.Json" Version="8.0.0" />
   </ItemGroup>
+  <Import Project="addons\YarnSpinner-Godot\YarnSpinner-Godot.props" />
 </Project>
