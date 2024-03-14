@@ -1,5 +1,7 @@
 using Godot;
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 // Make several different style draft to choose from?
 // Add more selectable styles (eg. warning/notification)
@@ -52,9 +54,13 @@ public class ToastMessage : Control
 	private Label _numOccurredLabelShort;
 	private Label _numMsgLabelFull;
 	private Label _numMsgLabelShort;
+	private ScrollContainer _historyScrollVBoxContainer;
 	private string _fullMessage;
 	private string _previewMessage;
+	private int mouseEnterCount = 0;
 	private bool _isMouseHovering = false;
+	private bool _mouseOnHistory = false;
+	private bool _mouseEnterFronHistory = false;
 	private Vector2 _messageBoxSize;
 	private Timer _visibilityTimer; // Declare the timer member
 
@@ -87,15 +93,17 @@ public class ToastMessage : Control
 		_visibilityTimer.Connect("timeout", this, nameof(StartHideAnimation));
 
 		var panel = GetNode<Panel>("Panel");
+		panel.MouseFilter = Control.MouseFilterEnum.Stop;
 		panel.Connect("mouse_entered", this, nameof(OnMouseEntered));
 		panel.Connect("mouse_exited", this, nameof(OnMouseExited));
 
-		// Setup mouse filter
-		panel.MouseFilter = Control.MouseFilterEnum.Stop;
+		_historyScrollVBoxContainer = GetNode<ScrollContainer>("Panel/HistoryScrollContainer");
+		_historyScrollVBoxContainer.Visible = false;
+		_historyScrollVBoxContainer.MouseFilter = MouseFilterEnum.Pass;
+		_historyScrollVBoxContainer.Connect("mouse_entered", this, nameof(OnMouseEnterHistory));
+		_historyScrollVBoxContainer.Connect("mouse_exited", this, nameof(OnMouseExitHistory));
 		
 		EventBus.Subscribe<EventToastUpdate>(UpdateToast);
-
-		
 	}
 
 	private void MessageObjContentDisplay(ToastObject msgObj, int previewLength = 50)
@@ -130,33 +138,59 @@ public class ToastMessage : Control
 		ResetAndStartTimer(e.obj.duration);
 	}
 
-	private void OnMouseEntered()
+	private async void OnMouseEntered()
 	{
+		GD.Print("Mouse enter attempt.");
+		mouseEnterCount++;
+
+		await Task.Delay(TimeSpan.FromMilliseconds(100));
+		if (mouseEnterCount != 1 || _isMouseHovering)
+		{
+			return;
+		}
+		GD.Print("Mouse enter.");
+
 		_isMouseHovering = true;
 		_animationPlayer.Play("expand_animation");
 		_numMsgLabelShort.Visible = false;
 		_numOccurredLabelShort.Visible = false;
 		_numMsgLabelFull.Visible = true;
 		_numOccurredLabelFull.Visible = true;
+		_historyScrollVBoxContainer.Visible = true;
+		ShowToastHistoryUI();
+
+		_messageLabel.Visible = false;
 		_messageLabel.Text = _fullMessage; // Show full message
 		_messageLabel.RectMinSize = new Vector2(_messageLabel.RectMinSize.x, CalculateLabelHeight(_fullMessage, false));
 
 	}
 
-	private void OnMouseExited()
+	private async void OnMouseExited()
 	{
+		GD.Print("Mouse exit attempt.");
+		await Task.Delay(TimeSpan.FromMilliseconds(100));
+		mouseEnterCount--;
+		if (mouseEnterCount != 0)
+		{
+			return;
+		}
+		GD.Print("Mouse exit.");
 		_isMouseHovering = false;
+		_mouseEnterFronHistory = false;
 		_messageLabel.Text = _previewMessage; // Revert to preview message
 		_numMsgLabelShort.Visible = true;
 		_numOccurredLabelShort.Visible = true;
 		_numMsgLabelFull.Visible = false;
 		_numOccurredLabelFull.Visible = false;
+		_historyScrollVBoxContainer.Visible = false;
 		_animationPlayer.Play("shrink_animation");
+
+		_messageLabel.Visible = true;
 		_messageLabel.RectMinSize = new Vector2(_messageLabel.RectMinSize.x, CalculateLabelHeight(_previewMessage, true));
 		
 		// Start hiding animation directly or after a delay
 		GetTree().CreateTimer(0.5f).Connect("timeout", this, nameof(StartHideAnimation), null, (uint)ConnectFlags.Oneshot);
-		
+
 	}
 
 	private void StartHideAnimation()
@@ -194,5 +228,55 @@ public class ToastMessage : Control
 		_visibilityTimer.WaitTime = duration;
 		_visibilityTimer.OneShot = true;
 		_visibilityTimer.Start();
+	}
+
+	private void ShowToastHistoryUI()
+	{
+		// Retrieve toast history
+		List<ToastObject> history = ToastManager.GetToastHistory();
+		var temp = _historyScrollVBoxContainer.GetNode<VBoxContainer>("VBoxContainer");
+		Label labelTemplate = temp.GetNode<Label>("LabelTemplate");
+
+		foreach (Node child in temp.GetChildren())
+		{
+			temp.RemoveChild(child);
+			child.QueueFree();
+		}
+
+		float totalHeight = 0;
+
+		foreach (ToastObject toast in history)
+		{
+			// Duplicate the label template
+			Label label = (Label)labelTemplate.Duplicate();
+
+			// Adjust properties for each message
+			label.Text = $"{toast.content} - {toast.type.ToString()}";
+
+			// Set the position of the label
+			label.RectPosition = new Vector2(0, totalHeight);
+
+			// Add the height of the current label to the total height
+			totalHeight += label.RectSize.y;
+
+			// Add some additional spacing between labels
+			totalHeight += 5; // Adjust as needed for spacing
+
+			// Add the label to the container
+			temp.AddChild(label);
+			
+		}
+	}
+
+	private void OnMouseEnterHistory()
+	{
+		GD.Print("Mouse enter history.");
+		mouseEnterCount++;
+	}
+	
+	private void OnMouseExitHistory()
+	{
+		GD.Print("Mouse exit history.");
+		mouseEnterCount--;
 	}
 }
