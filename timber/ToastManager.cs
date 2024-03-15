@@ -5,11 +5,14 @@ using Godot;
 using System.Threading.Tasks;
 
 // Todo for future
-// important: move it above the black screen
 // keyboard short cut
 // audio
 // make the scroll bar more visible
+// improve button style
+// differentiate toast types
+// remove Playbutton script? 
 // Todo for 3.14-3.21
+// Important: move it above elements (e.g. black screen) [[[[ALL TIME]]]] - done
 // Tiny fixes and look on other things to do
 
 public static class ToastManager
@@ -19,6 +22,7 @@ public static class ToastManager
     public static ToastMessage.ToastObject currentToast;
     private static bool isShowing;
     private static Node _rootNode;
+    private static CanvasLayer _toastLayer;
 
     static ToastManager()
     {
@@ -86,24 +90,41 @@ public static class ToastManager
     private static void ShowToast(ToastMessage.ToastObject obj)
     {
         currentToast = obj;
-        PackedScene toastScene = (PackedScene)ResourceLoader.Load("res://scenes/ToastMessage.tscn"); // Optionally, can pass in other scenes
+        Node root = obj.caller.GetTree().Root;
+        if (_toastLayer == null)
+        {
+            _toastLayer = new CanvasLayer();
+            var canvasLayers = root.GetChildren().OfType<CanvasLayer>().ToList();
+            int highestLayer = canvasLayers.Any() ? canvasLayers.Max(cl => cl.Layer) + 999 : 1;
+            _toastLayer.Layer = highestLayer;
+            root.AddChild(_toastLayer);
+        }
+        
+        PackedScene toastScene = (PackedScene)ResourceLoader.Load("res://scenes/ToastMessage.tscn");
         ToastMessage msg = toastScene.Instance() as ToastMessage;
-        obj.caller.GetTree().Root.AddChild(msg);
-        if (msg != null) msg.ShowMessage(obj);
+        if (msg != null)
+        {
+            _toastLayer.AddChild(msg);
+            msg.ShowMessage(obj);
+            PlayToastSoundEffect(msg);
+        }
     }
+
     
     public static void SetToastVisibility(bool visible)
     {
-        if (!visible && _toastQueue.Count > 0)
+        if (!visible)
         {
-            var firstElement = _toastQueue[0]; 
-            _toastQueue.RemoveAt(0); 
-            ShowToast(firstElement);
+            RemoveToastLayer();
+            if (_toastQueue.Count > 0)
+            {
+                var firstElement = _toastQueue[0]; 
+                _toastQueue.RemoveAt(0);
+                ShowToast(firstElement);
+                return;
+            }
         }
-        else
-        {
-            isShowing = visible;
-        }
+        isShowing = visible;
     }
 
     public static int GetNumMsgInQueue()
@@ -131,6 +152,33 @@ public static class ToastManager
     public static void ClearToastQueue()
     {
         _toastQueue.Clear();
+    }
+    
+    private static void RemoveToastLayer()
+    {
+        if (_toastLayer != null && _toastLayer.GetChildren().Count == 0)
+        {
+            _toastLayer.QueueFree(); // This removes the layer from the scene and frees its resources
+            _toastLayer = null; // Reset the reference to allow recreation later
+        }
+    }
+    
+    public static void PlayToastSoundEffect(Node caller)
+    {
+        // Load the sound effect (assuming it's in the project's "res://" directory)
+        AudioStream soundEffect = GD.Load<AudioStream>("res://path/to/sound_effect.wav");
+
+        // Create an AudioStreamPlayer node
+        AudioStreamPlayer audioPlayer = new AudioStreamPlayer();
+
+        // Assign the sound effect to the player
+        audioPlayer.Stream = soundEffect;
+
+        // Add the player to the scene
+        caller.AddChild(audioPlayer);
+
+        // Play the sound effect
+        audioPlayer.Play();
     }
 
 }

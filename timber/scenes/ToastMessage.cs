@@ -123,6 +123,10 @@ public class ToastMessage : Control
 
 	void UpdateToast(EventToastUpdate e)
 	{
+		if (e.obj.content is null)
+		{
+			e.obj.content = "null message detected";
+		}
 		MessageObjContentDisplay(e.obj);
 		_messageLabel.Text = e.obj.content;
 		ResetAndStartTimer(e.obj.duration);

@@ -1,6 +1,5 @@
-[gd_scene load_steps=15 format=2]
+[gd_scene load_steps=14 format=2]
 
-[ext_resource path="res://Roboto-Regular.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://scenes/ToastMessage.cs" type="Script" id=2]
 [ext_resource path="res://scenes/ToastMsgPanel.tres" type="StyleBox" id=3]
 [ext_resource path="res://scenes/ToastMsgColorBox.tres" type="StyleBox" id=4]
@@ -14,7 +13,7 @@ font_data = ExtResource( 6 )
 
 [sub_resource type="DynamicFont" id=12]
 size = 32
-font_data = ExtResource( 1 )
+font_data = ExtResource( 6 )
 
 [sub_resource type="DynamicFont" id=13]
 size = 18

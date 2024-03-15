@@ -19,6 +19,7 @@ public class UIManager : Node
         flash_panel = GetNode<Panel>("flash_panel");
         flash_panel.MouseFilter = Control.MouseFilterEnum.Ignore;
         flash_panel.Modulate = new Color(1, 1, 1, 0.0f);
+        ToastManager.Initialize(this);
     }
 
     public override void _Process(float delta)
@@ -60,6 +61,7 @@ public class UIManager : Node
                 SettingsMenu();
             }
         }
+        ToastManager.HandleInput(@event);
     }
 
     void SettingsMenu()
