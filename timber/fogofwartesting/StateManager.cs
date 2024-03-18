@@ -16,6 +16,7 @@ public class StateManager : Node
     Actor actor;
     HashSet<ActorState> activeStates;
     string defaultState = "Idle";
+    bool enabled = true;
 
     public override void _Ready()
     {
@@ -39,15 +40,18 @@ public class StateManager : Node
 
     public override void _Process(float delta)
     {
-        if (activeStates.Count == 0)
+        if (enabled)
         {
-            EnableState(defaultState);
-        }
-        ResetAnimation();
-        foreach ( var state in new HashSet<ActorState>(activeStates))
-        {
-            state.Update(delta);
-            state.Animate(delta);
+            if (activeStates.Count == 0)
+            {
+                EnableState(defaultState);
+            }
+            ResetAnimation();
+            foreach (var state in new HashSet<ActorState>(activeStates))
+            {
+                state.Update(delta);
+                state.Animate(delta);
+            }
         }
 
     }
@@ -112,9 +116,12 @@ public class StateManager : Node
 
     public void DisableAllState()
     {
-        foreach(ActorState state in activeStates)
+        enabled = false;
+        foreach (ActorState state in activeStates)
         {
             DisableState(state.name);
         }
+       
+        
     }
 }

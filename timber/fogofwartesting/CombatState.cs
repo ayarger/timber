@@ -10,7 +10,7 @@ public class CombatState : ActorState
     // private int a = 2;
     // private string b = "text";
     int attackRange = 2;//number of grids
-    int attackDamage = 10;
+    int attackDamage = 20;
     float criticalHitRate = 0.3f;
 
     float attackWindup = 0.5f;//animation before attack
@@ -46,33 +46,32 @@ public class CombatState : ActorState
 
         if (actor.GetNode<HasTeam>("HasTeam").team == "player")//Hardcode different actor stats
         {
-            attackDamage = 20;
+            attackDamage = 40;
             attackCooldown = 0.75f;
         }
-
-        EventBus.Subscribe<actorDeathEvent>((actorDeathEvent e) =>
-        {
-            if (e.actor == TargetActor)
-            {
-                TargetActor = null;
-            }
-        });
     }
 
     public override void Update(float delta)
     {
-        if (TargetActor != null)//TODO check if actor is dead
+        if (TargetActor != null && IsInstanceValid(TargetActor))//TODO check if actor is dead
         {
-            Vector3 dest = Grid.LockToGrid(TargetActor.GlobalTranslation);
+            Coord dest = Grid.ConvertToCoord(TargetActor.GlobalTranslation);
             MovementState b = (manager.states["MovementState"] as MovementState);
 
-            float dist = (Grid.ConvertToCoord(actor.GlobalTranslation) - Grid.ConvertToCoord(dest)).Mag();
+            Coord actorCoord = Grid.ConvertToCoord(actor.GlobalTranslation);
 
-            if (dist > attackRange && attackable)
+            float dist = Math.Abs(dest.x - actorCoord.x)
+                + Math.Abs(dest.z - actorCoord.z);
+
+            if (dist > attackRange)
             {
+                ArborCoroutine.StopCoroutinesOnNode(this);
+                attacking = false;
+                attackable = true;
                 //check if there are closer target
-                foreach(var actors in GetNode<LuaLoader>("/root/Main/LuaLoader").GetChildren())
+                foreach (var actors in GetNode<LuaLoader>("/root/Main/LuaLoader").GetChildren())
                 {
+                    
                     var actorInRange = actors as Actor;
                     if (actorInRange != null && actorInRange.GetNode<HasTeam>("HasTeam").team != actor.GetNode<HasTeam>("HasTeam").team)
                     {
@@ -89,7 +88,8 @@ public class CombatState : ActorState
                 if (b.waypoints.Count == 0)
                 {
                     ArborCoroutine.StopCoroutinesOnNode(b);
-                    ArborCoroutine.StartCoroutine(TestMovement.PathFindAsync(actor.GlobalTranslation, dest, (List<Vector3> a) =>
+                    Vector3 CoordDest = Grid.LockToGrid(TargetActor.GlobalTranslation);
+                    ArborCoroutine.StartCoroutine(TestMovement.PathFindAsync(actor.GlobalTranslation, CoordDest, (List<Vector3> a) =>
                     {
                         if (a.Count > 0)
                         {
@@ -121,6 +121,7 @@ public class CombatState : ActorState
     public override void Stop()
     {
         rotateTime = 0;
+        ArborCoroutine.StopCoroutinesOnNode(this);
     }
 
     IEnumerator attackAnimation()
@@ -132,9 +133,9 @@ public class CombatState : ActorState
         attacking = false;
         if(GD.Randf() < criticalHitRate)
         {
-            TargetActor.Hurt(attackDamage, true);
+            TargetActor.Hurt(attackDamage, true, actor);
         }
-        else TargetActor.Hurt(attackDamage, false);
+        else TargetActor.Hurt(attackDamage, false, actor);
 
         //setting target to attack actor
         StateManager sm = TargetActor.FindNode("StateManager") as StateManager;
@@ -147,9 +148,14 @@ public class CombatState : ActorState
 
         yield return ArborCoroutine.WaitForSeconds(attackRecovery);
         rotateTime = 0.0f;
+        ArborCoroutine.StartCoroutine(CoolDown());
+        
+    }
+
+    IEnumerator CoolDown()
+    {
         yield return ArborCoroutine.WaitForSeconds(attackCooldown);
         attackable = true;
-        
     }
 
     float animation_offset = 0;
@@ -164,7 +170,14 @@ public class CombatState : ActorState
 
         /* Paper Turning */
         float current_scale_x = actor.view.Scale.x;
-        current_scale_x += (actor.GetDesiredScaleX() - current_scale_x) * 0.2f;
+        float desired_scale_x = current_scale_x;
+        Vector3 position_delta = TargetActor.GlobalTranslation - actor.GlobalTranslation;
+        if (position_delta.x > 0.01f)
+            desired_scale_x = actor.initial_view_scale.x;
+        if (position_delta.x < -0.01f)
+            desired_scale_x = -actor.initial_view_scale.x;
+
+        current_scale_x += (desired_scale_x - current_scale_x) * 0.2f;
         actor.view.Scale = new Vector3(current_scale_x, actor.initial_view_scale.y * idle_scale_impact, actor.view.Scale.z);
 
         if (attacking)

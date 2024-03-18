@@ -53,7 +53,7 @@ public class IdleState : ActorState
                     float dist = Math.Abs(actorPos.x - cur.x)
                 + Math.Abs(actorPos.z - cur.z);
 
-                    if ((cur - actorPos).Mag() <= detectionRange)
+                    if (dist <= detectionRange)
                     {
                         CombatState cs = manager.states["CombatState"] as CombatState;
                         cs.TargetActor = actorInRange;

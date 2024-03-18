@@ -41,6 +41,8 @@ public class Actor : Spatial
     float desired_scale_x = 1.0f;
     public float GetDesiredScaleX() { return desired_scale_x; }
 
+    bool dying = false;
+
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
@@ -129,6 +131,7 @@ public class Actor : Spatial
         if (position_delta.x < -0.01f)
             desired_scale_x = -initial_view_scale.x;
 
+
         previous_position = GlobalTranslation;
     }
 
@@ -167,7 +170,7 @@ public class Actor : Spatial
         char_mat.SetShaderParam("screenPosZ", FogOfWar.instance.screenPosZ);
     }
 
-    public void Hurt(int damage, bool isCritical)
+    public void Hurt(int damage, bool isCritical, Actor source)
     {
         if (isCritical)
         {
@@ -186,37 +189,41 @@ public class Actor : Spatial
             stat.GetStat("health").DecreaseCurrentValue(isCritical ? damage * 2 : damage);
             if(stat.GetStat("health").currVal <= 0)
             {
-                Kill();
+                Kill(source);
                 return;
             }
         }
         else
         {
-            Kill();
+            Kill(source);
             return;
         }
 
         ArborCoroutine.StartCoroutine(HurtAnimation(), this);
     }
 
-    public void Kill()//TODO needs clean up in combatState, fogofwar, barcontainer
+    public void Kill(Actor source = null)//TODO needs clean up in combatState, fogofwar, barcontainer
     {
+        bool endGame = GetNode<HasTeam>("HasTeam").team == "player";
         PackedScene scene = (PackedScene)ResourceLoader.Load("res://scenes/ActorKO.tscn");
         ActorKO new_ko = (ActorKO)scene.Instance();
         GetParent().AddChild(new_ko);
         new_ko.GlobalTranslation = GlobalTranslation;
         new_ko.GlobalRotation = GlobalRotation;
         new_ko.Scale = Scale;
-        Visible = true;
-
-        EventBus.Publish<actorDeathEvent>(new actorDeathEvent(this));
-
-        bool endGame = GetNode<HasTeam>("HasTeam").team == "player";
-        GD.Print(endGame);
-        new_ko.Configure(ArborResource.Get<Texture>("images/" + config.pre_ko_sprite_filename), ArborResource.Get<Texture>("images/" + config.ko_sprite_filename), endGame);
+        new_ko.GetNode<Spatial>("view").Scale = view.Scale;
+        if (config.pre_ko_sprite_filename != "" && config.ko_sprite_filename != "")
+        {
+            new_ko.Configure(ArborResource.Get<Texture>("images/" + config.pre_ko_sprite_filename), ArborResource.Get<Texture>("images/" + config.ko_sprite_filename), endGame, source);
+        }
+        else
+        {
+            new_ko.Configure(ArborResource.Get<Texture>("images/" + config.idle_sprite_filename), ArborResource.Get<Texture>("images/" + config.idle_sprite_filename), endGame, source);
+        }
 
         QueueFree();
-        state_manager.DisableAllState();
+
+
     }
 
    public void UpdateActorDict()
@@ -234,5 +241,7 @@ public class Actor : Spatial
         char_mat.SetShaderParam("apply_red_tint", 0);
         //unturn color
     }
+    
+
 
 }

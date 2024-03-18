@@ -290,8 +290,8 @@ public class ActorConfig
 	public float aesthetic_scale_factor = 1.0f;
 	public string idle_sprite_filename;
 	public string lives_sprite_filename;
-	public string pre_ko_sprite_filename;
-	public string ko_sprite_filename;
+	public string pre_ko_sprite_filename = "";
+	public string ko_sprite_filename = "";
 
 	public List<string> scripts;
 }
