@@ -1,17 +1,32 @@
-[gd_scene load_steps=15 format=2]
+[gd_scene load_steps=18 format=2]
 
 [ext_resource path="res://scenes/ToastResources/ToastMsgPanel.tres" type="StyleBox" id=1]
 [ext_resource path="res://scenes/ToastMessage.cs" type="Script" id=2]
 [ext_resource path="res://scenes/ToastResources/ToastMsgColorBox_notice.tres" type="StyleBox" id=3]
+[ext_resource path="res://scenes/ToastResources/ToastIconExit.png" type="Texture" id=4]
 [ext_resource path="res://scenes/error-icon.png" type="Texture" id=5]
 [ext_resource path="res://fonts/Roboto-Regular.ttf" type="DynamicFontData" id=6]
+[ext_resource path="res://scenes/ToastResources/ToastIconClear.png" type="Texture" id=7]
 
 [sub_resource type="DynamicFont" id=1]
 size = 26
 outline_color = Color( 0.592157, 0.341176, 0.341176, 1 )
 font_data = ExtResource( 6 )
 
-[sub_resource type="Theme" id=14]
+[sub_resource type="StyleBoxFlat" id=14]
+
+[sub_resource type="Theme" id=15]
+VScrollBar/icons/decrement = null
+VScrollBar/icons/decrement_highlight = null
+VScrollBar/icons/decrement_pressed = null
+VScrollBar/icons/increment = null
+VScrollBar/icons/increment_highlight = null
+VScrollBar/icons/increment_pressed = null
+VScrollBar/styles/grabber = SubResource( 14 )
+VScrollBar/styles/grabber_highlight = null
+VScrollBar/styles/grabber_pressed = null
+VScrollBar/styles/scroll = null
+VScrollBar/styles/scroll_focus = null
 
 [sub_resource type="DynamicFont" id=12]
 size = 25
@@ -585,7 +600,7 @@ margin_top = 22.0
 margin_right = 1449.0
 margin_bottom = 372.0
 mouse_filter = 1
-theme = SubResource( 14 )
+theme = SubResource( 15 )
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Panel/HistoryScrollContainer"]
 margin_right = 1307.0
@@ -601,14 +616,17 @@ custom_colors/default_color = Color( 0, 0, 0, 1 )
 custom_fonts/normal_font = SubResource( 12 )
 text = "Toast history 1"
 
-[node name="ClearHistoryButton" type="Button" parent="Panel"]
-margin_left = 15.0
-margin_top = 261.0
-margin_right = 135.0
-margin_bottom = 301.0
+[node name="ClearHistoryButton" type="TextureButton" parent="Panel"]
+margin_left = 80.0
+margin_top = 342.0
+margin_right = 592.0
+margin_bottom = 854.0
+rect_scale = Vector2( 0.0800386, 0.0800386 )
 mouse_filter = 1
+texture_normal = ExtResource( 7 )
 
 [node name="Label" type="Label" parent="Panel/ClearHistoryButton"]
+visible = false
 margin_right = 120.0
 margin_bottom = 40.0
 custom_fonts/font = SubResource( 13 )
@@ -618,13 +636,16 @@ valign = 1
 autowrap = true
 
 [node name="CloseButton" type="TextureButton" parent="Panel"]
-margin_left = 15.0
-margin_top = 155.0
-margin_right = 135.0
-margin_bottom = 195.0
+margin_left = 24.0
+margin_top = 343.0
+margin_right = 708.0
+margin_bottom = 1011.0
+rect_scale = Vector2( 0.0629956, 0.0615126 )
 mouse_filter = 1
+texture_normal = ExtResource( 4 )
 
 [node name="Label" type="Label" parent="Panel/CloseButton"]
+visible = false
 margin_right = 120.0
 margin_bottom = 40.0
 custom_fonts/font = SubResource( 13 )

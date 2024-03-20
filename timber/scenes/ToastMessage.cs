@@ -40,13 +40,13 @@ public class ToastMessage : Control
 	{
 		Warning,
 		Error,
-		Notification,
+		Notice,
 	}
 	
 	private AnimationPlayer _animationPlayer;
 	private Label _messageLabel;
 	private Label _numMsgLabelShort;
-	private Button _clearHistoryButton;
+	private TextureButton _clearHistoryButton;
 	private TextureButton _closeButton;
 	private ScrollContainer _historyScrollVBoxContainer;
 	private string _fullMessage;
@@ -73,7 +73,7 @@ public class ToastMessage : Control
 		// default animation in case the mouse never enters
 		_visibilityTimer.Connect("timeout", this, nameof(StartHideAnimation));
 
-		_clearHistoryButton = GetNode<Button>("Panel/ClearHistoryButton");
+		_clearHistoryButton = GetNode<TextureButton>("Panel/ClearHistoryButton");
 		_clearHistoryButton.Connect("mouse_entered", this, nameof(OnMouseEnterButton));
 		_clearHistoryButton.Connect("mouse_exited", this, nameof(OnMouseExitButton));
 		_clearHistoryButton.Connect("pressed", this, nameof(OnMousePressClearButton));
@@ -170,14 +170,14 @@ public class ToastMessage : Control
 		_animationPlayer.Play("expand_animation");
 		_isMouseHovering = true;
 		_numMsgLabelShort.Visible = false;
-		_clearHistoryButton.Visible = true;
-		_closeButton.Visible = true;
-		_historyScrollVBoxContainer.Visible = true;
 		_messageLabel.Visible = false;
 		_messageLabel.Text = _fullMessage; // Show full message
 		_messageLabel.RectMinSize = new Vector2(_messageLabel.RectMinSize.x, CalculateLabelHeight(_fullMessage, false));
 
 		await Task.Delay(TimeSpan.FromMilliseconds(300));
+		_clearHistoryButton.Visible = true;
+		_closeButton.Visible = true;
+		_historyScrollVBoxContainer.Visible = true;
 		ShowToastHistoryUI();
 	}
 	
@@ -238,7 +238,23 @@ public class ToastMessage : Control
 		foreach (ToastObject toast in history)
 		{
 			RichTextLabel label = (RichTextLabel)labelTemplate.Duplicate();
-			label.Text = $"{toast.time}: [{toast.type.ToString()}] {toast.content}";
+			// Use BBCode tags to set part of the text color
+			label.BbcodeEnabled = true;
+			string coloredText;
+			if (toast.type == ToastType.Error)
+			{
+				coloredText = $"[color=#c93b2e]{toast.type.ToString()}[/color]";
+			} 
+			else if (toast.type == ToastType.Warning)
+			{
+				coloredText = $"[color=#cc9712]{toast.type.ToString()}[/color]";
+			}
+			else
+			{
+				coloredText = $"[color=#3874cf]{toast.type.ToString()}[/color]";
+			}
+			
+			label.BbcodeText = $"{toast.time}: [{coloredText}] {toast.content}";
 			label.RectPosition = new Vector2(0, totalHeight);
 			totalHeight += label.RectSize.y;
 			totalHeight += 5;

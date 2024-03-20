@@ -7,10 +7,9 @@ using System.Threading.Tasks;
 // Todo for future
 // keyboard short cut - done
 // audio
-// make the scroll bar more visible
-// improve button style
+// make the scroll bar more visible - done
+// improve button style - done
 // differentiate toast types - done
-// remove Playbutton script? 
 // Todo for 3.14-3.21
 // Important: move it above elements (e.g. black screen) [[[[ALL TIME]]]] - done
 // Tiny fixes and look on other things to do
@@ -44,7 +43,7 @@ public static class ToastManager
         {
             if (keyEvent.Pressed && ((keyEvent.Scancode == (int)KeyList.M && Input.IsKeyPressed((int)KeyList.Control)) || (keyEvent.Scancode == (int)KeyList.M && Input.IsKeyPressed((int)KeyList.Meta))))
             {
-                ShowToastMessage(_rootNode, "User called message display.", type: ToastMessage.ToastType.Notification);
+                ShowToastMessage(_rootNode, "User called message display.", type: ToastMessage.ToastType.Notice);
             }
         }
     }
