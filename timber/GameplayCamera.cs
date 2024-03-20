@@ -102,16 +102,16 @@ public class PlayerControlledCameraState : GameplayCameraState
         bool window_focused = SelectionSystem.WindowFocused();
 
 
-        if (Input.IsPhysicalKeyPressed((int)KeyList.W) || (cursor_window_position.y < window_resolution.y * 0.1f && cursor_inside_window && window_focused))
+        if (Input.IsPhysicalKeyPressed((int)KeyList.W) && false || (cursor_window_position.y < window_resolution.y * 0.1f && cursor_inside_window && window_focused))
             input += Vector3.Forward;
 
-        if (Input.IsPhysicalKeyPressed((int)KeyList.S) || (cursor_window_position.y > window_resolution.y * 0.9f && cursor_inside_window && window_focused))
+        if (Input.IsPhysicalKeyPressed((int)KeyList.S) && false|| (cursor_window_position.y > window_resolution.y * 0.9f && cursor_inside_window && window_focused))
             input += Vector3.Back;
 
-        if (Input.IsPhysicalKeyPressed((int)KeyList.D) || (cursor_window_position.x > window_resolution.x * 0.9f && cursor_inside_window && window_focused))
+        if (Input.IsPhysicalKeyPressed((int)KeyList.D) && false || (cursor_window_position.x > window_resolution.x * 0.9f && cursor_inside_window && window_focused))
             input += Vector3.Right;
 
-        if (Input.IsPhysicalKeyPressed((int)KeyList.A) || (cursor_window_position.x < window_resolution.x * 0.1f && cursor_inside_window && window_focused))
+        if (Input.IsPhysicalKeyPressed((int)KeyList.A) && false || (cursor_window_position.x < window_resolution.x * 0.1f && cursor_inside_window && window_focused))
             input += Vector3.Left;
 
         Vector3 current_desired_position = GameplayCamera.GetDesiredXZPosition();

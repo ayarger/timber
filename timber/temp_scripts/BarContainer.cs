@@ -183,36 +183,4 @@ public class BarContainer : Control
         }
 
     }
-
-    // Testing
-    public override void _Input(InputEvent @event)
-    {
-        if (@event is InputEventKey eventKey && eventKey.Pressed && !eventKey.Echo)
-        {
-            if (eventKey.Scancode == (int)KeyList.Key3)
-            {
-                RemovePrimary();
-            }
-
-            else if (eventKey.Scancode == (int)KeyList.Key4)
-            {
-                RemoveSecondary(0);
-            }
-
-            else if(eventKey.Scancode == (int)KeyList.Key5)
-            {
-                RemoveSecondary(1);
-            }
-
-            else if(eventKey.Scancode == (int)KeyList.Key8)
-            {
-                ToggleVisibilityOff();
-            }
-
-            else if (eventKey.Scancode == (int)KeyList.Key9)
-            {
-                ToggleVisibilityOn();
-            }
-        }
-    }
 }

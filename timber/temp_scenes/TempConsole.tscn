@@ -3,9 +3,10 @@
 [ext_resource path="res://DeveloperConsole/Scripts/ConsoleManager.cs" type="Script" id=1]
 
 [node name="TempConsole" type="Control"]
-margin_top = 12.0
-margin_right = 40.0
-margin_bottom = 52.0
+margin_left = 59.0
+margin_top = 57.0
+margin_right = 99.0
+margin_bottom = 97.0
 
 [node name="ConsolePanel" type="Panel" parent="."]
 visible = false

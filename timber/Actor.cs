@@ -18,7 +18,7 @@ public class Actor : Spatial
     SpatialMaterial character_material;
     MeshInstance shadow_view;
     StateManager state_manager;
-   
+    NameTag name_tag;
 
     IsSelectable selectable;
 
@@ -36,7 +36,6 @@ public class Actor : Spatial
     public override void _Ready()
     {
         previous_position = GlobalTranslation;
-
         view = (Spatial)GetNode("view");
         state_manager = (StateManager)GetNode("StateManager");
         character_view = (MeshInstance)GetNode("view/mesh");
@@ -51,6 +50,8 @@ public class Actor : Spatial
         });
         // update ActorDict after actor is loaded into the scene
         UpdateActorDict();
+        name_tag = NameTag.Create(character_view, this.Name);
+        GD.Print($"name_tag: {name_tag}");
     }
 
     public void Configure(ActorConfig info)
@@ -171,8 +172,8 @@ public class Actor : Spatial
     }
 
    public void UpdateActorDict()
-    {
+   {
         ConsoleManager console_manager = GetParent().GetNode<ConsoleManager>("../CanvasLayer/TempConsole/ConsoleManager");
         console_manager.ActorDict[this.Name.ToLower()] = this;
-    }
+   }
 }

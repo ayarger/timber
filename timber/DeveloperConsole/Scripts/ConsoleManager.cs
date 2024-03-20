@@ -5,6 +5,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 
+public class EditModeEvent
+{
+    public bool activated;
+    public EditModeEvent(bool _activated)
+    {
+        bool activated = _activated;
+    }
+}
+
 public class ConsoleManager : Control
 {
     [Export]
@@ -28,8 +37,9 @@ public class ConsoleManager : Control
     ConsoleCommand curr_match;
 
     [Export]
-    //autoComplete multiple matches
-    private List<string> matchingCommands = new List<string>();
+    List<string> matchingCommands = new List<string>();
+
+
     private int autocompleteIndex = -1;
     private string baseInput = "";
 
@@ -87,6 +97,10 @@ public class ConsoleManager : Control
 
     }
 
+    /// <summary>
+    /// Input control for console panel toggle, fetching last command entered and autocompletion 
+    /// </summary>
+    /// <param name="event"></param>
     public override void _Input(InputEvent @event)
     {
         // Toggle console panel visibility on pressing [`]
@@ -94,13 +108,16 @@ public class ConsoleManager : Control
         {
             if (eventKey.Scancode == 96)
             {
-                GD.Print("console toggle");
                 consolePanel.Visible = !consolePanel.Visible;
+                //Publish editMode event
+                EventBus.Publish(new EditModeEvent(consolePanel.Visible));
+                GD.Print($"EditModeOn:{consolePanel.Visible}");
                 //automatically focus on the lineEdit when console is visible
                 if (consolePanel.Visible) consoleInput.GrabFocus();
                 // Pause the game while accessing the command console
                 // TODO some of the functionality should remain accessible
-                GetTree().Paused = consolePanel.Visible;
+
+                //GetTree().Paused = consolePanel.Visible;
             }
 
             // fetch last command entered
@@ -116,20 +133,14 @@ public class ConsoleManager : Control
             if (eventKey.Scancode == (uint)KeyList.Tab && consolePanel.Visible)
             {
                 consoleInput.Text = curr_match.CommandWord;
+                if(matchingCommands.Count > 0)
+                {
+                    consoleInput.Text += $" {matchingCommands[0]}";
+                }
                 consoleInput.GrabFocus();
                 consoleInput.CaretPosition = consoleInput.Text.Length;
-
             }
         }
-    }
-
-    private void GetAllCommands()
-    {
-        commands.Add("stat");
-        commands.Add("help");
-        commands.Add("random");
-        commands.Add("test");
-        commands.Add("show");
     }
 
     private void OnCommandEntered(string input)
@@ -148,17 +159,29 @@ public class ConsoleManager : Control
     //TODO Show auto complete suggestion in a different window
     private void OnSuggestionSelected(string inputText)
     {
-        curr_match = commandList.FirstOrDefault(cmd => cmd.CommandWord.StartsWith(inputText));
         string[] input_string = inputText.Split(' ');
+        string input_command = input_string[0];
         string[] curr_args = new string[input_string.Length - 1];
-        GD.Print(curr_args.Length);
+        Array.Copy(input_string, 1, curr_args, 0, input_string.Length - 1);
+        // search for matching command word
+        curr_match = commandList.FirstOrDefault(cmd => cmd.CommandWord.StartsWith(input_command));
 
+
+        // serach for matching arguments if curr_args is not empty
         if (curr_args.Length > 0)
         {
+            GD.Print($"curr match in : {curr_match.CommandWord}\n");
+            GD.Print($"curr args: {curr_args[0]}\n");
             matchingCommands = curr_match.FindMatchingCommands(curr_args);
             foreach (string match in matchingCommands)
             {
+                GD.Print("match found");
                 consoleOutput.Text = $"{curr_match.CommandWord} {match}";
+                //show actor names if curr_match uses actor info after mathcing args found
+                if (curr_match.NeedActroInfo)
+                {
+                    ShowActors();
+                }
             }
         }
     }
@@ -176,7 +199,7 @@ public class ConsoleManager : Control
         string input_command = input_string[0]; //parse command
         string[] curr_args = new string[input_string.Length - 1];// the rest are arguments
         Array.Copy(input_string, 1, curr_args, 0, input_string.Length - 1);
-        GD.Print(curr_args);
+
         //starts comparing input to commandList
         foreach(var command in commandList)
         {
@@ -199,90 +222,10 @@ public class ConsoleManager : Control
         }
     }
 
-    //TODO: create a function that resize the output box based on output text
-
-    void ParseCommand(string input)
-    {
-        string[] inputString = input.Split(' ');
-        consoleOutput.Text += $"Command: {input}\n";
-
-        string command = inputString[0]; //parse command
-        string[] args = new string[inputString.Length - 1];// the rest are arguments
-        Array.Copy(inputString, 1, args, 0, inputString.Length - 1);
-
-        //TODO refacotr stat releated commands(start with name? stat? operations)
-        switch (command)
-        {
-            case "help":
-                if (args.Length == 0)
-                {
-                    ShowHelp();
-                }
-                break;
-
-            case "stat":
-                if (args.Length > 2) {
-                    //Get actor
-                    curr_actor = GetParent().GetParent().GetParent().GetParent().GetNode<Spatial>($"LuaLoader/{args[1]}");
-                    GD.Print(args);
-                }
-
-                if (curr_actor != null)
-                {
-                    //Get specific stat
-                    Stat curr_stat = curr_actor.GetNode<HasStats>("HasStats").GetStat(args[2]);
-
-                    if (args.Length == 3)
-                    {
-                        consoleOutput.Text += $"{args[1]} {curr_stat.name}: {curr_stat.currVal}";
-                    }
-                    if (args.Length == 4)
-                    {
-                        int amount = int.Parse(args[3]);
-                        switch (args[0])
-                        {
-                            case "increse":
-                                curr_stat.IncreaseCurrentValue(amount);
-                                consoleOutput.Text += $"{args[1]} {args[2]} changed to {curr_stat.currVal}";
-                                break;
-                            case "decrease":
-                                curr_stat.DecreaseCurrentValue(amount);
-                                consoleOutput.Text += $"{args[1]} {args[2]} changed to {curr_stat.currVal}";
-                                break;
-                            case "change":
-                                curr_stat.SetVal(amount);
-                                consoleOutput.Text += $"{args[1]} {args[2]} changed to {curr_stat.currVal}";
-                                break;
-                            case "max":
-                                curr_stat.SetMaxVal(amount);
-                                consoleOutput.Text = $"{args[1]} max {args[2]} set to {amount}";
-                                break;
-                            case "create":
-                                curr_actor.GetNode<HasStats>("HasStats").AddStat(args[2],0,100,amount,false);
-                                curr_stat = curr_actor.GetNode<HasStats>("HasStats").GetStat(args[2]);
-                                consoleOutput.Text = $"{args[1]} {args[2]} created. (current value: {curr_stat.currVal})";
-                                break;
-                        }
-                        
-                    }
-                }
-                break;
-
-            case "random":
-                break;
-
-            default:
-                consoleOutput.Text = "Invalid command";
-                lastCommand = "";
-                break;
-
-        }
-
-    }
 
     void ShowHelp()
     {
-        commandList.ForEach(item => consoleOutput.Text = $"{item.Usage} \n {consoleOutput.Text}");
+        commandList.ForEach(item => consoleOutput.Text = $"{item.Usage}\n{consoleOutput.Text}");
     }
 
     //TODO: show Actors in a popup or make the name tag available
@@ -290,7 +233,12 @@ public class ConsoleManager : Control
     {
         foreach (string key in ActorDict.Keys)
         {
-            consoleOutput.Text = $"{key}\n{consoleOutput.Text}";
+            consoleOutput.Text = $"{consoleOutput.Text}\n{key}";
         }
+    }
+
+    void HideActors()
+    {
+
     }
 }

@@ -16,13 +16,16 @@ public abstract class ConsoleCommand : Node
 
     [Export] protected string commandOutput = "";
 
+    [Export] protected bool needActorInfo = false;
+
 
     public string CommandWord => commandWord;
-
 
     public string Usage => usage;
 
     public string CommandOutput => commandOutput;
+
+    public bool NeedActroInfo => needActorInfo;
 
     /// <summary>
     /// A list of predefined valid args for the command for error handling and autocomplete
@@ -40,7 +43,7 @@ public abstract class ConsoleCommand : Node
 
 
     /// <summary>
-    /// Find matching commands from valid  console commands based on console input
+    /// Find matching commands from valid console commands based on console input
     /// </summary>
     /// <param name="args"></param>
     /// <returns></returns>
