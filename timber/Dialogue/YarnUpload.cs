@@ -23,6 +23,7 @@ public class YarnUpload : Button
     private void _on_Button_pressed()
     {
         fileDialog.PopupCentered(Vector2.One * 400);
+        fileDialog.SetAsToplevel(true);
     }
 
     private void _on_FileDialog_file_selected(string path)

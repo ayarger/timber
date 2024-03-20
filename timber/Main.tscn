@@ -440,6 +440,10 @@ margin_right = -989.0
 margin_bottom = -603.592
 rect_scale = Vector2( 2, 2 )
 
+[node name="TextureRect" type="TextureRect" parent="Dialogue/CanvasLayer"]
+margin_right = 40.0
+margin_bottom = 40.0
+
 [node name="NLuaManager" type="Node" parent="."]
 script = ExtResource( 19 )
 
