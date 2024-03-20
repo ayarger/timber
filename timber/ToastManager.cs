@@ -5,11 +5,11 @@ using Godot;
 using System.Threading.Tasks;
 
 // Todo for future
-// keyboard short cut
+// keyboard short cut - done
 // audio
 // make the scroll bar more visible
 // improve button style
-// differentiate toast types
+// differentiate toast types - done
 // remove Playbutton script? 
 // Todo for 3.14-3.21
 // Important: move it above elements (e.g. black screen) [[[[ALL TIME]]]] - done
@@ -44,7 +44,7 @@ public static class ToastManager
         {
             if (keyEvent.Pressed && ((keyEvent.Scancode == (int)KeyList.M && Input.IsKeyPressed((int)KeyList.Control)) || (keyEvent.Scancode == (int)KeyList.M && Input.IsKeyPressed((int)KeyList.Meta))))
             {
-                ShowToastMessage(_rootNode, "Called Message History.");
+                ShowToastMessage(_rootNode, "User called message display.", type: ToastMessage.ToastType.Notification);
             }
         }
     }

@@ -47,7 +47,7 @@ public class ToastMessage : Control
 	private Label _messageLabel;
 	private Label _numMsgLabelShort;
 	private Button _clearHistoryButton;
-	private Button _closeButton;
+	private TextureButton _closeButton;
 	private ScrollContainer _historyScrollVBoxContainer;
 	private string _fullMessage;
 	private string _previewMessage;
@@ -79,7 +79,7 @@ public class ToastMessage : Control
 		_clearHistoryButton.Connect("pressed", this, nameof(OnMousePressClearButton));
 		_clearHistoryButton.Visible = false;
 		
-		_closeButton = GetNode<Button>("Panel/CloseButton");
+		_closeButton = GetNode<TextureButton>("Panel/CloseButton");
 		_closeButton.Connect("mouse_entered", this, nameof(OnMouseEnterButton));
 		_closeButton.Connect("mouse_exited", this, nameof(OnMouseExitButton));
 		_closeButton.Connect("pressed", this, nameof(OnMousePressCloseButton));
@@ -114,7 +114,26 @@ public class ToastMessage : Control
 	
 	public void ShowMessage(ToastObject msgObj, int previewLength = 50)
 	{
-		MessageObjContentDisplay(msgObj);
+		string path_to_texture = "";
+		string path_to_stylebox = "";
+		if (msgObj.type == ToastType.Error)
+		{
+			path_to_texture = "res://scenes/ToastResources/ToastIconError.png";
+			path_to_stylebox = "res://scenes/ToastResources/ToastMsgColorBox_error.tres";
+		} else if (msgObj.type == ToastType.Warning)
+		{
+			path_to_texture = "res://scenes/ToastResources/ToastIconWarning.png";
+			path_to_stylebox = "res://scenes/ToastResources/ToastMsgColorBox_warning.tres";
+		}
+		else
+		{
+			path_to_texture = "res://scenes/ToastResources/ToastIconNotice.png";
+			path_to_stylebox = "res://scenes/ToastResources/ToastMsgColorBox_notice.tres";
+		}
+		GetNode<Sprite>("Panel/ColorPanel/Sprite").Texture = GD.Load<Texture>(path_to_texture);
+		GetNode<Panel>("Panel/ColorPanel").AddStyleboxOverride("panel", GD.Load<StyleBox>(path_to_stylebox));
+		
+		MessageObjContentDisplay(msgObj, previewLength);
 		Visible = true;
 		_animationPlayer.Play("show_animation");
 		_isMouseHovering = false;
@@ -223,12 +242,9 @@ public class ToastMessage : Control
 			label.RectPosition = new Vector2(0, totalHeight);
 			totalHeight += label.RectSize.y;
 			totalHeight += 5;
-			// if (toast.Equals(ToastManager.currentToast))
-			// {
-			// 	label.Modulate = new Color(0, 0, 0, 1);
-			// }
 			temp.AddChild(label);
 		}
+
 		
 		ToastManager.ClearToastQueue();
 	}
