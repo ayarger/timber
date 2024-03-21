@@ -10,6 +10,7 @@ public class ToastMessage : Control
 	{
 		public Node caller;
 		public string content;
+		public string preview;
 		public float duration;
 		public ToastType type;
 		public int numOccurred;
@@ -19,6 +20,7 @@ public class ToastMessage : Control
 		{
 			caller = _caller;
 			content = _content;
+			preview = "";
 			duration = _duration;
 			type = _type;
 			numOccurred = 1;
@@ -57,6 +59,7 @@ public class ToastMessage : Control
 	private Vector2 _messageBoxSize;
 	private Timer _visibilityTimer;
 	private RichTextLabel labelTemplate;
+	private AudioStreamPlayer audioPlayer;
 
 	public override void _Ready()
 	{
@@ -96,23 +99,25 @@ public class ToastMessage : Control
 		_historyScrollVBoxContainer.Connect("mouse_exited", this, nameof(OnMouseExitHistory));
 		
 		labelTemplate = (RichTextLabel)_historyScrollVBoxContainer.GetNode<RichTextLabel>("VBoxContainer/LabelTemplate").Duplicate();
+		audioPlayer = GetNode<AudioStreamPlayer>("AudioStreamPlayer");
 		EventBus.Subscribe<EventToastUpdate>(UpdateToast);
 	}
 
 	/// <summary>
 	/// Content Display Section
 	/// </summary>
-	private void MessageObjContentDisplay(ToastObject msgObj, int previewLength = 50)
+	private void MessageObjContentDisplay(ToastObject msgObj, int previewLength = 70)
 	{
 		_fullMessage = msgObj.content;
 		_previewMessage = _fullMessage.Length <= previewLength ? 
 			_fullMessage : _fullMessage.Substring(0, previewLength) + "...";
 		_messageLabel.Text = _previewMessage;
+		msgObj.preview = _previewMessage;
 		int numMsg = ToastManager.GetNumMsgInQueue();
 		if (numMsg > 0) _numMsgLabelShort.Text = numMsg.ToString() + " more";
 	}
 	
-	public void ShowMessage(ToastObject msgObj, int previewLength = 50)
+	public void ShowMessage(ToastObject msgObj, int previewLength = 70)
 	{
 		string path_to_texture = "";
 		string path_to_stylebox = "";
@@ -147,7 +152,7 @@ public class ToastMessage : Control
 			e.obj.content = "null message detected";
 		}
 		MessageObjContentDisplay(e.obj);
-		_messageLabel.Text = e.obj.content;
+		// _messageLabel.Text = e.obj.preview;
 		ResetAndStartTimer(e.obj.duration);
 		if (_isShowngHistory) ShowToastHistoryUI();
 	}
@@ -254,13 +259,19 @@ public class ToastMessage : Control
 				coloredText = $"[color=#3874cf]{toast.type.ToString()}[/color]";
 			}
 			
-			label.BbcodeText = $"{toast.time}: [{coloredText}] {toast.content}";
+			label.BbcodeText = $"{toast.time.ToString("hh:mm:ss")}: [{coloredText}] {toast.content}";
 			label.RectPosition = new Vector2(0, totalHeight);
-			totalHeight += label.RectSize.y;
-			totalHeight += 5;
+			label.RectMinSize = new Vector2(labelTemplate.RectMinSize.x, label.GetContentHeight());
+			label.Update();
+			totalHeight += label.RectSize.y + 5;
 			temp.AddChild(label);
 		}
-
+		
+		// if (temp.GetChildCount() > 0)
+		// {
+		// 	Control lastLabel = (Control)temp.GetChild(temp.GetChildCount() - 1);
+		// 	_historyScrollVBoxContainer.EnsureControlVisible(lastLabel);
+		// }
 		
 		ToastManager.ClearToastQueue();
 	}
@@ -313,5 +324,11 @@ public class ToastMessage : Control
 	{
 		// GD.Print("Mouse exit clear button.");
 		_mouseEnterCount--;
+	}
+	
+	public void PlayToastSoundEffect(float volumeDb = 0)
+	{
+		audioPlayer.VolumeDb = volumeDb;
+		audioPlayer.Play();
 	}
 }

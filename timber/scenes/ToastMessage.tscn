@@ -7,6 +7,7 @@
 [ext_resource path="res://scenes/error-icon.png" type="Texture" id=5]
 [ext_resource path="res://fonts/Roboto-Regular.ttf" type="DynamicFontData" id=6]
 [ext_resource path="res://scenes/ToastResources/ToastIconClear.png" type="Texture" id=7]
+[ext_resource path="res://scenes/ToastResources/Toast_sound_.mp3" type="AudioStream" id=8]
 
 [sub_resource type="DynamicFont" id=1]
 size = 26
@@ -14,6 +15,11 @@ outline_color = Color( 0.592157, 0.341176, 0.341176, 1 )
 font_data = ExtResource( 6 )
 
 [sub_resource type="StyleBoxFlat" id=14]
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+expand_margin_left = 1.0
 
 [sub_resource type="Theme" id=15]
 VScrollBar/icons/decrement = null
@@ -30,10 +36,6 @@ VScrollBar/styles/scroll_focus = null
 
 [sub_resource type="DynamicFont" id=12]
 size = 25
-font_data = ExtResource( 6 )
-
-[sub_resource type="DynamicFont" id=13]
-size = 18
 font_data = ExtResource( 6 )
 
 [sub_resource type="Animation" id=7]
@@ -569,18 +571,6 @@ align = 1
 valign = 1
 autowrap = true
 
-[node name="NumMsg_short" type="Label" parent="Panel"]
-margin_left = 582.0
-margin_top = 5.0
-margin_right = 729.0
-margin_bottom = 49.0
-custom_colors/font_color = Color( 0, 0, 0, 1 )
-custom_fonts/font = SubResource( 1 )
-text = "1 more"
-align = 2
-valign = 1
-autowrap = true
-
 [node name="NumOccurred_short" type="Label" parent="Panel"]
 visible = false
 margin_left = 566.0
@@ -590,6 +580,18 @@ margin_bottom = 106.0
 custom_colors/font_color = Color( 0, 0, 0, 1 )
 custom_fonts/font = SubResource( 1 )
 text = "3 Occurred"
+align = 2
+valign = 1
+autowrap = true
+
+[node name="NumMsg_short" type="Label" parent="Panel"]
+margin_left = 582.0
+margin_top = 5.0
+margin_right = 729.0
+margin_bottom = 49.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_fonts/font = SubResource( 1 )
+text = "1 more"
 align = 2
 valign = 1
 autowrap = true
@@ -625,16 +627,6 @@ rect_scale = Vector2( 0.0800386, 0.0800386 )
 mouse_filter = 1
 texture_normal = ExtResource( 7 )
 
-[node name="Label" type="Label" parent="Panel/ClearHistoryButton"]
-visible = false
-margin_right = 120.0
-margin_bottom = 40.0
-custom_fonts/font = SubResource( 13 )
-text = "Clear History"
-align = 1
-valign = 1
-autowrap = true
-
 [node name="CloseButton" type="TextureButton" parent="Panel"]
 margin_left = 24.0
 margin_top = 343.0
@@ -644,22 +636,15 @@ rect_scale = Vector2( 0.0629956, 0.0615126 )
 mouse_filter = 1
 texture_normal = ExtResource( 4 )
 
-[node name="Label" type="Label" parent="Panel/CloseButton"]
-visible = false
-margin_right = 120.0
-margin_bottom = 40.0
-custom_fonts/font = SubResource( 13 )
-text = "Close"
-align = 1
-valign = 1
-autowrap = true
-
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/RESET = SubResource( 7 )
 anims/expand_animation = SubResource( 8 )
 anims/hide_animation = SubResource( 9 )
 anims/show_animation = SubResource( 10 )
 anims/shrink_animation = SubResource( 11 )
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 8 )
 
 [node name="Timer" type="Timer" parent="."]
 wait_time = 3.0

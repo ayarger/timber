@@ -41,10 +41,33 @@ public static class ToastManager
     {
         if (@event is InputEventKey keyEvent)
         {
-            if (keyEvent.Pressed && ((keyEvent.Scancode == (int)KeyList.M && Input.IsKeyPressed((int)KeyList.Control)) || (keyEvent.Scancode == (int)KeyList.M && Input.IsKeyPressed((int)KeyList.Meta))))
+            if (keyEvent.Pressed && ((keyEvent.Scancode == (int)KeyList.M && Input.IsKeyPressed((int)KeyList.Control)) 
+                                     || (keyEvent.Scancode == (int)KeyList.M && Input.IsKeyPressed((int)KeyList.Meta))))
             {
                 ShowToastMessage(_rootNode, "User called message display.", type: ToastMessage.ToastType.Notice);
             }
+            // START OF DEBUG
+            else if (keyEvent.Pressed && ((keyEvent.Scancode == (int)KeyList.E && Input.IsKeyPressed((int)KeyList.Control)) 
+                                          || (keyEvent.Scancode == (int)KeyList.E && Input.IsKeyPressed((int)KeyList.Meta))))
+            {
+                ShowToastMessage(_rootNode, "Error test.", type: ToastMessage.ToastType.Error);
+            }
+            else if (keyEvent.Pressed && ((keyEvent.Scancode == (int)KeyList.W && Input.IsKeyPressed((int)KeyList.Control)) 
+                                          || (keyEvent.Scancode == (int)KeyList.W && Input.IsKeyPressed((int)KeyList.Meta))))
+            {
+                ShowToastMessage(_rootNode, "Warning test.", type: ToastMessage.ToastType.Warning);
+            }            
+            else if (keyEvent.Pressed && ((keyEvent.Scancode == (int)KeyList.L && Input.IsKeyPressed((int)KeyList.Control)) 
+                                          || (keyEvent.Scancode == (int)KeyList.L && Input.IsKeyPressed((int)KeyList.Meta))))
+            {
+                ShowToastMessage(_rootNode, "Testing long toast message: This is an apple, I like apples, apples are good for our health. " +
+                                            "An apple a day, keeps the doctor away. " +
+                                            "Life is like an ocean, only those who are strong in will can reach the shore." + 
+                                            "Testing long toast message: This is an apple, I like apples, apples are good for our health. " +
+                                            "An apple a day, keeps the doctor away. " +
+                                            "Life is like an ocean, only those who are strong in will can reach the shore.");
+            }
+            // END OF DEBUG
         }
     }
 
@@ -105,7 +128,7 @@ public static class ToastManager
         {
             _toastLayer.AddChild(msg);
             msg.ShowMessage(obj);
-            PlayToastSoundEffect(msg);
+            msg.PlayToastSoundEffect();
         }
     }
 
@@ -157,27 +180,9 @@ public static class ToastManager
     {
         if (_toastLayer != null && _toastLayer.GetChildren().Count == 0)
         {
-            _toastLayer.QueueFree(); // This removes the layer from the scene and frees its resources
-            _toastLayer = null; // Reset the reference to allow recreation later
+            _toastLayer.QueueFree();
+            _toastLayer = null;
         }
-    }
-    
-    public static void PlayToastSoundEffect(Node caller)
-    {
-        // Load the sound effect (assuming it's in the project's "res://" directory)
-        AudioStream soundEffect = GD.Load<AudioStream>("res://path/to/sound_effect.wav");
-
-        // Create an AudioStreamPlayer node
-        AudioStreamPlayer audioPlayer = new AudioStreamPlayer();
-
-        // Assign the sound effect to the player
-        audioPlayer.Stream = soundEffect;
-
-        // Add the player to the scene
-        caller.AddChild(audioPlayer);
-
-        // Play the sound effect
-        audioPlayer.Play();
     }
 
 }
