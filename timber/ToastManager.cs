@@ -4,15 +4,14 @@ using System.Linq;
 using Godot;
 using System.Threading.Tasks;
 
-// Todo for future
-// keyboard short cut - done
-// audio
-// make the scroll bar more visible - done
-// improve button style - done
-// differentiate toast types - done
-// Todo for 3.14-3.21
-// Important: move it above elements (e.g. black screen) [[[[ALL TIME]]]] - done
-// Tiny fixes and look on other things to do
+// Todo for 3.21-3.29
+// Explore tower placement - can I reuse the actor system and treat it like another player?
+
+/// <summary>
+/// Example:
+/// using static ToastManager;
+/// ShowToastMessage(callerNode, "Message.", 2.0f, ToastMessage.ToastType.Notice);
+/// </summary>
 
 public static class ToastManager
 {
@@ -79,26 +78,27 @@ public static class ToastManager
         
         if (isShowing)
         {
-            if (_newMsg.Equals(currentToast))
-            {
-                currentToast.numOccurred++;
-            }
-            else
-            {
-                bool found = false;
-                for (int i = 0; i < _toastQueue.Count; i++)
-                {
-                    ToastMessage.ToastObject t = _toastQueue[i];
-                    if (t.Equals(_newMsg))
-                    {
-                        t.numOccurred++;
-                        _toastQueue[i] = t;
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found) _toastQueue.Add(_newMsg);
-            }
+            // if (_newMsg.Equals(currentToast))
+            // {
+            //     currentToast.numOccurred++;
+            // }
+            // else
+            // {
+            //     bool found = false;
+            //     for (int i = 0; i < _toastQueue.Count; i++)
+            //     {
+            //         ToastMessage.ToastObject t = _toastQueue[i];
+            //         if (t.Equals(_newMsg))
+            //         {
+            //             t.numOccurred++;
+            //             _toastQueue[i] = t;
+            //             found = true;
+            //             break;
+            //         }
+            //     }
+            //     if (!found) _toastQueue.Add(_newMsg);
+            // }
+            _toastQueue.Add(_newMsg);
             EventBus.Publish(new EventToastUpdate(currentToast));
         }
         else

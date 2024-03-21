@@ -152,8 +152,7 @@ public class ToastMessage : Control
 			e.obj.content = "null message detected";
 		}
 		MessageObjContentDisplay(e.obj);
-		// _messageLabel.Text = e.obj.preview;
-		ResetAndStartTimer(e.obj.duration);
+		// ResetAndStartTimer(e.obj.duration);
 		if (_isShowngHistory) ShowToastHistoryUI();
 	}
 	
