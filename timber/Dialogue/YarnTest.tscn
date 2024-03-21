@@ -1,0 +1,196 @@
+[gd_scene load_steps=14 format=2]
+
+[ext_resource path="res://addons/YarnSpinner-Godot/Runtime/DialogueRunner.cs" type="Script" id=1]
+[ext_resource path="res://YarnUpload.cs" type="Script" id=2]
+[ext_resource path="res://addons/YarnSpinner-Godot/Runtime/LineProviders/TextLineProvider.cs" type="Script" id=3]
+[ext_resource path="res://addons/YarnSpinner-Godot/Runtime/InMemoryVariableStorage.cs" type="Script" id=4]
+[ext_resource path="res://addons/YarnSpinner-Godot/Runtime/Views/LineView.cs" type="Script" id=5]
+[ext_resource path="res://addons/YarnSpinner-Godot/Runtime/Views/OptionsListView.cs" type="Script" id=6]
+[ext_resource path="res://OptionView.tscn" type="PackedScene" id=7]
+[ext_resource path="res://FantasqueSansMono-Regular.ttf" type="DynamicFontData" id=8]
+[ext_resource path="res://StartDialogueButton.cs" type="Script" id=9]
+[ext_resource path="res://YarnSelect.cs" type="Script" id=10]
+
+[sub_resource type="DynamicFont" id=1]
+size = 25
+font_data = ExtResource( 8 )
+
+[sub_resource type="DynamicFont" id=28]
+size = 25
+font_data = ExtResource( 8 )
+
+[sub_resource type="DynamicFont" id=29]
+size = 40
+font_data = ExtResource( 8 )
+
+[node name="Control" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="DialogueRunner" type="Node" parent="CanvasLayer"]
+script = ExtResource( 1 )
+variableStoragePath = NodePath("../InMemoryVariableStorage")
+dialogueViewPaths = [ NodePath("../LineView"), NodePath("../OptionsListView") ]
+startNode = "Start"
+startAutomatically = false
+lineProviderPath = NodePath("../TextLineProvider")
+
+[node name="VariableDebugText" type="RichTextLabel" parent="CanvasLayer"]
+margin_right = 40.0
+margin_bottom = 40.0
+
+[node name="LineView" type="Control" parent="CanvasLayer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_right = -286.0
+margin_bottom = -220.0
+script = ExtResource( 5 )
+viewControlPath = NodePath("ViewControl")
+useFadeEffect = false
+lineTextPath = NodePath("ViewControl/LineText")
+characterNameTextPath = NodePath("ViewControl/CharacterNameText")
+typewriterEffectSpeed = 240.0
+continueButtonPath = NodePath("ViewControl/ContinueButton")
+
+[node name="ViewControl" type="Control" parent="CanvasLayer/LineView"]
+anchor_left = 0.348
+anchor_top = 0.31
+anchor_right = 0.977
+anchor_bottom = 1.0
+margin_top = 30.0
+margin_right = 59.0
+margin_bottom = 40.0
+
+[node name="LineText" type="RichTextLabel" parent="CanvasLayer/LineView/ViewControl"]
+anchor_top = 1.52
+anchor_right = 1.0
+anchor_bottom = 1.982
+margin_left = -23.0
+margin_top = -298.16
+margin_right = 17.0
+margin_bottom = -258.16
+custom_fonts/normal_font = SubResource( 1 )
+text = "Dialogue text goes here"
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer/LineView/ViewControl/LineText"]
+show_behind_parent = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_right = 40.0
+margin_bottom = 40.0
+color = Color( 0.282353, 0.0745098, 0.0745098, 1 )
+
+[node name="CharacterNameText" type="RichTextLabel" parent="CanvasLayer/LineView/ViewControl"]
+anchor_top = 0.224
+anchor_right = 1.0
+anchor_bottom = 0.409
+margin_left = -22.0
+margin_right = 18.0
+custom_fonts/normal_font = SubResource( 28 )
+text = "Name"
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer/LineView/ViewControl/CharacterNameText"]
+show_behind_parent = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_right = 40.0
+margin_bottom = 40.0
+color = Color( 0.643137, 0.254902, 0.254902, 1 )
+
+[node name="ContinueButton" type="Button" parent="CanvasLayer/LineView/ViewControl"]
+anchor_left = 1.042
+anchor_top = 0.615
+anchor_right = 1.142
+anchor_bottom = 1.0
+margin_left = -75.1765
+margin_top = 60.597
+margin_right = -66.4967
+margin_bottom = 2.79999
+custom_fonts/font = SubResource( 29 )
+text = "->"
+__meta__ = {
+"_editor_description_": ""
+}
+
+[node name="OptionsListView" type="Control" parent="CanvasLayer"]
+anchor_right = 0.963
+anchor_bottom = 0.925
+margin_right = 40.0
+margin_bottom = 40.0
+mouse_filter = 2
+script = ExtResource( 6 )
+optionViewPrefab = ExtResource( 7 )
+lastLineTextPath = NodePath("LastLineText")
+viewControlPath = NodePath("VBoxContainer")
+boxContainerPath = NodePath("VBoxContainer")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/OptionsListView"]
+anchor_left = 0.33
+anchor_top = 0.262
+anchor_right = 0.623
+anchor_bottom = 0.76
+margin_right = 40.0
+margin_bottom = 40.0
+
+[node name="LastLineText" type="RichTextLabel" parent="CanvasLayer/OptionsListView"]
+margin_right = 40.0
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer/OptionsListView/LastLineText"]
+margin_right = 40.0
+margin_bottom = 40.0
+
+[node name="InMemoryVariableStorage" type="Node" parent="CanvasLayer"]
+script = ExtResource( 4 )
+debugTextViewPath = NodePath("../VariableDebugText")
+
+[node name="TextLineProvider" type="Node2D" parent="CanvasLayer"]
+script = ExtResource( 3 )
+
+[node name="Button" type="Button" parent="CanvasLayer"]
+margin_left = 445.0
+margin_top = 460.0
+margin_right = 595.0
+margin_bottom = 510.0
+rect_min_size = Vector2( 150, 50 )
+text = "Start Dialogue"
+script = ExtResource( 9 )
+dialogueRunner = NodePath("../DialogueRunner")
+
+[node name="Upload yarn project" type="Button" parent="CanvasLayer"]
+anchor_left = 0.884
+anchor_top = 0.896
+anchor_right = 0.992
+anchor_bottom = 0.968
+margin_right = 12.0
+margin_bottom = 20.0
+text = "Upload"
+script = ExtResource( 2 )
+
+[node name="FileDialog" type="FileDialog" parent="CanvasLayer/Upload yarn project"]
+margin_right = 416.0
+margin_bottom = 184.0
+rect_min_size = Vector2( 400, 140 )
+window_title = "Open a File"
+mode = 0
+access = 2
+
+[node name="Select yarn project" type="Button" parent="CanvasLayer"]
+anchor_left = 0.012
+anchor_top = 0.896
+anchor_right = 0.128
+anchor_bottom = 0.968
+margin_right = 12.0
+margin_bottom = 20.0
+text = "Select"
+script = ExtResource( 10 )
+
+[node name="PopupMenu" type="PopupMenu" parent="CanvasLayer/Select yarn project"]
+margin_right = 20.0
+margin_bottom = 20.0
+
+[connection signal="pressed" from="CanvasLayer/Button" to="CanvasLayer/Button" method="_on_Button_pressed"]
+[connection signal="pressed" from="CanvasLayer/Upload yarn project" to="CanvasLayer/Upload yarn project" method="_on_Button_pressed"]
+[connection signal="file_selected" from="CanvasLayer/Upload yarn project/FileDialog" to="CanvasLayer/Upload yarn project" method="_on_FileDialog_file_selected"]
+[connection signal="pressed" from="CanvasLayer/Select yarn project" to="CanvasLayer/Select yarn project" method="ShowPopupMenu"]

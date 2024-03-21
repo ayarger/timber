@@ -490,7 +490,7 @@ public class ArborResource : Node
         }
 
         Vector2 location = new Vector2(300, 200);
-        UIManager.SimpleMenu("Title Screen", buttonLabels, buttonActions);
+        //UIManager.SimpleMenu("Title Screen", buttonLabels, buttonActions);
     }
 
     static IEnumerator DoEdit()

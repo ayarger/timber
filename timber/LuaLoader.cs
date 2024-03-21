@@ -26,7 +26,7 @@ public class LuaLoader : Node
 	{
 		instance = this;
 
-        ArborCoroutine.StartCoroutine(Load(), this);
+		ArborCoroutine.StartCoroutine(Load(), this);
 	}
 
 	bool loading_scene = false;
@@ -39,51 +39,51 @@ public class LuaLoader : Node
 	{
 		loading_scene = true;
 
-        /* Load game config */
-        ArborResource.Load<GameConfig>("game.config");
+		/* Load game config */
+		ArborResource.Load<GameConfig>("game.config");
 		yield return ArborResource.WaitFor("game.config");
-        GameConfig game_config = ArborResource.Get<GameConfig>("game.config");
+		GameConfig game_config = ArborResource.Get<GameConfig>("game.config");
 
 		yield return LoadActorConfigs();
-        yield return LoadScene(game_config.initial_scene_file);
+		yield return LoadScene(game_config.initial_scene_file);
 
-        loading_scene = false;
-    }
+		loading_scene = false;
+	}
 
 	Dictionary<char, ActorConfig> map_code_to_actor_config = new Dictionary<char, ActorConfig>();
-    IEnumerator LoadActorConfigs()
-    {
+	IEnumerator LoadActorConfigs()
+	{
 		ArborResource.Load<ModFileManifest>("mod_file_manifest.json");
 		yield return ArborResource.WaitFor("mod_file_manifest.json");
-        ModFileManifest manifest = ArborResource.Get<ModFileManifest>("mod_file_manifest.json");
+		ModFileManifest manifest = ArborResource.Get<ModFileManifest>("mod_file_manifest.json");
 
 		List<string> actor_files = manifest.Search("actor_definitions/*");
 
 		foreach (string actor_file in actor_files)
-        {
+		{
 			ArborResource.Load<ActorConfig>(actor_file);
 		}
 
-		foreach(string actor_file in actor_files)
+		foreach (string actor_file in actor_files)
 		{
 			yield return ArborResource.WaitFor(actor_file);
-            ActorConfig actor_info = ArborResource.Get<ActorConfig>(actor_file);
-            map_code_to_actor_config[actor_info.map_code] = actor_info;
-        }
+			ActorConfig actor_info = ArborResource.Get<ActorConfig>(actor_file);
+			map_code_to_actor_config[actor_info.map_code] = actor_info;
+		}
 	}
 
-    IEnumerator LoadScene (string scene_filename)
+	IEnumerator LoadScene(string scene_filename)
 	{
 		ViewportTexture fog_of_war_visibility_texture = new ViewportTexture();
 
-        string image_filename = "images/" + scene_filename + ".png";
+		string image_filename = "images/" + scene_filename + ".png";
 		ArborResource.Load<Texture>(image_filename);
 
-        string layout_filename = "scenes/" + scene_filename + ".layout";
-        ArborResource.Load<string>(layout_filename);
+		string layout_filename = "scenes/" + scene_filename + ".layout";
+		ArborResource.Load<string>(layout_filename);
 
-        string config_filename = "scenes/" + scene_filename + ".config";
-        ArborResource.Load<string>(config_filename);
+		string config_filename = "scenes/" + scene_filename + ".config";
+		ArborResource.Load<string>(config_filename);
 
 		/* Load Audio */
 		ArborResource.UseResource(
@@ -98,15 +98,15 @@ public class LuaLoader : Node
 		ArborResource.Load<AudioStream>("sounds/bgm_btd_defeat.ogg");
 		yield return ArborResource.WaitFor("sounds/bgm_btd_defeat.ogg");
 
-        yield return ArborResource.WaitFor(image_filename);
-        yield return ArborResource.WaitFor(layout_filename);
-        yield return ArborResource.WaitFor(config_filename);
+		yield return ArborResource.WaitFor(image_filename);
+		yield return ArborResource.WaitFor(layout_filename);
+		yield return ArborResource.WaitFor(config_filename);
 
-        Texture scene_tile_texture = ArborResource.Get<Texture>(image_filename);
-        string layout_file_contents = ArborResource.Get<string>(layout_filename);
-        string config_file_contents = ArborResource.Get<string>(config_filename);
+		Texture scene_tile_texture = ArborResource.Get<Texture>(image_filename);
+		string layout_file_contents = ArborResource.Get<string>(layout_filename);
+		string config_file_contents = ArborResource.Get<string>(config_filename);
 
-        List<Vector3> player_actor_spawn_positions = new List<Vector3>();
+		List<Vector3> player_actor_spawn_positions = new List<Vector3>();
 
 		List<ShaderMaterial> tile_mats = new List<ShaderMaterial>();
 
@@ -118,58 +118,65 @@ public class LuaLoader : Node
 		//Possibly load tile width
 		var tileData = new List<List<TileData>>();
 		tileData.Add(new List<TileData>());
-		for(int i = 0; i < layout_file_contents.Length; i++)
-        {
+		for (int i = 0; i < layout_file_contents.Length; i++)
+		{
 			char current_char = layout_file_contents[i];
 			char next_char = ' ';
 			if (i < layout_file_contents.Length - 1)
 				next_char = layout_file_contents[i + 1];
 
 			/* special cases */
-			if(current_char == '\n')
-            {
+			if (current_char == '\n')
+			{
 				tileData.Add(new List<TileData>());
 				width = x;
-                x = 0;
+				x = 0;
 				z++;
 				continue;
-            }
+			}
 
-			if(current_char == '\r')
-            {
+			if (current_char == '\r')
+			{
 				continue;
-            }
+			}
 
 			if (current_char == 'e')
-            {
-				tileData[z].Add(new TileData('e',new Coord(x,z)));
-            }
+			{
+				tileData[z].Add(new TileData('e', new Coord(x, z)));
+			}
 			else
-            {
-                tileData[z].Add(new TileData('.', new Coord(x, z)));
-                PackedScene tile_scene = (PackedScene)ResourceLoader.Load("res://scenes/Tile.tscn");
+			{
+				tileData[z].Add(new TileData('.', new Coord(x, z)));
+				PackedScene tile_scene = (PackedScene)ResourceLoader.Load("res://scenes/Tile.tscn");
 				CSGBox new_tile = (CSGBox)tile_scene.Instance();
-                ShaderMaterial mat = (ShaderMaterial)new_tile.Material;
+				ShaderMaterial mat = (ShaderMaterial)new_tile.Material;
 				tile_mats.Add(mat);
 
-                mat.SetShaderParam("albedo_texture", scene_tile_texture);
+				mat.SetShaderParam("albedo_texture", scene_tile_texture);
 				mat.SetShaderParam("visibility_texture", fog_of_war_visibility_texture);
 				AddChild(new_tile);
 				new_tile.GlobalTranslation = new Vector3(x * Grid.tileWidth, -1, z * Grid.tileWidth);
 			}
 
-			if(map_code_to_actor_config.ContainsKey(current_char))
-            {
+			if (map_code_to_actor_config.ContainsKey(current_char))
+			{
 				ActorConfig config = map_code_to_actor_config[current_char];
 				Vector3 spawn_pos = new Vector3(x * Grid.tileWidth, 0, z * Grid.tileWidth);
-				SpawnActorOfType(config, spawn_pos);
+				Actor new_actor = SpawnActorOfType(config, spawn_pos);
 
 				if (config.team.ToLower().Trim() == "player")
 					player_actor_spawn_positions.Add(spawn_pos);
+
+				//Test Code:
+				if (current_char == 'm' || current_char == 'q')
+				{
+					NLuaScriptManager.Instance
+						.CreateActor(NLuaScriptManager.testClassName, NLuaScriptManager.GenerateObjectName(), new_actor);
+				}
 			}
 
 			x++;
-        }
+		}
 		tileData.RemoveAt(tileData.Count - 1);
 		var tempTileData = new List<TileData[]>();
 		foreach (var td in tileData) tempTileData.Add(td.ToArray());
@@ -180,17 +187,17 @@ public class LuaLoader : Node
 
 		/* Configure fog of war */
 		Viewport viewport = GetParent().GetNode<Viewport>("FogOfWar/HighVisibility");
-		
+
 
 		//viewport.RenderTargetClearMode = Godot.Viewport.ClearMode.Never;
-        float pixels_per_tile = 10;
+		float pixels_per_tile = 10;
 		//viewport.Size = new Vector2(width, height);
 		//viewport.Size = new Vector2(1000, 1000);
 		//GD.Print("setting viewport to " + width + " " + height);
 		Spatial player_node = GetNode<Spatial>("Spot");
-        GD.Print("PLAYER AT " + player_node.GlobalTranslation.x + " " + player_node.GlobalTranslation.z);
+		GD.Print("PLAYER AT " + player_node.GlobalTranslation.x + " " + player_node.GlobalTranslation.z);
 
-        float new_marker_x = viewport.Size.x * (player_node.GlobalTranslation.x * 0.5f / width);
+		float new_marker_x = viewport.Size.x * (player_node.GlobalTranslation.x * 0.5f / width);
 		float new_marker_y = viewport.Size.y * (player_node.GlobalTranslation.z * 0.5f / height);
 
 		yield return null;
@@ -201,17 +208,17 @@ public class LuaLoader : Node
 
 		//fog_of_war_visibility_texture.ViewportPath = viewport.GetPath();
 
-        yield return null;
-        yield return null;
+		yield return null;
+		yield return null;
 
 
-        Vector2 new_marker_pos = new Vector2(new_marker_x, new_marker_y);
-        GD.Print("NEW MARKER POS " + new_marker_pos.x + " " + new_marker_pos.y);
-        
-        //GD.Print("fog_of_war_visibility_texture.size() " + fog_of_war_visibility_texture.GetSize());
+		Vector2 new_marker_pos = new Vector2(new_marker_x, new_marker_y);
+		GD.Print("NEW MARKER POS " + new_marker_pos.x + " " + new_marker_pos.y);
+
+		//GD.Print("fog_of_war_visibility_texture.size() " + fog_of_war_visibility_texture.GetSize());
 
 
-        Sprite visibility_marker = GetParent().GetNode<Sprite>("FogOfWar/HighVisibility/Sprite");
+		Sprite visibility_marker = GetParent().GetNode<Sprite>("FogOfWar/HighVisibility/Sprite");
 		visibility_marker.Position = new_marker_pos;
 
 		yield return null;
@@ -222,17 +229,17 @@ public class LuaLoader : Node
 		//	mat.SetShaderParam("visibility_texture", fog_of_war_visibility_texture);
 		//}
 
-        /* Finish up */
-        Vector3 avg_pos = Vector3.Zero;
+		/* Finish up */
+		Vector3 avg_pos = Vector3.Zero;
 		foreach (Vector3 pos in player_actor_spawn_positions)
 			avg_pos += pos;
 		avg_pos /= player_actor_spawn_positions.Count;
-        most_recent_load_scene_result = new LoadSceneResult() { average_position_of_player_actors = avg_pos };
+		most_recent_load_scene_result = new LoadSceneResult() { average_position_of_player_actors = avg_pos };
 	}
 
 
-	void SpawnActorOfType(ActorConfig config, Vector3 position)
-    {
+	Actor SpawnActorOfType(ActorConfig config, Vector3 position)
+	{
 		/* Spawn actor scene */
 		PackedScene actor_scene = (PackedScene)ResourceLoader.Load("res://scenes/actor.tscn");
 		Spatial new_actor = (Spatial)actor_scene.Instance();
@@ -245,15 +252,15 @@ public class LuaLoader : Node
 
 		actor_script.Configure(config);
 
-        /* customize actor aesthetics */
+		/* customize actor aesthetics */
 
-        /* Load scripts of an actor */
-        foreach (string script_name in config.scripts)
-        {
+		/* Load scripts of an actor */
+		foreach (string script_name in config.scripts)
+		{
 			string source_path = System.IO.Directory.GetCurrentDirectory() + @"\resources\scripts\" + script_name + ".gd";
 			LoadScriptAtLocation(source_path, new_actor);
 		}
-
+		return actor_script;
 	}
 
 	void LoadScriptAtLocation(string location, Node owning_actor)
@@ -265,7 +272,7 @@ public class LuaLoader : Node
 		Node new_script_node = new Node();
 		new_script_node.SetScript(loaded_gdscript);
 
-        //new_script_node.Call("_Ready");
+		//new_script_node.Call("_Ready");
 		owning_actor.AddChild(new_script_node);
 		new_script_node._Ready();
 		new_script_node.SetProcess(true);
@@ -305,7 +312,7 @@ public class SceneConfig
 {
 	public string name = null;
 	public List<string> basic_background_tracks = new List<string>();
-    public List<string> combat_background_tracks = new List<string>();
+	public List<string> combat_background_tracks = new List<string>();
 	public string intro_text_scroll = null;
 	public string success_image = null;
 	public string failure_image = null;
@@ -329,27 +336,28 @@ public class ModFileManifest
 {
 	public List<string> mod_files = new List<string>();
 
-    public List<string> Search (string pattern)
-    {
-        List<string> matchingStrings = new List<string>();
-        Regex regex = new Regex(pattern);
+	public List<string> Search(string pattern)
+	{
+		List<string> matchingStrings = new List<string>();
+		Regex regex = new Regex(pattern);
 
-        foreach (string str in mod_files)
-        {
-            if (regex.IsMatch(str))
-            {
-                matchingStrings.Add(str);
-            }
-        }
+		foreach (string str in mod_files)
+		{
+			if (regex.IsMatch(str))
+			{
+				matchingStrings.Add(str);
+			}
+		}
 
-        return matchingStrings;
-    }
+		return matchingStrings;
+	}
 }
 
 //May move elsewhere
-public class TileDataLoadedEvent{ }
+public class TileDataLoadedEvent { }
 
 //ActorDataLoadedEvent
-public class ActorDataLoadedEvent{
+public class ActorDataLoadedEvent
+{
 
 }

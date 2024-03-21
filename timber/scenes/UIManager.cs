@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 public class UIManager : Node
 {
-    static UIManager instance;
+    public static UIManager instance;
 
     Panel flash_panel;
     Color flash_panel_invisible = new Color(1, 1, 1, 0);
@@ -38,109 +38,14 @@ public class UIManager : Node
         instance.flash_panel.Modulate = instance.flash_panel_visible;
     }
 
-    public static void SimpleMenu (string header, List<string> buttonLabels, List<Action> buttonActions, Vector2? location = null, Vector2? size = null)
-    {
-        instance._SimpleMenu(header, buttonLabels, buttonActions, location, size);
-    }
-
-    void _SimpleMenu(string header, List<string> buttonLabels, List<Action> buttonActions, Vector2? location=null, Vector2? size=null)
-    {
-        const float height_per_option = 40.0f;
-        float final_vertical_size = Mathf.Min(60.0f + height_per_option * buttonLabels.Count, 800);
-
-        size = size ?? new Vector2(400.0f, final_vertical_size);
-        location = location ?? OS.WindowSize * 0.5f - size * 0.5f;
-
-        if (buttonLabels.Count != buttonActions.Count)
-        {
-            GD.Print("Error: The number of button labels must match the number of actions.");
-            return;
-        }
-
-        // Create a MarginContainer to position the Panel
-        MarginContainer marginContainer = new MarginContainer();
-        marginContainer.RectPosition = (Vector2)location;
-        marginContainer.RectSize = (Vector2)size;
-
-        AddChild(marginContainer);
-
-        // Create a Panel to serve as a background
-        Panel panel = new Panel();
-        panel.RectSize = (Vector2)size;
-        StyleBoxFlat styleBox = new StyleBoxFlat();
-        styleBox.ShadowColor = new Color(0.0f, 0.0f, 0.0f, 0.5f);
-        styleBox.BgColor = new Color(40.0f / 255.0f, 36.0f / 255.0f, 44.0f / 255.0f, 1.0f);
-        styleBox.ShadowOffset = new Vector2(10, 10); // Shadow offset (10px to the right and down)
-        styleBox.ShadowSize = 10;
-
-        // Set the StyleBoxFlat to the panel
-        panel.AddStyleboxOverride("panel", styleBox);
-
-        marginContainer.AddChild(panel);
-
-        // Create a VBoxContainer inside the Panel
-        VBoxContainer vbox = new VBoxContainer();
-        panel.RectSize = (Vector2)size;
-        panel.AddChild(vbox);
-
-        // Create a container for the header and close button
-        MenuHeader headerContainer = new MenuHeader();
-        headerContainer.Configure(_top_window_control:marginContainer);
-        headerContainer.RectSize = new Vector2(size.Value.x, 50.0f);
-        headerContainer.RectMinSize = new Vector2(size.Value.x, 50.0f);
-
-        vbox.AddChild(headerContainer);
-
-        // Create a Label as the header
-        Label headerLabel = new Label();
-        headerLabel.RectSize = new Vector2(size.Value.x, 50.0f);
-        headerLabel.RectMinSize = new Vector2(size.Value.x, 50.0f);
-        headerLabel.Text = header;
-        headerContainer.AddChild(headerLabel);
-
-        // Create a close button
-        Button closeButton = new Button();
-        closeButton.Text = "X";
-        closeButton.Align = Button.TextAlign.Center;
-        closeButton.AnchorRight = 1.0f;
-        closeButton.AnchorLeft = 0.9f;
-        closeButton.Connect("pressed", this, nameof(CloseButtonPressed), new Godot.Collections.Array { marginContainer });
-        headerContainer.AddChild(closeButton);
-
-        // Create a ScrollContainer
-        ScrollContainer scrollContainer = new ScrollContainer();
-        scrollContainer.RectMinSize = (Vector2)size;
-        scrollContainer.RectSize = (Vector2)size;
-        vbox.AddChild(scrollContainer);
-
-        // Create another VBoxContainer inside the ScrollContainer for the buttons
-        VBoxContainer buttonsBox = new VBoxContainer();
-        buttonsBox.RectMinSize = new Vector2(size.Value.x, buttonsBox.RectSize.y);
-        buttonsBox.RectSize = new Vector2(size.Value.x, buttonsBox.RectSize.y);
-        scrollContainer.AddChild(buttonsBox);
-
-        // Create buttons and add them to the VBoxContainer
-        for (int i = 0; i < buttonLabels.Count; i++)
-        {
-            CustomButton button = new CustomButton(buttonActions[i]);
-            button.Text = buttonLabels[i];
-            button.SizeFlagsHorizontal = (int)Control.SizeFlags.ExpandFill;
-            button.RectSize = new Vector2(size.Value.x, height_per_option);
-            button.RectMinSize = new Vector2(size.Value.x, height_per_option);
-            buttonsBox.AddChild(button);
-        }
-
-        menus.Add(marginContainer);
-    }
-
-    List<Control> menus = new List<Control>();
+    DynamicMenu currMenu = null;
 
     public static void ClearAllMenus()
     {
-        foreach(Control c in instance.menus)
+        while(instance.currMenu != null)
         {
-            if(IsInstanceValid(c))
-                c.QueueFree();
+            instance.currMenu = instance.currMenu._parent;
+            instance.currMenu.CloseMenu();    
         }
     }
 
@@ -159,8 +64,14 @@ public class UIManager : Node
 
     void SettingsMenu()
     {
-        List<string> options = new List<string>() { "Discord", "Credits2", "Quit", "debug_victory", "debug_lose", "debug_open_webgl_build", "debug_webgl_upload", "debug_webgl_upload_opt", "compress_canvas_minigame", "debug_change_title_screen", "debug_change_title_audio", "debug_test_image_upload", "debug_test_fullscreen" };
-        List<System.Action> actions = new List<Action>()
+        DynamicMenu.Configure(bgColor: new Color(41.0f / 255.0f, 41.0f / 255.0f, 69.0f / 255.0f, 1.0f),
+            secondaryColor: new Color(255.0f / 255.0f, 255.0f / 255.0f, 255.0f / 255.0f, 1.0f),
+            font: "res://UI/Oxanium-Regular.ttf",
+            textColor: new Color(169.0f / 255.0f, 180.0f / 255.0f, 194.0f / 255.0f, 1.0f),
+            buttonImg: "res://UI/default_tex.png",
+            panelImg: "res://UI/default_tex.png");
+        //List<string> options = new List<string>() { "Discord", "Credits2", "Quit", "debug_victory", "debug_lose", "debug_open_webgl_build", "debug_webgl_upload", "debug_webgl_upload_opt", "debug_change_title_screen", "debug_change_title_audio", "debug_test_image_upload", "debug_test_fullscreen" };
+        List <System.Action> actions = new List<Action>()
         {
             () => { OS.ShellOpen(@"https://discord.gg/2GZ3SxVA7Q"); },
             () => {  },
@@ -192,7 +103,54 @@ public class UIManager : Node
             },
         };
 
-        UIManager.SimpleMenu("pause", options, actions);
+        Toggle toggle = DynamicMenu.MenuToggle(true);
+        toggle.SetOnValueChanged(() => { GD.Print("Toggling: " + toggle.selected); });
+        Toggle toggle2 = DynamicMenu.MenuToggle();
+        toggle2.SetOnValueChanged(() => { GD.Print("Toggling: " + toggle2.selected); });
+
+        Control[] content = {
+            DynamicMenu.MenuRow(
+                DynamicMenu.MenuLabel("Volume"),
+                DynamicMenu.MenuSlider(0, 100, ArborAudioManager.master_volume * 100, new Action<float>(UIManager.OnVolumeChanged)),
+                DynamicMenu.MenuSpacer()
+            ),
+            //DynamicMenu.MenuButton("Discord", actions[0]),
+            DynamicMenu.MenuButton("Discord", () => { OS.ShellOpen(@"https://discord.gg/2GZ3SxVA7Q"); }),
+            DynamicMenu.MenuButton("Credits2", actions[1]),
+            DynamicMenu.MenuButton("Quit", actions[2]),
+            DynamicMenu.MenuButton("debug_victory", actions[3]),
+            DynamicMenu.MenuButton("debug_lose", actions[4]),
+            DynamicMenu.MenuButton("debug_open_webgl_build", actions[5]),
+            DynamicMenu.MenuButton("debug_webgl_upload", actions[6]),
+            DynamicMenu.MenuButton("debug_webgl_upload_opt", actions[7]),
+            DynamicMenu.MenuButton("debug_change_title_screen", actions[8]),
+            DynamicMenu.MenuButton("debug_change_title_audio", actions[9]),
+            DynamicMenu.MenuButton("debug_test_image_upload", actions[10]),
+            DynamicMenu.MenuButton("debug_test_fullscreen", actions[11]),
+            DynamicMenu.MenuRow(
+                DynamicMenu.MenuLabel("toggle"), toggle, DynamicMenu.MenuSpacer()
+                
+            ),
+            DynamicMenu.MenuRow(
+                DynamicMenu.MenuLabel("toggle2"), toggle2, DynamicMenu.MenuSpacer()
+
+            ),
+
+        };
+
+        DynamicMenu settings;
+        settings = new DynamicMenu(currMenu, content);
+        currMenu = settings;
+        settings.CreateMenu();
+        GD.Print("Creating new menu");
+
+        settings.SetOnMenuClose(() => { currMenu = settings._parent;  });
+        settings.AddToHeader(
+            DynamicMenu.MenuSpacer(),
+            DynamicMenu.MenuLabel("Pause", 40),
+            DynamicMenu.MenuSpacer()
+            );
+        settings.AddToggleGroup(true, false, toggle, toggle2);
     }
 
     IEnumerator changeCharacterExperiment()
@@ -215,26 +173,8 @@ public class UIManager : Node
         mi.SetSurfaceMaterial(0, mat);
     }
 
-    private void CloseButtonPressed(MarginContainer marginContainer)
+    static void OnVolumeChanged(float volume)
     {
-        marginContainer.QueueFree();
-    }
-
-    private class CustomButton : Button
-    {
-        private readonly Action _action;
-
-        public CustomButton(Action action)
-        {
-            _action = action;
-        }
-
-        public override void _GuiInput(InputEvent @event)
-        {
-            if (@event is InputEventMouseButton eventMouseButton && eventMouseButton.Pressed)
-            {
-                _action?.Invoke();
-            }
-        }
+        ArborAudioManager.SetMasterVolume(volume);
     }
 }
