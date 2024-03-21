@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=2]
+[gd_scene load_steps=19 format=2]
 
 [ext_resource path="res://scenes/ToastResources/ToastMsgPanel.tres" type="StyleBox" id=1]
 [ext_resource path="res://scenes/ToastMessage.cs" type="Script" id=2]
@@ -15,11 +15,21 @@ outline_color = Color( 0.592157, 0.341176, 0.341176, 1 )
 font_data = ExtResource( 6 )
 
 [sub_resource type="StyleBoxFlat" id=14]
+bg_color = Color( 0.184314, 0.184314, 0.184314, 1 )
 corner_radius_top_left = 10
 corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 expand_margin_left = 1.0
+expand_margin_right = 1.0
+
+[sub_resource type="StyleBoxFlat" id=16]
+border_width_left = 5
+border_width_right = 5
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
 
 [sub_resource type="Theme" id=15]
 VScrollBar/icons/decrement = null
@@ -31,7 +41,7 @@ VScrollBar/icons/increment_pressed = null
 VScrollBar/styles/grabber = SubResource( 14 )
 VScrollBar/styles/grabber_highlight = null
 VScrollBar/styles/grabber_pressed = null
-VScrollBar/styles/scroll = null
+VScrollBar/styles/scroll = SubResource( 16 )
 VScrollBar/styles/scroll_focus = null
 
 [sub_resource type="DynamicFont" id=12]
@@ -613,10 +623,12 @@ mouse_filter = 2
 margin_right = 1307.0
 margin_bottom = 35.0
 rect_min_size = Vector2( 1307, 35 )
+focus_mode = 2
 mouse_filter = 1
 custom_colors/default_color = Color( 0, 0, 0, 1 )
 custom_fonts/normal_font = SubResource( 12 )
 text = "Toast history 1"
+selection_enabled = true
 
 [node name="ClearHistoryButton" type="TextureButton" parent="Panel"]
 margin_left = 80.0
