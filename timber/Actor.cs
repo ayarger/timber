@@ -19,10 +19,11 @@ public class Actor : Spatial
     MeshInstance shadow_view;
     StateManager state_manager;
     NameTag name_tag;
-
     IsSelectable selectable;
-
     Texture idle_sprite;
+    public BarContainer bar_container;
+    Subscription<ActorDataLoadedEvent> actorLoadedEvent;
+
     //Initial animation variables
     public bool initial_load = false;
     public Vector3 initial_view_scale { get; private set; } = Vector3.One;
@@ -35,6 +36,7 @@ public class Actor : Spatial
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
+        actorLoadedEvent = EventBus.Subscribe<ActorDataLoadedEvent>(MeshRelativeToShadow);
         previous_position = GlobalTranslation;
         view = (Spatial)GetNode("view");
         state_manager = (StateManager)GetNode("StateManager");
@@ -51,7 +53,8 @@ public class Actor : Spatial
         // update ActorDict after actor is loaded into the scene
         UpdateActorDict();
         name_tag = NameTag.Create(character_view, this.Name);
-        GD.Print($"name_tag: {name_tag}");
+        // Set Bar contaner pos
+ 
     }
 
     public void Configure(ActorConfig info)
@@ -91,6 +94,7 @@ public class Actor : Spatial
 
                 //character_material.AlbedoTexture = idle_sprite;
                 character_view.SetSurfaceMaterial(0, char_mat);
+                EventBus.Publish(new ActorDataLoadedEvent());
             },
             this
         );
@@ -171,9 +175,23 @@ public class Actor : Spatial
         new_ko.Configure(ArborResource.Get<Texture>("images/" + config.pre_ko_sprite_filename), ArborResource.Get<Texture>("images/" + config.ko_sprite_filename));
     }
 
-   public void UpdateActorDict()
-   {
+    public void UpdateActorDict()
+    {
         ConsoleManager console_manager = GetParent().GetNode<ConsoleManager>("../CanvasLayer/TempConsole/ConsoleManager");
         console_manager.ActorDict[this.Name.ToLower()] = this;
-   }
+    }
+
+    public void MeshRelativeToShadow(ActorDataLoadedEvent e)
+    {
+        GD.Print("Done loading actor resources");
+        if (IsInstanceValid(bar_container))
+        {
+            GD.Print("relative pos calc starts");
+            Vector3 shadow_position = bar_container.target_shadow.GlobalTranslation;
+            Vector3 mesh_position = character_view.GlobalTransform.Xform(new Vector3(0, character_view.Scale.y, character_view.Scale.z)); ;
+            bar_container.relativeToshadow = mesh_position - shadow_position;
+            GD.Print($"relativePos set to: {bar_container.relativeToshadow}");
+        }
+    }
 }
+

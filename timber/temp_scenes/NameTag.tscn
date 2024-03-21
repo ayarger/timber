@@ -11,6 +11,9 @@ margin_right = -1103.0
 margin_bottom = -629.0
 rect_scale = Vector2( 2, 2 )
 script = ExtResource( 1 )
+scaling_factor = 50.0
 
 [node name="NameLabel" type="Label" parent="."]
 text = "ActorName"
+
+[node name="Tween" type="Tween" parent="."]

@@ -253,6 +253,7 @@ public class LuaLoader : Node
 			string source_path = System.IO.Directory.GetCurrentDirectory() + @"\resources\scripts\" + script_name + ".gd";
 			LoadScriptAtLocation(source_path, new_actor);
 		}
+
 	}
 
 	void LoadScriptAtLocation(string location, Node owning_actor)
@@ -347,3 +348,8 @@ public class ModFileManifest
 
 //May move elsewhere
 public class TileDataLoadedEvent{ }
+
+//ActorDataLoadedEvent
+public class ActorDataLoadedEvent{
+
+}

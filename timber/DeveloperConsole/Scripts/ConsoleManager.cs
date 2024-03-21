@@ -10,7 +10,7 @@ public class EditModeEvent
     public bool activated;
     public EditModeEvent(bool _activated)
     {
-        bool activated = _activated;
+        activated = _activated;
     }
 }
 
@@ -108,16 +108,14 @@ public class ConsoleManager : Control
         {
             if (eventKey.Scancode == 96)
             {
+                GetTree().SetInputAsHandled();
                 consolePanel.Visible = !consolePanel.Visible;
                 //Publish editMode event
-                EventBus.Publish(new EditModeEvent(consolePanel.Visible));
                 GD.Print($"EditModeOn:{consolePanel.Visible}");
+                EventBus.Publish(new EditModeEvent(consolePanel.Visible));
                 //automatically focus on the lineEdit when console is visible
                 if (consolePanel.Visible) consoleInput.GrabFocus();
-                // Pause the game while accessing the command console
-                // TODO some of the functionality should remain accessible
 
-                //GetTree().Paused = consolePanel.Visible;
             }
 
             // fetch last command entered
@@ -125,8 +123,8 @@ public class ConsoleManager : Control
             {
                 consoleInput.Text = lastCommand;
                 consoleInput.GrabFocus();
-                consoleInput.CaretPosition = lastCommand.Length;
-                GD.Print(consoleInput.CaretPosition);
+                consoleInput.CaretPosition = consoleInput.Text.Length;
+                GD.Print($" consoleInput Length: {consoleInput.Text.Length} caret pos:{consoleInput.CaretPosition}");
             }
 
             // autocompletion

@@ -6,9 +6,11 @@ public class BarContainer : Control
 
     HasStats target_data;
     MeshInstance target_mesh;
-    MeshInstance target_shadow;
+    public MeshInstance target_shadow;
     IsSelectable target_selection;
-    Vector3 relativeToshadow;
+    Spatial target_view;
+    Actor target_actor;
+    public Vector3 relativeToshadow;
     int count = 0;
     public float scaling_factor = 6f;
     bool displayOn;
@@ -18,7 +20,11 @@ public class BarContainer : Control
         // get target_mesh
         if (IsInstanceValid(target_data) && IsInstanceValid(target_data.GetParent()))
         {
+            target_view = target_data.GetParent().GetNode<Spatial>("view");
             target_mesh = target_data.GetParent().GetNode<MeshInstance>("view/mesh");
+            target_actor = (Actor)(target_data.GetParent());
+            //config bar_container
+            target_actor.bar_container = this;
             target_shadow = target_data.GetParent().GetNode<MeshInstance>("shadow");
             target_selection = target_data.GetParent().GetNode<IsSelectable>("IsSelectable");
             Vector3 shadow_position = target_shadow.GlobalTranslation;
@@ -26,7 +32,8 @@ public class BarContainer : Control
             float localHeight = aabb.Size.y;
             Vector3 globalScale = target_mesh.GlobalTransform.basis.Scale;
             float GlobalHeight = localHeight * globalScale.y;
-            Vector3 mesh_position = target_mesh.GlobalTransform.Xform(new Vector3(0, GlobalHeight + 3.2f, 0)); ;
+
+            Vector3 mesh_position = target_mesh.GlobalTransform.Xform(new Vector3(0, GlobalHeight, 0)); ;
             relativeToshadow = mesh_position - shadow_position;
         }
     }
@@ -36,11 +43,26 @@ public class BarContainer : Control
         target_data = _target;
     }
 
+
     public override void _Process(float delta)
     {
 
+        /*Vector3 shadow_position = target_shadow.GlobalTranslation;
+        Vector3 mesh_position = target_mesh.GlobalTransform.Xform(new Vector3(0,target_mesh.Scale.y/1.05f, 0)); ;
+        relativeToshadow = mesh_position - shadow_position;
+        */
+
         displayOn = target_selection.am_i_selected || target_selection.AmIHovered();
-        Visible = displayOn;
+        if (displayOn)
+        {
+            ToggleVisibilityOn();
+        }
+
+        else
+        {
+            ToggleVisibilityOff();
+        }
+
         if (IsInstanceValid(target_data))
             PursueTarget();
         else
@@ -77,7 +99,7 @@ public class BarContainer : Control
         child = (Bar)container1.GetChild(0);
         child.FadeIn(0.2f);
 
-        VBoxContainer container2 = GetNode<VBoxContainer>("container1/container2");
+        /*VBoxContainer container2 = GetNode<VBoxContainer>("container1/container2");
         if((Bar)container2.GetChild(0)!= null)
         {
             child1 = (Bar)container2.GetChild(0);
@@ -88,7 +110,7 @@ public class BarContainer : Control
         {
             child2 = (Bar)container2.GetChild(1);
             child2.FadeIn(0.2f);
-        }
+        }*/
     }
 
     void ToggleVisibilityOff()
@@ -98,18 +120,17 @@ public class BarContainer : Control
         child = (Bar)container1.GetChild(0);
         child.FadeOut(0.2f);
 
-        VBoxContainer container2 = GetNode<VBoxContainer>("container1/container2");
+        /*VBoxContainer container2 = GetNode<VBoxContainer>("container1/container2");
         if ((Bar)container2.GetChild(0) != null)
         {
             child1 = (Bar)container2.GetChild(0);
             child1.FadeOut(0.2f);
         }
-
         if ((Bar)container2.GetChild(0) != null)
         {
             child2 = (Bar)container2.GetChild(1);
             child2.FadeOut(0.2f);
-        }
+        }*/
     }
 
     // Editing Mode Functionality
