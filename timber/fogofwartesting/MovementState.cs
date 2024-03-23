@@ -187,8 +187,8 @@ public class MovementState : ActorState
             cur = queue.Dequeue();
             if (Grid.Get(cur).actor == null || Grid.Get(cur).actor == actor)
             {
-                dest = cur;
                 foundNewTile = true;
+                dest = cur;
                 break;
             }
 

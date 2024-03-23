@@ -104,6 +104,18 @@ public class Actor : Spatial
             },
             this
         );
+
+        foreach(StateConfig s in config.stateConfigs)
+        {
+            string stateName = s.name;
+            state_manager.states[stateName].Config(s);
+        }
+
+        StatManager statManager = GetNode<StatManager>("StatManager");
+        if(statManager != null)
+        {
+            statManager.Config(config.statConfig);
+        }
     }
 
 
@@ -204,7 +216,7 @@ public class Actor : Spatial
 
     public void Kill(Actor source = null)//TODO needs clean up in combatState, fogofwar, barcontainer
     {
-        bool endGame = GetNode<HasTeam>("HasTeam").team == "player";
+        bool endGame = config.name == "Spot";
         PackedScene scene = (PackedScene)ResourceLoader.Load("res://scenes/ActorKO.tscn");
         ActorKO new_ko = (ActorKO)scene.Instance();
         GetParent().AddChild(new_ko);

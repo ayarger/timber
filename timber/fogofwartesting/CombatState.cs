@@ -10,7 +10,7 @@ public class CombatState : ActorState
     // private int a = 2;
     // private string b = "text";
     int attackRange = 2;//number of grids
-    int attackDamage = 20;
+    int attackDamage = 10;
     float criticalHitRate = 0.3f;
 
     float attackWindup = 0.5f;//animation before attack
@@ -39,20 +39,31 @@ public class CombatState : ActorState
     public override void Start()
     {
         inclusiveStates = new HashSet<string>();
-        inclusiveStates.Add("AggroState");
         ArborCoroutine.StopCoroutinesOnNode(this);
         animation_offset = GD.Randf() * 100.0f;
         attackable = true;
 
-        if (actor.GetNode<HasTeam>("HasTeam").team == "player")//Hardcode different actor stats
-        {
-            attackDamage = 40;
-            attackCooldown = 0.75f;
-        }
+        //if (actor.GetNode<HasTeam>("HasTeam").team == "player")//Hardcode different actor stats
+        //{
+        //    attackDamage = 40;
+        //    attackCooldown = 0.75f;
+        //}
+    }
+
+    public override void Config(StateConfig stateConfig)
+    {
+        CombatConfig c = stateConfig as CombatConfig;
+        attackRange = c.attackRange;
+        attackDamage = c.attackDamage;
+        criticalHitRate = c.criticalHitRate;
+        attackWindup = c.attackWindup;
+        attackRecovery = c.attackRecovery;
+        attackCooldown = c.attackCooldown;
     }
 
     public override void Update(float delta)
     {
+
         if (TargetActor != null && IsInstanceValid(TargetActor))//TODO check if actor is dead
         {
             Coord dest = Grid.ConvertToCoord(TargetActor.GlobalTranslation);
@@ -88,8 +99,9 @@ public class CombatState : ActorState
                 if (b.waypoints.Count == 0)
                 {
                     ArborCoroutine.StopCoroutinesOnNode(b);
-                    Vector3 CoordDest = Grid.LockToGrid(TargetActor.GlobalTranslation);
-                    ArborCoroutine.StartCoroutine(TestMovement.PathFindAsync(actor.GlobalTranslation, CoordDest, (List<Vector3> a) =>
+                    Coord coordDest = FindClosestTileInRange(Grid.ConvertToCoord(TargetActor.GlobalTranslation));
+                    Vector3 vectorDest = new Vector3(coordDest.x * Grid.tileWidth, .1f, coordDest.z * Grid.tileWidth);
+                    ArborCoroutine.StartCoroutine(TestMovement.PathFindAsync(actor.GlobalTranslation, vectorDest, (List<Vector3> a) =>
                     {
                         if (a.Count > 0)
                         {
@@ -188,8 +200,41 @@ public class CombatState : ActorState
             if (TargetActor.GlobalTranslation.x < actor.GlobalTranslation.x) direction = 1;
 
             actor.view.Rotation = actor.initial_rotation + new Vector3(0, 0, direction * rot_amplitude * rotateTime * (rotateTime - 0.5f));
-        }
+        } 
         
+    }
+
+    Coord FindClosestTileInRange(Coord cur)
+    {
+        if (cur.x < 0 || cur.z < 0 || cur.z >= Grid.height || cur.x >= Grid.width)
+        {
+            //actor.movetotile(OOB);
+            return new Coord(0, 0);
+        }
+
+        //Flood fill
+        Coord actorPos = Grid.ConvertToCoord(actor.GlobalTranslation);
+
+        Coord dist = actorPos - cur;
+        if(Math.Abs(dist.x)+Math.Abs(dist.z) <= attackRange)
+        {
+            return actorPos;
+        }
+
+        while(Math.Abs(dist.x) + Math.Abs(dist.z) > attackRange)
+        {
+            if(Math.Abs(dist.x) > Math.Abs(dist.z))
+            {
+                dist.x += -(dist.x / Math.Abs(dist.x));
+            }
+            else
+            {
+                dist.z += -(dist.z / Math.Abs(dist.z));
+            }
+        }
+        GD.Print((actorPos).x, " ", (actorPos).z);
+        GD.Print((actorPos - dist).x, " ", (actorPos - dist).z);
+        return actorPos - dist;
         
     }
 }

@@ -12,9 +12,9 @@ script = ExtResource( 1 )
 transform = Transform( 1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 0, 0 )
 
 [node name="rotationPoint" type="Spatial" parent="view"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.354, 0 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.516111, 0.000413328 )
 
 [node name="mesh" type="MeshInstance" parent="view/rotationPoint"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.006 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
 mesh = SubResource( 1 )
 material/0 = ExtResource( 2 )

@@ -21,12 +21,20 @@ public class LuaLoader : Node
 
 	static LuaLoader instance;
 
+	//temporary fake json
+	CombatConfig enemyCombatConfig = new CombatConfig(2, 10, 0.3f, 0.5f, 0.125f, 1);
+	CombatConfig playerCombatConfig = new CombatConfig(2, 20, 0.3f, 0.5f, 0.125f, 0.75f);
+	StatConfig enemyStatConfig = new StatConfig();
+	StatConfig playerStatConfig = new StatConfig();
+
+
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
 		instance = this;
 
         ArborCoroutine.StartCoroutine(Load(), this);
+
 	}
 
 	bool loading_scene = false;
@@ -68,6 +76,24 @@ public class LuaLoader : Node
 		{
 			yield return ArborResource.WaitFor(actor_file);
             ActorConfig actor_info = ArborResource.Get<ActorConfig>(actor_file);
+
+			//temporary
+			playerStatConfig.stats["health"] = 100;
+
+			enemyStatConfig.stats["health"] = 50;
+			
+			if (actor_info.team == "player")
+            {
+				actor_info.stateConfigs.Add(playerCombatConfig);
+				actor_info.statConfig = playerStatConfig;
+            }
+            else
+            {
+				actor_info.stateConfigs.Add(enemyCombatConfig);
+				actor_info.statConfig = enemyStatConfig;
+			}
+			
+
             map_code_to_actor_config[actor_info.map_code] = actor_info;
         }
 	}
@@ -294,6 +320,9 @@ public class ActorConfig
 	public string ko_sprite_filename = "";
 
 	public List<string> scripts;
+
+	public List<StateConfig> stateConfigs = new List<StateConfig>();
+	public StatConfig statConfig;
 }
 
 [Serializable]
@@ -355,3 +384,39 @@ public class ModFileManifest
 
 //May move elsewhere
 public class TileDataLoadedEvent{ }
+
+
+//change into different stat in hasStat
+public class StateConfig
+{
+	public string name;
+}
+
+//state configs for actors
+public class CombatConfig : StateConfig
+{ 
+	public int attackRange = 2;//number of grids
+	public int attackDamage = 10;
+	public float criticalHitRate = 0.3f;
+
+	public float attackWindup = 0.5f;//animation before attack
+	public float attackRecovery = 0.125f;//anim after attack
+	public float attackCooldown = 1f;
+
+	public CombatConfig(int ar, int damage, float ch, float aw, float recovery, float cooldown)//temp constructor
+    {
+		name = "CombatState";
+		attackRange = ar;
+		attackDamage = damage;
+		criticalHitRate = ch;
+		attackWindup = aw;
+		attackRecovery = recovery;
+		attackCooldown = cooldown;
+    }
+}
+
+public class StatConfig
+{
+	public Dictionary<string, float> stats = new Dictionary<string, float>();
+}
+

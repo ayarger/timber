@@ -38,6 +38,7 @@ public class StateManager : Node
         actor = GetParent<Actor>();
     }
 
+
     public override void _Process(float delta)
     {
         if (enabled)

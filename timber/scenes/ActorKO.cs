@@ -20,7 +20,6 @@ public class ActorKO : Spatial
     public override void _Ready()
     {
         character_view = (MeshInstance)GetNode("view/rotationPoint/mesh");
-        rotationPoint = (Spatial)GetNode("view/rotationPoint");
 
         ArborCoroutine.StartCoroutine(DoAnimation());
     }
@@ -66,7 +65,7 @@ public class ActorKO : Spatial
 
         }
 
-        yield return ArborCoroutine.DoOverTime(DoFade, 2.0f);
+        yield return ArborCoroutine.DoOverTime(DoFade, 10.0f);
 
         if (endGame)
         {
@@ -95,7 +94,7 @@ public class ActorKO : Spatial
         }
 
         GlobalTranslation += blastDirection * blastSpeed * delta;
-        rotationPoint.Rotation += Vector3.Back * blastRotationSpeed * delta;
+        character_view.Rotation += Vector3.Back * blastRotationSpeed * delta;//BUG rotation point squish sprite
 
     }
 }

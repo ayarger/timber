@@ -43,35 +43,17 @@ public class ChaseState : ActorState
 
     public override void Update(float delta)
     {
-        if (TargetActor != null)//TODO check if actor is dead
+        if (TargetActor != null && IsInstanceValid(TargetActor))
         {
             Vector3 dest = Grid.LockToGrid(TargetActor.GlobalTranslation);
-            MovementState b = (manager.states["MovementState"] as MovementState);
 
             float dist = Math.Abs(Grid.ConvertToCoord(actor.GlobalTranslation).x - Grid.ConvertToCoord(dest).x)
                 + Math.Abs(Grid.ConvertToCoord(actor.GlobalTranslation).z - Grid.ConvertToCoord(dest).z);
 
-            if (dist <= attackRange || dist > aggroRange)
+            if (dist <= attackRange)
             {
-                manager.DisableState("MovementState");
-                manager.DisableState("ChaseState");
-                return;
-            }
-            else if (!manager.IsStateActive("MovementState") || Grid.ConvertToCoord(actor.GlobalTranslation) != targetCoord)
-            {
-                ArborCoroutine.StopCoroutinesOnNode(b);
-                ArborCoroutine.StartCoroutine(TestMovement.PathFindAsync(actor.GlobalTranslation, dest, (List<Vector3> a) =>
-                {
-                    if (a.Count > 0)
-                    {
-                        GD.Print("move ok");
-                        manager.EnableState("MovementState");
-                        b.waypoints = a;
-                    }
-                }), b);
-
-                targetCoord = Grid.ConvertToCoord(actor.GlobalTranslation);
-                return;
+                if(manager.IsStateActive("MovementState"))
+                    manager.DisableState("MovementState");
             }
         }
         else
