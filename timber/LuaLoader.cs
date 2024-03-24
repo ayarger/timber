@@ -22,7 +22,7 @@ public class LuaLoader : Node
 	static LuaLoader instance;
 
 	//temporary fake json
-	CombatConfig enemyCombatConfig = new CombatConfig(2, 10, 0.3f, 0.5f, 0.125f, 1);
+	CombatConfig enemyCombatConfig = new CombatConfig(2, 5, 0.3f, 0.5f, 0.125f, 1);
 	CombatConfig playerCombatConfig = new CombatConfig(2, 20, 0.3f, 0.5f, 0.125f, 0.75f);
 	StatConfig enemyStatConfig = new StatConfig();
 	StatConfig playerStatConfig = new StatConfig();

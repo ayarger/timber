@@ -134,6 +134,10 @@ public class NLuaScriptManager : Node
                     data += name + "=" + luaActors[name].GlobalTranslation.x/Grid.tileWidth;
                     data += ",";
                 }
+                else if (command.StartsWith("H"))
+                {
+                    
+                }
             }
         }
     }

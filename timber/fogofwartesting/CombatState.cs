@@ -216,25 +216,30 @@ public class CombatState : ActorState
         Coord actorPos = Grid.ConvertToCoord(actor.GlobalTranslation);
 
         Coord dist = actorPos - cur;
+        Coord movement = new Coord(0, 0);
         if(Math.Abs(dist.x)+Math.Abs(dist.z) <= attackRange)
         {
             return actorPos;
         }
 
-        while(Math.Abs(dist.x) + Math.Abs(dist.z) > attackRange)
+        GD.Print((dist).x, " ", (dist).z);
+
+        while (Math.Abs(dist.x) + Math.Abs(dist.z) > attackRange)
         {
             if(Math.Abs(dist.x) > Math.Abs(dist.z))
             {
+                movement.x += -(dist.x / Math.Abs(dist.x));
                 dist.x += -(dist.x / Math.Abs(dist.x));
+                
             }
             else
             {
+                movement.z += -(dist.z / Math.Abs(dist.z));
                 dist.z += -(dist.z / Math.Abs(dist.z));
+                
             }
         }
-        GD.Print((actorPos).x, " ", (actorPos).z);
-        GD.Print((actorPos - dist).x, " ", (actorPos - dist).z);
-        return actorPos - dist;
+        return actorPos + movement;
         
     }
 }

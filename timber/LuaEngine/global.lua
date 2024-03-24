@@ -23,6 +23,10 @@ function Print(str)
 	coroutine.yield("global:P"..str)
 end
 
+function Hurt(obj, damage)
+	coroutine.yield(obj.object_name..":H"..damage)
+end
+
 --Just float currently
 function GetValue(obj,key)
 	local coroutine_data = {coroutine.yield(obj..":R"..key)}
