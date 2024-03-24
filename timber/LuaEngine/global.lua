@@ -14,6 +14,14 @@ global.awaiting_coroutines = {}
 
 global.delta_time = 0
 
+
+global.keywords = {
+	x=true,
+	z=true,
+}
+
+
+
 --- Delays execution for secs seconds.
 -- If the event is called again while it is waiting, there will be two instances of the event running.
 -- @param secs Time to wait in seconds, number.
@@ -25,11 +33,12 @@ function WaitForSeconds(secs)
 	end
 end
 
-function SetDestination(obj, xdelta)
+function SetDestination(obj, xdelta, zdelta)
 	coroutine.yield(
 		{obj=obj.object_name,
 		type="M",
-		param=xdelta}
+		x=xdelta,
+		z=zdelta}
 		)
 end
 
@@ -67,7 +76,7 @@ function global:receive(message)
 		if global.game_objects[i]==nil then
 			table.insert(to_remove,i)
 		else
-			if type(global.game_objects[i][message])=="function" then --REPLACE READY LATER
+			if type(global.game_objects[i][message])=="function" then
 				table.insert(new_coroutines,{global.game_objects[i],coroutine.create(global.game_objects[i].ready)})
 			end
 		end
@@ -88,7 +97,9 @@ function global:advance_coroutines(coroutine_list)
 		local commands = {}
 		local to_remove = {}
 		for i=1,#coroutine_list do
+			-- If there was data returned from C# due to the command, pass it back to the coroutine
 			local return_data = data[coroutine_list[i][1].object_name]==nil and 0 or data[coroutine_list[i][1].object_name]
+			-- Run the coroutine
 			local code, res = coroutine.resume(coroutine_list[i][2],coroutine_list[i][1], return_data)
 			if res then
 				if res=="N" then
@@ -107,6 +118,7 @@ function global:advance_coroutines(coroutine_list)
 		end
 		-- to be submitted back to C#, last return element is data
 		local coroutine_data = {coroutine.yield(global.lunajson.encode(commands))}
+		-- data returned from C#
 		data = coroutine_data[#coroutine_data]
 		
 	end
