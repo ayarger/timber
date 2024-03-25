@@ -1,5 +1,12 @@
+print("Start Init")
+
 global = {}
 
+global.lunajson = require 'lunajson'
+local jsonstr = '{"Hello":["lunajson",1.5]}'
+local t = global.lunajson.decode(jsonstr)
+print(t.Hello[2]) -- prints 1.5
+print(global.lunajson.encode(t)) -- prints {"Hello":["lunajson",1.5]}
 -- 
 global.game_objects = {}
 --TODO: Keep track of which coroutines on which game_objects
@@ -7,6 +14,17 @@ global.awaiting_coroutines = {}
 
 global.delta_time = 0
 
+
+global.keywords = {
+	x=true,
+	z=true,
+}
+
+
+
+--- Delays execution for secs seconds.
+-- If the event is called again while it is waiting, there will be two instances of the event running.
+-- @param secs Time to wait in seconds, number.
 function WaitForSeconds(secs)
 	local time = secs
 	while time>0 do
@@ -15,21 +33,36 @@ function WaitForSeconds(secs)
 	end
 end
 
-function SetDestination(obj, xdelta)
-	coroutine.yield(obj.object_name..":M"..xdelta)
+function SetDestination(obj, xdelta, zdelta)
+	coroutine.yield(
+		{obj=obj.object_name,
+		type="M",
+		x=xdelta,
+		z=zdelta}
+		)
 end
 
 function Print(str)
-	coroutine.yield("global:P"..str)
+	coroutine.yield(
+		{obj="global",
+		type="P",
+		param=str})
 end
 
 function Hurt(obj, damage)
-	coroutine.yield(obj.object_name..":H"..damage)
+	coroutine.yield(
+		{obj=obj.object_name,
+		type="H",
+		damage=damage}
+		)
 end
 
 --Just float currently
 function GetValue(obj,key)
-	local coroutine_data = {coroutine.yield(obj..":R"..key)}
+	local coroutine_data = {coroutine.yield(
+		{obj=obj,
+		type="R",
+		param=key})}
 	return coroutine_data[#coroutine_data]
 end
 
@@ -51,7 +84,7 @@ function global:receive(message)
 		if global.game_objects[i]==nil then
 			table.insert(to_remove,i)
 		else
-			if type(global.game_objects[i][message])=="function" then --REPLACE READY LATER
+			if type(global.game_objects[i][message])=="function" then
 				table.insert(new_coroutines,{global.game_objects[i],coroutine.create(global.game_objects[i].ready)})
 			end
 		end
@@ -69,17 +102,19 @@ function global:advance_coroutines(coroutine_list)
 	--run coroutines until completion or "N"
 	local data = {}
 	while #coroutine_list>0 do
-		local commands = ''
+		local commands = {}
 		local to_remove = {}
 		for i=1,#coroutine_list do
+			-- If there was data returned from C# due to the command, pass it back to the coroutine
 			local return_data = data[coroutine_list[i][1].object_name]==nil and 0 or data[coroutine_list[i][1].object_name]
+			-- Run the coroutine
 			local code, res = coroutine.resume(coroutine_list[i][2],coroutine_list[i][1], return_data)
 			if res then
 				if res=="N" then
 					table.insert(global.awaiting_coroutines,coroutine_list[i])
 					table.insert(to_remove, i)
 				else
-					commands = commands..res.."\n"
+					commands[i]=res
 				end
 			else
 				table.insert(to_remove, i)
@@ -90,7 +125,8 @@ function global:advance_coroutines(coroutine_list)
 			table.remove(coroutine_list,to_remove[i]-i+1)
 		end
 		-- to be submitted back to C#, last return element is data
-		local coroutine_data = {coroutine.yield(commands)}
+		local coroutine_data = {coroutine.yield(global.lunajson.encode(commands))}
+		-- data returned from C#
 		data = coroutine_data[#coroutine_data]
 		
 	end

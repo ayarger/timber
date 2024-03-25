@@ -1,18 +1,7 @@
 using Godot;
-using System;
-
-using Godot;
-using System;
-using System.IO;
-using System.Runtime.Serialization;
-using System.Text;
 using System.Collections.Generic;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Linq;
-using System.Security.Permissions;
 using System.Collections;
-using System.Text.RegularExpressions;
+using System.Collections;
 
 //LuaLoader, but just actor configs.
 public class ConfigLoader : Node
