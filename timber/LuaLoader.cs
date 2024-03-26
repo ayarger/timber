@@ -22,7 +22,8 @@ public class LuaLoader : Node
 	static LuaLoader instance;
 
 	//temporary fake json
-	CombatConfig enemyCombatConfig = new CombatConfig(2, 5, 0.3f, 0.5f, 0.125f, 1);
+	CombatConfig enemyMeleeCombatConfig = new CombatConfig(1, 10, 0.3f, 0.5f, 0.125f, 1);
+	CombatConfig enemyRangeCombatConfig = new CombatConfig(3, 5, 0.3f, 0.5f, 0.125f, 1.5f);
 	CombatConfig playerCombatConfig = new CombatConfig(2, 20, 0.3f, 0.5f, 0.125f, 0.75f);
 	StatConfig enemyStatConfig = new StatConfig();
 	StatConfig playerStatConfig = new StatConfig();
@@ -87,9 +88,14 @@ public class LuaLoader : Node
 				actor_info.stateConfigs.Add(playerCombatConfig);
 				actor_info.statConfig = playerStatConfig;
             }
+            else if(actor_info.name=="Chunk")
+            {
+				actor_info.stateConfigs.Add(enemyMeleeCombatConfig);
+				actor_info.statConfig = enemyStatConfig;
+            }
             else
             {
-				actor_info.stateConfigs.Add(enemyCombatConfig);
+				actor_info.stateConfigs.Add(enemyRangeCombatConfig);
 				actor_info.statConfig = enemyStatConfig;
 			}
 			
