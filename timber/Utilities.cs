@@ -36,7 +36,7 @@ public static class Utilities
         
         if (!isConnected)
         {
-            ShowToastMessage(caller, "No internet connection detected.");
+            SendToast(caller, "No internet connection detected.");
         }
 
         return isConnected;
