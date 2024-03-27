@@ -140,13 +140,14 @@ public class NLuaScriptManager : Node
     {
         string name = Convert.ToString(cmd["obj"]);
         string command = Convert.ToString(cmd["type"]);
+        Actor actor = luaActors.ContainsKey(name) ? luaActors[name] as Actor : null;
 
         //Parse commands. Will need to refactor to a better system.
         if (command == "M")
         {
             int amtX = Convert.ToInt32(cmd["x"]);
             int amtZ = Convert.ToInt32(cmd["z"]);
-            TestMovement.SetDestination(luaActors[name] as Actor, new Vector3(Grid.tileWidth * amtX, luaActors[name].GlobalTranslation.y, Grid.tileWidth * amtZ));
+            TestMovement.SetDestination(actor, new Vector3(Grid.tileWidth * amtX, luaActors[name].GlobalTranslation.y, Grid.tileWidth * amtZ));
         }
         else if (command == "P")
         {
@@ -162,10 +163,15 @@ public class NLuaScriptManager : Node
             {
                 return luaActors[name].GlobalTranslation.x / Grid.tileWidth;
             }
-            else
+            else if (key=="z")
             {
                 return luaActors[name].GlobalTranslation.z / Grid.tileWidth;
             }
+        }
+        else if(command == "T")
+        {
+            GD.Print(actor.ToString() + " just posted " + cmd["toastString"] + " to the toast!");
+
         }
 
         return null;
@@ -247,7 +253,7 @@ public class NLuaScriptManager : Node
             timer = 5f;
                 DNDStressTest.LogTimeOfEvent(() =>
                 {
-                    RunUntilCompletion("global.receive", new List<string> { "\"ready\"" });
+                    RunUntilCompletion("global.receive", new List<string> { "\"testfunc\"" });
                 });
 
                 //int amt = int.Parse(res.Substring(1));
