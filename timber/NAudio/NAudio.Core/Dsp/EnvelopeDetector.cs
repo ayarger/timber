@@ -1,4 +1,4 @@
-// based on EnvelopeDetector.cpp v1.10 © 2006, ChunkWare Music Software, OPEN-SOURCE
+// based on EnvelopeDetector.cpp v1.102006, ChunkWare Music Software, OPEN-SOURCE
 using System;
 
 namespace NAudio.Dsp

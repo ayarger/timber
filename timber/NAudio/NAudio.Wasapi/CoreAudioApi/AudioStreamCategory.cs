@@ -56,7 +56,7 @@ namespace NAudio.CoreAudioApi
         /// </summary>
         Media,
         /// <summary>
-        /// Media is audio captured with the intent of capturing voice sources located in the ‘far field’. (Far away from the microphone.)
+        /// Media is audio captured with the intent of capturing voice sources located in the (Far away from the microphone.)
         /// </summary>
         FarFieldSpeech,
         /// <summary>
