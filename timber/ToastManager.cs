@@ -29,7 +29,6 @@ public static class ToastManager
         isShowing = false;
     }
     
-    // TODO: fix this method
     public static void Initialize(Node rootNode)
     {
         _rootNode = rootNode;

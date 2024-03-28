@@ -1,7 +1,8 @@
 // Assume that tower is a special type of actor that does not move, and has a ranged attack method. 
 
 // Experiment: use temp art to generate and put a tower; make it follow mouse cursor
-// Goal: make sure that two towers are not spawned in the same grid
+// Goal: make sure that two towers are not spawned in the same grid - done
+//       make sure that towers cannot be placed out side the boundary
 //       cursor thing
 //       auto-align
 // Extra goal: juice
@@ -48,29 +49,33 @@ public class TowerManager : Node
 	{
 		Vector3 spawn_pos = new Vector3(cursorPos.x , 0, cursorPos.z );
 		Coord cur = Grid.ConvertToCoord(spawn_pos);
-		if (Grid.Get(cur).actor==null)
-		{
-			ActorConfig config = new ActorConfig();
-			config.name = "Test Tower";
-			config.map_code = 't';
-			config.idle_sprite_filename = "cuff_idle.png";
-		
-			Tower new_tower = SpawnActorOfType(config, spawn_pos);
-			EventBus.Publish(new TileDataLoadedEvent());
-			
-			// Copied from MoveToNearestTile()
-			if (Grid.Get(cur).actor==null || Grid.Get(cur).actor == new_tower)
-			{
-				new_tower.currentTile.actor = null;
-				Grid.Get(cur).actor = new_tower;
-				new_tower.currentTile = Grid.Get(cur);
-			}
-		}
-		else
+		ToastManager.SendToast(this, "Tower coord: [" + cur.x + "," + cur.z + "]", ToastMessage.ToastType.Notice);
+		if (Grid.Get(cur).actor != null)
 		{
 			ToastManager.SendToast(this, "You cannot put a tower on a non-empty grid.", ToastMessage.ToastType.Warning);
+			return;
 		}
+
+		if (Grid.Get(cur).actor != null)
+		{
+			
+		}
+
+		ActorConfig config = new ActorConfig();
+		config.name = "Test Tower";
+		config.map_code = 't';
+		config.idle_sprite_filename = "cuff_idle.png";
+	
+		Tower new_tower = SpawnActorOfType(config, spawn_pos);
+		EventBus.Publish(new TileDataLoadedEvent());
 		
+		// Copied from MoveToNearestTile()
+		if (Grid.Get(cur).actor==null || Grid.Get(cur).actor == new_tower)
+		{
+			new_tower.currentTile.actor = null;
+			Grid.Get(cur).actor = new_tower;
+			new_tower.currentTile = Grid.Get(cur);
+		}
 	}
 	
 	Tower SpawnActorOfType(ActorConfig config, Vector3 position)

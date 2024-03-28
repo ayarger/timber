@@ -11,25 +11,25 @@ public class Actor : Spatial
     // private int a = 2;
     // private string b = "text";
 
-    ActorConfig config;
+    protected ActorConfig config;
 
-    public Spatial view { get; private set; } // Good for scaling operations.
-    MeshInstance character_view;
-    SpatialMaterial character_material;
-    MeshInstance shadow_view;
-    StateManager state_manager;
+    public Spatial view { get; protected set; } // Good for scaling operations.
+    protected MeshInstance character_view;
+    protected SpatialMaterial character_material;
+    protected MeshInstance shadow_view;
+    protected StateManager state_manager;
    
 
-    IsSelectable selectable;
+    protected IsSelectable selectable;
 
-    Texture idle_sprite;
+    protected Texture idle_sprite;
     //Initial animation variables
     public bool initial_load = false;
-    public Vector3 initial_view_scale { get; private set; } = Vector3.One;
-    public Vector3 initial_rotation { get; private set; } = Vector3.Zero;
+    public Vector3 initial_view_scale { get; protected set; } = Vector3.One;
+    public Vector3 initial_rotation { get; protected set; } = Vector3.Zero;
     public TileData currentTile;
 
-    float desired_scale_x = 1.0f;
+    protected float desired_scale_x = 1.0f;
     public float GetDesiredScaleX() { return desired_scale_x; }
 
     // Called when the node enters the scene tree for the first time.
@@ -53,7 +53,7 @@ public class Actor : Spatial
         UpdateActorDict();
     }
 
-    public void Configure(ActorConfig info)
+    public virtual void Configure(ActorConfig info)
     {
         config = info;
         GetNode<HasTeam>("HasTeam").team = config.team;

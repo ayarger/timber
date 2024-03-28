@@ -16,4 +16,38 @@ public class Tower : Actor
 		}
 		
 	}
+
+	public override void Configure(ActorConfig info)
+	{
+		config = info;
+		GetNode<HasTeam>("HasTeam").team = config.team;
+		if (config.team == "player")
+		{
+			EventBus.Publish<SpawnLightSourceEvent>(new SpawnLightSourceEvent(this));
+		}
+
+		// if (config.pre_ko_sprite_filename != null && config.pre_ko_sprite_filename != "")
+		// 	ArborResource.Load<Texture>("images/" + config.pre_ko_sprite_filename);
+		// if (config.ko_sprite_filename != null && config.ko_sprite_filename != "")
+		// 	ArborResource.Load<Texture>("images/" + config.ko_sprite_filename);
+
+		Texture tex = (Texture)ResourceLoader.Load("res://temp_scripts/TempTowerSprite.png");
+
+		ShaderMaterial char_mat = (ShaderMaterial)character_view.GetSurfaceMaterial(0).Duplicate();
+
+		shadow_view = (MeshInstance)GetNode("shadow");
+		view.Scale = new Vector3(tex.GetWidth(), tex.GetHeight(), 1.0f) * 0.01f;
+		view.Scale = view.Scale * config.aesthetic_scale_factor;
+		initial_load = true;
+		initial_view_scale = view.Scale;
+		desired_scale_x = initial_view_scale.x;
+		initial_rotation = view.Rotation;
+		shadow_view.Scale = new Vector3(Mathf.Min(2.0f, view.Scale.x), shadow_view.Scale.y, shadow_view.Scale.z);
+
+		char_mat.SetShaderParam("texture_albedo", tex);
+		char_mat.SetShaderParam("fade_amount ", 0.8f);
+		char_mat.SetShaderParam("alpha_cutout_threshold  ", 0.2f);
+
+		character_view.SetSurfaceMaterial(0, char_mat);
+	}
 }
