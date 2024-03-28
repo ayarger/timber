@@ -38,6 +38,9 @@ public class SelectionSystem : Node
         active_cursor = GetNode<CSGMesh>("active_cursor");
 
         EventBus.Subscribe<EventTileCursorChangedLocation> (OnEventTileCursorChangedLocation);
+        EventBus.Subscribe<TowerManager.EventToggleTowerPlacement> (OnEventToggleTowerPlacement);
+        EventBus.Subscribe<TowerManager.EventCancelTowerPlacement> (OnEventCancelTowerPlacement);
+        
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -202,6 +205,22 @@ public class SelectionSystem : Node
                 }
             }
         }
+    }
+    
+    
+    void OnEventToggleTowerPlacement(TowerManager.EventToggleTowerPlacement e)
+    {
+        // active_cursor = GetNode<CSGMesh>("active_cursor_tower");
+        // active_cursor.GetNode<CSGMesh>("active_cursor_tower").Visible = true;
+        // GetNode<CSGMesh>("active_cursor").Visible = false;
+
+    }
+
+    void OnEventCancelTowerPlacement(TowerManager.EventCancelTowerPlacement e)
+    {
+        // active_cursor = GetNode<CSGMesh>("active_cursor");
+        // active_cursor.GetNode<CSGMesh>("active_cursor_tower").Visible = false;
+        // GetNode<CSGMesh>("active_cursor").Visible = true;
     }
 }
 

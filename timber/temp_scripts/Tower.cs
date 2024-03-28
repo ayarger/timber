@@ -2,6 +2,11 @@ using Godot;
 
 public class Tower : Actor
 {
+	public enum TowerType
+	{
+		Normal,
+	}
+	
 	public override void _Ready()
 	{
 		base._Ready();
@@ -49,5 +54,9 @@ public class Tower : Actor
 		char_mat.SetShaderParam("alpha_cutout_threshold  ", 0.2f);
 
 		character_view.SetSurfaceMaterial(0, char_mat);
+
+		StateManager _stateManager = GetNode<Node>("StateManager") as StateManager;
+		IdleState _idleState = _stateManager.states["Idle"] as IdleState;
+		_idleState.has_idle_animation = false;
 	}
 }

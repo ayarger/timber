@@ -2,10 +2,12 @@
 
 // Experiment: use temp art to generate and put a tower; make it follow mouse cursor
 // Goal: make sure that two towers are not spawned in the same grid - done
-//       make sure that towers cannot be placed out side the boundary
+//       make sure that towers cannot be placed out side the boundary - done
 //       cursor thing
 //       auto-align
 // Extra goal: juice
+
+// Can make an in-game message log
 
 using Godot;
 using System;
@@ -31,10 +33,14 @@ public class TowerManager : Node
 			if (isPlacingTower)
 			{
 				// Input.SetCustomMouseCursor(customCursor, Input.CursorShape.Arrow, new Vector2(0, 0));
+				ToastManager.SendToast(this, "Tower placement triggered.", ToastMessage.ToastType.Notice, 1f);
+				EventBus.Publish(new EventToggleTowerPlacement());
 			}
 			else
 			{
 				// Input.SetCustomMouseCursor(null, Input.CursorShape.Arrow);
+				ToastManager.SendToast(this, "Tower placement canceled.", ToastMessage.ToastType.Notice, 1f);
+				EventBus.Publish(new EventCancelTowerPlacement());
 			}
 		}
 		
@@ -49,18 +55,19 @@ public class TowerManager : Node
 	{
 		Vector3 spawn_pos = new Vector3(cursorPos.x , 0, cursorPos.z );
 		Coord cur = Grid.ConvertToCoord(spawn_pos);
-		ToastManager.SendToast(this, "Tower coord: [" + cur.x + "," + cur.z + "]", ToastMessage.ToastType.Notice);
+		EventBus.Publish(new EventCancelTowerPlacement());
 		if (Grid.Get(cur).actor != null)
 		{
-			ToastManager.SendToast(this, "You cannot put a tower on a non-empty grid.", ToastMessage.ToastType.Warning);
+			ToastManager.SendToast(this, "Cannot put a tower on a non-empty grid.", ToastMessage.ToastType.Warning, 2f);
 			return;
 		}
 
-		if (Grid.Get(cur).actor != null)
+		if (Grid.Get(cur).value != '.')
 		{
-			
+			ToastManager.SendToast(this, "Cannot throw a tower into the void.", ToastMessage.ToastType.Warning, 2f);
+			return;
 		}
-
+		// ToastManager.SendToast(this, "Tower coord: [" + cur.x + "," + cur.z + "]", ToastMessage.ToastType.Notice, 1f);
 		ActorConfig config = new ActorConfig();
 		config.name = "Test Tower";
 		config.map_code = 't';
@@ -94,4 +101,22 @@ public class TowerManager : Node
 		
 		return tower_script;
 	}
+
+	public class EventToggleTowerPlacement
+	{
+		private Tower.TowerType towerType;
+		
+		public EventToggleTowerPlacement(Tower.TowerType _towerType = Tower.TowerType.Normal)
+		{
+			towerType = _towerType;
+		}
+	}
+	
+	public class EventCancelTowerPlacement
+	{
+		public EventCancelTowerPlacement()
+		{
+		}
+	}
+
 }
