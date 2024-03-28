@@ -214,7 +214,7 @@ public class Actor : Spatial
         ArborCoroutine.StartCoroutine(HurtAnimation(), this);
     }
 
-    public void Kill(Actor source = null)//TODO needs clean up in combatState, fogofwar, barcontainer
+    public void Kill(Actor source = null)//TODO needs clean up in map --- actors cannot move to tile where actor died
     {
         bool endGame = config.name == "Spot";
         PackedScene scene = (PackedScene)ResourceLoader.Load("res://scenes/ActorKO.tscn");

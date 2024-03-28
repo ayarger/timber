@@ -33,6 +33,7 @@ function WaitForSeconds(secs)
 	end
 end
 
+
 function SetDestination(obj, xdelta, zdelta)
 	coroutine.yield(
 		{obj=obj.object_name,
@@ -72,12 +73,12 @@ function global:tick(delta)
 	local c_list = global.awaiting_coroutines
 	global.awaiting_coroutines = {}
 	global:advance_coroutines(c_list)
-	--global:receive("process")
+	global:receive("process")
 end
 
 function global:receive(message)
 	-- For now, just iterate through all objects looking for ready functions
-	print(message)
+
 	local to_remove = {}
 	local new_coroutines = {}
 	for i=1,#global.game_objects do
@@ -85,7 +86,7 @@ function global:receive(message)
 			table.insert(to_remove,i)
 		else
 			if type(global.game_objects[i][message])=="function" then
-				table.insert(new_coroutines,{global.game_objects[i],coroutine.create(global.game_objects[i].ready)})
+				table.insert(new_coroutines,{global.game_objects[i],coroutine.create(global.game_objects[i][message])})
 			end
 		end
 	end
