@@ -22,8 +22,8 @@ public class LuaLoader : Node
 	static LuaLoader instance;
 
 	//temporary fake json
-	CombatConfig enemyMeleeCombatConfig = new CombatConfig(1, 10, 0.3f, 0.5f, 0.125f, 1);
-	CombatConfig enemyRangeCombatConfig = new CombatConfig(3, 5, 0.3f, 0.5f, 0.125f, 1.5f);
+	CombatConfig enemyMeleeCombatConfig = new CombatConfig(1, 10, 0.5f, 0.5f, 0.125f, 1);
+	CombatConfig enemyRangeCombatConfig = new CombatConfig(3, 5, 0.3f, 0.75f, 0.125f, 1.5f);
 	CombatConfig playerCombatConfig = new CombatConfig(2, 20, 0.3f, 0.5f, 0.125f, 0.75f);
 	StatConfig enemyStatConfig = new StatConfig();
 	StatConfig playerStatConfig = new StatConfig();
@@ -409,13 +409,13 @@ public class CombatConfig : StateConfig
 	public float attackRecovery = 0.125f;//anim after attack
 	public float attackCooldown = 1f;
 
-	public CombatConfig(int ar, int damage, float ch, float aw, float recovery, float cooldown)//temp constructor
+	public CombatConfig(int ar, int damage, float critRate, float windup, float recovery, float cooldown)//temp constructor
     {
 		name = "CombatState";
 		attackRange = ar;
 		attackDamage = damage;
-		criticalHitRate = ch;
-		attackWindup = aw;
+		criticalHitRate = critRate;
+		attackWindup = windup;
 		attackRecovery = recovery;
 		attackCooldown = cooldown;
     }

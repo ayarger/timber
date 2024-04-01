@@ -17,12 +17,12 @@ function testluaobject:testfunc()
 	myvariable = false
 	WaitForSeconds(1)
 	--SetDestination(self,self.x-3, self.z)
-	--Hurt(self, 10)
+	Hurt(self, 10)
 	Print("I am at x-position: "..self.x)
 	WaitForSeconds(2)
 	
 	--SetDestination(self,self.x+3, self.z)
-	--Hurt(self, 10)
+	Hurt(self, 10)
 	--parent.testData = ""..i;
 	Print("Completed Ready")
 	--end

@@ -42,6 +42,7 @@ public class Actor : Spatial
     public float GetDesiredScaleX() { return desired_scale_x; }
 
     bool dying = false;
+    bool isInvicible = false;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -204,6 +205,18 @@ public class Actor : Spatial
                 Kill(source);
                 return;
             }
+
+            //draws aggro
+            if (state_manager.states.ContainsKey("CombatState"))
+            {
+                CombatState c = (state_manager.states["CombatState"] as CombatState);
+                Coord targetCoord = Grid.ConvertToCoord(source.GlobalTranslation);
+                if (c.WithinRange(targetCoord))
+                {
+                    c.TargetActor = source;
+                    state_manager.EnableState("CombatState");
+                }
+            }
         }
         else
         {
@@ -253,7 +266,11 @@ public class Actor : Spatial
         char_mat.SetShaderParam("apply_red_tint", 0);
         //unturn color
     }
-    
+
+    public void setInvicible(bool invicible)
+    {
+        isInvicible = invicible;
+    }
 
 
 }
