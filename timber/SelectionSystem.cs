@@ -2,6 +2,7 @@ using Godot;
 using System;
 using System.Security.Cryptography.X509Certificates;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 public class SelectionSystem : Node
 {
@@ -210,17 +211,13 @@ public class SelectionSystem : Node
     
     void OnEventToggleTowerPlacement(TowerManager.EventToggleTowerPlacement e)
     {
-        // active_cursor = GetNode<CSGMesh>("active_cursor_tower");
-        // active_cursor.GetNode<CSGMesh>("active_cursor_tower").Visible = true;
-        // GetNode<CSGMesh>("active_cursor").Visible = false;
+        active_cursor.GetNode<CSGMesh>("active_cursor_tower").Visible = true;
 
     }
 
     void OnEventCancelTowerPlacement(TowerManager.EventCancelTowerPlacement e)
     {
-        // active_cursor = GetNode<CSGMesh>("active_cursor");
-        // active_cursor.GetNode<CSGMesh>("active_cursor_tower").Visible = false;
-        // GetNode<CSGMesh>("active_cursor").Visible = true;
+        active_cursor.GetNode<CSGMesh>("active_cursor_tower").Visible = false;
     }
 }
 

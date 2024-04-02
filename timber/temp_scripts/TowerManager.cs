@@ -67,7 +67,7 @@ public class TowerManager : Node
 			ToastManager.SendToast(this, "Cannot throw a tower into the void.", ToastMessage.ToastType.Warning, 2f);
 			return;
 		}
-		// ToastManager.SendToast(this, "Tower coord: [" + cur.x + "," + cur.z + "]", ToastMessage.ToastType.Notice, 1f);
+		ToastManager.SendToast(this, "Tower coord: [" + cur.x + "," + cur.z + "]", ToastMessage.ToastType.Notice, 1f);
 		ActorConfig config = new ActorConfig();
 		config.name = "Test Tower";
 		config.map_code = 't';
@@ -82,6 +82,7 @@ public class TowerManager : Node
 			new_tower.currentTile.actor = null;
 			Grid.Get(cur).actor = new_tower;
 			new_tower.currentTile = Grid.Get(cur);
+			Grid.Get(cur).value = 't';
 		}
 	}
 	
