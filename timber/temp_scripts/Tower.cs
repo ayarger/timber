@@ -28,7 +28,7 @@ public class Tower : Actor
 		GetNode<HasTeam>("HasTeam").team = config.team;
 		if (config.team == "player")
 		{
-			EventBus.Publish<SpawnLightSourceEvent>(new SpawnLightSourceEvent(this));
+			EventBus.Publish<SpawnLightSourceEvent>(new SpawnLightSourceEvent(this, true));
 		}
 
 		// if (config.pre_ko_sprite_filename != null && config.pre_ko_sprite_filename != "")
@@ -59,4 +59,18 @@ public class Tower : Actor
 		IdleState _idleState = _stateManager.states["Idle"] as IdleState;
 		_idleState.has_idle_animation = false;
 	}
+
+	public override void _ExitTree()
+	{
+		EventBus.Publish(new RemoveLightSourceEvent(GlobalTranslation));
+		foreach (Node child in GetChildren())
+		{
+			if (child is IsSelectable childScript)
+			{
+				childScript.OnRemovingParent();
+			}
+		}
+		base._ExitTree();
+	}
+
 }

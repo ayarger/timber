@@ -11,43 +11,81 @@
 
 using Godot;
 using System;
+using System.Collections.Generic;
 
 public class TowerManager : Node
 {
 
-	private bool isPlacingTower = false;
-	private Texture customCursor;
+	enum TowerManagerStatus
+	{
+		idle,
+		isPlacingTower,
+		isRemovingTower
+	}
+
+	// private bool isPlacingTower = false;
+	// private bool isRemovingTower = false;
+	private TowerManagerStatus status;
+	// private Texture customCursor;
+	public List<Tower> tower_spawn_positions = new List<Tower>();
 
 	public override void _Ready()
 	{
 		SetProcessInput(true);
-		customCursor = (Texture)ResourceLoader.Load("res://temp_scripts/TempTowerSprite.png");
-
+		// customCursor = (Texture)ResourceLoader.Load("res://temp_scripts/TempTowerSprite.png");
 	}
 
 	public override void _Input(InputEvent @event)
 	{
-		if (@event is InputEventKey eventKey && eventKey.Pressed && eventKey.Scancode == (uint)KeyList.X)
+		if (@event is InputEventKey eventKey)
 		{
-			isPlacingTower = !isPlacingTower;
-			if (isPlacingTower)
+			if (eventKey.Pressed && eventKey.Scancode == (uint)KeyList.T)
 			{
-				// Input.SetCustomMouseCursor(customCursor, Input.CursorShape.Arrow, new Vector2(0, 0));
-				ToastManager.SendToast(this, "Tower placement triggered.", ToastMessage.ToastType.Notice, 1f);
-				EventBus.Publish(new EventToggleTowerPlacement());
-			}
-			else
+				if (status == TowerManagerStatus.isPlacingTower) status = TowerManagerStatus.idle;
+				else status = TowerManagerStatus.isPlacingTower;
+				
+				if (status == TowerManagerStatus.isPlacingTower)
+				{
+					// Input.SetCustomMouseCursor(customCursor, Input.CursorShape.Arrow, new Vector2(0, 0));
+					ToastManager.SendToast(this, "Tower placement triggered.", ToastMessage.ToastType.Notice, 1f);
+					EventBus.Publish(new EventToggleTowerPlacement());
+				}
+				else
+				{
+					// Input.SetCustomMouseCursor(null, Input.CursorShape.Arrow);
+					ToastManager.SendToast(this, "Tower placement canceled.", ToastMessage.ToastType.Notice, 1f);
+					EventBus.Publish(new EventCancelTowerPlacement());
+				}
+			} 
+			else if (eventKey.Pressed && eventKey.Scancode == (uint)KeyList.X)
 			{
-				// Input.SetCustomMouseCursor(null, Input.CursorShape.Arrow);
-				ToastManager.SendToast(this, "Tower placement canceled.", ToastMessage.ToastType.Notice, 1f);
-				EventBus.Publish(new EventCancelTowerPlacement());
+				if (status == TowerManagerStatus.isRemovingTower) status = TowerManagerStatus.idle;
+				else status = TowerManagerStatus.isRemovingTower;
+				if (status == TowerManagerStatus.isRemovingTower)
+				{
+					// Input.SetCustomMouseCursor(customCursor, Input.CursorShape.Arrow, new Vector2(0, 0));
+					ToastManager.SendToast(this, "Tower removal triggered.", ToastMessage.ToastType.Notice, 1f);
+					EventBus.Publish(new EventCancelTowerPlacement());
+				}
+				else
+				{
+					// Input.SetCustomMouseCursor(null, Input.CursorShape.Arrow);
+					ToastManager.SendToast(this, "Tower removal canceled.", ToastMessage.ToastType.Notice, 1f);
+				}
 			}
 		}
 		
-		if (isPlacingTower && @event is InputEventMouseButton eventMouseButton && eventMouseButton.Pressed && eventMouseButton.ButtonIndex == (int)ButtonList.Left)
+		if (@event is InputEventMouseButton eventMouseButton && eventMouseButton.Pressed && eventMouseButton.ButtonIndex == (int)ButtonList.Left)
 		{
-			SpawnTower(SelectionSystem.GetTilePosition());
-			isPlacingTower = false;
+			if (status == TowerManagerStatus.isPlacingTower)
+			{
+				SpawnTower(SelectionSystem.GetTilePosition());
+				status = TowerManagerStatus.idle;
+			} else if (status == TowerManagerStatus.isRemovingTower)
+			{
+				RemoveTower(SelectionSystem.GetTilePosition());
+				status = TowerManagerStatus.idle;
+			}
 		}
 	}
 	
@@ -74,6 +112,7 @@ public class TowerManager : Node
 		config.idle_sprite_filename = "cuff_idle.png";
 	
 		Tower new_tower = SpawnActorOfType(config, spawn_pos);
+		new_tower.Configure(config);
 		EventBus.Publish(new TileDataLoadedEvent());
 		
 		// Copied from MoveToNearestTile()
@@ -95,12 +134,32 @@ public class TowerManager : Node
 		AddChild(new_tower);
 
 		Tower tower_script = new_tower as Tower;
+		tower_spawn_positions.Add(tower_script);
 
 		new_tower.GlobalTranslation = position;
 		new_tower.AddChild(tower_script);
-		tower_script.Configure(config);
 		
 		return tower_script;
+	}
+
+	void RemoveTower(Vector3 cursorPos)
+	{
+		Vector3 pos = new Vector3(cursorPos.x , 0, cursorPos.z );
+		Coord cur = Grid.ConvertToCoord(pos);
+		status = TowerManagerStatus.idle;
+
+		for (int i = 0; i < tower_spawn_positions.Count; i++)
+		{
+			Tower tower = tower_spawn_positions[i];
+			if (Grid.Get(cur).actor!= null && Grid.Get(cur).actor.Equals(tower))
+			{
+				tower_spawn_positions.RemoveAt(i);
+				tower.QueueFree();
+				Grid.Get(cur).actor = null;
+				Grid.Get(cur).value = '.';
+				break;
+			}
+		}
 	}
 
 	public class EventToggleTowerPlacement

@@ -7,6 +7,7 @@ public class IsSelectable : Node
 {
     static HashSet<IsSelectable> selectables = new HashSet<IsSelectable>();
     public static HashSet<IsSelectable> GetSelectables() { return selectables; }
+    private bool isRemovingParent = false;
 
     public static HashSet<IsSelectable> GetSelectablesWithinRegion(SelectionRegion region) 
     {
@@ -81,7 +82,7 @@ public class IsSelectable : Node
    public bool AmIHovered()
     {
         SelectionRegion selection_region = SelectionSystem.GetCurrentSelectionRegion();
-        return selection_region.IsPointWithinRegion(parent.GlobalTranslation);
+        return !isRemovingParent && selection_region.IsPointWithinRegion(parent.GlobalTranslation);
     }
 
     public bool am_i_selected = false;
@@ -98,5 +99,10 @@ public class IsSelectable : Node
     void OnEventSelectionBegun(EventSelectionBegun e)
     {
         am_i_selected = false;
+    }
+
+    public void OnRemovingParent()
+    {
+        isRemovingParent = true;
     }
 }

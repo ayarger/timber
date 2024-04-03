@@ -37,6 +37,7 @@ public class SelectionSystem : Node
     {
         instance = this;
         active_cursor = GetNode<CSGMesh>("active_cursor");
+        active_cursor.GetNode<CSGMesh>("active_cursor_tower").Visible = false;
 
         EventBus.Subscribe<EventTileCursorChangedLocation> (OnEventTileCursorChangedLocation);
         EventBus.Subscribe<TowerManager.EventToggleTowerPlacement> (OnEventToggleTowerPlacement);
