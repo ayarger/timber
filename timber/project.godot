@@ -104,6 +104,7 @@ package_path/behavior=false
 
 runtime/unhandled_exception_policy=1
 project/assembly_name="lua_experiment"
+export/include_scripts_content=true
 
 [physics]
 
