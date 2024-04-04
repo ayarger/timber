@@ -56,7 +56,11 @@ public class MeleeCombatState : CombatState
         if (TargetActor != null && IsInstanceValid(TargetActor))//TODO check if actor is dead
         {
             Coord dest = Grid.ConvertToCoord(TargetActor.GlobalTranslation);
-            MovementState b = (manager.states["MovementState"] as MovementState);
+            MovementState b = null;
+            if (manager.states.ContainsKey("MovementState"))
+            {
+                b = manager.states["MovementState"] as MovementState;
+            }
 
             Coord actorCoord = Grid.ConvertToCoord(actor.GlobalTranslation);
 
@@ -83,6 +87,11 @@ public class MeleeCombatState : CombatState
                             return;
                         }
                     }
+                }
+
+                if(b == null)
+                {
+                    manager.DisableState("CombatState");
                 }
 
                 if (b.waypoints.Count == 0)
