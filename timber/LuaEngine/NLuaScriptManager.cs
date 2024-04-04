@@ -1,6 +1,7 @@
 using Godot;
 using NAudio.Codecs;
 using Newtonsoft.Json.Linq.JsonPath;
+using Newtonsoft.Json;
 using MoonSharp.Interpreter;
 using System;
 using System.Collections;
@@ -8,6 +9,7 @@ using System.Collections.Generic;
 using System.Security.AccessControl;
 using System.Xml.Linq;
 using Script = MoonSharp.Interpreter.Script;
+using MoonSharp.Interpreter.Loaders;
 
 public class NLuaScriptManager : Node
 {
@@ -64,7 +66,7 @@ public class NLuaScriptManager : Node
         try
         {
             luaState.DoString($"{objectName} = {{}}\n" +
-                $"setmetatable({objectName}, {{__index = function(self, key) \r\n  if key==\"x\" then\r\n\treturn GetValue(rawget(self,\"object_name\"),key)\r\n  else\r\n\treturn rawget({className}, key)\r\n  end\r\nend}})\n" +
+                $"setmetatable({objectName}, {{__index = function(self, key) \r\n  if global.keywords[key]  then\r\n\treturn GetValue(rawget(self,\"object_name\"),key)\r\n  else\r\n\treturn rawget({className}, key)\r\n  end\r\nend}})\n" +
                 $"global:register_object({objectName}, \"{objectName}\")");
             luaObjects.Add(objectName);
         }
@@ -97,45 +99,82 @@ public class NLuaScriptManager : Node
         luaState.DoString($"timber_runner = coroutine.create({function})\n");
         List<string> args = prms ?? new List<string>();
         string data = "";
+
+        //Run until we do not have any commands from Lua
         while (res != "")
         {
+
             string prm = "";
             foreach(string arg in args)
             {
                 prm += ","+arg;
             }
 
+            //Run our coroutine with any required parameters (currently, just delta if we are running a tick update).
             res = luaState.DoString($"local co, res = coroutine.resume(timber_runner,global {prm}, {{{data}}})\n" +
                 "return res").String;
-            if (res == "" || res == null) break;
+
+            if (res == "{}" || res == ""||res == null) break;
             GD.Print("Got response: "+res);
             data = "";
-            //THIS DOESN'T WORK IF PRINT HAS NEWLINES OR COLONS! (but this will be refactored later so idc)
-            foreach (string cmd in res.Split('\n'))
+            Dictionary<string, object>[] cmds = JsonConvert.DeserializeObject<Dictionary<string,object>[]>(res);
+
+            //Run every command that was returned from Lua
+            foreach (Dictionary<string, object> cmd in cmds)
             {
-                if (cmd == "") continue;
-                string name = cmd.Split(':')[0];
-                string command = cmd.Split(':')[1];
-                //Parse commands. Will need to refactor to a better system.
-                if (command.StartsWith("M"))
+                object result = HandleCommand(cmd);
+                if (result != null)
                 {
-                    int amt = int.Parse(command.Substring(1));
-                    TestMovement.SetDestination(luaActors[name] as Actor,  new Vector3(Grid.tileWidth * amt, luaActors[name].GlobalTranslation.y, luaActors[name].GlobalTranslation.z));
-                }
-                else if (command.StartsWith("P"))
-                {
-                    //Replace with toast later
-                    GD.Print(command.Substring(1));
-                }
-                else if (command.StartsWith("R"))
-                {
-                    //Same deal with newlines
-                    //Get data, just x position rn for demonstration
-                    data += name + "=" + luaActors[name].GlobalTranslation.x/Grid.tileWidth;
+                    string name = Convert.ToString(cmd["obj"]);
+                    data += name + "=" + result; //Replace with serializing JSON?
                     data += ",";
                 }
+
             }
         }
+    }
+
+    //Handles commands. The contents of cmd is determined by the appropriate command in Lua, and needs to be manually converted.
+    //Every command should have a name (the object name), and a command type. Everything else is determined by the appropriate API.
+    public static object HandleCommand(Dictionary<string, object> cmd)
+    {
+        string name = Convert.ToString(cmd["obj"]);
+        string command = Convert.ToString(cmd["type"]);
+        Actor actor = luaActors.ContainsKey(name) ? luaActors[name] as Actor : null;
+
+        //Parse commands. Will need to refactor to a better system.
+        if (command == "M")
+        {
+            int amtX = Convert.ToInt32(cmd["x"]);
+            int amtZ = Convert.ToInt32(cmd["z"]);
+            TestMovement.SetDestination(actor, new Vector3(Grid.tileWidth * amtX, luaActors[name].GlobalTranslation.y, Grid.tileWidth * amtZ));
+        }
+        else if (command == "P")
+        {
+            //Replace with toast later
+            GD.Print(Convert.ToString(cmd["param"]));
+        }
+        else if (command == "R")
+        {
+            //Same deal with newlines
+            //Get data, just x position rn for demonstration
+            string key = Convert.ToString(cmd["param"]);
+            if (key == "x")
+            {
+                return luaActors[name].GlobalTranslation.x / Grid.tileWidth;
+            }
+            else if (key=="z")
+            {
+                return luaActors[name].GlobalTranslation.z / Grid.tileWidth;
+            }
+        }
+        else if(command == "T")
+        {
+            GD.Print(actor.ToString() + " just posted " + cmd["toastString"] + " to the toast!");
+
+        }
+
+        return null;
     }
 
 
@@ -155,6 +194,11 @@ public class NLuaScriptManager : Node
         GD.Print("Lua initialized");
         Instance = this;
         luaState = new Script();
+        luaState.Options.ScriptLoader = new FileSystemScriptLoader();
+
+        //This may cause issues
+        string abspath = $"{System.IO.Directory.GetCurrentDirectory()}/LuaEngine/testmodules/";
+        ((ScriptLoaderBase)luaState.Options.ScriptLoader).ModulePaths = new string[] { abspath+"?", $"{abspath}?.lua", $"{abspath}/lunajson/?", $"{abspath}/lunajson/?.lua" };
         registeredClasses = new HashSet<string>();
         luaObjects = new HashSet<string>();
         luaActors = new Dictionary<string, Spatial>();
@@ -211,7 +255,7 @@ public class NLuaScriptManager : Node
             timer = 5f;
                 DNDStressTest.LogTimeOfEvent(() =>
                 {
-                    RunUntilCompletion("global.receive", new List<string> { "\"ready\"" });
+                    RunUntilCompletion("global.receive", new List<string> { "\"testfunc\"" });
                 });
 
                 //int amt = int.Parse(res.Substring(1));
