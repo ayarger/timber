@@ -19,6 +19,7 @@ public class Actor : Spatial
     MeshInstance shadow_view;
     StateManager state_manager;
     NameTag name_tag;
+    EditUI edit_ui;
     IsSelectable selectable;
     Texture idle_sprite;
     public BarContainer bar_container;
@@ -53,8 +54,8 @@ public class Actor : Spatial
         // update ActorDict after actor is loaded into the scene
         UpdateActorDict();
         name_tag = NameTag.Create(character_view, this.Name);
-        // Set Bar contaner pos
- 
+        edit_ui = EditUI.Create(character_view, GetNode<HasStats>("HasStats"));
+        GD.Print("edit_ui_created:"+ edit_ui);
     }
 
     public void Configure(ActorConfig info)

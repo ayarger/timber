@@ -1,0 +1,25 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://UI/EditUI/EditUI.cs" type="Script" id=1]
+
+[node name="EditUIManager" type="Control"]
+visible = false
+margin_left = 447.0
+margin_top = 433.0
+margin_right = 447.0
+margin_bottom = 433.0
+rect_scale = Vector2( 1.56, 1.56 )
+script = ExtResource( 1 )
+__meta__ = {
+"_editor_description_": "Edit Mode UI element for manipulating character stats"
+}
+
+[node name="OptionButton" type="OptionButton" parent="."]
+margin_left = 43.5897
+margin_top = -150.641
+margin_right = 151.59
+margin_bottom = -130.641
+text = "Edit Options"
+expand_icon = true
+
+[node name="Tween" type="Tween" parent="."]
