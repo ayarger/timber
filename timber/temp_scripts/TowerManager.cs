@@ -4,7 +4,8 @@
 // Goal: make sure that two towers are not spawned in the same grid - done
 //       make sure that towers cannot be placed out side the boundary - done
 //       cursor thing
-//       auto-align
+//		 merge attack branch and add melee attack for tower
+
 // Extra goal: juice
 
 // Can make an in-game message log
@@ -46,14 +47,12 @@ public class TowerManager : Node
 				
 				if (status == TowerManagerStatus.isPlacingTower)
 				{
-					// Input.SetCustomMouseCursor(customCursor, Input.CursorShape.Arrow, new Vector2(0, 0));
-					ToastManager.SendToast(this, "Tower placement triggered.", ToastMessage.ToastType.Notice, 1f);
+					// ToastManager.SendToast(this, "Tower placement triggered.", ToastMessage.ToastType.Notice, 1f);
 					EventBus.Publish(new EventToggleTowerPlacement());
 				}
 				else
 				{
-					// Input.SetCustomMouseCursor(null, Input.CursorShape.Arrow);
-					ToastManager.SendToast(this, "Tower placement canceled.", ToastMessage.ToastType.Notice, 1f);
+					// ToastManager.SendToast(this, "Tower placement canceled.", ToastMessage.ToastType.Notice, 1f);
 					EventBus.Publish(new EventCancelTowerPlacement());
 				}
 			} 
