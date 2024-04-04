@@ -229,6 +229,7 @@ public class Actor : Spatial
 
     public void Kill(Actor source = null)//TODO needs clean up in map --- actors cannot move to tile where actor died
     {
+        currentTile.actor = null;
         bool endGame = config.name == "Spot";
         PackedScene scene = (PackedScene)ResourceLoader.Load("res://scenes/ActorKO.tscn");
         ActorKO new_ko = (ActorKO)scene.Instance();

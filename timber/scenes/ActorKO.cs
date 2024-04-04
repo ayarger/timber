@@ -53,9 +53,9 @@ public class ActorKO : Spatial
         else
         {
             blastDirection = (GlobalTranslation - killedBy.GlobalTranslation).Normalized();
-            blastSpeed = 8;
+            blastSpeed = 6;
             blastRotationSpeed = 15;
-            velocity = 0.3f;
+            velocity = 0.2f;
             gravity = true;
         }
 

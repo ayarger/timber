@@ -90,7 +90,6 @@ public class ConsoleManager : Control
                 // Pause the game while accessing the command console
                 // TODO some of the functionality should remain accessible
                 //GetTree().Paused = consolePanel.Visible;
-                GetTree().Paused = !GetTree().Paused;
             }
 
             // fetch last command entered
