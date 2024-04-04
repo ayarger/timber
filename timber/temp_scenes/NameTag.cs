@@ -13,7 +13,7 @@ public class NameTag : Control
     [Export]
     string actor_name;
     [Export]
-    public float scaling_factor = 80f;
+    public float scaling_factor = 40f;
 
     public override void _Ready()
     {
@@ -77,9 +77,9 @@ public class NameTag : Control
         var screenPosition = cam.UnprojectPosition(desired_position);
         RectGlobalPosition = screenPosition;
         float distance = target_mesh.GlobalTransform.origin.DistanceTo(cam.GlobalTransform.origin);
-        float characterSize = target_mesh.Scale.y;
-        float newScale = (characterSize / distance)*scaling_factor;
-        RectScale = new Vector2(newScale, newScale);
+        //float characterSize = target_mesh.Scale.y;
+        //float newScale = characterSize * scaling_factor;
+        //RectScale = new Vector2(newScale, newScale);
     }
 
     /// <summary>

@@ -33,8 +33,8 @@ public class BarContainer : Control
             Vector3 globalScale = target_mesh.GlobalTransform.basis.Scale;
             float GlobalHeight = localHeight * globalScale.y;
 
-            Vector3 mesh_position = target_mesh.GlobalTransform.Xform(new Vector3(0, GlobalHeight, 0)); ;
-            relativeToshadow = mesh_position - shadow_position;
+            Vector3 mesh_position = target_mesh.GlobalTransform.Xform(new Vector3(0, GlobalHeight, 0));
+            relativeToshadow = (mesh_position - shadow_position);
         }
     }
 
@@ -79,8 +79,7 @@ public class BarContainer : Control
 
         // TODO: UI position should be based on the top of the character
         if (IsInstanceValid(target_shadow))
-            desired_position = (target_shadow.GlobalTranslation + relativeToshadow);
-
+            desired_position = (target_shadow.GlobalTranslation + relativeToshadow/1.08f);
         var screenPosition = cam.UnprojectPosition(desired_position);
         RectGlobalPosition = screenPosition;
         RectScale = Vector2.One * 0.15f;

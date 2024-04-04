@@ -11,16 +11,15 @@ rect_scale = Vector2( 0.35, 0.35 )
 script = ExtResource( 3 )
 
 [node name="container1" type="VBoxContainer" parent="."]
-margin_left = -160.0
-margin_top = 82.8569
-margin_right = 314.0
-margin_bottom = 333.857
+margin_left = -217.143
+margin_top = 2.85715
+margin_right = 256.857
+margin_bottom = 253.857
 grow_horizontal = 0
 custom_constants/separation = 50
 alignment = 2
 
 [node name="container2" type="VBoxContainer" parent="container1"]
-visible = false
 margin_top = 251.0
 margin_right = 474.0
 margin_bottom = 251.0

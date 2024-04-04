@@ -134,9 +134,10 @@ public class ConsoleManager : Control
                 if(matchingCommands.Count > 0)
                 {
                     consoleInput.Text += $" {matchingCommands[0]}";
+                    consoleInput.GrabFocus();
                 }
                 consoleInput.GrabFocus();
-                consoleInput.CaretPosition = consoleInput.Text.Length;
+                //consoleInput.CaretPosition = consoleInput.Text.Length;
             }
         }
     }

@@ -3,17 +3,19 @@
 [ext_resource path="res://temp_scenes/NameTag.cs" type="Script" id=1]
 
 [node name="nameTagUI" type="Control"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = 817.0
-margin_top = 451.0
-margin_right = -1103.0
-margin_bottom = -629.0
-rect_scale = Vector2( 2, 2 )
+margin_left = 777.0
+margin_top = 494.0
+margin_right = 777.0
+margin_bottom = 494.0
+rect_scale = Vector2( 2.48, 2.48 )
 script = ExtResource( 1 )
 scaling_factor = 50.0
 
 [node name="NameLabel" type="Label" parent="."]
+margin_left = -32.0
+margin_right = 40.0
+margin_bottom = 14.0
 text = "ActorName"
+align = 1
 
 [node name="Tween" type="Tween" parent="."]
