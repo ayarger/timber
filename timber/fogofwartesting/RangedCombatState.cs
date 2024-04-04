@@ -9,6 +9,8 @@ public class RangedCombatState : CombatState
 {
     float time = 0.0f, rotateTime = 0.0f;
 
+    PackedScene projectile_scene = (PackedScene)ResourceLoader.Load("res://temp_scenes/Projectile.tscn");
+
     public override void Start()
     {
         inclusiveStates = new HashSet<string>();
@@ -37,7 +39,6 @@ public class RangedCombatState : CombatState
 
             if (dist > attackRange || (dest.x != actorCoord.x && dest.z != actorCoord.z))
             {
-                GD.Print("yessser");
                 ArborCoroutine.StopCoroutinesOnNode(this);
                 attacking = false;
                 attackable = true;
@@ -103,11 +104,10 @@ public class RangedCombatState : CombatState
         yield return ArborCoroutine.WaitForSeconds(attackWindup);
 
         attacking = false;
-        if (GD.Randf() < criticalHitRate)
-        {
-            TargetActor.Hurt(attackDamage, true, actor);
-        }
-        else TargetActor.Hurt(attackDamage, false, actor);
+        Projectile projectile = (Projectile)projectile_scene.Instance();
+        projectile.Name = "Prjectile";
+        projectile.GlobalTranslation = actor.GlobalTranslation;
+        GetNode(".").AddChild(projectile);
 
         yield return ArborCoroutine.WaitForSeconds(attackRecovery);
         rotateTime = 0.0f;

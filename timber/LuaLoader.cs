@@ -270,7 +270,7 @@ public class LuaLoader : Node
 	}
 
 
-	Actor SpawnActorOfType(ActorConfig config, Vector3 position)
+	public Actor SpawnActorOfType(ActorConfig config, Vector3 position)
     {
 		/* Spawn actor scene */
 		PackedScene actor_scene = (PackedScene)ResourceLoader.Load("res://scenes/actor.tscn");

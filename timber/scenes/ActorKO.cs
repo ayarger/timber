@@ -7,7 +7,6 @@ using static System.Net.Mime.MediaTypeNames;
 public class ActorKO : Spatial
 {
     MeshInstance character_view;
-    Spatial rotationPoint;
 
     Texture pre_ko_texture;
     Texture ko_texture;
@@ -19,8 +18,8 @@ public class ActorKO : Spatial
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
-        character_view = (MeshInstance)GetNode("view/rotationPoint/mesh");
-
+        character_view = (MeshInstance)GetNode("rotationPoint/view/mesh");
+        GD.Print("starting soon");
         ArborCoroutine.StartCoroutine(DoAnimation());
     }
 
@@ -41,8 +40,8 @@ public class ActorKO : Spatial
         char_mat.SetShaderParam("alpha_cutout_threshold  ", 0.2f);
         char_mat.SetShaderParam("texture_albedo", pre_ko_texture);
         character_view.SetSurfaceMaterial(0, char_mat);
+        character_view.Translation = new Vector3(0, character_view.Scale.y/2, 0);
 
-        
         if (endGame)
         {
             yield return ArborCoroutine.WaitForSeconds(2.0f);
@@ -54,7 +53,7 @@ public class ActorKO : Spatial
         else
         {
             blastDirection = (GlobalTranslation - killedBy.GlobalTranslation).Normalized();
-            blastSpeed = 10;
+            blastSpeed = 8;
             blastRotationSpeed = 15;
             velocity = 0.3f;
             gravity = true;
@@ -95,6 +94,5 @@ public class ActorKO : Spatial
 
         GlobalTranslation += blastDirection * blastSpeed * delta;
         character_view.Rotation += Vector3.Back * blastRotationSpeed * delta;//BUG rotation point squish sprite
-
     }
 }

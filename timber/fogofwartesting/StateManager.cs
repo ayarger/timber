@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections;
 using System.Linq;
 
+
 public class StateManager : Node
 {
     // Declare member variables here. Examples:
@@ -38,6 +39,10 @@ public class StateManager : Node
         actor = GetParent<Actor>();
     }
 
+    public void Configure(List<StateConfig> stateConfigs)
+    {
+
+    }
 
     public override void _Process(float delta)
     {
