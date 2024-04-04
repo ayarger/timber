@@ -31,6 +31,7 @@ public class Actor : Spatial
 
     protected float desired_scale_x = 1.0f;
     public float GetDesiredScaleX() { return desired_scale_x; }
+    private Subscription<TileDataLoadedEvent> sub;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -43,7 +44,7 @@ public class Actor : Spatial
         selectable = GetNode<IsSelectable>("IsSelectable");
         time = GlobalTranslation.x + GlobalTranslation.z;
         animation_offset = GD.Randf() * 100.0f;
-        EventBus.Subscribe<TileDataLoadedEvent>((TileDataLoadedEvent e) =>
+        sub = EventBus.Subscribe<TileDataLoadedEvent>((TileDataLoadedEvent e) =>
         {
             TileData td = Grid.Get(GlobalTranslation);
             currentTile = td;
@@ -175,4 +176,10 @@ public class Actor : Spatial
         ConsoleManager console_manager = GetParent().GetNode<ConsoleManager>("../CanvasLayer/TempConsole/ConsoleManager");
         console_manager.ActorDict[this.Name.ToLower()] = this;
     }
+
+   public override void _ExitTree()
+   {
+       EventBus.Unsubscribe(sub);
+       base._ExitTree();
+   }
 }
