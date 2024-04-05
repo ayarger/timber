@@ -4,13 +4,10 @@ using System.Linq;
 using Godot;
 using System.Threading.Tasks;
 
-// Todo for 3.21-3.29
-// Explore tower placement - can I reuse the actor system and treat it like another player?
-
 /// <summary>
 /// Example:
 /// using static ToastManager;
-/// ShowToastMessage(callerNode, "Message.", 2.0f, ToastMessage.ToastType.Notice);
+/// SendToast(callerNode, "Message.", 2.0f, ToastMessage.ToastType.Notice);
 /// </summary>
 
 public static class ToastManager
@@ -29,7 +26,6 @@ public static class ToastManager
         isShowing = false;
     }
     
-    // TODO: fix this method
     public static void Initialize(Node rootNode)
     {
         _rootNode = rootNode;
@@ -43,35 +39,35 @@ public static class ToastManager
             if (keyEvent.Pressed && ((keyEvent.Scancode == (int)KeyList.M && Input.IsKeyPressed((int)KeyList.Control)) 
                                      || (keyEvent.Scancode == (int)KeyList.M && Input.IsKeyPressed((int)KeyList.Meta))))
             {
-                ShowToastMessage(_rootNode, "User called message display.", type: ToastMessage.ToastType.Notice);
+                SendToast(_rootNode, "User called message display.", type: ToastMessage.ToastType.Notice);
             }
             // START OF DEBUG
-            else if (keyEvent.Pressed && ((keyEvent.Scancode == (int)KeyList.E && Input.IsKeyPressed((int)KeyList.Control)) 
-                                          || (keyEvent.Scancode == (int)KeyList.E && Input.IsKeyPressed((int)KeyList.Meta))))
-            {
-                ShowToastMessage(_rootNode, "Error test.", type: ToastMessage.ToastType.Error);
-            }
-            else if (keyEvent.Pressed && ((keyEvent.Scancode == (int)KeyList.W && Input.IsKeyPressed((int)KeyList.Control)) 
-                                          || (keyEvent.Scancode == (int)KeyList.W && Input.IsKeyPressed((int)KeyList.Meta))))
-            {
-                ShowToastMessage(_rootNode, "Warning test.", type: ToastMessage.ToastType.Warning);
-            }            
-            else if (keyEvent.Pressed && ((keyEvent.Scancode == (int)KeyList.L && Input.IsKeyPressed((int)KeyList.Control)) 
-                                          || (keyEvent.Scancode == (int)KeyList.L && Input.IsKeyPressed((int)KeyList.Meta))))
-            {
-                ShowToastMessage(_rootNode, "Testing long toast message: This is an apple, I like apples, apples are good for our health. " +
-                                            "An apple a day, keeps the doctor away. " +
-                                            "Life is like an ocean, only those who are strong in will can reach the shore." + 
-                                            "Testing long toast message: This is an apple, I like apples, apples are good for our health. " +
-                                            "An apple a day, keeps the doctor away. " +
-                                            "Life is like an ocean, only those who are strong in will can reach the shore.");
-            }
+            // else if (keyEvent.Pressed && ((keyEvent.Scancode == (int)KeyList.E && Input.IsKeyPressed((int)KeyList.Control)) 
+            //                               || (keyEvent.Scancode == (int)KeyList.E && Input.IsKeyPressed((int)KeyList.Meta))))
+            // {
+            //     SendToast(_rootNode, "Error test.", type: ToastMessage.ToastType.Error);
+            // }
+            // else if (keyEvent.Pressed && ((keyEvent.Scancode == (int)KeyList.W && Input.IsKeyPressed((int)KeyList.Control)) 
+            //                               || (keyEvent.Scancode == (int)KeyList.W && Input.IsKeyPressed((int)KeyList.Meta))))
+            // {
+            //     SendToast(_rootNode, "Warning test.", type: ToastMessage.ToastType.Warning);
+            // }            
+            // else if (keyEvent.Pressed && ((keyEvent.Scancode == (int)KeyList.L && Input.IsKeyPressed((int)KeyList.Control)) 
+            //                               || (keyEvent.Scancode == (int)KeyList.L && Input.IsKeyPressed((int)KeyList.Meta))))
+            // {
+            //     SendToast(_rootNode, "Testing long toast message: This is an apple, I like apples, apples are good for our health. " +
+            //                                 "An apple a day, keeps the doctor away. " +
+            //                                 "Life is like an ocean, only those who are strong in will can reach the shore." + 
+            //                                 "Testing long toast message: This is an apple, I like apples, apples are good for our health. " +
+            //                                 "An apple a day, keeps the doctor away. " +
+            //                                 "Life is like an ocean, only those who are strong in will can reach the shore.");
+            // }
             // END OF DEBUG
         }
     }
 
     // Called by other scripts to send a toast message
-    public static void ShowToastMessage(Node caller, string content, float duration=3.0f, ToastMessage.ToastType type = ToastMessage.ToastType.Error)
+    public static void SendToast(Node caller, string content, ToastMessage.ToastType type = ToastMessage.ToastType.Error, float duration=3.0f)
     {
         ToastMessage.ToastObject _newMsg = new ToastMessage.ToastObject(caller, content, duration, type);
         _toastHistory.Add(_newMsg);

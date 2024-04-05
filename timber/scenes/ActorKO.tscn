@@ -1,54 +1,21 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://scenes/ActorKO.cs" type="Script" id=1]
+[ext_resource path="res://scenes/Actor.tres" type="Material" id=2]
 
-[sub_resource type="QuadMesh" id=6]
-
-[sub_resource type="Shader" id=9]
-code = "shader_type spatial;
-
-uniform sampler2D texture_albedo : hint_albedo;
-uniform float alpha_cutout_threshold : hint_range(0, 1) = 0.5;
-uniform float static_amount = 0.0; // Amount of static pattern (0 to 1)
-
-// Hash function for procedural noise
-float hash(vec2 p) {
-    p = fract(p * vec2(123.4, 789.6));
-    p += dot(p, p + 45.32);
-    return fract(p.x * p.y);
-}
-
-void fragment() {
-    vec4 tex_color = texture(texture_albedo, UV);
-	ALBEDO = vec3(tex_color.r, tex_color.g, tex_color.b);
-	
-    // Perform alpha cutout
-    ALPHA_SCISSOR = alpha_cutout_threshold;
-    if(tex_color.a < 0.5f)
-        discard;
-
-	/*
-    // Generate noise based on UV and time
-    float noise = hash(UV * 30.0 + vec2(0, TIME * 5.0));
-
-    // Apply static effect
-    vec3 static_color = mix(tex_color.rgb, tex_color.rgb + noise * static_amount, static_amount);
-
-    // Output the final color
-    ALBEDO = static_color;*/
-}
-"
-
-[sub_resource type="ShaderMaterial" id=10]
-shader = SubResource( 9 )
-shader_param/alpha_cutout_threshold = 0.5
-shader_param/static_amount = 0.8
+[sub_resource type="QuadMesh" id=1]
 
 [node name="ActorKO" type="Spatial" groups=["actors"]]
 script = ExtResource( 1 )
 
-[node name="mesh" type="MeshInstance" parent="."]
-transform = Transform( 2, 0, 0, 0, 1.76777, 0.707107, 0, -1.76777, 0.707107, 0, 0.878713, -0.918023 )
-mesh = SubResource( 6 )
-skeleton = NodePath("")
-material/0 = SubResource( 10 )
+[node name="rotationPoint" type="Spatial" parent="."]
+transform = Transform( 1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 0, 0 )
+
+[node name="view" type="Spatial" parent="rotationPoint"]
+transform = Transform( 1, -2.98023e-08, 0, 2.98023e-08, 1, 0, 0, 0, 1, 0, 0, 0 )
+
+[node name="mesh" type="MeshInstance" parent="rotationPoint/view"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0 )
+mesh = SubResource( 1 )
+skeleton = NodePath("../..")
+material/0 = ExtResource( 2 )

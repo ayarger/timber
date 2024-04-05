@@ -50,6 +50,22 @@ function Print(str)
 		param=str})
 end
 
+function Hurt(obj, damage)
+	coroutine.yield(
+		{obj=obj.object_name,
+		type="H",
+		damage=damage}
+		)
+end
+
+function Kill(obj, source)
+	coroutine.yield(
+		{obj=obj.object_name,
+		type="K",
+		killSource=source.object_name}
+		)
+end
+
 --Just float currently
 function GetValue(obj,key)
 	local coroutine_data = {coroutine.yield(

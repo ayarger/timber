@@ -14,7 +14,6 @@ public class PlayButton : Button
 		else
 		{
 			GD.Print("No internet connection detected.");
-			// TODO: show a message to warn the player about missing internet connection
 		}
 	}
 }

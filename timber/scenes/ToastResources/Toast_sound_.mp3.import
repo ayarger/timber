@@ -1,0 +1,15 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+path="res://.import/Toast_sound_.mp3-642d0e22e3cd8fe41c7e852b755a8308.mp3str"
+
+[deps]
+
+source_file="res://scenes/ToastResources/Toast_sound_.mp3"
+dest_files=[ "res://.import/Toast_sound_.mp3-642d0e22e3cd8fe41c7e852b755a8308.mp3str" ]
+
+[params]
+
+loop=false
+loop_offset=0
