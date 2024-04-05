@@ -58,6 +58,12 @@ public class Tower : Actor
 		StateManager _stateManager = GetNode<Node>("StateManager") as StateManager;
 		IdleState _idleState = _stateManager.states["Idle"] as IdleState;
 		_idleState.has_idle_animation = false;
+
+		StatManager statManager = GetNode<StatManager>("StatManager");
+		if (statManager != null)
+		{
+			statManager.Config(config.statConfig);
+		}
 	}
 
 	public override void _ExitTree()

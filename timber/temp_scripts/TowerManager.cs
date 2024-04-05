@@ -94,6 +94,10 @@ public class TowerManager : Node
 		config.name = "Test Tower";
 		config.map_code = 't';
 		config.idle_sprite_filename = "cuff_idle.png";
+
+		config.team = "player";
+		config.statConfig = new StatConfig();
+		config.statConfig.stats["health"] = 150;
 	
 		Tower new_tower = SpawnActorOfType(config, spawn_pos);
 		new_tower.Configure(config);

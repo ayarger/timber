@@ -1,10 +1,11 @@
-[gd_scene load_steps=12 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://Components/IsSelectable.tscn" type="PackedScene" id=1]
 [ext_resource path="res://temp_scripts/Tower.cs" type="Script" id=2]
 [ext_resource path="res://circle_256.png" type="Texture" id=3]
 [ext_resource path="res://scenes/HasStats.tscn" type="PackedScene" id=4]
 [ext_resource path="res://fogofwartesting/StateManager.cs" type="Script" id=5]
+[ext_resource path="res://fogofwartesting/MeleeCombatState.cs" type="Script" id=6]
 [ext_resource path="res://fogofwartesting/HasTeam.cs" type="Script" id=7]
 [ext_resource path="res://scenes/Actor.tres" type="Material" id=8]
 [ext_resource path="res://temp_scenes/StatManager.tscn" type="PackedScene" id=9]
@@ -43,6 +44,7 @@ material/0 = SubResource( 8 )
 script = ExtResource( 5 )
 
 [node name="CombatState" type="Node" parent="StateManager"]
+script = ExtResource( 6 )
 
 [node name="HasTeam" type="Node" parent="."]
 script = ExtResource( 7 )
