@@ -1,4 +1,4 @@
-[gd_scene load_steps=42 format=2]
+[gd_scene load_steps=41 format=2]
 
 [ext_resource path="res://scenes/GameManager.tscn" type="PackedScene" id=1]
 [ext_resource path="res://DebugSphere.cs" type="Script" id=2]
@@ -25,12 +25,11 @@
 [ext_resource path="res://addons/YarnSpinner-Godot/Runtime/Views/LineView.cs" type="Script" id=23]
 [ext_resource path="res://Dialogue/YarnSelect.cs" type="Script" id=24]
 [ext_resource path="res://Dialogue/YarnUpload.cs" type="Script" id=25]
-[ext_resource path="res://Dialogue/OptionView.tscn" type="PackedScene" id=26]
+[ext_resource path="res://temp_scripts/TowerManager.cs" type="Script" id=26]
 [ext_resource path="res://Dialogue/StartDialogueButton.cs" type="Script" id=27]
 [ext_resource path="res://UI/Oxanium-Regular.ttf" type="DynamicFontData" id=28]
 [ext_resource path="res://addons/YarnSpinner-Godot/Runtime/LineProviders/TextLineProvider.cs" type="Script" id=29]
-[ext_resource path="res://temp_scripts/TowerManager.cs" type="Script" id=20]
-[ext_resource path="res://selection_square_tower.tscn" type="PackedScene" id=21]
+[ext_resource path="res://selection_square_tower.tscn" type="PackedScene" id=30]
 
 [sub_resource type="GDScript" id=2]
 
@@ -162,9 +161,8 @@ script = ExtResource( 7 )
 selection_square_scene = ExtResource( 5 )
 
 [node name="active_cursor" parent="SelectionSystem" instance=ExtResource( 5 )]
-transform = Transform( 2, 0, 0, 0, -8.74228e-08, 2, 0, -2, -8.74228e-08, 0, 0, 0 )
 
-[node name="active_cursor_tower" parent="SelectionSystem/active_cursor" instance=ExtResource( 21 )]
+[node name="active_cursor_tower" parent="SelectionSystem/active_cursor" instance=ExtResource( 30 )]
 transform = Transform( 1, -1.50996e-07, -7.10543e-15, 1.0677e-07, 0.707107, -0.707107, 1.0677e-07, 0.707107, 0.707107, 0, -2.18557e-08, 0.5 )
 
 [node name="icon" type="MeshInstance" parent="."]
@@ -361,10 +359,6 @@ margin_right = 40.0
 margin_bottom = 40.0
 mouse_filter = 2
 script = ExtResource( 21 )
-optionViewPrefab = ExtResource( 26 )
-lastLineTextPath = NodePath("LastLineText")
-viewControlPath = NodePath("VBoxContainer")
-boxContainerPath = NodePath("VBoxContainer")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Dialogue/CanvasLayer/OptionsListView"]
 anchor_left = 0.33
@@ -383,7 +377,6 @@ margin_bottom = 40.0
 
 [node name="InMemoryVariableStorage" type="Node" parent="Dialogue/CanvasLayer"]
 script = ExtResource( 20 )
-debugTextViewPath = NodePath("../VariableDebugText")
 
 [node name="TextLineProvider" type="Node2D" parent="Dialogue/CanvasLayer"]
 script = ExtResource( 29 )
@@ -454,7 +447,7 @@ margin_bottom = 40.0
 script = ExtResource( 19 )
 
 [node name="TowerManager" type="Node" parent="."]
-script = ExtResource( 20 )
+script = ExtResource( 26 )
 
 [connection signal="pressed" from="Dialogue/CanvasLayer/Button" to="Dialogue/CanvasLayer/Button" method="_on_Button_pressed"]
 [connection signal="pressed" from="Dialogue/CanvasLayer/Upload yarn project" to="Dialogue/CanvasLayer/Upload yarn project" method="_on_Button_pressed"]
