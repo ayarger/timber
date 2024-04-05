@@ -4,9 +4,6 @@ using System.Linq;
 using Godot;
 using System.Threading.Tasks;
 
-// Todo for 3.21-3.29
-// Explore tower placement - can I reuse the actor system and treat it like another player?
-
 /// <summary>
 /// Example:
 /// using static ToastManager;

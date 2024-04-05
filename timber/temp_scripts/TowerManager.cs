@@ -1,22 +1,12 @@
-// Assume that tower is a special type of actor that does not move, and has a ranged attack method. 
-
-// Experiment: use temp art to generate and put a tower; make it follow mouse cursor
-// Goal: make sure that two towers are not spawned in the same grid - done
-//       make sure that towers cannot be placed out side the boundary - done
-//       cursor thing
-//		 merge attack branch and add melee attack for tower
-
-// Extra goal: juice
-
-// Can make an in-game message log
-
 using Godot;
 using System;
 using System.Collections.Generic;
 
+// Press T to toggle placement
+// Press X to toggle removal
+
 public class TowerManager : Node
 {
-
 	enum TowerManagerStatus
 	{
 		idle,
@@ -24,16 +14,12 @@ public class TowerManager : Node
 		isRemovingTower
 	}
 
-	// private bool isPlacingTower = false;
-	// private bool isRemovingTower = false;
 	private TowerManagerStatus status;
-	// private Texture customCursor;
 	public List<Tower> tower_spawn_positions = new List<Tower>();
 
 	public override void _Ready()
 	{
 		SetProcessInput(true);
-		// customCursor = (Texture)ResourceLoader.Load("res://temp_scripts/TempTowerSprite.png");
 	}
 
 	public override void _Input(InputEvent @event)
@@ -62,14 +48,12 @@ public class TowerManager : Node
 				else status = TowerManagerStatus.isRemovingTower;
 				if (status == TowerManagerStatus.isRemovingTower)
 				{
-					// Input.SetCustomMouseCursor(customCursor, Input.CursorShape.Arrow, new Vector2(0, 0));
-					ToastManager.SendToast(this, "Tower removal triggered.", ToastMessage.ToastType.Notice, 1f);
+					// ToastManager.SendToast(this, "Tower removal triggered.", ToastMessage.ToastType.Notice, 1f);
 					EventBus.Publish(new EventCancelTowerPlacement());
 				}
 				else
 				{
-					// Input.SetCustomMouseCursor(null, Input.CursorShape.Arrow);
-					ToastManager.SendToast(this, "Tower removal canceled.", ToastMessage.ToastType.Notice, 1f);
+					// ToastManager.SendToast(this, "Tower removal canceled.", ToastMessage.ToastType.Notice, 1f);
 				}
 			}
 		}
@@ -78,12 +62,12 @@ public class TowerManager : Node
 		{
 			if (status == TowerManagerStatus.isPlacingTower)
 			{
-				SpawnTower(SelectionSystem.GetTilePosition());
 				status = TowerManagerStatus.idle;
+				SpawnTower(SelectionSystem.GetTilePosition());
 			} else if (status == TowerManagerStatus.isRemovingTower)
 			{
-				RemoveTower(SelectionSystem.GetTilePosition());
 				status = TowerManagerStatus.idle;
+				RemoveTower(SelectionSystem.GetTilePosition());
 			}
 		}
 	}
@@ -95,6 +79,7 @@ public class TowerManager : Node
 		EventBus.Publish(new EventCancelTowerPlacement());
 		if (Grid.Get(cur).actor != null)
 		{
+			// please ignore this, will fix
 			ToastManager.SendToast(this, "Cannot put a tower on a non-empty grid.", ToastMessage.ToastType.Warning, 2f);
 			return;
 		}
@@ -104,7 +89,7 @@ public class TowerManager : Node
 			ToastManager.SendToast(this, "Cannot throw a tower into the void.", ToastMessage.ToastType.Warning, 2f);
 			return;
 		}
-		ToastManager.SendToast(this, "Tower coord: [" + cur.x + "," + cur.z + "]", ToastMessage.ToastType.Notice, 1f);
+		// ToastManager.SendToast(this, "Tower coord: [" + cur.x + "," + cur.z + "]", ToastMessage.ToastType.Notice, 1f);
 		ActorConfig config = new ActorConfig();
 		config.name = "Test Tower";
 		config.map_code = 't';
