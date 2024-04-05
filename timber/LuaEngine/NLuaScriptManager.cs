@@ -173,6 +173,17 @@ public class NLuaScriptManager : Node
             GD.Print(actor.ToString() + " just posted " + cmd["toastString"] + " to the toast!");
 
         }
+        else if (command == "H")
+        {
+            int damage = Convert.ToInt32(cmd["damage"]);
+            actor.Hurt(damage, false, null);
+        }
+        else if (command == "K")
+        {
+            string killSourceName = Convert.ToString(cmd["obj"]);
+            Actor source = luaActors.ContainsKey(killSourceName) ? luaActors[killSourceName] as Actor : null;
+            actor.Kill(source);
+        }
 
         return null;
     }

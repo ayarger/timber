@@ -84,7 +84,8 @@ public class MovementState : ActorState
     public override void Stop()
     {
         ArborCoroutine.StopCoroutinesOnNode(this);
-        ArborCoroutine.StartCoroutine(MoveToNearestTile(), this);
+        if(!actor.IsQueuedForDeletion())
+            ArborCoroutine.StartCoroutine(MoveToNearestTile(), this);
         //Place actor in tilemap
     }
 
@@ -186,8 +187,8 @@ public class MovementState : ActorState
             cur = queue.Dequeue();
             if (Grid.Get(cur).actor == null || Grid.Get(cur).actor == actor)
             {
-                dest = cur;
                 foundNewTile = true;
+                dest = cur;
                 break;
             }
 

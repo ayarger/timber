@@ -1,5 +1,7 @@
 using Godot;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 
 public class IdleState : ActorState
 {
@@ -45,5 +47,32 @@ public class IdleState : ActorState
     public void SetAnimationOffset(float val)
     {
         animation_offset = val;
+    }
+
+    int detectionRange = 3;
+    public override void Update(float delta)
+    {
+        if (actor.GetNode<HasTeam>("HasTeam").team == "enemy")
+        {
+            foreach (var actors in GetNode<LuaLoader>("/root/Main/LuaLoader").GetChildren())
+            {
+                var actorInRange = actors as Actor;
+                if (actorInRange != null && actorInRange.GetNode<HasTeam>("HasTeam").team != actor.GetNode<HasTeam>("HasTeam").team)
+                {
+                    Coord actorPos = Grid.ConvertToCoord(actorInRange.GlobalTranslation);
+                    Coord cur = Grid.ConvertToCoord(actor.GlobalTranslation);
+                    float dist = Math.Abs(actorPos.x - cur.x)
+                + Math.Abs(actorPos.z - cur.z);
+
+                    if (dist <= detectionRange)
+                    {
+                        CombatState cs = manager.states["CombatState"] as CombatState;
+                        cs.TargetActor = actorInRange;
+                        manager.EnableState("CombatState");
+                    }
+                }
+            }
+        }
+
     }
 }

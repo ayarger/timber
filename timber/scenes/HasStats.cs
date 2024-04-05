@@ -10,8 +10,7 @@ public class StatChangeEvent
 {
     public string stat_name;
     public StatChangeEvent(string _stat_name)
-    {
-        stat_name = _stat_name;
+    {        stat_name = _stat_name;
     }
 }
 

@@ -39,10 +39,13 @@ public class BarContainer : Control
     public override void _Process(float delta)
     {
 
-        displayOn = target_selection.am_i_selected || target_selection.AmIHovered();
-        Visible = displayOn;
+
         if (IsInstanceValid(target_data))
+        {
+            displayOn = target_selection.am_i_selected || target_selection.AmIHovered();
+            Visible = displayOn;
             PursueTarget();
+        }
         else
             QueueFree();
     }
