@@ -9,7 +9,7 @@
 [ext_resource path="res://fogofwartesting/HasTeam.cs" type="Script" id=7]
 [ext_resource path="res://scenes/Actor.tres" type="Material" id=8]
 [ext_resource path="res://temp_scenes/StatManager.tscn" type="PackedScene" id=9]
-[ext_resource path="res://fogofwartesting/MeleeCombatState.cs" type="Script" id=10]
+[ext_resource path="res://fogofwartesting/RangedCombatState.cs" type="Script" id=10]
 
 [sub_resource type="QuadMesh" id=6]
 

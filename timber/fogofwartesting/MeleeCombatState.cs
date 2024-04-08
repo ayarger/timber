@@ -118,7 +118,7 @@ public class MeleeCombatState : CombatState
             }
             else if (attackable)
             {
-                ArborCoroutine.StartCoroutine(attackAnimation(), this);
+                ArborCoroutine.StartCoroutine(attackRoutine(), this);
             }
         }
         else
@@ -134,7 +134,7 @@ public class MeleeCombatState : CombatState
         ArborCoroutine.StopCoroutinesOnNode(this);
     }
 
-    protected IEnumerator attackAnimation()
+    protected IEnumerator attackRoutine()
     {
         attacking = true;
         attackable = false;

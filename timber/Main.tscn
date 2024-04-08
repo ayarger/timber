@@ -1,4 +1,4 @@
-[gd_scene load_steps=43 format=2]
+[gd_scene load_steps=44 format=2]
 
 [ext_resource path="res://scenes/GameManager.tscn" type="PackedScene" id=1]
 [ext_resource path="res://DebugSphere.cs" type="Script" id=2]
@@ -32,6 +32,7 @@
 [ext_resource path="res://fogofwartesting/TestAttack.cs" type="Script" id=30]
 [ext_resource path="res://temp_scripts/DamageTextManager.cs" type="Script" id=31]
 [ext_resource path="res://selection_square_tower.tscn" type="PackedScene" id=32]
+[ext_resource path="res://temp_scenes/ProjectileManager.cs" type="Script" id=33]
 
 [sub_resource type="GDScript" id=2]
 
@@ -458,6 +459,9 @@ script = ExtResource( 26 )
 
 [node name="TestAttack" type="Node" parent="."]
 script = ExtResource( 30 )
+
+[node name="ProjectileManager" type="Node" parent="."]
+script = ExtResource( 33 )
 
 [connection signal="pressed" from="Dialogue/CanvasLayer/Button" to="Dialogue/CanvasLayer/Button" method="_on_Button_pressed"]
 [connection signal="pressed" from="Dialogue/CanvasLayer/Upload yarn project" to="Dialogue/CanvasLayer/Upload yarn project" method="_on_Button_pressed"]

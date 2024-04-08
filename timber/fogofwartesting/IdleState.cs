@@ -52,7 +52,8 @@ public class IdleState : ActorState
     int detectionRange = 3;
     public override void Update(float delta)
     {
-        if (actor.GetNode<HasTeam>("HasTeam").team == "enemy")
+        HasTeam team = actor.GetNode<HasTeam>("HasTeam");
+        if (team != null && team.team == "enemy")//only enemy actor has aggro right now
         {
             foreach (var actors in GetNode<LuaLoader>("/root/Main/LuaLoader").GetChildren())
             {

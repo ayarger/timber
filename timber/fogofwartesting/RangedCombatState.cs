@@ -80,7 +80,7 @@ public class RangedCombatState : CombatState
             }
             else if (attackable)
             {
-                ArborCoroutine.StartCoroutine(attackAnimation(), this);
+                ArborCoroutine.StartCoroutine(attackRoutine(), this);
             }
         }
         else
@@ -97,17 +97,14 @@ public class RangedCombatState : CombatState
         ArborCoroutine.StopCoroutinesOnNode(this);
     }
 
-    protected IEnumerator attackAnimation()
+    protected IEnumerator attackRoutine()
     {
         attacking = true;
         attackable = false;
         yield return ArborCoroutine.WaitForSeconds(attackWindup);
 
         attacking = false;
-        Projectile projectile = (Projectile)projectile_scene.Instance();
-        projectile.Name = "Prjectile";
-        projectile.GlobalTranslation = actor.GlobalTranslation;
-        GetNode(".").AddChild(projectile);
+        ProjectileManager.instance.SpawnProjectile(actor.GlobalTranslation, (TargetActor.GlobalTranslation - actor.GlobalTranslation).Normalized(), actor);
 
         yield return ArborCoroutine.WaitForSeconds(attackRecovery);
         rotateTime = 0.0f;

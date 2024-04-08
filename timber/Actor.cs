@@ -241,7 +241,7 @@ public class Actor : Spatial
         new_ko.GlobalTranslation = GlobalTranslation;
         new_ko.GlobalRotation = GlobalRotation;
         new_ko.Scale = Scale;
-        new_ko.GetNode<Spatial>("rotationPoint/view/mesh").Scale = view.Scale;
+        new_ko.GetNode<Spatial>("view/mesh").Scale = view.Scale;
         if (config.pre_ko_sprite_filename != "" && config.ko_sprite_filename != "")
         {
             new_ko.Configure(ArborResource.Get<Texture>("images/" + config.pre_ko_sprite_filename), ArborResource.Get<Texture>("images/" + config.ko_sprite_filename), endGame, source);
