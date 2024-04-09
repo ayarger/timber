@@ -43,7 +43,7 @@ public class RangedCombatState : CombatState
                 attacking = false;
                 attackable = true;
                 //check if there are closer target
-                foreach (var actors in GetNode<LuaLoader>("/root/Main/LuaLoader").GetChildren())
+                foreach (var actors in GetAttackableActorList())
                 {
 
                     var actorInRange = actors as Actor;

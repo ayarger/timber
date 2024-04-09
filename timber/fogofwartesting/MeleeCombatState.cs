@@ -1,4 +1,4 @@
-﻿using Godot;
+using Godot;
 using Priority_Queue;
 using System;
 using System.Collections;
@@ -67,14 +67,14 @@ public class MeleeCombatState : CombatState
             float dist = Math.Abs(dest.x - actorCoord.x)
                 + Math.Abs(dest.z - actorCoord.z);
 
-            if (dist > attackRange)
-            {
-                ArborCoroutine.StopCoroutinesOnNode(this);
-                attacking = false;
-                attackable = true;
-                //check if there are closer target
-                foreach (var actors in GetNode<LuaLoader>("/root/Main/LuaLoader").GetChildren())
-                {
+			if (dist > attackRange)
+			{
+				ArborCoroutine.StopCoroutinesOnNode(this);
+				attacking = false;
+				attackable = true;
+				//check if there are closer target
+				foreach (var actors in GetAttackableActorList())
+				{
 
                     var actorInRange = actors as Actor;
                     if (actorInRange != null && actorInRange.GetNode<HasTeam>("HasTeam").team != actor.GetNode<HasTeam>("HasTeam").team)

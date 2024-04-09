@@ -54,7 +54,7 @@ public class IdleState : ActorState
     {
         if (actor.GetNode<HasTeam>("HasTeam").team == "enemy")
         {
-            foreach (var actors in GetNode<LuaLoader>("/root/Main/LuaLoader").GetChildren())
+            foreach (var actors in GetAttackableActorList())
             {
                 var actorInRange = actors as Actor;
                 if (actorInRange != null && actorInRange.GetNode<HasTeam>("HasTeam").team != actor.GetNode<HasTeam>("HasTeam").team)

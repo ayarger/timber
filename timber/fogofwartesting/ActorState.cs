@@ -57,6 +57,11 @@ public abstract class ActorState : Node
     //  {
     //      
     //  }
-
+    public Godot.Collections.Array GetAttackableActorList()
+    {
+        var list_luaLoader = GetNode<LuaLoader>("/root/Main/LuaLoader").GetChildren();
+        var list_towers = GetNode<TowerManager>("/root/Main/TowerManager").GetChildren();
+        return list_luaLoader + list_towers;
+    }
 
 }
