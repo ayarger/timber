@@ -18,7 +18,7 @@ public class ProjectileManager : Node
 	}
 
 
-	public void SpawnProjectile(Vector3 position, Vector3 direction, Actor owner)
+	public void SpawnProjectile(Vector3 position, Vector3 offset, Vector3 direction, Actor owner)
 	{
 		// ToastManager.SendToast(this, "Tower coord: [" + cur.x + "," + cur.z + "]", ToastMessage.ToastType.Notice, 1f);
 		ActorConfig config = new ActorConfig();
@@ -34,6 +34,8 @@ public class ProjectileManager : Node
 		else config.team = "player";
 
 		Projectile new_projectile = SpawnProjectileOfType(config, position);
+		new_projectile.view.Translation += offset;
+		new_projectile.setDirection(direction);
 		projectiles.Add(new_projectile);
 
 	}

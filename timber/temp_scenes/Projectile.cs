@@ -2,17 +2,19 @@ using Godot;
 
 public class Projectile : Actor
 {
+	Vector3 direction = Vector3.Zero;
     public override void _Ready()
     {
         base._Ready();
+		state_manager.defaultState = "ProjectileState";
     }
 
-	float rotationSpeed = 5;
+	float rotationSpeed = 5, speed = 5f;
     public override void _Process(float delta)
     {
         base._Process(delta);
-		view.Rotation += Vector3.Back * rotationSpeed * delta;
 	}
+	
 
 	public override void Configure(ActorConfig info)
 	{
@@ -28,7 +30,7 @@ public class Projectile : Actor
 
 		ShaderMaterial char_mat = (ShaderMaterial)character_view.GetSurfaceMaterial(0).Duplicate();
 
-		view.Scale = new Vector3(tex.GetWidth(), tex.GetHeight(), 1.0f) * 0.01f;
+		view.Scale = new Vector3(tex.GetWidth(), tex.GetHeight(), 1.0f) * 0.005f;
 		view.Scale = view.Scale * config.aesthetic_scale_factor;
 		initial_load = true;
 		initial_view_scale = view.Scale;
@@ -50,6 +52,12 @@ public class Projectile : Actor
 		{
 			statManager.Config(config.statConfig);
 		}
+	}
+
+	public void setDirection(Vector3 dir)
+    {
+		ProjectileState projectileState = state_manager.states["ProjectileState"] as ProjectileState;
+		projectileState.setDirection(dir);
 	}
 
 }

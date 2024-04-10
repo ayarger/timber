@@ -32,12 +32,7 @@ public class RangedCombatState : CombatState
             Coord dest = Grid.ConvertToCoord(TargetActor.GlobalTranslation);
             MovementState b = (manager.states["MovementState"] as MovementState);
 
-            Coord actorCoord = Grid.ConvertToCoord(actor.GlobalTranslation);
-
-            float dist = Math.Abs(dest.x - actorCoord.x)
-                + Math.Abs(dest.z - actorCoord.z);
-
-            if (dist > attackRange || (dest.x != actorCoord.x && dest.z != actorCoord.z))
+            if (!WithinRange(dest))
             {
                 ArborCoroutine.StopCoroutinesOnNode(this);
                 attacking = false;
@@ -104,7 +99,7 @@ public class RangedCombatState : CombatState
         yield return ArborCoroutine.WaitForSeconds(attackWindup);
 
         attacking = false;
-        ProjectileManager.instance.SpawnProjectile(actor.GlobalTranslation, (TargetActor.GlobalTranslation - actor.GlobalTranslation).Normalized(), actor);
+        ProjectileManager.instance.SpawnProjectile(actor.GlobalTranslation, new Vector3(0, actor.view.Scale.y/2, 0), (TargetActor.GlobalTranslation - actor.GlobalTranslation).Normalized(), actor);
 
         yield return ArborCoroutine.WaitForSeconds(attackRecovery);
         rotateTime = 0.0f;
@@ -188,6 +183,6 @@ public class RangedCombatState : CombatState
         float dist = Math.Abs(pos.x - actorCoord.x)
             + Math.Abs(pos.z - actorCoord.z);
 
-        return dist <= attackRange && (pos.x == actorCoord.x && pos.z == actorCoord.z);
+        return dist <= attackRange;
     }
 }

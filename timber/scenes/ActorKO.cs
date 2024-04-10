@@ -18,8 +18,7 @@ public class ActorKO : Spatial
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
-        character_view = (MeshInstance)GetNode("rotationPoint/view/mesh");
-        GD.Print("starting soon");
+        character_view = (MeshInstance)GetNode("view/mesh");
         ArborCoroutine.StartCoroutine(DoAnimation());
     }
 

@@ -36,7 +36,7 @@ public class Actor : Spatial
     public bool initial_load = false;
     public Vector3 initial_view_scale { get; protected set; } = Vector3.One;
     public Vector3 initial_rotation { get; protected set; } = Vector3.Zero;
-    public TileData currentTile;
+    public TileData currentTile = null;
 
     protected float desired_scale_x = 1.0f;
     public float GetDesiredScaleX() { return desired_scale_x; }
@@ -233,7 +233,7 @@ public class Actor : Spatial
 
     public void Kill(Actor source = null)//TODO needs clean up in map --- actors cannot move to tile where actor died
     {
-        currentTile.actor = null;
+        if(currentTile != null) currentTile.actor = null;
         bool endGame = config.name == "Spot";
         PackedScene scene = (PackedScene)ResourceLoader.Load("res://scenes/ActorKO.tscn");
         ActorKO new_ko = (ActorKO)scene.Instance();

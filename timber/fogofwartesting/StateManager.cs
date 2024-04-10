@@ -16,7 +16,7 @@ public class StateManager : Node
     public Dictionary<string,ActorState> states;
     Actor actor;
     HashSet<ActorState> activeStates;
-    string defaultState = "Idle";
+    public string defaultState = "Idle";
     bool enabled = true;
 
     public override void _Ready()

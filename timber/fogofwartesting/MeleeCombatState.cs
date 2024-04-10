@@ -62,12 +62,7 @@ public class MeleeCombatState : CombatState
                 b = manager.states["MovementState"] as MovementState;
             }
 
-            Coord actorCoord = Grid.ConvertToCoord(actor.GlobalTranslation);
-
-            float dist = Math.Abs(dest.x - actorCoord.x)
-                + Math.Abs(dest.z - actorCoord.z);
-
-            if (dist > attackRange)
+            if (!WithinRange(dest))
             {
                 ArborCoroutine.StopCoroutinesOnNode(this);
                 attacking = false;
