@@ -4,13 +4,17 @@ using System.Collections.Generic;
 using Amazon.CloudFront.Model;
 
 
-// TODO: fix tower cannot be placed on a tile where a tower was previously defeated - fixed
+// TODO:
+//		fix tower cannot be placed on a tile where a tower was previously defeated - fixed
 //		fix tower placement animation - done
 //		add buttons - done
-//		fix button press issue
-
-// Press T to toggle placement
-// Press X to toggle removal
+// TODO: 4.11 - 4.18
+//		fix button press issue ?
+//		ranged projectile
+//		ko animation sprite
+//		currency
+//		make different kind of tower - by disable/emable components. 
+//		fix the issue that the tower is off the grid
 
 public class TowerManager : Node
 {
@@ -47,8 +51,8 @@ public class TowerManager : Node
 	
 	void SpawnTower(Vector3 cursorPos)
 	{
-		Vector3 spawn_pos = new Vector3(cursorPos.x , 0, cursorPos.z );
-		Coord cur = Grid.ConvertToCoord(spawn_pos);
+		Coord cur = Grid.ConvertToCoord(new Vector3(cursorPos.x , 0, cursorPos.z));
+		Vector3 spawnPos = Grid.ConvertToWorldPos(cur);
 		EventBus.Publish(new EventCancelTowerPlacement());
 		if (Grid.Get(cur).actor != null)
 		{
@@ -72,7 +76,7 @@ public class TowerManager : Node
 		config.statConfig = new StatConfig();
 		config.statConfig.stats["health"] = 50;
 	
-		Tower new_tower = SpawnActorOfType(config, spawn_pos);
+		Tower new_tower = SpawnActorOfType(config, spawnPos);
 		new_tower.Configure(config);
 		new_tower.curr_coord = cur;
 		SpawnAnimate(new_tower);
