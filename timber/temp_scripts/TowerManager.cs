@@ -1,6 +1,13 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using Amazon.CloudFront.Model;
+
+
+// TODO: fix tower cannot be placed on a tile where a tower was previously defeated - fixed
+//		fix tower placement animation - done
+//		add buttons - done
+//		fix button press issue
 
 // Press T to toggle placement
 // Press X to toggle removal
@@ -24,40 +31,6 @@ public class TowerManager : Node
 
 	public override void _Input(InputEvent @event)
 	{
-		if (@event is InputEventKey eventKey)
-		{
-			if (eventKey.Pressed && eventKey.Scancode == (uint)KeyList.T)
-			{
-				if (status == TowerManagerStatus.isPlacingTower) status = TowerManagerStatus.idle;
-				else status = TowerManagerStatus.isPlacingTower;
-				
-				if (status == TowerManagerStatus.isPlacingTower)
-				{
-					// ToastManager.SendToast(this, "Tower placement triggered.", ToastMessage.ToastType.Notice, 1f);
-					EventBus.Publish(new EventToggleTowerPlacement());
-				}
-				else
-				{
-					// ToastManager.SendToast(this, "Tower placement canceled.", ToastMessage.ToastType.Notice, 1f);
-					EventBus.Publish(new EventCancelTowerPlacement());
-				}
-			} 
-			else if (eventKey.Pressed && eventKey.Scancode == (uint)KeyList.X)
-			{
-				if (status == TowerManagerStatus.isRemovingTower) status = TowerManagerStatus.idle;
-				else status = TowerManagerStatus.isRemovingTower;
-				if (status == TowerManagerStatus.isRemovingTower)
-				{
-					// ToastManager.SendToast(this, "Tower removal triggered.", ToastMessage.ToastType.Notice, 1f);
-					EventBus.Publish(new EventCancelTowerPlacement());
-				}
-				else
-				{
-					// ToastManager.SendToast(this, "Tower removal canceled.", ToastMessage.ToastType.Notice, 1f);
-				}
-			}
-		}
-		
 		if (@event is InputEventMouseButton eventMouseButton && eventMouseButton.Pressed && eventMouseButton.ButtonIndex == (int)ButtonList.Left)
 		{
 			if (status == TowerManagerStatus.isPlacingTower)
@@ -97,10 +70,12 @@ public class TowerManager : Node
 
 		config.team = "player";
 		config.statConfig = new StatConfig();
-		config.statConfig.stats["health"] = 150;
+		config.statConfig.stats["health"] = 50;
 	
 		Tower new_tower = SpawnActorOfType(config, spawn_pos);
 		new_tower.Configure(config);
+		new_tower.curr_coord = cur;
+		SpawnAnimate(new_tower);
 		EventBus.Publish(new TileDataLoadedEvent());
 		
 		// Copied from MoveToNearestTile()
@@ -152,7 +127,7 @@ public class TowerManager : Node
 
 	public class EventToggleTowerPlacement
 	{
-		private Tower.TowerType towerType;
+		public Tower.TowerType towerType;
 		
 		public EventToggleTowerPlacement(Tower.TowerType _towerType = Tower.TowerType.Normal)
 		{
@@ -164,6 +139,81 @@ public class TowerManager : Node
 	{
 		public EventCancelTowerPlacement()
 		{
+		}
+	}
+	
+	public void SpawnAnimate(Tower tower)
+	{
+		var tween = tower.GetNode<Tween>("Tween");
+		var mesh = tower.GetNode<MeshInstance>("view/mesh"); // Adjust the path according to your scene structure
+
+		Vector3 startScale = new Vector3(1, 0, 1); // Starting scale, Y is 0
+		Vector3 endScale = new Vector3(1, 1, 1); // End scale, Y is 1
+
+		// Assuming the mesh's bottom is originally at position.y = 0
+		// Calculate the required adjustment in position to make it appear as if scaling from the bottom
+		float deltaY = (endScale.y - startScale.y) / 2.0f;
+		Vector3 startPosition = mesh.Translation + new Vector3(0, -deltaY, 0);
+		Vector3 endPosition = mesh.Translation; // Adjust Y position as the mesh scales up
+
+		mesh.Scale = startScale; // Apply the initial scale
+		mesh.Translation = startPosition; // Ensure the starting position is set
+
+		// Animate scale
+		tween.InterpolateProperty(
+			mesh,
+			"scale",
+			startScale,
+			endScale,
+			1.0f, // Duration of the animation in seconds
+			Tween.TransitionType.Sine,
+			Tween.EaseType.Out
+		);
+
+		// Animate position to make it scale from the bottom
+		tween.InterpolateProperty(
+			mesh,
+			"translation",
+			startPosition,
+			endPosition,
+			1.0f, // Duration of the animation in seconds
+			Tween.TransitionType.Sine,
+			Tween.EaseType.Out
+		);
+
+		tween.Start(); // Start the animation
+	}
+
+	
+	public void OnTowerPlacementButtonPressed()
+	{
+		if (status == TowerManagerStatus.isPlacingTower) status = TowerManagerStatus.idle;
+		else status = TowerManagerStatus.isPlacingTower;
+				
+		if (status == TowerManagerStatus.isPlacingTower)
+		{
+			// ToastManager.SendToast(this, "Tower placement triggered.", ToastMessage.ToastType.Notice, 1f);
+			EventBus.Publish(new EventToggleTowerPlacement());
+		}
+		else
+		{
+			// ToastManager.SendToast(this, "Tower placement canceled.", ToastMessage.ToastType.Notice, 1f);
+			EventBus.Publish(new EventCancelTowerPlacement());
+		}
+	}
+	
+	public void OnTowerRemovalButtonPressed()
+	{
+		if (status == TowerManagerStatus.isRemovingTower) status = TowerManagerStatus.idle;
+		else status = TowerManagerStatus.isRemovingTower;
+		if (status == TowerManagerStatus.isRemovingTower)
+		{
+			ToastManager.SendToast(this, "Tower removal triggered.", ToastMessage.ToastType.Notice, 1f);
+			EventBus.Publish(new EventCancelTowerPlacement());
+		}
+		else
+		{
+			ToastManager.SendToast(this, "Tower removal canceled.", ToastMessage.ToastType.Notice, 1f);
 		}
 	}
 

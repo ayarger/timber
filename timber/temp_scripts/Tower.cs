@@ -6,6 +6,8 @@ public class Tower : Actor
 	{
 		Normal,
 	}
+
+	public Coord curr_coord;
 	
 	public override void _Ready()
 	{
@@ -69,6 +71,8 @@ public class Tower : Actor
 	public override void _ExitTree()
 	{
 		EventBus.Publish(new RemoveLightSourceEvent(GlobalTranslation));
+		Grid.Get(curr_coord).actor = null;
+		Grid.Get(curr_coord).value = '.';
 		foreach (Node child in GetChildren())
 		{
 			if (child is IsSelectable childScript)
