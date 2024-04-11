@@ -14,12 +14,15 @@ public class ProjectileState : ActorState
     }
 
     //Inclusive States should always be empty for idle state.
-
+    RigidBody collision;
     public override void Start()
     {
+        collision = GetNode<RigidBody>("view/RigidBody");
+
+        collision.Connect("body_entered", this, "on_body_entered");
     }
 
-    float rotationSpeed = 5, speed = 5f;
+    float rotationSpeed = 5, speed = 7f;
     Vector3 direction = Vector3.Zero;
     public override void Animate(float delta)
     {
@@ -30,11 +33,7 @@ public class ProjectileState : ActorState
     public override void Update(float delta)
     {
         actor.GlobalTranslation += direction * speed * delta;
-        TileData cur = Grid.Get(actor.GlobalTranslation);
-        if(cur.actor != null && cur.actor != actor)
-        {
-            GD.Print("found!");
-        }
+        
     }
 
     public void setDirection(Vector3 dir)
@@ -42,5 +41,8 @@ public class ProjectileState : ActorState
         direction = dir;
     }
 
-    
+    private void on_body_entered(Node body)
+    {
+        GD.Print("hello");
+    }
 }
