@@ -53,6 +53,7 @@ public class Actor : Spatial
         view = (Spatial)GetNode("view");
         state_manager = (StateManager)GetNode("StateManager");
         character_view = (MeshInstance)GetNode("view/mesh");
+        shadow_view = (MeshInstance)GetNode("shadow");
         selectable = GetNode<IsSelectable>("IsSelectable");
         time = GlobalTranslation.x + GlobalTranslation.z;
         animation_offset = GD.Randf() * 100.0f;
@@ -85,7 +86,7 @@ public class Actor : Spatial
             (Texture tex) =>
             {
                 ShaderMaterial char_mat = (ShaderMaterial)character_view.GetSurfaceMaterial(0).Duplicate();
-                shadow_view = (MeshInstance)GetNode("shadow");
+                ShaderMaterial shadow_mat = (ShaderMaterial)shadow_view.GetSurfaceMaterial(0).Duplicate();
 
                 /* Scale */
                 view.Scale = new Vector3(tex.GetWidth(), tex.GetHeight(), 1.0f) * 0.01f;
@@ -101,8 +102,13 @@ public class Actor : Spatial
                 char_mat.SetShaderParam("fade_amount ", 0.8f);
                 char_mat.SetShaderParam("alpha_cutout_threshold  ", 0.2f);
 
+                shadow_mat.SetShaderParam("fade_amount ", 0.8f);
+                shadow_mat.SetShaderParam("alpha_cutout_threshold  ", 0.2f);
+
                 //character_material.AlbedoTexture = idle_sprite;
                 character_view.SetSurfaceMaterial(0, char_mat);
+
+                shadow_view.SetSurfaceMaterial(0, shadow_mat);
             },
             this
         );
@@ -182,6 +188,15 @@ public class Actor : Spatial
         char_mat.SetShaderParam("screenHeight", FogOfWar.instance.screenHeight);
         char_mat.SetShaderParam("screenPosX", FogOfWar.instance.screenPosX);
         char_mat.SetShaderParam("screenPosZ", FogOfWar.instance.screenPosZ);
+
+        ShaderMaterial shadow_mat = (ShaderMaterial)shadow_view.GetSurfaceMaterial(0);
+
+        shadow_mat.SetShaderParam("fowTexture", FogOfWar.actorInstance.GetTexture());
+        shadow_mat.SetShaderParam("world_position", GlobalTranslation);
+        shadow_mat.SetShaderParam("screenWidth", FogOfWar.instance.screenWidth);
+        shadow_mat.SetShaderParam("screenHeight", FogOfWar.instance.screenHeight);
+        shadow_mat.SetShaderParam("screenPosX", FogOfWar.instance.screenPosX);
+        shadow_mat.SetShaderParam("screenPosZ", FogOfWar.instance.screenPosZ);
     }
 
     public void Hurt(int damage, bool isCritical, Actor source)
