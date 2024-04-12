@@ -23,3 +23,9 @@ text = "Edit Options"
 expand_icon = true
 
 [node name="Tween" type="Tween" parent="."]
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+margin_left = 160.897
+margin_top = -151.282
+margin_right = 263.897
+margin_bottom = -59.2821

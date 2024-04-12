@@ -1,6 +1,16 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
+
+public class StatSelectionEvent
+{
+    public string stat_name;
+    public StatSelectionEvent (string _stat_name)
+    {
+        stat_name = _stat_name;
+    }
+}
 
 public class EditUI : Control
 {
@@ -11,12 +21,39 @@ public class EditUI : Control
     Tween ui_tween;
     Dictionary<string, Stat> statsDict = new Dictionary<string, Stat>();
     OptionButton optionButton;
+    VBoxContainer vbox;
 
     public override void _Ready()
     {
         editModeEvent = EventBus.Subscribe<EditModeEvent>(HideAndShow);
         ui_tween = GetNode<Tween>("Tween");
         optionButton = GetNode<OptionButton>("OptionButton");
+        vbox = GetNode<VBoxContainer>("VBoxContainer");
+        //default signal when selecting an optoin
+        optionButton.Connect("item_selected", this, nameof(OnOptionSelected));
+    }
+
+    private void OnOptionSelected(int index)
+    {
+        EventBus.Publish<StatSelectionEvent>(new StatSelectionEvent(optionButton.GetItemText(index)));
+    }
+
+    private void OnStatSelected(StatSelectionEvent e) {
+        Stat curr_stat = target_data.Stats[e.stat_name];
+        Type typeToInspect = curr_stat.GetType();
+        if (typeToInspect != null)
+        {
+            MethodInfo[] methods = typeToInspect.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+            foreach (MethodInfo method in methods)
+            {
+                PackedScene scene = (PackedScene)ResourceLoader.Load("res://UI/EditUI/methodButton.tscn");
+                Button methodButton = (Button)scene.Instance();
+                GD.Print($"{methodButton.Text}\n");
+                methodButton.Text += $"{method.Name} ({method.ReturnType.Name})\n";
+                vbox.AddChild(methodButton);
+            }
+        }
+
     }
 
     public void Configure(MeshInstance _target_mesh, HasStats _target_data)

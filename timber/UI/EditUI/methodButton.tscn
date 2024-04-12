@@ -1,0 +1,6 @@
+[gd_scene format=2]
+
+[node name="methodButton" type="Button"]
+margin_right = 103.0
+margin_bottom = 20.0
+text = "method Info 1"
