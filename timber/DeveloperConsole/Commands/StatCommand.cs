@@ -5,11 +5,11 @@ using System.Collections.Generic;
 
 public class StatCommand : ConsoleCommand
 {
-    public StatCommand()
-    {
-        commandWord = "stat";
-        usage = "stat [operation] [actorName] [statname] ([amount])\n" + "operatons: increase decrease change max create get";
-    }
+	public StatCommand()
+	{
+		commandWord = "stat";
+		usage = "stat [operation] [actorName] [statname] ([amount])\n" + "Operations: increase decrease change max create get";
+	}
 
     public override List<string> ValidArgs()
     {

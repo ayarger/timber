@@ -4,17 +4,13 @@ using System.Collections.Generic;
 using Amazon.CloudFront.Model;
 
 
-// TODO:
-//		fix tower cannot be placed on a tile where a tower was previously defeated - fixed
-//		fix tower placement animation - done
-//		add buttons - done
 // TODO: 4.11 - 4.18
 //		fix button press issue ?
 //		ranged projectile
 //		ko animation sprite
 //		currency
-//		make different kind of tower - by disable/emable components. 
-//		fix the issue that the tower is off the grid
+//		make different kind of tower - by disable/enable components. 
+//		fix the issue that the tower is off the grid - fixed
 
 public class TowerManager : Node
 {
@@ -75,6 +71,8 @@ public class TowerManager : Node
 		config.team = "player";
 		config.statConfig = new StatConfig();
 		config.statConfig.stats["health"] = 50;
+		// for Tower only
+		config.statConfig.stats["buildCost"] = 10;
 	
 		Tower new_tower = SpawnActorOfType(config, spawnPos);
 		new_tower.Configure(config);
@@ -191,18 +189,21 @@ public class TowerManager : Node
 	
 	public void OnTowerPlacementButtonPressed()
 	{
-		if (status == TowerManagerStatus.isPlacingTower) status = TowerManagerStatus.idle;
-		else status = TowerManagerStatus.isPlacingTower;
-				
 		if (status == TowerManagerStatus.isPlacingTower)
 		{
-			// ToastManager.SendToast(this, "Tower placement triggered.", ToastMessage.ToastType.Notice, 1f);
+			status = TowerManagerStatus.idle;
+			EventBus.Publish(new EventCancelTowerPlacement());
+			return;
+		}
+		
+		status = TowerManagerStatus.isPlacingTower;
+		if (TempCurrencyManager.CheckAmountOfCurrency(this, 10))
+		{
 			EventBus.Publish(new EventToggleTowerPlacement());
 		}
 		else
 		{
-			// ToastManager.SendToast(this, "Tower placement canceled.", ToastMessage.ToastType.Notice, 1f);
-			EventBus.Publish(new EventCancelTowerPlacement());
+			status = TowerManagerStatus.idle;
 		}
 	}
 	
