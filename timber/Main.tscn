@@ -373,8 +373,10 @@ anchor_left = 0.33
 anchor_top = 0.262
 anchor_right = 0.623
 anchor_bottom = 0.76
-margin_right = 40.0
-margin_bottom = 40.0
+margin_left = -434.357
+margin_top = -1868.22
+margin_right = -394.357
+margin_bottom = -1828.22
 
 [node name="LastLineText" type="RichTextLabel" parent="Dialogue/CanvasLayer/OptionsListView"]
 margin_right = 40.0

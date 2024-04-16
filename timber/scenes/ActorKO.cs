@@ -4,7 +4,7 @@ using System;
 using System.Collections;
 using static System.Net.Mime.MediaTypeNames;
 
-public class ActorKO : Spatial
+public class ActorKO : Spatial//TODO check if dead or not: bug - spawn multiple KO when killed at the same time
 {
     MeshInstance character_view;
 

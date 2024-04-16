@@ -2,7 +2,10 @@ using Godot;
 
 public class Projectile : Actor
 {
-	Vector3 direction = Vector3.Zero;
+	public Vector3 targetPosition;
+	public int damage;
+	public Actor owner;
+
     public override void _Ready()
     {
         base._Ready();
@@ -10,7 +13,7 @@ public class Projectile : Actor
     }
 
 	float rotationSpeed = 5, speed = 5f;
-    public override void _Process(float delta)
+    public override void _Process(float delta)//different projectile movements: projectile motion, 
     {
         base._Process(delta);
 	}
@@ -47,17 +50,17 @@ public class Projectile : Actor
 		IdleState _idleState = _stateManager.states["Idle"] as IdleState;
 		_idleState.has_idle_animation = false;
 
-		StatManager statManager = GetNode<StatManager>("StatManager");
-		if (statManager != null)
-		{
-			statManager.Config(config.statConfig);
-		}
 	}
 
-	public void setDirection(Vector3 dir)
+	public void setTarget(Vector3 target)
     {
 		ProjectileState projectileState = state_manager.states["ProjectileState"] as ProjectileState;
-		projectileState.setDirection(dir);
+		projectileState.setTarget(target);
 	}
+
+	public void setDamage(int d)
+    {
+		damage = d;
+    }
 
 }

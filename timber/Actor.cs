@@ -53,7 +53,7 @@ public class Actor : Spatial
         view = (Spatial)GetNode("view");
         state_manager = (StateManager)GetNode("StateManager");
         character_view = (MeshInstance)GetNode("view/mesh");
-        selectable = GetNode<IsSelectable>("IsSelectable");
+        selectable = (IsSelectable)GetNode("IsSelectable");
         time = GlobalTranslation.x + GlobalTranslation.z;
         animation_offset = GD.Randf() * 100.0f;
         sub = EventBus.Subscribe<TileDataLoadedEvent>((TileDataLoadedEvent e) =>
@@ -231,8 +231,9 @@ public class Actor : Spatial
         ArborCoroutine.StartCoroutine(HurtAnimation(), this);
     }
 
-    public void Kill(Actor source = null)//TODO needs clean up in map --- actors cannot move to tile where actor died
+    public void Kill(Actor source = null)
     {
+        if (IsQueuedForDeletion()) return;
         if(currentTile != null) currentTile.actor = null;
         bool endGame = config.name == "Spot";
         PackedScene scene = (PackedScene)ResourceLoader.Load("res://scenes/ActorKO.tscn");

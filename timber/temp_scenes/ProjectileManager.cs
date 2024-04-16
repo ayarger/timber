@@ -17,8 +17,8 @@ public class ProjectileManager : Node
 		instance = this;
 	}
 
-
-	public void SpawnProjectile(Vector3 position, Vector3 offset, Vector3 direction, Actor owner)
+	//Position to spawn at; Offset from bottom of actor; target position; actor who created owner; damage
+	public void SpawnProjectile(Vector3 position, Vector3 offset, Vector3 target, Actor owner, int damage)
 	{
 		// ToastManager.SendToast(this, "Tower coord: [" + cur.x + "," + cur.z + "]", ToastMessage.ToastType.Notice, 1f);
 		ActorConfig config = new ActorConfig();
@@ -35,7 +35,9 @@ public class ProjectileManager : Node
 
 		Projectile new_projectile = SpawnProjectileOfType(config, position);
 		new_projectile.view.Translation += offset;
-		new_projectile.setDirection(direction);
+		new_projectile.setTarget(target);
+		new_projectile.setDamage(damage);
+		new_projectile.owner = owner;
 		projectiles.Add(new_projectile);
 
 	}

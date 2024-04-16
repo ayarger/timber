@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Collections;
 
 public class BarContainer : Control
 {
@@ -11,7 +12,7 @@ public class BarContainer : Control
     Vector3 relativeToshadow;
     int count = 0;
     public float scaling_factor = 6f;
-    bool displayOn;
+    bool displayOn, statChanged;
 
     public override void _Ready()
     {
@@ -28,7 +29,21 @@ public class BarContainer : Control
             float GlobalHeight = localHeight * globalScale.y;
             Vector3 mesh_position = target_mesh.GlobalTransform.Xform(new Vector3(0, GlobalHeight + 3.2f, 0)); ;
             relativeToshadow = mesh_position - shadow_position;
+            EventBus.Subscribe<StatChangeEvent>(updateOnStatChanged);
         }
+    }
+
+    public void updateOnStatChanged(StatChangeEvent e)
+    {
+        ArborCoroutine.StopCoroutinesOnNode(this);
+        statChanged = true;
+        ArborCoroutine.StartCoroutine(turnOffVisibilityOnCooldown());
+    }
+
+    IEnumerator turnOffVisibilityOnCooldown()
+    {
+        yield return ArborCoroutine.WaitForSeconds(2);
+        statChanged = false;
     }
 
     public void Configure(HasStats _target) { 
@@ -42,7 +57,7 @@ public class BarContainer : Control
 
         if (IsInstanceValid(target_data))
         {
-            displayOn = target_selection.am_i_selected || target_selection.AmIHovered();
+            displayOn = target_selection.am_i_selected || target_selection.AmIHovered() || statChanged;
             Visible = displayOn;
             PursueTarget();
         }
