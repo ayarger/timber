@@ -114,6 +114,7 @@ public class ConsoleManager : Control
     private void GetAllCommands()
     {
         commands.Add("stat");
+        commands.Add("currency");
         commands.Add("help");
         commands.Add("random");
         commands.Add("test");
@@ -243,6 +244,32 @@ public class ConsoleManager : Control
                                 break;
                         }
                         
+                    }
+                }
+                break;
+            
+            case "currency":
+                if (args.Length >= 2)
+                {
+                    string arg = args[0].ToLower();
+                    int amount = args[1].ToInt();
+                    if (args.Length == 2)
+                    {
+                        switch (arg)
+                        {
+                            default:
+                                consoleOutput.Text = "invalid arguments";
+                                break;
+                            case "increase":
+                                TempCurrencyManager.IncreaseMoney(amount);
+                                break;
+                            case "decrease":
+                                TempCurrencyManager.DecreaseMoney(amount);
+                                break;
+                            case "change":
+                                TempCurrencyManager.ChangeMoney(amount);
+                                break;
+                        }
                     }
                 }
                 break;
