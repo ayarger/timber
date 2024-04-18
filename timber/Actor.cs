@@ -24,6 +24,7 @@ public class Actor : Spatial
 
     public Spatial view { get; protected set; } // Good for scaling operations.
     protected MeshInstance character_view;
+    protected MeshInstance character_view_shadow;
     protected SpatialMaterial character_material;
     protected MeshInstance shadow_view;
     protected StateManager state_manager;
@@ -53,6 +54,8 @@ public class Actor : Spatial
         view = (Spatial)GetNode("view");
         state_manager = (StateManager)GetNode("StateManager");
         character_view = (MeshInstance)GetNode("view/mesh");
+        character_view_shadow = (MeshInstance)GetNode("view/shadowMesh");
+        shadow_view = (MeshInstance)GetNode("shadow");
         selectable = GetNode<IsSelectable>("IsSelectable");
         time = GlobalTranslation.x + GlobalTranslation.z;
         animation_offset = GD.Randf() * 100.0f;
@@ -85,7 +88,8 @@ public class Actor : Spatial
             (Texture tex) =>
             {
                 ShaderMaterial char_mat = (ShaderMaterial)character_view.GetSurfaceMaterial(0).Duplicate();
-                shadow_view = (MeshInstance)GetNode("shadow");
+                ShaderMaterial char_mat_shadow = (ShaderMaterial)character_view_shadow.GetSurfaceMaterial(0).Duplicate();
+                ShaderMaterial shadow_mat = (ShaderMaterial)shadow_view.GetSurfaceMaterial(0).Duplicate();
 
                 /* Scale */
                 view.Scale = new Vector3(tex.GetWidth(), tex.GetHeight(), 1.0f) * 0.01f;
@@ -98,11 +102,19 @@ public class Actor : Spatial
                 shadow_view.Scale = new Vector3(Mathf.Min(2.0f, view.Scale.x), shadow_view.Scale.y, shadow_view.Scale.z);
 
                 char_mat.SetShaderParam("texture_albedo", tex);
+                char_mat_shadow.SetShaderParam("texture_albedo", tex);
+
                 char_mat.SetShaderParam("fade_amount ", 0.8f);
                 char_mat.SetShaderParam("alpha_cutout_threshold  ", 0.2f);
 
+                shadow_mat.SetShaderParam("fade_amount ", 0.8f);
+                shadow_mat.SetShaderParam("alpha_cutout_threshold  ", 0.2f);
+
                 //character_material.AlbedoTexture = idle_sprite;
                 character_view.SetSurfaceMaterial(0, char_mat);
+                character_view_shadow.SetSurfaceMaterial(0, char_mat_shadow);
+
+                shadow_view.SetSurfaceMaterial(0, shadow_mat);
             },
             this
         );
@@ -182,6 +194,24 @@ public class Actor : Spatial
         char_mat.SetShaderParam("screenHeight", FogOfWar.instance.screenHeight);
         char_mat.SetShaderParam("screenPosX", FogOfWar.instance.screenPosX);
         char_mat.SetShaderParam("screenPosZ", FogOfWar.instance.screenPosZ);
+
+        ShaderMaterial char_mat_shadow = (ShaderMaterial)character_view_shadow.GetSurfaceMaterial(0);
+
+        char_mat_shadow.SetShaderParam("fowTexture", FogOfWar.actorInstance.GetTexture());
+        char_mat_shadow.SetShaderParam("world_position", GlobalTranslation);
+        char_mat_shadow.SetShaderParam("screenWidth", FogOfWar.instance.screenWidth);
+        char_mat_shadow.SetShaderParam("screenHeight", FogOfWar.instance.screenHeight);
+        char_mat_shadow.SetShaderParam("screenPosX", FogOfWar.instance.screenPosX);
+        char_mat_shadow.SetShaderParam("screenPosZ", FogOfWar.instance.screenPosZ);
+
+        ShaderMaterial shadow_mat = (ShaderMaterial)shadow_view.GetSurfaceMaterial(0);
+
+        shadow_mat.SetShaderParam("fowTexture", FogOfWar.actorInstance.GetTexture());
+        shadow_mat.SetShaderParam("world_position", GlobalTranslation);
+        shadow_mat.SetShaderParam("screenWidth", FogOfWar.instance.screenWidth);
+        shadow_mat.SetShaderParam("screenHeight", FogOfWar.instance.screenHeight);
+        shadow_mat.SetShaderParam("screenPosX", FogOfWar.instance.screenPosX);
+        shadow_mat.SetShaderParam("screenPosZ", FogOfWar.instance.screenPosZ);
     }
 
     public void Hurt(int damage, bool isCritical, Actor source)
