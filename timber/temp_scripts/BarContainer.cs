@@ -29,11 +29,10 @@ public class BarContainer : Control
             float GlobalHeight = localHeight * globalScale.y;
             Vector3 mesh_position = target_mesh.GlobalTransform.Xform(new Vector3(0, GlobalHeight + 3.2f, 0)); ;
             relativeToshadow = mesh_position - shadow_position;
-            EventBus.Subscribe<StatChangeEvent>(updateOnStatChanged);
         }
     }
 
-    public void updateOnStatChanged(StatChangeEvent e)
+    public void ShowOnStatChanged()
     {
         ArborCoroutine.StopCoroutinesOnNode(this);
         statChanged = true;
@@ -42,7 +41,7 @@ public class BarContainer : Control
 
     IEnumerator turnOffVisibilityOnCooldown()
     {
-        yield return ArborCoroutine.WaitForSeconds(2);
+        yield return ArborCoroutine.WaitForSeconds(4);
         statChanged = false;
     }
 

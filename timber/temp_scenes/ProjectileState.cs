@@ -46,8 +46,7 @@ public class ProjectileState : ActorState//TODO collision body to chekc for coll
         float dx =Mathf.Sqrt(Mathf.Pow(targetPosition.x - actor.GlobalTranslation.x, 2) + Mathf.Pow(targetPosition.z - actor.GlobalTranslation.z, 2));
         direction = (targetPosition - actor.GlobalTranslation).Normalized();
         float dt = dx / horizontalSpeed;
-        float dy = targetPosition.z - actor.GlobalTranslation.z;
-        verticalSpeed = (dy + 0.5f * gravity * dt * dt) / dt;
+        verticalSpeed = (0.5f * gravity * dt * dt) / dt;
     }
 
     public void onBodyEntered(Node body)

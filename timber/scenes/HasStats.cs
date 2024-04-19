@@ -159,6 +159,15 @@ public class HasStats : Node
     public override void _Ready()
     {
         container = BarContainer.Create(this);
+        EventBus.Subscribe<StatChangeEvent>(updateOnStatChanged);
+    }
+
+    public void updateOnStatChanged(StatChangeEvent e)
+    {
+        if(Stats[e.stat_name].Ratio != 1)
+        {
+            container.ShowOnStatChanged();
+        }
     }
 
 

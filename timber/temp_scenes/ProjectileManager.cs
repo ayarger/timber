@@ -17,7 +17,7 @@ public class ProjectileManager : Node
 		instance = this;
 	}
 
-	//Position to spawn at; Offset from bottom of actor; target position; actor who created owner; damage
+	//Position to spawn at; Offset from bottom of actor; target position; actor who created projectile; damage
 	public void SpawnProjectile(Vector3 position, Vector3 offset, Vector3 target, Actor owner, int damage)
 	{
 		// ToastManager.SendToast(this, "Tower coord: [" + cur.x + "," + cur.z + "]", ToastMessage.ToastType.Notice, 1f);
