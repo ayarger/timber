@@ -6,18 +6,22 @@ using System.Reflection;
 public class StatSelectionEvent
 {
     public string stat_name;
-    public StatSelectionEvent (string _stat_name)
+    public string char_name;
+    public StatSelectionEvent (string _stat_name,string _char_name)
     {
         stat_name = _stat_name;
+        char_name = _char_name;
     }
 }
 
 public class EditUI : Control
 {
     HasStats target_data;
+    string target_name;
     public MeshInstance target_mesh;
     public Vector3 relativeToShadow;
     Subscription<EditModeEvent> editModeEvent;
+    Subscription<StatSelectionEvent> statSelectionEvent;
     Tween ui_tween;
     Dictionary<string, Stat> statsDict = new Dictionary<string, Stat>();
     OptionButton optionButton;
@@ -26,6 +30,7 @@ public class EditUI : Control
     public override void _Ready()
     {
         editModeEvent = EventBus.Subscribe<EditModeEvent>(HideAndShow);
+        statSelectionEvent = EventBus.Subscribe<StatSelectionEvent>(OnStatSelected);
         ui_tween = GetNode<Tween>("Tween");
         optionButton = GetNode<OptionButton>("OptionButton");
         vbox = GetNode<VBoxContainer>("VBoxContainer");
@@ -35,31 +40,39 @@ public class EditUI : Control
 
     private void OnOptionSelected(int index)
     {
-        EventBus.Publish<StatSelectionEvent>(new StatSelectionEvent(optionButton.GetItemText(index)));
+        EventBus.Publish<StatSelectionEvent>(new StatSelectionEvent(optionButton.GetItemText(index),target_name));
     }
 
     private void OnStatSelected(StatSelectionEvent e) {
-        Stat curr_stat = target_data.Stats[e.stat_name];
-        Type typeToInspect = curr_stat.GetType();
-        if (typeToInspect != null)
+        //check if the event is relevant to this character
+        if (e.char_name == target_name)
         {
-            MethodInfo[] methods = typeToInspect.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
-            foreach (MethodInfo method in methods)
+            Stat curr_stat = target_data.Stats[e.stat_name];
+            Type typeToInspect = curr_stat.GetType();
+            if (typeToInspect != null)
             {
-                PackedScene scene = (PackedScene)ResourceLoader.Load("res://UI/EditUI/methodButton.tscn");
-                Button methodButton = (Button)scene.Instance();
-                GD.Print($"{methodButton.Text}\n");
-                methodButton.Text += $"{method.Name} ({method.ReturnType.Name})\n";
-                vbox.AddChild(methodButton);
+                //spawn in options if no methodbutton is present
+                MethodInfo[] methods = typeToInspect.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+                foreach (MethodInfo method in methods)
+                {
+                    PackedScene scene = (PackedScene)ResourceLoader.Load("res://UI/EditUI/methodButton.tscn");
+                    Button methodButton = (Button)scene.Instance();
+                    GD.Print($"{methodButton.Text}\n");
+                    methodButton.Text = $"{method.Name} ({method.ReturnType.Name})\n";
+                    vbox.AddChild(methodButton);
+                }
             }
         }
 
     }
 
+    //TODO OnMethod Selection
+
     public void Configure(MeshInstance _target_mesh, HasStats _target_data)
     {
         target_mesh = _target_mesh;
         target_data = _target_data;
+        target_name = target_data.GetParent().Name;
     }
 
     public static EditUI Create( MeshInstance _mesh, HasStats _stats)

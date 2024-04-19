@@ -19,8 +19,10 @@ margin_left = 43.5897
 margin_top = -150.641
 margin_right = 151.59
 margin_bottom = -130.641
-text = "Edit Options"
+text = "select a stat"
 expand_icon = true
+items = [ "select a stat", null, false, 0, null ]
+selected = 0
 
 [node name="Tween" type="Tween" parent="."]
 
