@@ -10,8 +10,17 @@ public class TowerPlacementButton : Button
 		base._Ready();
 		_towerManager = GetNode<TowerManager>("/root/Main/TowerManager");
 		Connect("pressed", this, nameof(OnPressed));
+		
+		UpdateButtonState();
+		Timer timer = GetNode<Timer>("Timer");
+		timer.Connect("timeout", this, nameof(UpdateButtonState));
 	}
 
+	private void UpdateButtonState()
+	{
+		Disabled = !TempCurrencyManager.CheckCurrencyGreaterThan(this, 10);
+	}
+	
 	public async void OnPressed()
 	{
 		_towerManager.OnTowerPlacementButtonPressed();

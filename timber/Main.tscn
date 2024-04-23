@@ -274,6 +274,9 @@ margin_bottom = 640.0
 text = "Place Tower"
 script = ExtResource( 34 )
 
+[node name="Timer" type="Timer" parent="CanvasLayer/TowerPlacementButton"]
+autostart = true
+
 [node name="TowerRemovalButton" type="Button" parent="CanvasLayer"]
 margin_left = 1573.0
 margin_top = 480.0

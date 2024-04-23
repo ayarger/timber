@@ -214,28 +214,28 @@ public class Actor : Spatial
         shadow_mat.SetShaderParam("screenPosZ", FogOfWar.instance.screenPosZ);
     }
 
-    public void Hurt(int damage, bool isCritical, Actor source)
-    {
-        if (isCritical)
-        {
-            DamageTextManager.DrawText(damage*2, this, "criticalDamage");
-        }
-        else
-        {
-            DamageTextManager.DrawText(damage, this, "damage");
-        }
-        //animate hurt - change to red color for a duration
-        //deal damage
-        HasStats stat = GetNode<HasStats>("HasStats");
-        if(stat != null)
-        {
-            //health.ApplyDamage(10);
-            stat.GetStat("health").DecreaseCurrentValue(isCritical ? damage * 2 : damage);
-            if(stat.GetStat("health").currVal <= 0)
-            {
-                Kill(source);
-                return;
-            }
+	public virtual void Hurt(int damage, bool isCritical, Actor source)
+	{
+		if (isCritical)
+		{
+			DamageTextManager.DrawText(damage*2, this, "criticalDamage");
+		}
+		else
+		{
+			DamageTextManager.DrawText(damage, this, "damage");
+		}
+		//animate hurt - change to red color for a duration
+		//deal damage
+		HasStats stat = GetNode<HasStats>("HasStats");
+		if(stat != null)
+		{
+			//health.ApplyDamage(10);
+			stat.GetStat("health").DecreaseCurrentValue(isCritical ? damage * 2 : damage);
+			if(stat.GetStat("health").currVal <= 0)
+			{
+				Kill(source);
+				return;
+			}
 
             //draws aggro
             if (state_manager.states.ContainsKey("CombatState"))

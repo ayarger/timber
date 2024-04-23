@@ -21,6 +21,21 @@ public class CurrencyCommand : ConsoleCommand
 	{
 		GD.Print(args);
 
+		if (args.Length == 1)
+		{
+			string arg = args[0].ToLower();
+			switch (arg)
+			{
+				case "checkamount":
+					commandOutput = $"current currency: {TempCurrencyManager.GetCurrencyAmount()}";
+					break;
+				default:
+					commandOutput = "invalid arguments";
+					return false;
+			}
+			return true;
+		}
+		
 		if (args.Length >= 2)
 		{
 			string arg = args[0].ToLower();
@@ -29,9 +44,6 @@ public class CurrencyCommand : ConsoleCommand
 			{
 				switch (arg)
 				{
-					default:
-						commandOutput = "invalid arguments";
-						return false;
 					case "increase":
 						TempCurrencyManager.IncreaseMoney(amount);
 						break;
@@ -41,7 +53,12 @@ public class CurrencyCommand : ConsoleCommand
 					case "change":
 						TempCurrencyManager.ChangeMoney(amount);
 						break;
+					default:
+						commandOutput = "invalid arguments";
+						return false;
 				}
+				commandOutput = $"currency changed to: {TempCurrencyManager.GetCurrencyAmount()}";
+				return true;
 			}
 		}
 		return false;

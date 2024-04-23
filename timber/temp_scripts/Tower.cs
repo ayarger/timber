@@ -1,18 +1,37 @@
 using Godot;
 
+// TODO: switch to HasStat
+
 public class Tower : Actor
 {
 	public enum TowerType
 	{
 		Normal,
 	}
+	public enum TowerStatus
+	{
+		Functioning,
+		AwaitConstruction,
+		InConstruction,
+	}
 
 	public Coord curr_coord;
+	public TowerStatus towerStatus;
+
+	public HasStats _HasStats;
+	public Timer timer;
 	
+	
+	Subscription<EventTowerStatusChange> EventTowerStatusChangeSub;
+
 	public override void _Ready()
 	{
 		base._Ready();
 		SetProcessInput(true);
+		EventTowerStatusChangeSub = EventBus.Subscribe<EventTowerStatusChange>(HandleTowerStatusChange);
+		timer = GetNode<Timer>("Timer");
+		_HasStats = GetNode<HasStats>("HasStats");
+		_HasStats.AddStat("construction_progress", 0, 100, 0, true);
 	}
 
 	public override void _Input(InputEvent @event)
@@ -24,14 +43,44 @@ public class Tower : Actor
 		
 	}
 
+	public void HandleTowerStatusChange(EventTowerStatusChange e)
+	{
+		if (e.towerStatus == TowerStatus.AwaitConstruction)
+		{
+			towerStatus = TowerStatus.AwaitConstruction;
+			
+			// disable combatstate
+			// state_manager.SetProcess(false);
+			
+			// Debug
+			ToastManager.SendToast(this, "Switch to AwaitConstruction", ToastMessage.ToastType.Notice);
+		}
+
+		else if (e.towerStatus == TowerStatus.InConstruction)
+		{
+			towerStatus = TowerStatus.InConstruction;
+			
+			// Debug
+			ToastManager.SendToast(this, "Switch to InConstruction", ToastMessage.ToastType.Notice);
+		}
+		
+		else if (e.towerStatus == TowerStatus.Functioning)
+		{
+			towerStatus = TowerStatus.Functioning;
+			config.team = "player";
+			
+			// enable combatstate
+			ToastManager.SendToast(this, "Switch to Functioning", ToastMessage.ToastType.Notice);
+			// state_manager.SetProcess(true);
+			GetNode<StateManager>("StateManager").DisableState("MovementState");
+		}
+	} 
+
 	public override void Configure(ActorConfig info)
 	{
 		config = info;
 		GetNode<HasTeam>("HasTeam").team = config.team;
-		if (config.team == "player")
-		{
-			EventBus.Publish<SpawnLightSourceEvent>(new SpawnLightSourceEvent(this, true));
-		}
+		EventBus.Publish(new SpawnLightSourceEvent(this, true));
 
 		// if (config.pre_ko_sprite_filename != null && config.pre_ko_sprite_filename != "")
 		// 	ArborResource.Load<Texture>("images/" + config.pre_ko_sprite_filename);
@@ -68,9 +117,33 @@ public class Tower : Actor
 		}
 	}
 
+	public override void Hurt(int damage, bool isCritical, Actor source)
+	{
+		if (config.team == "construction")
+		{
+			if (towerStatus == TowerStatus.AwaitConstruction)
+			{
+				EventBus.Publish(new EventTowerStatusChange(TowerStatus.InConstruction));
+			}
+			
+			// No critical construction
+			DamageTextManager.DrawText(damage, this, "construction");
+			if(_HasStats != null)
+			{
+				_HasStats.GetStat("construction_progress").IncreaseCurrentValue(damage);
+				if(_HasStats.GetStat("construction_progress").currVal >= _HasStats.GetStat("construction_progress").maxVal)
+				{
+					EventBus.Publish(new EventTowerStatusChange(TowerStatus.Functioning));
+					return;
+				}
+			}
+			return;
+		}
+		base.Hurt(damage, isCritical, source);
+	}
+
 	public override void _ExitTree()
 	{
-		EventBus.Publish(new RemoveLightSourceEvent(GlobalTranslation));
 		Grid.Get(curr_coord).actor = null;
 		Grid.Get(curr_coord).value = '.';
 		foreach (Node child in GetChildren())
@@ -80,7 +153,18 @@ public class Tower : Actor
 				childScript.OnRemovingParent();
 			}
 		}
+		EventBus.Publish(new RemoveLightSourceEvent(GlobalTranslation));
+		EventBus.Unsubscribe(EventTowerStatusChangeSub);
 		base._ExitTree();
 	}
+}
 
+public class EventTowerStatusChange
+{
+	public Tower.TowerStatus towerStatus;
+
+	public EventTowerStatusChange (Tower.TowerStatus _towerStatus)
+	{
+		towerStatus = _towerStatus;
+	}
 }

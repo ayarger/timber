@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=2]
+[gd_scene load_steps=19 format=2]
 
 [ext_resource path="res://Components/IsSelectable.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Actor.cs" type="Script" id=2]
@@ -11,10 +11,11 @@
 [ext_resource path="res://temp_scenes/StatManager.tscn" type="PackedScene" id=9]
 [ext_resource path="res://fogofwartesting/MeleeCombatState.cs" type="Script" id=10]
 [ext_resource path="res://temp_scripts/TempTowerSprite.png" type="Texture" id=11]
+[ext_resource path="res://temp_scripts/ConstructionState.cs" type="Script" id=12]
 
 [sub_resource type="QuadMesh" id=6]
 
-[sub_resource type="Shader" id=9]
+[sub_resource type="Shader" id=11]
 code = "shader_type spatial;
 
 uniform sampler2D fowTexture;
@@ -69,7 +70,7 @@ void fragment() {
 }"
 
 [sub_resource type="ShaderMaterial" id=10]
-shader = SubResource( 9 )
+shader = SubResource( 11 )
 shader_param/world_position = null
 shader_param/screenPosX = 0.0
 shader_param/screenPosZ = 0.0
@@ -81,7 +82,7 @@ shader_param/texture_albedo = ExtResource( 11 )
 
 [sub_resource type="QuadMesh" id=4]
 
-[sub_resource type="Shader" id=7]
+[sub_resource type="Shader" id=12]
 code = "shader_type spatial;
 
 uniform sampler2D fowTexture;
@@ -124,7 +125,7 @@ void fragment() {
 "
 
 [sub_resource type="ShaderMaterial" id=8]
-shader = SubResource( 7 )
+shader = SubResource( 12 )
 shader_param/world_position = null
 shader_param/screenPosX = 0.0
 shader_param/screenPosZ = 0.0
@@ -173,6 +174,9 @@ script = ExtResource( 6 )
 
 [node name="CombatState" type="Node" parent="StateManager"]
 script = ExtResource( 10 )
+
+[node name="ConstructionState" type="Node" parent="StateManager"]
+script = ExtResource( 12 )
 
 [node name="HasTeam" type="Node" parent="."]
 script = ExtResource( 7 )

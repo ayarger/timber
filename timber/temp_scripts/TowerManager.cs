@@ -10,7 +10,8 @@ using Amazon.CloudFront.Model;
 //		ko animation sprite
 //		currency
 //		make different kind of tower - by disable/enable components. 
-//		fix the issue that the tower is off the grid - fixed
+// cannot put at somewhere not discovered
+// need units to build
 
 public class TowerManager : Node
 {
@@ -44,7 +45,7 @@ public class TowerManager : Node
 			}
 		}
 	}
-	
+
 	void SpawnTower(Vector3 cursorPos)
 	{
 		Coord cur = Grid.ConvertToCoord(new Vector3(cursorPos.x , 0, cursorPos.z));
@@ -66,9 +67,9 @@ public class TowerManager : Node
 		ActorConfig config = new ActorConfig();
 		config.name = "Test Tower";
 		config.map_code = 't';
-		config.idle_sprite_filename = "cuff_idle.png";
 
-		config.team = "player";
+		// To attract player and avoid being attacked
+		config.team = "construction";
 		config.statConfig = new StatConfig();
 		config.statConfig.stats["health"] = 50;
 		// for Tower only
@@ -88,6 +89,10 @@ public class TowerManager : Node
 			new_tower.currentTile = Grid.Get(cur);
 			Grid.Get(cur).value = 't';
 		}
+		
+		TempCurrencyManager.DecreaseMoney(10);
+		EventBus.Publish(new EventTowerStatusChange(Tower.TowerStatus.AwaitConstruction));
+
 	}
 	
 	Tower SpawnActorOfType(ActorConfig config, Vector3 position)
@@ -147,43 +152,38 @@ public class TowerManager : Node
 	public void SpawnAnimate(Tower tower)
 	{
 		var tween = tower.GetNode<Tween>("Tween");
-		var mesh = tower.GetNode<MeshInstance>("view/mesh"); // Adjust the path according to your scene structure
+		var mesh = tower.GetNode<MeshInstance>("view/mesh");
+		Vector3 startScale = new Vector3(1, 0, 1);
+		Vector3 endScale = new Vector3(1, 1, 1); 
 
-		Vector3 startScale = new Vector3(1, 0, 1); // Starting scale, Y is 0
-		Vector3 endScale = new Vector3(1, 1, 1); // End scale, Y is 1
-
-		// Assuming the mesh's bottom is originally at position.y = 0
-		// Calculate the required adjustment in position to make it appear as if scaling from the bottom
 		float deltaY = (endScale.y - startScale.y) / 2.0f;
 		Vector3 startPosition = mesh.Translation + new Vector3(0, -deltaY, 0);
-		Vector3 endPosition = mesh.Translation; // Adjust Y position as the mesh scales up
+		Vector3 endPosition = mesh.Translation; 
 
-		mesh.Scale = startScale; // Apply the initial scale
-		mesh.Translation = startPosition; // Ensure the starting position is set
+		mesh.Scale = startScale;
+		mesh.Translation = startPosition;
 
-		// Animate scale
 		tween.InterpolateProperty(
 			mesh,
 			"scale",
 			startScale,
 			endScale,
-			1.0f, // Duration of the animation in seconds
+			1.0f,
 			Tween.TransitionType.Sine,
 			Tween.EaseType.Out
 		);
 
-		// Animate position to make it scale from the bottom
 		tween.InterpolateProperty(
 			mesh,
 			"translation",
 			startPosition,
 			endPosition,
-			1.0f, // Duration of the animation in seconds
+			1.0f, 
 			Tween.TransitionType.Sine,
 			Tween.EaseType.Out
 		);
 
-		tween.Start(); // Start the animation
+		tween.Start();
 	}
 
 	
@@ -197,7 +197,7 @@ public class TowerManager : Node
 		}
 		
 		status = TowerManagerStatus.isPlacingTower;
-		if (TempCurrencyManager.CheckAmountOfCurrency(this, 10))
+		if (TempCurrencyManager.CheckCurrencyGreaterThan(this, 10, true))
 		{
 			EventBus.Publish(new EventToggleTowerPlacement());
 		}
@@ -209,17 +209,15 @@ public class TowerManager : Node
 	
 	public void OnTowerRemovalButtonPressed()
 	{
-		if (status == TowerManagerStatus.isRemovingTower) status = TowerManagerStatus.idle;
-		else status = TowerManagerStatus.isRemovingTower;
 		if (status == TowerManagerStatus.isRemovingTower)
 		{
-			ToastManager.SendToast(this, "Tower removal triggered.", ToastMessage.ToastType.Notice, 1f);
-			EventBus.Publish(new EventCancelTowerPlacement());
-		}
-		else
-		{
+			status = TowerManagerStatus.idle;
 			ToastManager.SendToast(this, "Tower removal canceled.", ToastMessage.ToastType.Notice, 1f);
+			return;
 		}
+		status = TowerManagerStatus.isRemovingTower;
+		ToastManager.SendToast(this, "Tower removal triggered.", ToastMessage.ToastType.Notice, 1f);
+		EventBus.Publish(new EventCancelTowerPlacement());
 	}
 
 }
