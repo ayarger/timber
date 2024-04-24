@@ -1,6 +1,10 @@
 using Godot;
 
 // TODO: switch to HasStat
+// When towers are spawned, their team is set to "construction" and has no combatState
+// they will attract "player" actors with ConstructionState to attack them, 
+// and when construction progress bar is filled, 
+// the tower switches to "player" team, and starts functioning.
 
 public class Tower : Actor
 {
@@ -20,18 +24,14 @@ public class Tower : Actor
 
 	public HasStats _HasStats;
 	public Timer timer;
-	
-	
-	Subscription<EventTowerStatusChange> EventTowerStatusChangeSub;
 
 	public override void _Ready()
 	{
 		base._Ready();
 		SetProcessInput(true);
-		EventTowerStatusChangeSub = EventBus.Subscribe<EventTowerStatusChange>(HandleTowerStatusChange);
 		timer = GetNode<Timer>("Timer");
 		_HasStats = GetNode<HasStats>("HasStats");
-		_HasStats.AddStat("construction_progress", 0, 100, 0, true);
+		_HasStats.AddStat("construction_progress", 0, 50, 0, true);
 	}
 
 	public override void _Input(InputEvent @event)
@@ -43,20 +43,15 @@ public class Tower : Actor
 		
 	}
 
-	public void HandleTowerStatusChange(EventTowerStatusChange e)
+	public void HandleTowerStatusChange(TowerStatus newTowerStatus)
 	{
-		if (e.towerStatus == TowerStatus.AwaitConstruction)
+		
+		if (newTowerStatus == TowerStatus.AwaitConstruction)
 		{
 			towerStatus = TowerStatus.AwaitConstruction;
-			
-			// disable combatstate
-			// state_manager.SetProcess(false);
-			
-			// Debug
-			ToastManager.SendToast(this, "Switch to AwaitConstruction", ToastMessage.ToastType.Notice);
 		}
 
-		else if (e.towerStatus == TowerStatus.InConstruction)
+		else if (newTowerStatus == TowerStatus.InConstruction)
 		{
 			towerStatus = TowerStatus.InConstruction;
 			
@@ -64,7 +59,7 @@ public class Tower : Actor
 			ToastManager.SendToast(this, "Switch to InConstruction", ToastMessage.ToastType.Notice);
 		}
 		
-		else if (e.towerStatus == TowerStatus.Functioning)
+		else if (newTowerStatus == TowerStatus.Functioning)
 		{
 			towerStatus = TowerStatus.Functioning;
 			config.team = "player";
@@ -130,22 +125,26 @@ public class Tower : Actor
 		{
 			if (towerStatus == TowerStatus.AwaitConstruction)
 			{
-				EventBus.Publish(new EventTowerStatusChange(TowerStatus.InConstruction));
+				HandleTowerStatusChange(TowerStatus.InConstruction);
 			}
 			
-			// No critical construction
+			// No critical attack for construction
 			DamageTextManager.DrawText(damage, this, "construction");
 			if(_HasStats != null)
 			{
 				_HasStats.GetStat("construction_progress").IncreaseCurrentValue(damage);
 				if(_HasStats.GetStat("construction_progress").currVal >= _HasStats.GetStat("construction_progress").maxVal)
 				{
-					EventBus.Publish(new EventTowerStatusChange(TowerStatus.Functioning));
+					HandleTowerStatusChange(TowerStatus.Functioning);
 					return;
 				}
 			}
 			return;
 		}
+
+		// Avoid civil war
+		if (source.GetNode<HasTeam>("HasTeam").team == "player") return;
+		
 		base.Hurt(damage, isCritical, source);
 	}
 
@@ -161,17 +160,18 @@ public class Tower : Actor
 			}
 		}
 		EventBus.Publish(new RemoveLightSourceEvent(GlobalTranslation));
-		EventBus.Unsubscribe(EventTowerStatusChangeSub);
 		base._ExitTree();
 	}
 }
 
-public class EventTowerStatusChange
-{
-	public Tower.TowerStatus towerStatus;
-
-	public EventTowerStatusChange (Tower.TowerStatus _towerStatus)
-	{
-		towerStatus = _towerStatus;
-	}
-}
+// public class EventTowerStatusChange
+// {
+// 	public Tower.TowerStatus towerStatus;
+// 	public Tower targetTower;
+//
+// 	public EventTowerStatusChange (Tower _targetTower, Tower.TowerStatus _towerStatus)
+// 	{
+// 		targetTower = _targetTower;
+// 		towerStatus = _towerStatus;
+// 	}
+// }

@@ -23,7 +23,7 @@ public class ConstructionState : CombatState
 		attackRecovery = c.attackRecovery;
 		attackCooldown = c.attackCooldown;
 	}
-	
+
 	public override void Update(float delta)
 	{
 		Tower _tower = TargetActor as Tower;
@@ -31,8 +31,10 @@ public class ConstructionState : CombatState
 		{
 			
 			// If construction is completed, stop this state
-			if (_tower._HasStats.GetStat("construction_progress").currVal >= _tower._HasStats.GetStat("construction_progress").maxVal) 
+			if (_tower._HasStats.GetStat("construction_progress").currVal >= _tower._HasStats.GetStat("construction_progress").maxVal)
 			{
+				attackable = true;
+				ArborCoroutine.StopCoroutinesOnNode(this);
 				manager.DisableState("ConstructionState");
 				manager.EnableState("Idle");
 				return;

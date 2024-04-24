@@ -11,7 +11,8 @@ using Amazon.CloudFront.Model;
 //		currency
 //		make different kind of tower - by disable/enable components. 
 // cannot put at somewhere not discovered
-// need units to build
+// need units to build - done
+// player actors cannot correctly find the constructions spot - done
 
 public class TowerManager : Node
 {
@@ -24,7 +25,7 @@ public class TowerManager : Node
 
 	private TowerManagerStatus status;
 	public List<Tower> tower_spawn_positions = new List<Tower>();
-	CombatConfig TowerRangeConfig = new CombatConfig(4, 10, 0.3f, 0.5f, 0.125f, 0.75f);
+	CombatConfig TowerRangeConfig = new CombatConfig(20, 10, 0.3f, 0.5f, 0.125f, 0.75f);
 
 	public override void _Ready()
 	{
@@ -64,7 +65,7 @@ public class TowerManager : Node
 			ToastManager.SendToast(this, "Cannot throw a tower into the void.", ToastMessage.ToastType.Warning, 2f);
 			return;
 		}
-		// ToastManager.SendToast(this, "Tower coord: [" + cur.x + "," + cur.z + "]", ToastMessage.ToastType.Notice, 1f);
+		ToastManager.SendToast(this, "Tower coord: [" + cur.x + "," + cur.z + "]", ToastMessage.ToastType.Notice, 1f);
 		ActorConfig config = new ActorConfig();
 		config.name = "Test Tower";
 		config.map_code = 't';
@@ -94,7 +95,8 @@ public class TowerManager : Node
 		}
 		
 		TempCurrencyManager.DecreaseMoney(10);
-		EventBus.Publish(new EventTowerStatusChange(Tower.TowerStatus.AwaitConstruction));
+		// EventBus.Publish(new EventTowerStatusChange(Tower.TowerStatus.AwaitConstruction));
+		new_tower.HandleTowerStatusChange(Tower.TowerStatus.AwaitConstruction);
 
 	}
 	
