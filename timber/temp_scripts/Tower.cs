@@ -68,6 +68,7 @@ public class Tower : Actor
 		{
 			towerStatus = TowerStatus.Functioning;
 			config.team = "player";
+			GetNode<HasTeam>("HasTeam").team = config.team;
 			
 			// enable combatstate
 			ToastManager.SendToast(this, "Switch to Functioning", ToastMessage.ToastType.Notice);
@@ -109,6 +110,12 @@ public class Tower : Actor
 		StateManager _stateManager = GetNode<Node>("StateManager") as StateManager;
 		IdleState _idleState = _stateManager.states["Idle"] as IdleState;
 		_idleState.has_idle_animation = false;
+		
+		foreach(StateConfig s in config.stateConfigs)
+		{
+			string stateName = s.name;
+			state_manager.states[stateName].Config(s);
+		}
 
 		StatManager statManager = GetNode<StatManager>("StatManager");
 		if (statManager != null)

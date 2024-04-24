@@ -24,6 +24,7 @@ public class TowerManager : Node
 
 	private TowerManagerStatus status;
 	public List<Tower> tower_spawn_positions = new List<Tower>();
+	CombatConfig TowerRangeConfig = new CombatConfig(4, 10, 0.3f, 0.5f, 0.125f, 0.75f);
 
 	public override void _Ready()
 	{
@@ -71,9 +72,11 @@ public class TowerManager : Node
 		// To attract player and avoid being attacked
 		config.team = "construction";
 		config.statConfig = new StatConfig();
-		config.statConfig.stats["health"] = 50;
+		config.statConfig.stats["health"] = 150;
 		// for Tower only
 		config.statConfig.stats["buildCost"] = 10;
+		config.stateConfigs.Add(TowerRangeConfig);
+		config.type = "tower";
 	
 		Tower new_tower = SpawnActorOfType(config, spawnPos);
 		new_tower.Configure(config);

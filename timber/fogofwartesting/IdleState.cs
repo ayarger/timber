@@ -78,7 +78,7 @@ public class IdleState : ActorState
             foreach (var actors in GetAttackableActorList())
             {
                 var actorInRange = actors as Actor;
-                if (actorInRange != null && actorInRange.GetNode<HasTeam>("HasTeam").team == "construction") // 变成function之后tower的team没有被正确修改为player
+                if (actorInRange != null && actorInRange.GetNode<HasTeam>("HasTeam").team == "construction")
                 {
                     Coord actorPos = Grid.ConvertToCoord(actorInRange.GlobalTranslation);
                     Coord cur = Grid.ConvertToCoord(actor.GlobalTranslation);
@@ -90,6 +90,28 @@ public class IdleState : ActorState
                         CombatState cs = manager.states["ConstructionState"] as CombatState;
                         cs.TargetActor = actorInRange;
                         manager.EnableState("ConstructionState");
+                    }
+                }
+            }
+
+            if (actor.GetNode<Tower>(".") != null)
+            {
+                foreach (var actors in GetAttackableActorList())
+                {
+                    var actorInRange = actors as Actor;
+                    if (actorInRange != null && actorInRange.GetNode<HasTeam>("HasTeam").team == "enemy")
+                    {
+                        Coord actorPos = Grid.ConvertToCoord(actorInRange.GlobalTranslation);
+                        Coord cur = Grid.ConvertToCoord(actor.GlobalTranslation);
+                        float dist = Math.Abs(actorPos.x - cur.x)
+                                     + Math.Abs(actorPos.z - cur.z);
+
+                        if (dist <= detectionRange)
+                        {
+                            CombatState cs = manager.states["CombatState"] as CombatState;
+                            cs.TargetActor = actorInRange;
+                            manager.EnableState("CombatState");
+                        }
                     }
                 }
             }
