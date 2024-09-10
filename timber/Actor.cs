@@ -53,7 +53,7 @@ public class Actor : Spatial
         view = (Spatial)GetNode("view");
         state_manager = (StateManager)GetNode("StateManager");
         character_view = (MeshInstance)GetNode("view/mesh");
-        selectable = (IsSelectable)GetNode("IsSelectable");
+        selectable = GetNode<IsSelectable>("IsSelectable");
         time = GlobalTranslation.x + GlobalTranslation.z;
         animation_offset = GD.Randf() * 100.0f;
         sub = EventBus.Subscribe<TileDataLoadedEvent>((TileDataLoadedEvent e) =>
@@ -211,7 +211,7 @@ public class Actor : Spatial
             if (state_manager.states.ContainsKey("CombatState"))
             {
                 CombatState c = (state_manager.states["CombatState"] as CombatState);
-                if (source != null)
+                if (source != null && !state_manager.IsStateActive("CombatState"))
                 {
                     Coord targetCoord = Grid.ConvertToCoord(source.GlobalTranslation);
                     if (c.WithinRange(targetCoord))
@@ -251,7 +251,6 @@ public class Actor : Spatial
         {
             new_ko.Configure(ArborResource.Get<Texture>("images/" + config.idle_sprite_filename), ArborResource.Get<Texture>("images/" + config.idle_sprite_filename), endGame, source);
         }
-
         QueueFree();
 
 

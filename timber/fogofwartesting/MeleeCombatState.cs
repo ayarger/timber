@@ -167,12 +167,14 @@ public class MeleeCombatState : CombatState
         /* Paper Turning */
         float current_scale_x = actor.view.Scale.x;
         float desired_scale_x = current_scale_x;
-        Vector3 position_delta = TargetActor.GlobalTranslation - actor.GlobalTranslation;
-        if (position_delta.x > 0.01f)
-            desired_scale_x = actor.initial_view_scale.x;
-        if (position_delta.x < -0.01f)
-            desired_scale_x = -actor.initial_view_scale.x;
-
+        if (TargetActor != null && IsInstanceValid(TargetActor))
+        {
+            Vector3 position_delta = TargetActor.GlobalTranslation - actor.GlobalTranslation;
+            if (position_delta.x > 0.01f)
+                desired_scale_x = actor.initial_view_scale.x;
+            if (position_delta.x < -0.01f)
+                desired_scale_x = -actor.initial_view_scale.x;
+        }
         current_scale_x += (desired_scale_x - current_scale_x) * 0.2f;
         actor.view.Scale = new Vector3(current_scale_x, actor.initial_view_scale.y * idle_scale_impact, actor.view.Scale.z);
 

@@ -99,7 +99,9 @@ public class RangedCombatState : CombatState
         yield return ArborCoroutine.WaitForSeconds(attackWindup);
 
         attacking = false;
-        ProjectileManager.instance.SpawnProjectile(actor.GlobalTranslation, new Vector3(0, (actor.view.Scale.y/2)*Mathf.Sin(Mathf.Pi/4), -(actor.view.Scale.y / 2) * Mathf.Sin(Mathf.Pi / 4)), TargetActor.GlobalTranslation, actor, attackDamage);
+        ProjectileManager.instance.SpawnProjectile(actor.GlobalTranslation,
+            new Vector3(0, (actor.view.Scale.y/2)*Mathf.Sin(Mathf.Pi/4), -(actor.view.Scale.y / 2) * Mathf.Sin(Mathf.Pi / 4)),
+            TargetActor.GlobalTranslation, actor, attackDamage);
 
         yield return ArborCoroutine.WaitForSeconds(attackRecovery);
         rotateTime = 0.0f;
@@ -126,12 +128,14 @@ public class RangedCombatState : CombatState
         /* Paper Turning */
         float current_scale_x = actor.view.Scale.x;
         float desired_scale_x = current_scale_x;
-        Vector3 position_delta = TargetActor.GlobalTranslation - actor.GlobalTranslation;
-        if (position_delta.x > 0.01f)
-            desired_scale_x = actor.initial_view_scale.x;
-        if (position_delta.x < -0.01f)
-            desired_scale_x = -actor.initial_view_scale.x;
-
+        if (TargetActor != null && IsInstanceValid(TargetActor))
+        {
+            Vector3 position_delta = TargetActor.GlobalTranslation - actor.GlobalTranslation;
+            if (position_delta.x > 0.01f)
+                desired_scale_x = actor.initial_view_scale.x;
+            if (position_delta.x < -0.01f)
+                desired_scale_x = -actor.initial_view_scale.x;
+        }
         current_scale_x += (desired_scale_x - current_scale_x) * 0.2f;
         actor.view.Scale = new Vector3(current_scale_x, actor.initial_view_scale.y * idle_scale_impact, actor.view.Scale.z);
 
