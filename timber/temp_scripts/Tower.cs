@@ -25,6 +25,8 @@ public class Tower : Actor
 	public HasStats _HasStats;
 	public Timer timer;
 
+	private Vector3 defaultTranslation;
+
 	public override void _Ready()
 	{
 		base._Ready();
@@ -32,6 +34,7 @@ public class Tower : Actor
 		timer = GetNode<Timer>("Timer");
 		_HasStats = GetNode<HasStats>("HasStats");
 		_HasStats.AddStat("construction_progress", 0, 50, 0, true);
+		defaultTranslation = GetNode<MeshInstance>("view/mesh").Translation;
 	}
 
 	public override void _Input(InputEvent @event)
@@ -132,8 +135,12 @@ public class Tower : Actor
 			DamageTextManager.DrawText(damage, this, "construction");
 			if(_HasStats != null)
 			{
-				_HasStats.GetStat("construction_progress").IncreaseCurrentValue(damage);
-				if(_HasStats.GetStat("construction_progress").currVal >= _HasStats.GetStat("construction_progress").maxVal)
+				_HasStats.GetStat("construction_progress").IncreaseCurrentValue(damage); // increase construction meter
+				// TODO: animation step forward
+				float currVal = _HasStats.GetStat("construction_progress").currVal;
+				float maxVal = _HasStats.GetStat("construction_progress").maxVal;
+				ConstructAnimate(currVal / maxVal);
+				if(currVal >= maxVal)
 				{
 					HandleTowerStatusChange(TowerStatus.Functioning);
 					return;
@@ -146,6 +153,43 @@ public class Tower : Actor
 		if (source.GetNode<HasTeam>("HasTeam").team == "player") return;
 		
 		base.Hurt(damage, isCritical, source);
+	}
+	
+	public void ConstructAnimate(float progress)
+	{
+		var tween = GetNode<Tween>("Tween");
+		var mesh = GetNode<MeshInstance>("view/mesh");
+		Vector3 startScale = mesh.Scale;
+		Vector3 endScale = new Vector3(1, progress, 1); 
+	
+		float deltaY = (endScale.y - startScale.y) / 2.0f;
+		Vector3 startPosition = mesh.Translation;
+		ToastManager.SendToast(this, "-deltaY = " + (-deltaY).ToString() + "; endScale.y = " + progress.ToString(), ToastMessage.ToastType.Notice);
+		Vector3 endPosition = defaultTranslation + new Vector3(0, progress/2-0.5f, 0);;
+	
+		mesh.Scale = startScale;
+		// mesh.Translation = startPosition;
+	
+		tween.InterpolateProperty(
+			mesh,
+			"scale",
+			startScale,
+			endScale,
+			1.0f,
+			Tween.TransitionType.Sine,
+			Tween.EaseType.Out
+		);
+	
+		tween.InterpolateProperty(
+			mesh,
+			"translation",
+			startPosition,
+			endPosition,
+			1.0f, 
+			Tween.TransitionType.Sine,
+			Tween.EaseType.Out
+		);
+		tween.Start();
 	}
 
 	public override void _ExitTree()
