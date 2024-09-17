@@ -26,6 +26,7 @@ public class MainMenu : Control
 				ArborAudioManager.RequestBGM(audio, true);
 			},
 			this
+			
 		);
 		ArborResource.UseResource(
 			"images/diamond-g7915c1180_1280.png",

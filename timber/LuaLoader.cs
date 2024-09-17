@@ -68,6 +68,8 @@ public class LuaLoader : Node
 
 		List<string> actor_files = manifest.Search("actor_definitions/*");
 
+		StateProcessor.Initialize();
+
 		foreach (string actor_file in actor_files)
         {
 			ArborResource.Load<ActorConfig>(actor_file);
@@ -77,6 +79,7 @@ public class LuaLoader : Node
 		{
 			yield return ArborResource.WaitFor(actor_file);
             ActorConfig actor_info = ArborResource.Get<ActorConfig>(actor_file);
+			
 
 			//temporary
 			playerStatConfig.stats["health"] = 100;

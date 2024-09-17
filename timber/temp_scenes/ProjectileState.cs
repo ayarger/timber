@@ -19,7 +19,7 @@ public class ProjectileState : ActorState//TODO collision body to chekc for coll
     {
     }
 
-    float rotationSpeed = 5, horizontalSpeed = 7f, verticalSpeed = 1f, lifeTime = 5f, timer = 0;
+    float rotationSpeed = 5, horizontalSpeed = 10f, verticalSpeed = 1f, lifeTime = 5f, timer = 0;
     float gravity = 60f;
     Vector3 direction = Vector3.Zero;
     public override void Animate(float delta)

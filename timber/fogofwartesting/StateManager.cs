@@ -22,26 +22,39 @@ public class StateManager : Node
     public override void _Ready()
     {
         states = new Dictionary<string,ActorState>();
-        foreach(var state in GetChildren())
-        {
-            var actorState = state as ActorState;
-            if (actorState != null) states[actorState.name] = actorState;
+        // foreach(var state in GetChildren())
+        // {
+        //     var actorState = state as ActorState;
+        //     if (actorState != null) states[actorState.name] = actorState;
 
-        }
-        if (!states.ContainsKey("Idle"))
-        {
-            states.Add("Idle", new IdleState());
-            states["Idle"].actor = GetParent<Actor>();
-            states["Idle"].manager = this;
-            AddChild(states["Idle"]);
-        }
+        // }
+        // if (!states.ContainsKey("Idle"))
+        // {
+        //     states.Add("Idle", new IdleState());
+        //     states["Idle"].actor = GetParent<Actor>();
+        //     states["Idle"].manager = this;
+        //     AddChild(states["Idle"]);
+        // }
         activeStates = new HashSet<ActorState>();
         actor = GetParent<Actor>();
     }
 
     public void Configure(List<StateConfig> stateConfigs)
     {
+        foreach (var config in stateConfigs)
+        {
+            var state = StateProcessor.GetState(config.name);
+            Node stateNode = new Node();
+            stateNode.SetScript(state.GetScript());
 
+            ActorState actorState = stateNode as ActorState;
+            actorState.Config(config);
+            states.Add(actorState.name, actorState);
+            actorState.actor = GetParent<Actor>();
+            actorState.manager = this;
+            AddChild(actorState);
+            GD.Print("Configured state: " + actorState.name);
+        }
     }
 
     public override void _Process(float delta)
