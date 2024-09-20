@@ -1,50 +1,24 @@
-using Godot;
-using Priority_Queue;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Godot;
 
-public class MeleeCombatState : CombatState
+
+public class ConstructionState : CombatState
 {
-	// Declare member variables here. Examples:
-	// private int a = 2;
-	// private string b = "text";
-
-
 	float time = 0.0f, rotateTime = 0.0f;
 
-    public override string name
-    {
-        get { return "MeleeCombatState"; }
-    }
-
-	// Called when the node enters the scene tree for the first time.
-	public override void _Ready()
+	public override string name
 	{
-
-		base._Ready();
+		get { return "ConstructionState"; }
 	}
-
-	public override void Start()
-	{
-		inclusiveStates = new HashSet<string>();
-		ArborCoroutine.StopCoroutinesOnNode(this);
-		animation_offset = GD.Randf() * 100.0f;
-		attackable = true;
-
-		//if (actor.GetNode<HasTeam>("HasTeam").team == "player")//Hardcode different actor stats
-		//{
-		//    attackDamage = 40;
-		//    attackCooldown = 0.75f;
-		//}
-	}
-
+	
 	public override void Config(StateConfig stateConfig)
 	{
 		CombatConfig c = stateConfig as CombatConfig;
 		attackRange = c.attackRange;
 		attackDamage = c.attackDamage;
-		criticalHitRate = c.criticalHitRate;
+		criticalHitRate = 0;
 		attackWindup = c.attackWindup;
 		attackRecovery = c.attackRecovery;
 		attackCooldown = c.attackCooldown;
@@ -52,17 +26,32 @@ public class MeleeCombatState : CombatState
 
 	public override void Update(float delta)
 	{
-
+		Tower _tower = TargetActor as Tower;
 		if (TargetActor != null && IsInstanceValid(TargetActor))//TODO check if actor is dead
 		{
-			Coord dest = Grid.ConvertToCoord(TargetActor.GlobalTranslation);
-			MovementState b = null;
-			if (manager.states.ContainsKey("MovementState"))
+			
+			// If construction is completed, stop this state
+			if (_tower._HasStats.GetStat("construction_progress").currVal >= _tower._HasStats.GetStat("construction_progress").maxVal)
 			{
-				b = manager.states["MovementState"] as MovementState;
+				attackable = true;
+				ArborCoroutine.StopCoroutinesOnNode(this);
+				manager.DisableState("ConstructionState");
+				manager.EnableState("Idle");
+				return;
 			}
 
-			if (!WithinRange(dest))
+			Coord dest = Grid.ConvertToCoord(TargetActor.GlobalTranslation);
+			MovementState movementState = null;
+			if (manager.states.ContainsKey("MovementState"))
+			{
+				movementState = manager.states["MovementState"] as MovementState;
+			}
+
+			Coord actorCoord = Grid.ConvertToCoord(actor.GlobalTranslation);
+
+			float dist = Math.Abs(dest.x - actorCoord.x) + Math.Abs(dest.z - actorCoord.z);
+
+			if (dist > attackRange)
 			{
 				ArborCoroutine.StopCoroutinesOnNode(this);
 				attacking = false;
@@ -72,7 +61,7 @@ public class MeleeCombatState : CombatState
 				{
 
 					var actorInRange = actors as Actor;
-					if (actorInRange != null && actorInRange.GetNode<HasTeam>("HasTeam").team != actor.GetNode<HasTeam>("HasTeam").team)
+					if (actorInRange != null && actorInRange.GetNode<HasTeam>("HasTeam").team == "construction")
 					{
 						Coord actorPos = Grid.ConvertToCoord(actorInRange.GlobalTranslation);
 						Coord cur = Grid.ConvertToCoord(actor.GlobalTranslation);
@@ -84,14 +73,14 @@ public class MeleeCombatState : CombatState
 					}
 				}
 
-				if(b == null)
+				if(movementState == null)
 				{
-					manager.DisableState("CombatState");
+					manager.DisableState("ConstructionState");
 				}
 
-				if (b.waypoints.Count == 0)
+				if (movementState.waypoints.Count == 0)
 				{
-					ArborCoroutine.StopCoroutinesOnNode(b);
+					ArborCoroutine.StopCoroutinesOnNode(movementState);
 					Coord coordDest = FindClosestTileInRange(Grid.ConvertToCoord(TargetActor.GlobalTranslation));
 					Vector3 vectorDest = new Vector3(coordDest.x * Grid.tileWidth, .1f, coordDest.z * Grid.tileWidth);
 					ArborCoroutine.StartCoroutine(TestMovement.PathFindAsync(actor.GlobalTranslation, vectorDest, (List<Vector3> a) =>
@@ -99,41 +88,47 @@ public class MeleeCombatState : CombatState
 						if (a.Count > 0)
 						{
 							manager.EnableState("MovementState");
-							b.waypoints = a;
+							movementState.waypoints = a;
 						}
-					}), b);
-					manager.DisableState("CombatState");
+					}), movementState);
+					manager.DisableState("ConstructionState");
 					return;
 
 
-                }
-                //b.TargetActor = TargetActor;
-                //manager.EnableState("ChaseState");
-                //manager.DisableState("CombatState");
-            }
-            else if (attackable)
-            {
-                ArborCoroutine.StartCoroutine(attackRoutine(), this);
-            }
-        }
-        else
-        {
-            manager.DisableState("CombatState");
-            return;
-        }
-    }
+				}
+				//b.TargetActor = TargetActor;
+				//manager.EnableState("ChaseState");
+				//manager.DisableState("CombatState");
+			}
+			else if (attackable)
+			{
+				ArborCoroutine.StartCoroutine(attackAnimation(), this);
+			}
+		}
+		else
+		{
+			manager.DisableState("ConstructionState");
+			return;
+		}
+	}
 
+	
+	//************************************//
+	//*** Copied from MeleeCombatState ***//
+	//************************************//
+	
+	
 	public override void Stop()
 	{
 		rotateTime = 0;
 		ArborCoroutine.StopCoroutinesOnNode(this);
 	}
 
-    protected IEnumerator attackRoutine()
-    {
-        attacking = true;
-        attackable = false;
-        yield return ArborCoroutine.WaitForSeconds(attackWindup);
+	protected IEnumerator attackAnimation()
+	{
+		attacking = true;
+		attackable = false;
+		yield return ArborCoroutine.WaitForSeconds(attackWindup);
 
 		attacking = false;
 		if (GD.Randf() < criticalHitRate)
@@ -164,19 +159,17 @@ public class MeleeCombatState : CombatState
 		/* idle / breathing animation */
 		float idle_scale_impact = (1.0f + Mathf.Sin(time * 4 + animation_offset) * 0.025f);
 
-        /* Paper Turning */
-        float current_scale_x = actor.view.Scale.x;
-        float desired_scale_x = current_scale_x;
-        if (TargetActor != null && IsInstanceValid(TargetActor))
-        {
-            Vector3 position_delta = TargetActor.GlobalTranslation - actor.GlobalTranslation;
-            if (position_delta.x > 0.01f)
-                desired_scale_x = actor.initial_view_scale.x;
-            if (position_delta.x < -0.01f)
-                desired_scale_x = -actor.initial_view_scale.x;
-        }
-        current_scale_x += (desired_scale_x - current_scale_x) * 0.2f;
-        actor.view.Scale = new Vector3(current_scale_x, actor.initial_view_scale.y * idle_scale_impact, actor.view.Scale.z);
+		/* Paper Turning */
+		float current_scale_x = actor.view.Scale.x;
+		float desired_scale_x = current_scale_x;
+		Vector3 position_delta = TargetActor.GlobalTranslation - actor.GlobalTranslation;
+		if (position_delta.x > 0.01f)
+			desired_scale_x = actor.initial_view_scale.x;
+		if (position_delta.x < -0.01f)
+			desired_scale_x = -actor.initial_view_scale.x;
+
+		current_scale_x += (desired_scale_x - current_scale_x) * 0.2f;
+		actor.view.Scale = new Vector3(current_scale_x, actor.initial_view_scale.y * idle_scale_impact, actor.view.Scale.z);
 
 		if (attacking)
 		{

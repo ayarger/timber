@@ -1,9 +1,18 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using Amazon.CloudFront.Model;
 
-// Press T to toggle placement
-// Press X to toggle removal
+
+// TODO: 4.11 - 4.18
+//		fix button press issue ?
+//		ranged projectile
+//		ko animation sprite
+//		currency
+//		make different kind of tower - by disable/enable components. 
+// cannot put at somewhere not discovered
+// need units to build - done
+// player actors cannot correctly find the constructions spot - done
 
 public class TowerManager : Node
 {
@@ -16,6 +25,7 @@ public class TowerManager : Node
 
 	private TowerManagerStatus status;
 	public List<Tower> tower_spawn_positions = new List<Tower>();
+	CombatConfig TowerRangeConfig = new CombatConfig("RangedCombatState", 20, 10, 0.3f, 0.5f, 0.125f, 0.75f);
 
 	public override void _Ready()
 	{
@@ -24,40 +34,6 @@ public class TowerManager : Node
 
 	public override void _Input(InputEvent @event)
 	{
-		if (@event is InputEventKey eventKey)
-		{
-			if (eventKey.Pressed && eventKey.Scancode == (uint)KeyList.T)
-			{
-				if (status == TowerManagerStatus.isPlacingTower) status = TowerManagerStatus.idle;
-				else status = TowerManagerStatus.isPlacingTower;
-				
-				if (status == TowerManagerStatus.isPlacingTower)
-				{
-					// ToastManager.SendToast(this, "Tower placement triggered.", ToastMessage.ToastType.Notice, 1f);
-					EventBus.Publish(new EventToggleTowerPlacement());
-				}
-				else
-				{
-					// ToastManager.SendToast(this, "Tower placement canceled.", ToastMessage.ToastType.Notice, 1f);
-					EventBus.Publish(new EventCancelTowerPlacement());
-				}
-			} 
-			else if (eventKey.Pressed && eventKey.Scancode == (uint)KeyList.X)
-			{
-				if (status == TowerManagerStatus.isRemovingTower) status = TowerManagerStatus.idle;
-				else status = TowerManagerStatus.isRemovingTower;
-				if (status == TowerManagerStatus.isRemovingTower)
-				{
-					// ToastManager.SendToast(this, "Tower removal triggered.", ToastMessage.ToastType.Notice, 1f);
-					EventBus.Publish(new EventCancelTowerPlacement());
-				}
-				else
-				{
-					// ToastManager.SendToast(this, "Tower removal canceled.", ToastMessage.ToastType.Notice, 1f);
-				}
-			}
-		}
-		
 		if (@event is InputEventMouseButton eventMouseButton && eventMouseButton.Pressed && eventMouseButton.ButtonIndex == (int)ButtonList.Left)
 		{
 			if (status == TowerManagerStatus.isPlacingTower)
@@ -71,11 +47,11 @@ public class TowerManager : Node
 			}
 		}
 	}
-	
+
 	void SpawnTower(Vector3 cursorPos)
 	{
-		Vector3 spawn_pos = new Vector3(cursorPos.x , 0, cursorPos.z );
-		Coord cur = Grid.ConvertToCoord(spawn_pos);
+		Coord cur = Grid.ConvertToCoord(new Vector3(cursorPos.x , 0, cursorPos.z));
+		Vector3 spawnPos = Grid.ConvertToWorldPos(cur);
 		EventBus.Publish(new EventCancelTowerPlacement());
 		if (Grid.Get(cur).actor != null)
 		{
@@ -89,18 +65,24 @@ public class TowerManager : Node
 			ToastManager.SendToast(this, "Cannot throw a tower into the void.", ToastMessage.ToastType.Warning, 2f);
 			return;
 		}
-		// ToastManager.SendToast(this, "Tower coord: [" + cur.x + "," + cur.z + "]", ToastMessage.ToastType.Notice, 1f);
+		ToastManager.SendToast(this, "Tower coord: [" + cur.x + "," + cur.z + "]", ToastMessage.ToastType.Notice, 1f);
 		ActorConfig config = new ActorConfig();
 		config.name = "Test Tower";
 		config.map_code = 't';
-		config.idle_sprite_filename = "cuff_idle.png";
 
-		config.team = "player";
+		// To attract player and avoid being attacked
+		config.team = "construction";
 		config.statConfig = new StatConfig();
 		config.statConfig.stats["health"] = 150;
+		// for Tower only
+		config.statConfig.stats["buildCost"] = 10;
+		config.stateConfigs.Add(TowerRangeConfig);
+		config.type = "tower";
 	
-		Tower new_tower = SpawnActorOfType(config, spawn_pos);
+		Tower new_tower = SpawnActorOfType(config, spawnPos);
 		new_tower.Configure(config);
+		new_tower.curr_coord = cur;
+		SpawnAnimate(new_tower);
 		EventBus.Publish(new TileDataLoadedEvent());
 		
 		// Copied from MoveToNearestTile()
@@ -111,6 +93,11 @@ public class TowerManager : Node
 			new_tower.currentTile = Grid.Get(cur);
 			Grid.Get(cur).value = 't';
 		}
+		
+		TempCurrencyManager.DecreaseMoney(10);
+		// EventBus.Publish(new EventTowerStatusChange(Tower.TowerStatus.AwaitConstruction));
+		new_tower.HandleTowerStatusChange(Tower.TowerStatus.AwaitConstruction);
+
 	}
 	
 	Tower SpawnActorOfType(ActorConfig config, Vector3 position)
@@ -152,7 +139,7 @@ public class TowerManager : Node
 
 	public class EventToggleTowerPlacement
 	{
-		private Tower.TowerType towerType;
+		public Tower.TowerType towerType;
 		
 		public EventToggleTowerPlacement(Tower.TowerType _towerType = Tower.TowerType.Normal)
 		{
@@ -165,6 +152,77 @@ public class TowerManager : Node
 		public EventCancelTowerPlacement()
 		{
 		}
+	}
+	
+	public void SpawnAnimate(Tower tower)
+	{
+		var tween = tower.GetNode<Tween>("Tween");
+		var mesh = tower.GetNode<MeshInstance>("view/mesh");
+		Vector3 startScale = new Vector3(1, 0, 1);
+		Vector3 endScale = new Vector3(1, 1, 1); 
+
+		float deltaY = (endScale.y - startScale.y) / 2.0f;
+		Vector3 startPosition = mesh.Translation + new Vector3(0, -deltaY, 0);
+		Vector3 endPosition = mesh.Translation; 
+
+		mesh.Scale = startScale;
+		mesh.Translation = startPosition;
+
+		tween.InterpolateProperty(
+			mesh,
+			"scale",
+			startScale,
+			endScale,
+			1.0f,
+			Tween.TransitionType.Sine,
+			Tween.EaseType.Out
+		);
+
+		tween.InterpolateProperty(
+			mesh,
+			"translation",
+			startPosition,
+			endPosition,
+			1.0f, 
+			Tween.TransitionType.Sine,
+			Tween.EaseType.Out
+		);
+
+		tween.Start();
+	}
+
+	
+	public void OnTowerPlacementButtonPressed()
+	{
+		if (status == TowerManagerStatus.isPlacingTower)
+		{
+			status = TowerManagerStatus.idle;
+			EventBus.Publish(new EventCancelTowerPlacement());
+			return;
+		}
+		
+		status = TowerManagerStatus.isPlacingTower;
+		if (TempCurrencyManager.CheckCurrencyGreaterThan(this, 10, true))
+		{
+			EventBus.Publish(new EventToggleTowerPlacement());
+		}
+		else
+		{
+			status = TowerManagerStatus.idle;
+		}
+	}
+	
+	public void OnTowerRemovalButtonPressed()
+	{
+		if (status == TowerManagerStatus.isRemovingTower)
+		{
+			status = TowerManagerStatus.idle;
+			ToastManager.SendToast(this, "Tower removal canceled.", ToastMessage.ToastType.Notice, 1f);
+			return;
+		}
+		status = TowerManagerStatus.isRemovingTower;
+		ToastManager.SendToast(this, "Tower removal triggered.", ToastMessage.ToastType.Notice, 1f);
+		EventBus.Publish(new EventCancelTowerPlacement());
 	}
 
 }

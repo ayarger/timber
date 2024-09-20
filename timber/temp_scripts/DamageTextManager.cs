@@ -54,6 +54,9 @@ public class DamageTextManager : Control
         else if (type == "healing")
         {
             text.Modulate = Colors.GreenYellow;
+        }else if (type == "construction")
+        {
+            text.Modulate = Colors.Gold;
         }
         
 

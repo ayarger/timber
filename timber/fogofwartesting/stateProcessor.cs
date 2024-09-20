@@ -15,27 +15,10 @@ public static class StateProcessor
         public static void Initialize()
         {
             ActorStateDict.Clear();
+            
+            var actorstates = typeof(ActorState).Assembly.GetTypes();
 
-        // string folderPath = "states/";
-
-        // // Get all .cs files in the folder
-        // DirectoryInfo dir = new DirectoryInfo(folderPath);
-        // FileInfo[] fileInfo = dir.GetFiles("*.cs");
-
-        // foreach(FileInfo file in fileInfo)
-        // {
-        //     string scriptName = System.IO.Path.GetFileNameWithoutExtension(file.Name);
-
-        //     if (scriptName == "ActorState") continue;
-
-        //     GD.Print("Loading script: " + scriptName);
-        //     string scriptPath = folderPath + file.Name;
-
-        //     Script script = GD.Load<Script>(scriptPath);
-        //     ActorStateDict.Add(scriptName, script);
-        // }
-        var allActorStateTypes = Assembly.GetAssembly(typeof(ActorState)).GetTypes()
-           .Where(t => t.IsSubclassOf(typeof(ActorState)) && t.IsAbstract == false);
+            var allActorStateTypes = actorstates.Where(t => t.IsSubclassOf(typeof(ActorState)) && t.IsAbstract == false);
 
             foreach (var s in allActorStateTypes)
             {

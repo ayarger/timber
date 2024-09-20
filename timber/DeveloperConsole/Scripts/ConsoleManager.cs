@@ -114,6 +114,7 @@ public class ConsoleManager : Control
     private void GetAllCommands()
     {
         commands.Add("stat");
+        commands.Add("currency");
         commands.Add("help");
         commands.Add("random");
         commands.Add("test");
@@ -159,23 +160,15 @@ public class ConsoleManager : Control
         //starts comparing input to commandList
         foreach(var command in commandList)
         {
-            if (!input_command.Equals(command.CommandWord, StringComparison.OrdinalIgnoreCase))
+            if (input_command.Equals(command.CommandWord, StringComparison.OrdinalIgnoreCase))
             {
-                consoleOutput.Text = $"invalid command\n {consoleOutput.Text}";
+                consoleOutput.Text = command.Process(args)
+                    ? $"{command.CommandOutput}\n {consoleOutput.Text}"
+                    : $"invalid arguments\n {consoleOutput.Text}";
                 return;
             }
-
-            if (command.Process(args))
-            {
-                //update consoleOutput based on process result
-                consoleOutput.Text = $"{command.CommandOutput}\n {consoleOutput.Text}";
-            }
-
-            else
-            {
-                consoleOutput.Text = $"invalid arguments\n {consoleOutput.Text}";
-            }
         }
+        consoleOutput.Text = $"invalid command\n {consoleOutput.Text}";
     }
 
     //TODO: create a function that resize the output box based on output text
@@ -243,6 +236,42 @@ public class ConsoleManager : Control
                                 break;
                         }
                         
+                    }
+                }
+                break;
+            
+            case "currency":
+                if (args.Length == 1)
+                {
+                    string arg = args[0].ToLower();
+                    switch (arg)
+                    {
+                        case "checkamount":
+                            consoleOutput.Text = $"current currency: {TempCurrencyManager.GetCurrencyAmount()}";
+                            break;
+                        default:
+                            consoleOutput.Text = "invalid arguments";
+                            break;
+                    }
+                }
+                else if (args.Length >= 2)
+                {
+                    string arg = args[0].ToLower();
+                    int amount = args[1].ToInt();
+                    if (args.Length == 2)
+                    {
+                        switch (arg)
+                        {
+                            case "increase":
+                                TempCurrencyManager.IncreaseMoney(amount);
+                                break;
+                            case "decrease":
+                                TempCurrencyManager.DecreaseMoney(amount);
+                                break;
+                            case "change":
+                                TempCurrencyManager.ChangeMoney(amount);
+                                break;
+                        }
                     }
                 }
                 break;

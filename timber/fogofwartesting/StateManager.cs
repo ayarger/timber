@@ -21,15 +21,30 @@ public class StateManager : Node
 
     public override void _Ready()
     {
+        actor = GetParent<Actor>();
         states = new Dictionary<string,ActorState>();
         // foreach(var state in GetChildren())
         // {
         //     var actorState = state as ActorState;
-        //     if (actorState != null) states[actorState.name] = actorState;
-
+        //     if (actorState != null)
+        //     {
+        //         if (actor.GetNode<HasTeam>("HasTeam") != null 
+        //             && actor.GetNode<HasTeam>("HasTeam").team == "enemy"
+        //             && actorState.name == "construction")
+        //         {
+        //             continue;
+        //         }
+        //         states[actorState.name] = actorState;
+        //     }
+        // }
+        // if (!states.ContainsKey("Idle"))
+        // {
+        //     states.Add("Idle", new IdleState());
+        //     states["Idle"].actor = GetParent<Actor>();
+        //     states["Idle"].manager = this;
+        //     AddChild(states["Idle"]);
         // }
         activeStates = new HashSet<ActorState>();
-        actor = GetParent<Actor>();
     }
 
     public void Configure(List<StateConfig> stateConfigs)

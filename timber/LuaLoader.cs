@@ -25,11 +25,14 @@ public class LuaLoader : Node
 	CombatConfig enemyMeleeCombatConfig = new CombatConfig("MeleeCombatState", 1, 10, 0.5f, 0.5f, 0.125f, 1);
 	CombatConfig enemyRangeCombatConfig = new CombatConfig("RangedCombatState", 3, 5, 0.3f, 0.75f, 0.125f, 1.5f);
 	CombatConfig playerCombatConfig = new CombatConfig("MeleeCombatState", 2, 20, 0.3f, 0.5f, 0.125f, 0.75f);
+	CombatConfig TowerRangeConfig = new CombatConfig("RangedCombatState", 4, 10, 0.3f, 0.5f, 0.125f, 0.75f);
 	StatConfig enemyStatConfig = new StatConfig();
 	StatConfig playerStatConfig = new StatConfig();
 
 	StateConfig idleState = new StateConfig() { name = "IdleState" };
 	StateConfig movementState = new StateConfig() { name = "MovementState" };
+
+	StateConfig ConstructionState = new StateConfig() { name = "constructionState" };
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
@@ -93,7 +96,13 @@ public class LuaLoader : Node
             {
 				actor_info.stateConfigs.Add(playerCombatConfig);
 				actor_info.statConfig = playerStatConfig;
+				actor_info.stateConfigs.Add(ConstructionState);
             }
+			else if (actor_info.team=="construction")
+			{
+				actor_info.stateConfigs.Add(TowerRangeConfig);
+				actor_info.statConfig = playerStatConfig;
+			}
             else if(actor_info.name=="Chunk")
             {
 				actor_info.stateConfigs.Add(enemyMeleeCombatConfig);
@@ -330,6 +339,7 @@ public class ActorConfig
 	public string lives_sprite_filename;
 	public string pre_ko_sprite_filename = "";
 	public string ko_sprite_filename = "";
+	public string type = "actor";
 
 	public List<string> scripts;
 
