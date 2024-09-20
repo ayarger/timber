@@ -47,8 +47,10 @@ public class Projectile : Actor
 		character_view.SetSurfaceMaterial(0, char_mat);
 
 		StateManager _stateManager = GetNode<Node>("StateManager") as StateManager;
-		IdleState _idleState = _stateManager.states["Idle"] as IdleState;
-		_idleState.has_idle_animation = false;
+		state_manager.Configure(config.stateConfigs);
+
+		// IdleState _idleState = _stateManager.states["IdleState"] as IdleState;
+		// _idleState.has_idle_animation = false;
 
 	}
 

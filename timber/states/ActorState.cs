@@ -14,6 +14,12 @@ public abstract class ActorState : Node
     {
         get;
     }
+
+    public virtual string stateType
+    {
+        get { return name; }
+    }
+
     public Actor actor;
     public StateManager manager;
 

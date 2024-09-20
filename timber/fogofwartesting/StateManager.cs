@@ -16,7 +16,7 @@ public class StateManager : Node
     public Dictionary<string,ActorState> states;
     Actor actor;
     HashSet<ActorState> activeStates;
-    public string defaultState = "Idle";
+    public string defaultState = "IdleState";
     bool enabled = true;
 
     public override void _Ready()
@@ -28,13 +28,6 @@ public class StateManager : Node
         //     if (actorState != null) states[actorState.name] = actorState;
 
         // }
-        // if (!states.ContainsKey("Idle"))
-        // {
-        //     states.Add("Idle", new IdleState());
-        //     states["Idle"].actor = GetParent<Actor>();
-        //     states["Idle"].manager = this;
-        //     AddChild(states["Idle"]);
-        // }
         activeStates = new HashSet<ActorState>();
         actor = GetParent<Actor>();
     }
@@ -43,17 +36,16 @@ public class StateManager : Node
     {
         foreach (var config in stateConfigs)
         {
-            var state = StateProcessor.GetState(config.name);
-            Node stateNode = new Node();
-            stateNode.SetScript(state.GetScript());
-
-            ActorState actorState = stateNode as ActorState;
+            var type = StateProcessor.GetState(config.name);
+            ActorState actorState = Activator.CreateInstance(type) as ActorState;
+            
             actorState.Config(config);
-            states.Add(actorState.name, actorState);
+            string stateType = actorState.stateType;
+            GD.Print(stateType);
+            states.Add(stateType, actorState);
             actorState.actor = GetParent<Actor>();
             actorState.manager = this;
             AddChild(actorState);
-            GD.Print("Configured state: " + actorState.name);
         }
     }
 

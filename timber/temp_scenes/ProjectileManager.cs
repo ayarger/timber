@@ -25,6 +25,8 @@ public class ProjectileManager : Node
 		config.name = "Projectile";
 		config.idle_sprite_filename = "acorn.png";
 		config.aesthetic_scale_factor = 0.05f;
+		StateConfig projectileState = new StateConfig() { name = "ProjectileState" };
+		config.stateConfigs.Add(projectileState);
 
 		HasTeam team = owner.GetNode<HasTeam>("HasTeam");
 		if (team != null)
@@ -55,7 +57,7 @@ public class ProjectileManager : Node
 		new_projectile.GlobalTranslation = position;
 
 		projectile_script.Configure(config);
-
+		
 		return projectile_script;
 
 	}

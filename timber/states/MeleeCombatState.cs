@@ -15,7 +15,7 @@ public class MeleeCombatState : CombatState
 
     public override string name
     {
-        get { return "CombatState"; }
+        get { return "MeleeCombatState"; }
     }
 
     // Called when the node enters the scene tree for the first time.

@@ -11,13 +11,16 @@ public class RangedCombatState : CombatState
 
     PackedScene projectile_scene = (PackedScene)ResourceLoader.Load("res://temp_scenes/Projectile.tscn");
 
+    public override string name
+    {
+        get { return "RangedCombatState"; }
+    }
     public override void Start()
     {
         inclusiveStates = new HashSet<string>();
         ArborCoroutine.StopCoroutinesOnNode(this);
         animation_offset = GD.Randf() * 100.0f;
         attackable = true;
-
         //if (actor.GetNode<HasTeam>("HasTeam").team == "player")//Hardcode different actor stats
         //{
         //    attackDamage = 40;

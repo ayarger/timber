@@ -3,7 +3,7 @@
 [ext_resource path="res://fogofwartesting/StateManager.cs" type="Script" id=1]
 [ext_resource path="res://scenes/Actor.tres" type="Material" id=2]
 [ext_resource path="res://fogofwartesting/HasTeam.cs" type="Script" id=3]
-[ext_resource path="res://temp_scenes/ProjectileState.cs" type="Script" id=4]
+[ext_resource path="res://states/ProjectileState.cs" type="Script" id=4]
 [ext_resource path="res://temp_scenes/Projectile.cs" type="Script" id=8]
 
 [sub_resource type="QuadMesh" id=1]

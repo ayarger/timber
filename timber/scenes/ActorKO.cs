@@ -53,7 +53,7 @@ public class ActorKO : Spatial//TODO check if dead or not: bug - spawn multiple 
         {
             if(killedBy!=null)
                 blastDirection = (GlobalTranslation - killedBy.GlobalTranslation).Normalized();
-            blastSpeed = 6;
+            blastSpeed = 8;
             blastRotationSpeed = 15;
             velocity = 0.2f;
             gravity = true;
@@ -64,7 +64,7 @@ public class ActorKO : Spatial//TODO check if dead or not: bug - spawn multiple 
 
         }
 
-        yield return ArborCoroutine.DoOverTime(DoFade, 10.0f);
+        yield return ArborCoroutine.DoOverTime(DoFade, 1.0f);
 
         if (endGame)
         {

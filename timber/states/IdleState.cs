@@ -9,7 +9,7 @@ public class IdleState : ActorState
     {
         get
         {
-            return "Idle";
+            return "IdleState";
         }
     }
 
