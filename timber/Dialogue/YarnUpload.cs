@@ -2,7 +2,9 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using System.IO;
-//using YarnSpinnerGodot.Editor;
+#if TOOLS
+using YarnSpinnerGodot.Editor;
+#endif
 using YarnSpinnerGodot;
 
 static class YarnManager
@@ -86,9 +88,12 @@ public class YarnUpload : Button
         newYarnProject.ResourceName = fileName;
         //newYarnProject.ResourcePath = path; // Can probably remove in future
         newYarnProject.SourceScripts.Add(path); // Can remove in the future
-        /*YarnProjectEditorUtility.CompileAllScripts(newYarnProject);
+
+        //TODO: THIS DOES NOT WORK ON THE WEB RIGHT NOW
+
+        YarnProjectEditorUtility.CompileAllScripts(newYarnProject);
         YarnProjectEditorUtility.AddLineTagsToFilesInYarnProject(newYarnProject);
-        YarnProjectEditorUtility.UpdateLocalizationCSVs(newYarnProject);*/
+        YarnProjectEditorUtility.UpdateLocalizationCSVs(newYarnProject);
         YarnManager.projects[fileName] = newYarnProject;
         //YarnSpinnerGodot.DialogueRunner dialogueRunner = GetTree().CurrentScene.FindNode("DialogueRunner", recursive: true) as YarnSpinnerGodot.DialogueRunner;
         //dialogueRunner.SetProject(newYarnProject);
