@@ -26,6 +26,8 @@ public class Tower : Actor
 	public Timer timer;
 
 	private Vector3 defaultTranslation;
+	private MeshInstance tower_sprite_view;
+	private float target_view_scale_y = 1.0f;
 
 	public override void _Ready()
 	{
@@ -35,6 +37,7 @@ public class Tower : Actor
 		_HasStats = GetNode<HasStats>("HasStats");
 		_HasStats.AddStat("construction_progress", 0, 50, 0, true);
 		defaultTranslation = GetNode<MeshInstance>("view/mesh").Translation;
+		tower_sprite_view = (MeshInstance)GetNode("view/spriteMesh");
 	}
 
 	public override void _Input(InputEvent @event)
@@ -88,11 +91,13 @@ public class Tower : Actor
 
 		Texture tex = (Texture)ResourceLoader.Load("res://temp_scripts/TempTowerSprite.png");
 
+		// ShaderMaterial char_mat = (ShaderMaterial)tower_sprite_view.GetSurfaceMaterial(0).Duplicate();
 		ShaderMaterial char_mat = (ShaderMaterial)character_view.GetSurfaceMaterial(0).Duplicate();
 
 		shadow_view = (MeshInstance)GetNode("shadow");
-		view.Scale = new Vector3(tex.GetWidth(), tex.GetHeight(), 1.0f) * 0.01f;
-		view.Scale = view.Scale * config.aesthetic_scale_factor;
+		view.Scale = new Vector3(tex.GetWidth(), 0.0f, 1.0f) * 0.01f;
+		view.Scale *= config.aesthetic_scale_factor;
+		target_view_scale_y = tex.GetHeight() * config.aesthetic_scale_factor * 0.01f;
 		initial_load = true;
 		initial_view_scale = view.Scale;
 		desired_scale_x = initial_view_scale.x;
@@ -139,7 +144,7 @@ public class Tower : Actor
 				// TODO: animation step forward
 				float currVal = _HasStats.GetStat("construction_progress").currVal;
 				float maxVal = _HasStats.GetStat("construction_progress").maxVal;
-				ConstructAnimate(currVal / maxVal);
+				ConstructAnimation_new(currVal / maxVal);
 				if(currVal >= maxVal)
 				{
 					HandleTowerStatusChange(TowerStatus.Functioning);
@@ -155,41 +160,12 @@ public class Tower : Actor
 		base.Hurt(damage, isCritical, source);
 	}
 	
-	public void ConstructAnimate(float progress)
+	public void ConstructAnimation_new(float progress)
 	{
-		var tween = GetNode<Tween>("Tween");
-		var mesh = GetNode<MeshInstance>("view/mesh");
-		Vector3 startScale = mesh.Scale;
-		Vector3 endScale = new Vector3(1, progress, 1); 
-	
-		float deltaY = (endScale.y - startScale.y) / 2.0f;
-		Vector3 startPosition = mesh.Translation;
-		ToastManager.SendToast(this, "-deltaY = " + (-deltaY).ToString() + "; endScale.y = " + progress.ToString(), ToastMessage.ToastType.Notice);
-		Vector3 endPosition = defaultTranslation + new Vector3(0, progress/2-0.5f, 0);;
-	
-		mesh.Scale = startScale;
-		// mesh.Translation = startPosition;
-	
-		tween.InterpolateProperty(
-			mesh,
-			"scale",
-			startScale,
-			endScale,
-			1.0f,
-			Tween.TransitionType.Sine,
-			Tween.EaseType.Out
-		);
-	
-		tween.InterpolateProperty(
-			mesh,
-			"translation",
-			startPosition,
-			endPosition,
-			1.0f, 
-			Tween.TransitionType.Sine,
-			Tween.EaseType.Out
-		);
-		tween.Start();
+		// Scale according to the progress (progress should be a value between 0 and 1)
+		view.Scale = new Vector3(view.Scale.x, target_view_scale_y * progress, view.Scale.z);
+		initial_view_scale = view.Scale; // Track the scale during construction
+		desired_scale_x = initial_view_scale.x;
 	}
 
 	public override void _ExitTree()
