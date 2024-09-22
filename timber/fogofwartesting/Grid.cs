@@ -47,6 +47,10 @@ public class Grid
     {
         return new Coord(Mathf.RoundToInt(worldPos.x / tileWidth), Mathf.RoundToInt(worldPos.z / tileWidth));
     }
+    public static Vector3 ConvertToWorldPos(Coord coord)
+    {
+        return new Vector3(coord.x * tileWidth, 0, coord.z * tileWidth);
+    }
     public static Vector3 LockToGrid(Vector3 worldPos)
     {
         return new Vector3(Mathf.RoundToInt(worldPos.x / tileWidth) * tileWidth, worldPos.y, Mathf.RoundToInt(worldPos.z / tileWidth) * tileWidth);

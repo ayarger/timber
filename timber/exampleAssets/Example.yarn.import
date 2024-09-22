@@ -1,6 +1,6 @@
 [remap]
 
-importer="gdyarn.yarnFile"
+importer="yarnscript"
 type="Resource"
 path="res://.import/Example.yarn-9742b1af8e7884ec080b868d7d5390a1.tres"
 

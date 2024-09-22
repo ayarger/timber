@@ -6,16 +6,27 @@ using System.Collections;
 
 public class MainMenu : Control
 {
-    public override void _Ready()
-    {
-        ArborResource.UseResource(
-            "sounds/bgm_title.ogg", 
-            (AudioStream audio) => {
-                GD.Print("playing title music.");
-                ArborAudioManager.RequestBGM(audio, true);
-            },
-            this
-        );
+	public override async void _Ready()
+	{
+		
+		if (await Utilities.IsConnectedToInternet(this))
+		{
+			GD.Print("Internet connection detected. Launching game...");
+		}
+		else
+		{
+			GD.Print("No internet connection detected.");
+			// TODO: show a message to warn the player about missing internet connection
+			return;
+		}
+		ArborResource.UseResource(
+			"sounds/bgm_title.ogg", 
+			(AudioStream audio) => {
+				GD.Print("playing title music.");
+				ArborAudioManager.RequestBGM(audio, true);
+			},
+			this
+		);
 		ArborResource.UseResource(
 			"images/diamond-g7915c1180_1280.png",
 			(Texture texture) => {

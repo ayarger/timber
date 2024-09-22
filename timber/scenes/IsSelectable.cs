@@ -7,6 +7,7 @@ public class IsSelectable : Node
 {
     static HashSet<IsSelectable> selectables = new HashSet<IsSelectable>();
     public static HashSet<IsSelectable> GetSelectables() { return selectables; }
+    private bool isRemovingParent = false;
 
     public static HashSet<IsSelectable> GetSelectablesWithinRegion(SelectionRegion region) 
     {
@@ -22,7 +23,7 @@ public class IsSelectable : Node
     }
 
     MeshInstance shadow_view;
-    SpatialMaterial shadow_material;
+    ShaderMaterial shadow_material;
     Spatial parent;
 
     Subscription<EventSelectionBegun> sub_EventSelectionBegun;
@@ -43,9 +44,9 @@ public class IsSelectable : Node
 
     void InitShadow()
     {
-        shadow_material = (SpatialMaterial)shadow_view.GetSurfaceMaterial(0).Duplicate();
-        shadow_material.ParamsAlphaScissorThreshold = 0.5f;
-        shadow_material.FlagsTransparent = true;
+        shadow_material = (ShaderMaterial)shadow_view.GetSurfaceMaterial(0).Duplicate();
+        //shadow_material.ParamsAlphaScissorThreshold = 0.5f;
+        //shadow_material.FlagsTransparent = true;
 
         shadow_view.SetSurfaceMaterial(0, shadow_material);
     }
@@ -69,19 +70,29 @@ public class IsSelectable : Node
 
     void ProcessShadow()
     {
-        shadow_material.AlbedoColor = new Color(0, 0, 0, 0.4f);
-
-        /* Selected */
         if (am_i_selected)
-            shadow_material.AlbedoColor = new Color(1, 1, 1, 1);
+        {
+            shadow_material.SetShaderParam("color", new Vector3(1.0f, 1.0f, 1.0f));
+            shadow_material.SetShaderParam("alpha", 1.0f);
+        }
         else if (AmIHovered())
-            shadow_material.AlbedoColor = new Color(1, 1, 1, 0.4f);
+        {
+            shadow_material.SetShaderParam("color", new Vector3(1.0f, 1.0f, 1.0f));
+            shadow_material.SetShaderParam("alpha", 0.4f);
+        }
+        else
+        {
+            shadow_material.SetShaderParam("color", new Vector3(0.0f, 0.0f, 0.0f));
+            shadow_material.SetShaderParam("alpha", 0.4f);
+        }
+
+        shadow_view.MaterialOverride = shadow_material;
     }
 
    public bool AmIHovered()
     {
         SelectionRegion selection_region = SelectionSystem.GetCurrentSelectionRegion();
-        return selection_region.IsPointWithinRegion(parent.GlobalTranslation);
+        return !isRemovingParent && selection_region.IsPointWithinRegion(parent.GlobalTranslation);
     }
 
     public bool am_i_selected = false;
@@ -98,5 +109,10 @@ public class IsSelectable : Node
     void OnEventSelectionBegun(EventSelectionBegun e)
     {
         am_i_selected = false;
+    }
+
+    public void OnRemovingParent()
+    {
+        isRemovingParent = true;
     }
 }

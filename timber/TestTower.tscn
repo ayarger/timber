@@ -1,0 +1,460 @@
+[gd_scene load_steps=41 format=2]
+
+[ext_resource path="res://scenes/GameManager.tscn" type="PackedScene" id=1]
+[ext_resource path="res://DebugSphere.cs" type="Script" id=2]
+[ext_resource path="res://GameplayCamera.cs" type="Script" id=3]
+[ext_resource path="res://LuaLoader.cs" type="Script" id=4]
+[ext_resource path="res://selection_square.tscn" type="PackedScene" id=5]
+[ext_resource path="res://Icon3D.cs" type="Script" id=6]
+[ext_resource path="res://SelectionSystem.cs" type="Script" id=7]
+[ext_resource path="res://scenes/GameManager.cs" type="Script" id=8]
+[ext_resource path="res://MeshIcon.cs" type="Script" id=9]
+[ext_resource path="res://InputManager.cs" type="Script" id=10]
+[ext_resource path="res://gradient256.png" type="Texture" id=11]
+[ext_resource path="res://lives_tex.png" type="Texture" id=12]
+[ext_resource path="res://spot_hud_face.png" type="Texture" id=13]
+[ext_resource path="res://square.png" type="Texture" id=14]
+[ext_resource path="res://temp_scenes/TempConsole.tscn" type="PackedScene" id=15]
+[ext_resource path="res://fogofwartesting/FogOfWar.tscn" type="PackedScene" id=16]
+[ext_resource path="res://fogofwartesting/TestMovement.cs" type="Script" id=17]
+[ext_resource path="res://temp_scenes/HUD.tscn" type="PackedScene" id=18]
+[ext_resource path="res://LuaEngine/NLuaScriptManager.cs" type="Script" id=19]
+[ext_resource path="res://addons/YarnSpinner-Godot/Runtime/InMemoryVariableStorage.cs" type="Script" id=20]
+[ext_resource path="res://addons/YarnSpinner-Godot/Runtime/Views/OptionsListView.cs" type="Script" id=21]
+[ext_resource path="res://addons/YarnSpinner-Godot/Runtime/DialogueRunner.cs" type="Script" id=22]
+[ext_resource path="res://addons/YarnSpinner-Godot/Runtime/Views/LineView.cs" type="Script" id=23]
+[ext_resource path="res://Dialogue/YarnSelect.cs" type="Script" id=24]
+[ext_resource path="res://Dialogue/YarnUpload.cs" type="Script" id=25]
+[ext_resource path="res://Dialogue/OptionView.tscn" type="PackedScene" id=26]
+[ext_resource path="res://Dialogue/StartDialogueButton.cs" type="Script" id=27]
+[ext_resource path="res://UI/Oxanium-Regular.ttf" type="DynamicFontData" id=28]
+[ext_resource path="res://addons/YarnSpinner-Godot/Runtime/LineProviders/TextLineProvider.cs" type="Script" id=29]
+[ext_resource path="res://temp_scripts/TowerManager.cs" type="Script" id=30]
+
+[sub_resource type="GDScript" id=2]
+
+[sub_resource type="SpatialMaterial" id=1]
+flags_unshaded = true
+
+[sub_resource type="QuadMesh" id=3]
+
+[sub_resource type="ViewportTexture" id=16]
+viewport_path = NodePath("FogOfWar/HighVisibility")
+
+[sub_resource type="ShaderMaterial" id=11]
+
+[sub_resource type="Shader" id=13]
+code = "shader_type canvas_item;
+
+// Uniform to control the number of filled segments
+uniform int num_segments : hint_range(1, 20) = 4;
+
+// Uniform to control the maximum number of segments
+uniform int max_num_segments : hint_range(1, 20) = 5;
+
+// Uniform to control the thickness of the ring (0.0 to 1.0)
+uniform float thickness : hint_range(0.0, 1.0) = 0.3;
+
+// Uniform to control the width of the gap between segments
+uniform float gap : hint_range(0.0, 0.1) = 0.03;
+
+// Uniform to control the starting angle of the segments (in degrees)
+uniform float start_angle : hint_range(0.0, 360.0) = 0.0;
+
+// Uniform to control the amount of anti-aliasing (edge softness)
+uniform float aa_edge_softness : hint_range(0.0, 0.1) = 0.01;
+
+// Uniform to control the start color of the ring
+uniform vec4 start_color : hint_color = vec4(1.0, 0.0, 0.0, 1.0);
+
+// Uniform to control the end color of the ring
+uniform vec4 end_color : hint_color = vec4(0.0, 1.0, 1.0, 1.0);
+
+const float PI = 3.14159265359;
+
+void fragment() {
+    // Convert the pixel coordinates to polar coordinates
+    vec2 pos = UV * 2.0 - vec2(1.0);
+    float angle = atan(pos.y, pos.x);
+    float radius = length(pos);
+
+    // Normalize angle to [0, 1]
+    float normalized_angle = angle / (2.0 * PI) + 0.5;
+
+    // Adjust normalized_angle by start_angle
+    normalized_angle = 1.0 - (normalized_angle + (start_angle / 360.0));
+    if (normalized_angle > 1.0) normalized_angle -= 1.0;
+
+    // Calculate segment width
+    float segment_width = 1.0 / float(max_num_segments);
+    
+    // Calculate which segment the current angle belongs to
+    float segment_position = mod(normalized_angle, segment_width);
+
+    // Determine if we are in the gap between segments
+    bool in_gap = segment_position > (segment_width - gap);
+
+    // Determine the part of the circle that should be visible
+    int current_segment = int(normalized_angle / segment_width) + 1;
+
+    // Anti-aliasing
+    float edge_dist = min(abs(radius - (1.0 - thickness)), abs(segment_position - (segment_width - gap)));
+    float alpha = smoothstep(0.0, aa_edge_softness, edge_dist);
+
+    // Color interpolation
+    vec4 color = mix(start_color, end_color, float(current_segment) / float(max_num_segments));
+
+    if (!in_gap && current_segment <= num_segments && radius < 1.0 && radius > 1.0 - thickness) {
+        COLOR = color;
+        COLOR.a *= alpha;
+    } else {
+        discard;
+    }
+}
+"
+
+[sub_resource type="ShaderMaterial" id=14]
+shader = SubResource( 13 )
+shader_param/num_segments = 4
+shader_param/max_num_segments = 5
+shader_param/thickness = 0.3
+shader_param/gap = 0.03
+shader_param/start_angle = 0.0
+shader_param/aa_edge_softness = 0.01
+shader_param/start_color = Color( 1, 0, 0, 1 )
+shader_param/end_color = Color( 0, 1, 1, 1 )
+
+[sub_resource type="DynamicFont" id=30]
+size = 40
+font_data = ExtResource( 28 )
+
+[sub_resource type="DynamicFont" id=28]
+size = 40
+font_data = ExtResource( 28 )
+
+[sub_resource type="DynamicFont" id=29]
+size = 40
+font_data = ExtResource( 28 )
+
+[node name="TestTower" type="Spatial"]
+script = SubResource( 2 )
+
+[node name="GameManager" parent="." instance=ExtResource( 1 )]
+script = ExtResource( 8 )
+
+[node name="LuaLoader" type="Node" parent="."]
+script = ExtResource( 4 )
+
+[node name="GameplayCamera" type="Camera" parent="."]
+transform = Transform( 1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 14.5959, 15.5959 )
+current = true
+fov = 25.8
+script = ExtResource( 3 )
+
+[node name="DebugSphere" type="CSGSphere" parent="."]
+visible = false
+material = SubResource( 1 )
+script = ExtResource( 2 )
+
+[node name="SelectionSystem" type="Node" parent="."]
+script = ExtResource( 7 )
+selection_square_scene = ExtResource( 5 )
+
+[node name="active_cursor" parent="SelectionSystem" instance=ExtResource( 5 )]
+
+[node name="icon" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, -0.907975, 0.419024, 0, -0.419024, -0.907975, 36.6761, 12.1712, 27.6394 )
+mesh = SubResource( 3 )
+script = ExtResource( 6 )
+
+[node name="icon2" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 0.70508, 0.709128, 0, -0.709128, 0.70508, 38.676, 12.1656, 27.6434 )
+mesh = SubResource( 3 )
+script = ExtResource( 6 )
+PerformTrace = false
+
+[node name="FogOfWar" parent="." instance=ExtResource( 16 )]
+
+[node name="Node" type="Spatial" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.55476, 0 )
+script = ExtResource( 9 )
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="viewport_tex_rect" type="TextureRect" parent="CanvasLayer"]
+visible = false
+margin_right = 1000.0
+margin_bottom = 1000.0
+rect_scale = Vector2( 0.5, 0.5 )
+texture = SubResource( 16 )
+stretch_mode = 1
+
+[node name="bottom_gradient" type="TextureRect" parent="CanvasLayer"]
+visible = false
+modulate = Color( 0, 0, 0, 1 )
+anchor_top = 0.9
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_right = 40.0
+margin_bottom = 40.0
+texture = ExtResource( 11 )
+expand = true
+
+[node name="HudeFaceLeft_shadow" type="TextureRect" parent="CanvasLayer"]
+visible = false
+self_modulate = Color( 0, 0, 0, 1 )
+material = SubResource( 11 )
+anchor_top = 1.0
+anchor_bottom = 1.0
+margin_left = 10.0
+margin_top = -246.0
+margin_right = 266.0
+margin_bottom = 10.0
+texture = ExtResource( 13 )
+stretch_mode = 7
+
+[node name="HudeFaceLeft" type="TextureRect" parent="CanvasLayer"]
+visible = false
+material = SubResource( 11 )
+anchor_top = 1.0
+anchor_bottom = 1.0
+margin_top = -256.0
+margin_right = 256.0
+texture = ExtResource( 13 )
+expand = true
+stretch_mode = 6
+
+[node name="TextureRect2" type="TextureRect" parent="CanvasLayer"]
+visible = false
+material = SubResource( 14 )
+margin_left = 347.0
+margin_top = 984.0
+margin_right = 437.0
+margin_bottom = 1104.0
+texture = ExtResource( 14 )
+expand = true
+stretch_mode = 5
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/TextureRect2"]
+margin_left = 12.0
+margin_top = 13.0
+margin_right = 140.0
+margin_bottom = 141.0
+rect_scale = Vector2( 0.5, 0.5 )
+texture = ExtResource( 12 )
+
+[node name="HUD" parent="CanvasLayer" instance=ExtResource( 18 )]
+
+[node name="TempConsole" parent="CanvasLayer" instance=ExtResource( 15 )]
+
+[node name="DirectionalLight2" type="DirectionalLight" parent="."]
+transform = Transform( 0.766044, 0.454519, -0.454519, 0, 0.707107, 0.707107, 0.642788, -0.541675, 0.541675, 0, 0, 0 )
+shadow_enabled = true
+shadow_color = Color( 0.47451, 0.47451, 0.47451, 1 )
+
+[node name="InputManager" type="Node" parent="."]
+script = ExtResource( 10 )
+
+[node name="TestMovement" type="Node" parent="."]
+script = ExtResource( 17 )
+
+[node name="Dialogue" type="Control" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="CanvasLayer" type="CanvasLayer" parent="Dialogue"]
+
+[node name="DialogueRunner" type="Node" parent="Dialogue/CanvasLayer"]
+script = ExtResource( 22 )
+variableStoragePath = NodePath("../InMemoryVariableStorage")
+dialogueViewPaths = [ NodePath("../LineView"), NodePath("../OptionsListView") ]
+startNode = "Start"
+startAutomatically = false
+lineProviderPath = NodePath("../TextLineProvider")
+
+[node name="VariableDebugText" type="RichTextLabel" parent="Dialogue/CanvasLayer"]
+margin_right = 40.0
+margin_bottom = 40.0
+
+[node name="LineView" type="Control" parent="Dialogue/CanvasLayer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_right = -539.0
+margin_bottom = -295.0
+script = ExtResource( 23 )
+viewControlPath = NodePath("ViewControl")
+useFadeEffect = false
+lineTextPath = NodePath("ViewControl/LineText")
+characterNameTextPath = NodePath("ViewControl/CharacterNameText")
+typewriterEffectSpeed = 240.0
+continueButtonPath = NodePath("ViewControl/ContinueButton")
+
+[node name="ViewControl" type="Control" parent="Dialogue/CanvasLayer/LineView"]
+anchor_left = 0.348
+anchor_top = 0.31
+anchor_right = 0.977
+anchor_bottom = 1.0
+margin_top = 30.0
+margin_right = 59.0
+margin_bottom = 40.0
+
+[node name="LineText" type="RichTextLabel" parent="Dialogue/CanvasLayer/LineView/ViewControl"]
+anchor_top = 1.52
+anchor_right = 1.0
+anchor_bottom = 1.982
+margin_left = -23.0
+margin_top = -253.508
+margin_right = 17.3511
+margin_bottom = -257.37
+custom_fonts/normal_font = SubResource( 30 )
+text = "Dialogue text goes here"
+
+[node name="ColorRect" type="ColorRect" parent="Dialogue/CanvasLayer/LineView/ViewControl/LineText"]
+show_behind_parent = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_right = 40.0
+margin_bottom = 40.0
+color = Color( 0.545098, 0.545098, 0.545098, 0.32549 )
+
+[node name="CharacterNameText" type="RichTextLabel" parent="Dialogue/CanvasLayer/LineView/ViewControl"]
+anchor_top = 0.844
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -22.0
+margin_right = 18.0
+custom_fonts/normal_font = SubResource( 28 )
+text = "Name"
+
+[node name="ColorRect" type="ColorRect" parent="Dialogue/CanvasLayer/LineView/ViewControl/CharacterNameText"]
+show_behind_parent = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_right = 40.0
+margin_bottom = 40.0
+color = Color( 0.545098, 0.545098, 0.545098, 0.694118 )
+
+[node name="ContinueButton" type="Button" parent="Dialogue/CanvasLayer/LineView/ViewControl"]
+anchor_left = 0.712
+anchor_top = 1.104
+anchor_right = 1.0
+anchor_bottom = 1.418
+margin_left = 137.514
+margin_top = 87.9783
+margin_right = -24.6489
+margin_bottom = -19.2398
+custom_fonts/font = SubResource( 29 )
+text = "->"
+__meta__ = {
+"_editor_description_": ""
+}
+
+[node name="OptionsListView" type="Control" parent="Dialogue/CanvasLayer"]
+anchor_right = 0.963
+anchor_bottom = 0.925
+margin_right = 40.0
+margin_bottom = 40.0
+mouse_filter = 2
+script = ExtResource( 21 )
+optionViewPrefab = ExtResource( 26 )
+lastLineTextPath = NodePath("LastLineText")
+viewControlPath = NodePath("VBoxContainer")
+boxContainerPath = NodePath("VBoxContainer")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Dialogue/CanvasLayer/OptionsListView"]
+anchor_left = 0.33
+anchor_top = 0.262
+anchor_right = 0.623
+anchor_bottom = 0.76
+margin_right = 40.0
+margin_bottom = 40.0
+
+[node name="LastLineText" type="RichTextLabel" parent="Dialogue/CanvasLayer/OptionsListView"]
+margin_right = 40.0
+
+[node name="ColorRect" type="ColorRect" parent="Dialogue/CanvasLayer/OptionsListView/LastLineText"]
+margin_right = 40.0
+margin_bottom = 40.0
+
+[node name="InMemoryVariableStorage" type="Node" parent="Dialogue/CanvasLayer"]
+script = ExtResource( 20 )
+debugTextViewPath = NodePath("../VariableDebugText")
+
+[node name="TextLineProvider" type="Node2D" parent="Dialogue/CanvasLayer"]
+script = ExtResource( 29 )
+
+[node name="Button" type="Button" parent="Dialogue/CanvasLayer"]
+anchor_left = 0.683
+anchor_top = 0.218
+anchor_right = 0.683
+anchor_bottom = 0.252
+margin_left = 445.0
+margin_top = 460.0
+margin_right = 595.0
+margin_bottom = 510.0
+rect_min_size = Vector2( 150, 50 )
+text = "Start Dialogue"
+script = ExtResource( 27 )
+dialogueRunner = NodePath("../DialogueRunner")
+
+[node name="Upload yarn project" type="Button" parent="Dialogue/CanvasLayer"]
+anchor_left = 0.884
+anchor_top = 0.896
+anchor_right = 0.992
+anchor_bottom = 0.968
+margin_right = 12.0
+margin_bottom = 20.0
+text = "Upload"
+script = ExtResource( 25 )
+fileDialogPath = NodePath("FileDialog")
+
+[node name="FileDialog" type="FileDialog" parent="Dialogue/CanvasLayer/Upload yarn project"]
+margin_left = -1202.28
+margin_top = -744.68
+margin_right = -786.28
+margin_bottom = -549.68
+rect_min_size = Vector2( 400, 140 )
+rect_scale = Vector2( 2, 2 )
+window_title = "Open a File"
+mode = 0
+access = 2
+
+[node name="Select yarn project" type="Button" parent="Dialogue/CanvasLayer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 1694.0
+margin_top = 830.0
+margin_right = -4.0
+margin_bottom = -138.0
+text = "Select"
+script = ExtResource( 24 )
+popupPath = NodePath("PopupMenu")
+
+[node name="PopupMenu" type="PopupMenu" parent="Dialogue/CanvasLayer/Select yarn project"]
+anchor_left = -7.546
+anchor_top = -7.304
+anchor_right = 1.0
+anchor_bottom = 2.166
+margin_left = 470.212
+margin_top = 290.048
+margin_right = -989.0
+margin_bottom = -603.592
+rect_scale = Vector2( 2, 2 )
+
+[node name="TextureRect" type="TextureRect" parent="Dialogue/CanvasLayer"]
+margin_right = 40.0
+margin_bottom = 40.0
+
+[node name="NLuaManager" type="Node" parent="."]
+script = ExtResource( 19 )
+
+[node name="TowerManager" type="Node" parent="."]
+script = ExtResource( 30 )
+
+[connection signal="pressed" from="Dialogue/CanvasLayer/Button" to="Dialogue/CanvasLayer/Button" method="_on_Button_pressed"]
+[connection signal="pressed" from="Dialogue/CanvasLayer/Upload yarn project" to="Dialogue/CanvasLayer/Upload yarn project" method="_on_Button_pressed"]
+[connection signal="file_selected" from="Dialogue/CanvasLayer/Upload yarn project/FileDialog" to="Dialogue/CanvasLayer/Upload yarn project" method="_on_FileDialog_file_selected"]
+[connection signal="pressed" from="Dialogue/CanvasLayer/Select yarn project" to="Dialogue/CanvasLayer/Select yarn project" method="ShowPopupMenu"]
+[connection signal="id_pressed" from="Dialogue/CanvasLayer/Select yarn project/PopupMenu" to="Dialogue/CanvasLayer/Select yarn project" method="OnProjectSelected"]
+
+[editable path="FogOfWar"]

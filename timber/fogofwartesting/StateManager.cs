@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections;
 using System.Linq;
 
+
 public class StateManager : Node
 {
     // Declare member variables here. Examples:
@@ -15,14 +16,26 @@ public class StateManager : Node
     public Dictionary<string,ActorState> states;
     Actor actor;
     HashSet<ActorState> activeStates;
+    string defaultState = "Idle";
+    bool enabled = true;
 
     public override void _Ready()
     {
+        actor = GetParent<Actor>();
         states = new Dictionary<string,ActorState>();
         foreach(var state in GetChildren())
         {
             var actorState = state as ActorState;
-            if (actorState != null) states[actorState.name] = actorState;
+            if (actorState != null)
+            {
+                if (actor.GetNode<HasTeam>("HasTeam") != null 
+                    && actor.GetNode<HasTeam>("HasTeam").team == "enemy"
+                    && actorState.name == "construction")
+                {
+                    continue;
+                }
+                states[actorState.name] = actorState;
+            }
         }
         if (!states.ContainsKey("Idle"))
         {
@@ -32,20 +45,27 @@ public class StateManager : Node
             AddChild(states["Idle"]);
         }
         activeStates = new HashSet<ActorState>();
-        actor = GetParent<Actor>();
+    }
+
+    public void Configure(List<StateConfig> stateConfigs)
+    {
+
     }
 
     public override void _Process(float delta)
     {
-        if (activeStates.Count == 0)
+        if (enabled)
         {
-            EnableState("Idle");
-        }
-        ResetAnimation();
-        foreach ( var state in new HashSet<ActorState>(activeStates))
-        {
-            state.Update(delta);
-            state.Animate(delta);
+            if (activeStates.Count == 0)
+            {
+                EnableState(defaultState);
+            }
+            ResetAnimation();
+            foreach (var state in new HashSet<ActorState>(activeStates))
+            {
+                state.Update(delta);
+                state.Animate(delta);
+            }
         }
 
     }
@@ -70,6 +90,7 @@ public class StateManager : Node
             activeStates.Add(states[state]);
             states[state].Start();
         }
+        
     }
 
     public void DisableState(string state)
@@ -102,5 +123,19 @@ public class StateManager : Node
         oldScale = actor.view.Scale;
     }
 
+    public bool IsStateActive(string state)
+    {
+        return activeStates.Contains(states[state]);
+    }
 
+    public void DisableAllState()
+    {
+        enabled = false;
+        foreach (ActorState state in activeStates)
+        {
+            DisableState(state.name);
+        }
+       
+        
+    }
 }

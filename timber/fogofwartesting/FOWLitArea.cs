@@ -24,9 +24,9 @@ public class FOWLitArea : Sprite
         timer += delta;
         float radius = isLow ? baseRadius * 1.3f : baseRadius * (1f + .075f * Mathf.Sin(2f*timer));
 
-        if (follow == null)
+        if (follow == null || !IsInstanceValid(follow))
         {
-            QueueFree();
+            follow = null;
             return;
         }
 
