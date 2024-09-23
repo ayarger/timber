@@ -174,6 +174,7 @@ public class HasStats : Node
 	// Refactor AddStat to send signals to BarContainer/UI Manager.
 	public void AddStat(string name, int min, int max, int initial, bool display)
 	{
+		GD.Print("Adding stat: " + name + " min: " + min + " max: " + max + " initial: " + initial + " display: " + display);
 		// Add new stat into the dictionary
 		if (display && Stats_With_Bar.Count < 3)
 		{

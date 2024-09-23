@@ -32,7 +32,7 @@ public class LuaLoader : Node
 	StateConfig idleState = new StateConfig() { name = "IdleState" };
 	StateConfig movementState = new StateConfig() { name = "MovementState" };
 
-	StateConfig ConstructionState = new StateConfig() { name = "constructionState" };
+	CombatConfig ConstructionState = new CombatConfig("ConstructionState", 1, 10, 0.5f, 0.5f, 0.125f, 1);
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()

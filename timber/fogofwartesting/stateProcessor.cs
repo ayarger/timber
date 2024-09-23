@@ -15,18 +15,44 @@ public static class StateProcessor
         public static void Initialize()
         {
             ActorStateDict.Clear();
-            
-            var actorstates = typeof(ActorState).Assembly.GetTypes();
 
-            var allActorStateTypes = actorstates.Where(t => t.IsSubclassOf(typeof(ActorState)) && t.IsAbstract == false);
+            try{
+                var actorstates = typeof(ActorState).Assembly.GetTypes();
+                var allActorStateTypes = actorstates.Where(t => t.IsSubclassOf(typeof(ActorState)) && t.IsAbstract == false);
 
-            foreach (var s in allActorStateTypes)
+                foreach (var s in allActorStateTypes)
+                {
+                    GD.Print("Adding state: " + s.Name);
+                    ActorStateDict.Add(s.Name, s);
+                }
+
+                IsInitialized = true;
+            }
+            catch (ReflectionTypeLoadException ex)
             {
-                GD.Print("Adding state: " + s.Name);
-                ActorStateDict.Add(s.Name, s);
+                // Log or handle loader exceptions
+                var loaderExceptions = ex.LoaderExceptions;
+                foreach (var loaderException in loaderExceptions)
+                {
+                    GD.Print(loaderException.Message);
+                }
+                
+                // Use the types that were successfully loaded
+                var allActorStateTypes = ex.Types.Where(t => t != null && t.IsSubclassOf(typeof(ActorState)) && t.IsAbstract == false);
+                
+                foreach(var type in allActorStateTypes){
+                    GD.Print(type);
+                }
+                foreach (var s in allActorStateTypes)
+                {
+                    GD.Print("Adding state: " + s.Name);
+                    ActorStateDict.Add(s.Name, s);
+                }
+
+                IsInitialized = true;
             }
 
-            IsInitialized = true;
+            
         }
 
         public static Type GetState(string targetState){
