@@ -40,3 +40,7 @@ message Map {
     // TODO: See how is rows and cols calculated
 }
 
+message SimpleString {
+    string message = 1;
+}
+

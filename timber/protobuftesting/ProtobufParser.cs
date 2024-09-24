@@ -12,6 +12,9 @@ using Google.Protobuf.Message;
 using System.Diagnostics;
 using Amazon.Auth.AccessControlPolicy;
 using Amazon.S3.Model;
+using System.Diagnostics.Eventing.Reader;
+using System.Reflection;
+using System.Runtime.InteropServices;
 
 public class ProtobufParser : Node
 {
@@ -48,34 +51,80 @@ public class ProtobufParser : Node
 
 
     // TODO: Add control logic to ArborResource.SetResources(), so they can handle the new <T> Type
+    //else 
+    //{
+    //    string file_extension = System.IO.Path.GetExtension(resource).ToLower();
+    //    if(file_extension == ".bin")
+    //    {
+    //        ParseBinary<>
+    //    }
+    //    else 
+    //    {
+    //        string s = Encoding.UTF8.GetString(body);
+    //        JsonSerializerSettings settings = new JsonSerializerSettings();
+    //        SetResource(key, JsonConvert.DeserializeObject(s, Type.GetType(type), settings));
+    //    }
+    //}
+
     // TODO: Not exactly sure where to insert the binary parsing methods
 
-    public void ParseBinary<T>(long result, long responseCode, string[] headers, byte[] body, string resource, string type, HTTPRequest request_used, string force_key_for_asset = null)
+    public static T ParseBinary<T>(byte[] body, string resource, string type)
     {
+        T output;    
 
         if(type == "string")
         {
-            byte[] message = body;
-            int lastDotIndex = resource.LastIndexOf('.');
-            string fileType = resource.Substring(lastDotIndex + 1); 
-
-            if(resource == "M")
-
-            if (fileType == "Actor")
-            {
-
-            }
-
-            var protobufData = Google.Protobuf.Message.GameActor.Parser.ParseFrom(body);
-            string stringOutput = protobufData.ToString();
-            GD.Print(stringOutput);
+            // TODO: Rebuild .proto again
+            var protobufData = Google.Protobuf.Message.SimpleString.Parser.ParseFrom(body);
+            output = protobufData.ToString();
+            GD.Print(output);
         }
             
         else
         {
-            byte[] message = System.IO.File.ReadAllBytes("./protobuftesting/cuff.bin");
-            var cuff = Google.Protobuf.Message.GameActor.Parser.ParseFrom(message);
+            string file_extension = System.IO.Path.GetExtension(resource).ToLower();
+            
+            // At some point these will likely change. 
+            if(file_extension == ".Actor")
+            {
+                var protoActor = Google.Protobuf.Message.GameActor.Parser.ParseFrom(body);
+
+                string[] attachedScripts = Array.Empty<string>();
+                foreach(string item in protoActor.Scripts)
+                {
+                    attachedScripts.Append(item);
+                }
+                GD.Print(attachedScripts);
+
+                // I think you can use Handlers but it's not appearing for v3 proto
+                ActorConfig localActor = new ActorConfig
+                {
+                    guid = Guid.Parse(protoActor.Guid),
+                    name = protoActor.Name,
+                    team = protoActor.Team,
+                    map_code = protoActor.MapCode[0],
+                    aesthetic_scale_factor = protoActor.AestheticScaleFactor,
+                    idle_sprite_filename = protoActor.IdleSpriteFilename,
+                    lives_sprite_filename = protoActor.LivesIconFilename,
+                    scripts = attachedScripts                    
+                };
+
+                output = localActor;
+            }
+            else if (file_extension == ".Config")
+            {
+                var Config = Google.Protobuf.Message.GameConfig.Parser.ParseFrom(body);
+            }
+            else if (file_extension == ".JSON")
+            {
+                var ModFile = Google.Protobuf.Message.ModFiles.Parser.ParseFrom(body);
+            }
+
+
+            output = "1";
         }
+
+        return output;
     }
 
     // Handles the web process of grabbing a binary file off AWS
