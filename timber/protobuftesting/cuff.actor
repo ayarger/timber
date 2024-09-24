@@ -1,0 +1,10 @@
+{
+  "guid":"6ef3ddce-110e-4da6-aa59-1a8628d3f264",
+  "name": "Cuff",
+  "team": "player",
+  "map_code":"c",
+  "aesthetic_scale_factor":1.15,
+  "idle_sprite_filename": "cuff_idle.png",
+  "lives_icon_filename": "spot_lives.png",
+  "scripts": ["LogActorName"]
+}
