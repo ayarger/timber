@@ -151,7 +151,7 @@ public class HasStats : Node
 	public float curr_health = 100;
 	public float max_health = 100;
 	public float health_ratio = 1;
-	//TODO: max 3 overhead progress bar can be stacked together
+	//TODO: max 3 overhead bar can be stacked together
 	[Signal] public delegate void stat_change(string stat_name);
 
 	BarContainer container;
@@ -170,26 +170,35 @@ public class HasStats : Node
 		{
 			Stats_With_Bar.Add(name);
 			int index = Stats_With_Bar.Count - 1;
-			
-			// TODO create bars
 
-			if (name == "health" && !Stats.ContainsKey(name))
+			if (!Stats.ContainsKey(name))
 			{
-				Bar bar = container.CreatePrimary(name);
-			}
+				//create stat
+				Stats[name] = new Stat(name, min, max, initial, display);
 
-			else
-			{
-				Bar bar =  container.CreateSecondary(name);
-				if (index == 2)
+
+				//create bars
+				if (name == "health")
 				{
-					//GD.Print("green");
-					bar.ChangeColor(new Color(0.33f, 0.63f, 0.35f, 1));
+					Bar bar = container.CreatePrimary(name);
+				}
+
+				else
+				{
+					Bar bar = container.CreateSecondary(name);
+					if (index == 2)
+					{
+						//TODO custom color
+						bar.ChangeColor(new Color(0.33f, 0.63f, 0.35f, 1));
+					}
 				}
 			}
+
+		
+
+			// TODO Prompt player to change display settings if > 3
 		}
-		// TODO Prompt player to change display settings if > 3
-		Stats[name] = new Stat(name, min, max, initial, display);
+
 	}
 
 	// TODO: remove stat

@@ -7,7 +7,6 @@ public class StatManager : Node
     [Export]
     public string node_name = "HasStats";
     private HasStats stats;
-    private Random random = new Random();
     Control hud;
 
     public override void _Ready()

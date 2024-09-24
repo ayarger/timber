@@ -80,6 +80,7 @@ public class LuaLoader : Node
             ActorConfig actor_info = ArborResource.Get<ActorConfig>(actor_file);
 
 			//temporary
+			//TODO: update actor config & enemy config
 			playerStatConfig.stats["health"] = 100;
 
 			enemyStatConfig.stats["health"] = 50;
@@ -233,7 +234,7 @@ public class LuaLoader : Node
 		//viewport.Size = new Vector2(1000, 1000);
 		//GD.Print("setting viewport to " + width + " " + height);
 		Spatial player_node = GetNode<Spatial>("Spot");
-        GD.Print("PLAYER AT " + player_node.GlobalTranslation.x + " " + player_node.GlobalTranslation.z);
+        //GD.Print("PLAYER AT " + player_node.GlobalTranslation.x + " " + player_node.GlobalTranslation.z);
 
         float new_marker_x = viewport.Size.x * (player_node.GlobalTranslation.x * 0.5f / width);
 		float new_marker_y = viewport.Size.y * (player_node.GlobalTranslation.z * 0.5f / height);

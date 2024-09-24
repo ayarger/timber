@@ -22,8 +22,6 @@ public class Bar : Control
         tex_progress = GetNode<TextureProgress>("FrontProgress");
         // get target_tween
         ui_tween = GetNode<Tween>("UITween");
-        // connect stats change event here
-        //target_data.Connect("stat_change", this, nameof(OnUIStatChange));
         statChangeEvent = EventBus.Subscribe<StatChangeEvent>(OnUIStatChange);
     }
 
@@ -76,11 +74,12 @@ public class Bar : Control
         // Setup the tween to scale the child from 0 to 1 (original size).
         ui_tween.InterpolateProperty(this,"rect_scale", RectScale,new Vector2(1, 1), 0.3f,Tween.TransitionType.Back, Tween.EaseType.Out);
         ui_tween.Start(); // Start the tween.
+        tex_progress.Value = target_data.Stats[data_name].currVal;
     }
 
     public void OnCreate2()
     {
-       Color currentColor = new Color(Modulate.r, Modulate.g, Modulate.b, 0);
+        Color currentColor = new Color(Modulate.r, Modulate.g, Modulate.b, 0);
         FadeIn(1);
         ui_tween.Start();
 
