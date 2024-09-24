@@ -17,6 +17,9 @@ public class ProjectileState : ActorState//TODO collision body to chekc for coll
     RigidBody collision;
     public override void Start()
     {
+        Node rb = GetParent().GetParent().FindNode("RigidBody");
+        GD.Print("found rigidbody: " + rb);
+        rb.Connect("body_entered", this, "onBodyEntered");
     }
 
     float rotationSpeed = 5, horizontalSpeed = 10f, verticalSpeed = 1f, lifeTime = 5f, timer = 0;
@@ -51,6 +54,7 @@ public class ProjectileState : ActorState//TODO collision body to chekc for coll
 
     public void onBodyEntered(Node body)
     {
+        GD.Print("Collision");
         Actor TargetActor = body.GetNode("../..") as Actor;
         if (TargetActor != null)
         {

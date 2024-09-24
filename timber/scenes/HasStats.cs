@@ -164,10 +164,13 @@ public class HasStats : Node
 
     public void updateOnStatChanged(StatChangeEvent e)
     {
-        if(Stats[e.stat_name].Ratio != 1)
-        {
-            container.ShowOnStatChanged();
-        }
+		if (Stats.ContainsKey(e.stat_name)){
+			if(Stats[e.stat_name].Ratio != 1)
+			{
+				container.ShowOnStatChanged();
+			}
+		}
+        
     }
 
 

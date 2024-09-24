@@ -12,7 +12,7 @@
 
 [sub_resource type="QuadMesh" id=8]
 
-[sub_resource type="Shader" id=9]
+[sub_resource type="Shader" id=13]
 code = "shader_type spatial;
 
 uniform sampler2D fowTexture;
@@ -67,7 +67,7 @@ void fragment() {
 }"
 
 [sub_resource type="ShaderMaterial" id=10]
-shader = SubResource( 9 )
+shader = SubResource( 13 )
 shader_param/world_position = null
 shader_param/screenPosX = 0.0
 shader_param/screenPosZ = 0.0
@@ -79,7 +79,7 @@ shader_param/texture_albedo = ExtResource( 11 )
 
 [sub_resource type="QuadMesh" id=11]
 
-[sub_resource type="Shader" id=7]
+[sub_resource type="Shader" id=14]
 code = "shader_type spatial;
 
 uniform sampler2D fowTexture;
@@ -122,7 +122,7 @@ void fragment() {
 "
 
 [sub_resource type="ShaderMaterial" id=12]
-shader = SubResource( 7 )
+shader = SubResource( 14 )
 shader_param/world_position = null
 shader_param/screenPosX = 0.0
 shader_param/screenPosZ = 0.0
