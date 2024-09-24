@@ -15,7 +15,7 @@ public class NLuaScriptManager : Node
 {
 
     public static int id = 0;
-    public static LuaEngine luaState;
+    public static Script luaState;
     public static HashSet<string> registeredClasses;
     public static string globalClass = "global";
     public static NLuaScriptManager Instance;
@@ -113,7 +113,7 @@ public class NLuaScriptManager : Node
 
             //Run our coroutine with any required parameters (currently, just delta if we are running a tick update).
             res = luaState.DoString($"local co, res = coroutine.resume(timber_runner,global {prm}, {{{data}}})\n" +
-                "return res");
+                "return res").String;
 
 			if (res == "{}" || res == ""||res == null) break;
 			GD.Print("Got response: "+res);
@@ -207,27 +207,27 @@ public class NLuaScriptManager : Node
 
         GD.Print("Lua:" + ResourceLoader.Exists("res://LuaEngine/testmodules/protoc.lua"));
         Instance = this;
-        luaState = new LuaEngine();
-        //luaState.Options.ScriptLoader = new FileSystemScriptLoader();
+        luaState = new Script();
 
         //This may cause issues
         string abspath = $"{System.IO.Directory.GetCurrentDirectory()}/LuaEngine/testmodules/".Replace("\\", "/");
-        //((ScriptLoaderBase)luaState.Options.ScriptLoader).ModulePaths = new string[] { abspath+"?", $"{abspath}?.lua", $"{abspath}/lunajson/?", $"{abspath}/lunajson/?.lua" };
 
+        luaState.Options.ScriptLoader = new FileSystemScriptLoader();
+        ((ScriptLoaderBase)luaState.Options.ScriptLoader).ModulePaths = new string[] { abspath+"?", $"{abspath}?.lua", $"{abspath}/lunajson/?", $"{abspath}/lunajson/?.lua" };
 
         //TODO: Add a proper package manager, paths will likely not work on HTML ever
 
         //luaState.DoString("package.path = 'testmodules/?.lua;' .. package.path");
         //luaState.DoString($"package.path = '{abspath}?.lua;' .. package.path");
         //luaState.DoString("package.path = 'LuaEngine/testmodules/?.lua;' .. package.path");
-        luaState.AddModuleDir("res://LuaEngine/testmodules");
+        //luaState.AddModuleDir("res://LuaEngine/testmodules");
         registeredClasses = new HashSet<string>();
         luaObjects = new HashSet<string>();
         luaActors = new Dictionary<string, Spatial>();
         string testc = "local pb = require \"pb\"\r\nlocal protoc = require \"protoc\"\r\n\r\n-- load schema from text (just for demo, use protoc.new() in real world)\r\nassert(protoc:load [[\r\n   message Phone {\r\n\t  optional string name        = 1;\r\n\t  optional int64  phonenumber = 2;\r\n   }\r\n   message Person {\r\n\t  optional string name     = 1;\r\n\t  optional int32  age      = 2;\r\n\t  optional string address  = 3;\r\n\t  repeated Phone  contacts = 4;\r\n   } ]])\r\n\r\n-- lua table data\r\nlocal data = {\r\n   name = \"ilse\",\r\n   age  = 18,\r\n   contacts = {\r\n\t  { name = \"alice\", phonenumber = 12312341234 },\r\n\t  { name = \"bob\",   phonenumber = 45645674567 }\r\n   }\r\n}\r\n\r\n-- encode lua table data into binary format in lua string and return\r\nlocal bytes = assert(pb.encode(\"Person\", data))\r\nreturn pb.tohex(bytes)";
 
-        GD.Print(luaState.DoString(testc));
-        //luaState.Globals["print"] = (Action<object>)Print;
+        //GD.Print(luaState.DoString(testc));
+        luaState.Globals["print"] = (Action<object>)Print;
 
 		//Initialize global Lua manager. Make global a "global object"?
 		//https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Overview/Variables/Global_Variables.htm
