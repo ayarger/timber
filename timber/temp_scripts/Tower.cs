@@ -68,7 +68,6 @@ public class Tower : Actor
 			// enable combatstate
 			ToastManager.SendToast(this, "Switch to Functioning", ToastMessage.ToastType.Notice);
 			// state_manager.SetProcess(true);
-			GetNode<StateManager>("StateManager").DisableState("MovementState");
 		}
 	} 
 

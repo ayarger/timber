@@ -2,7 +2,9 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using System.IO;
+#if TOOLS
 using YarnSpinnerGodot.Editor;
+#endif
 using YarnSpinnerGodot;
 
 static class YarnManager
@@ -86,6 +88,9 @@ public class YarnUpload : Button
         newYarnProject.ResourceName = fileName;
         //newYarnProject.ResourcePath = path; // Can probably remove in future
         newYarnProject.SourceScripts.Add(path); // Can remove in the future
+
+        //TODO: THIS DOES NOT WORK ON THE WEB RIGHT NOW
+
         YarnProjectEditorUtility.CompileAllScripts(newYarnProject);
         YarnProjectEditorUtility.AddLineTagsToFilesInYarnProject(newYarnProject);
         YarnProjectEditorUtility.UpdateLocalizationCSVs(newYarnProject);

@@ -33,11 +33,17 @@ public class RangedCombatState : CombatState
 		if (TargetActor != null && IsInstanceValid(TargetActor))//TODO check if actor is dead
 		{
 			Coord dest = Grid.ConvertToCoord(TargetActor.GlobalTranslation);
-			MovementState b = (manager.states["MovementState"] as MovementState);
+			MovementState b = null;
+			if (manager.states.ContainsKey("MovementState"))
+			 	b = (manager.states["MovementState"] as MovementState);
 
 
 			if (attackable && !WithinRange(dest))
 			{
+				if(b==null){
+					manager.DisableState("CombatState");
+					return;
+				}
 				ArborCoroutine.StopCoroutinesOnNode(this);
 				attacking = false;
 				attackable = true;
