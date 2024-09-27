@@ -1,11 +1,8 @@
 using Godot;
-using System;
 using System.Collections.Generic;
-using System.IO;
-#if TOOLS
-using YarnSpinnerGodot.Editor;
-#endif
 using YarnSpinnerGodot;
+
+
 
 static class YarnManager
 {
@@ -91,18 +88,15 @@ public class YarnUpload : Button
 
         //TODO: THIS DOES NOT WORK ON THE WEB RIGHT NOW
 
-        YarnProjectEditorUtility.CompileAllScripts(newYarnProject);
-        YarnProjectEditorUtility.AddLineTagsToFilesInYarnProject(newYarnProject);
-        YarnProjectEditorUtility.UpdateLocalizationCSVs(newYarnProject);
+        YarnEditorUtilityDecoupled.CompileAllScripts(newYarnProject);
+        YarnEditorUtilityDecoupled.AddLineTagsToFilesInYarnProject(newYarnProject);
+
+        //TODO: This function assumes running on OS, not a priority
+        YarnEditorUtilityDecoupled.UpdateLocalizationCSVs(newYarnProject);
+        
         YarnManager.projects[fileName] = newYarnProject;
         //YarnSpinnerGodot.DialogueRunner dialogueRunner = GetTree().CurrentScene.FindNode("DialogueRunner", recursive: true) as YarnSpinnerGodot.DialogueRunner;
         //dialogueRunner.SetProject(newYarnProject);
     }
 
-    private string GenerateUniqueDirectoryName()
-    {
-        var uniqueID = Guid.NewGuid().ToString();
-        string uniqueFolderName = $"YarnProject_{uniqueID}";
-        return uniqueFolderName;
-    }
 }
