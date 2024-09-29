@@ -95,7 +95,7 @@ public class StateManager : Node
 
     public void DisableState(string state)
     {
-        if (activeStates.Contains(states[state]))
+        if (states.ContainsKey(state) && activeStates.Contains(states[state]))
         {
             activeStates.Remove(states[state]);
             states[state].Stop();

@@ -1,3 +1,5 @@
+using System;
+using System.Threading.Tasks;
 using Godot;
 
 // TODO: switch to HasStat
@@ -26,7 +28,6 @@ public class Tower : Actor
 	public Timer timer;
 
 	private Vector3 defaultTranslation;
-	private MeshInstance tower_sprite_view;
 	private float target_view_scale_y = 1.0f;
 
 	public override void _Ready()
@@ -37,7 +38,6 @@ public class Tower : Actor
 		_HasStats = GetNode<HasStats>("HasStats");
 		_HasStats.AddStat("construction_progress", 0, 50, 0, true);
 		defaultTranslation = GetNode<MeshInstance>("view/mesh").Translation;
-		tower_sprite_view = (MeshInstance)GetNode("view/spriteMesh");
 	}
 
 	public override void _Input(InputEvent @event)
@@ -91,7 +91,6 @@ public class Tower : Actor
 
 		Texture tex = (Texture)ResourceLoader.Load("res://temp_scripts/TempTowerSprite.png");
 
-		// ShaderMaterial char_mat = (ShaderMaterial)tower_sprite_view.GetSurfaceMaterial(0).Duplicate();
 		ShaderMaterial char_mat = (ShaderMaterial)character_view.GetSurfaceMaterial(0).Duplicate();
 
 		shadow_view = (MeshInstance)GetNode("shadow");
@@ -162,10 +161,7 @@ public class Tower : Actor
 	
 	public void ConstructAnimation_new(float progress)
 	{
-		// Scale according to the progress (progress should be a value between 0 and 1)
-		view.Scale = new Vector3(view.Scale.x, target_view_scale_y * progress, view.Scale.z);
-		initial_view_scale = view.Scale; // Track the scale during construction
-		desired_scale_x = initial_view_scale.x;
+		initial_view_scale = new Vector3(view.Scale.x, target_view_scale_y * progress, view.Scale.z);
 	}
 
 	public override void _ExitTree()
