@@ -156,15 +156,28 @@ public class HasStats : Node
 
 	BarContainer container;
 
-	public override void _Ready()
-	{
-		container = BarContainer.Create(this);
-	}
+    public override void _Ready()
+    {
+        container = BarContainer.Create(this);
+        EventBus.Subscribe<StatChangeEvent>(updateOnStatChanged);
+    }
+
+    public void updateOnStatChanged(StatChangeEvent e)
+    {
+		if (Stats.ContainsKey(e.stat_name)){
+			if(Stats[e.stat_name].Ratio != 1)
+			{
+				container.ShowOnStatChanged();
+			}
+		}
+        
+    }
 
 
 	// Refactor AddStat to send signals to BarContainer/UI Manager.
 	public void AddStat(string name, int min, int max, int initial, bool display)
 	{
+		GD.Print("Adding stat: " + name + " min: " + min + " max: " + max + " initial: " + initial + " display: " + display);
 		// Add new stat into the dictionary
 		if (display && Stats_With_Bar.Count < 3)
 		{

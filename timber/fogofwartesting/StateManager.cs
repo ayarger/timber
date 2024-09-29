@@ -16,40 +16,52 @@ public class StateManager : Node
     public Dictionary<string,ActorState> states;
     Actor actor;
     HashSet<ActorState> activeStates;
-    string defaultState = "Idle";
+    public string defaultState = "IdleState";
     bool enabled = true;
 
     public override void _Ready()
     {
         actor = GetParent<Actor>();
         states = new Dictionary<string,ActorState>();
-        foreach(var state in GetChildren())
-        {
-            var actorState = state as ActorState;
-            if (actorState != null)
-            {
-                if (actor.GetNode<HasTeam>("HasTeam") != null 
-                    && actor.GetNode<HasTeam>("HasTeam").team == "enemy"
-                    && actorState.name == "construction")
-                {
-                    continue;
-                }
-                states[actorState.name] = actorState;
-            }
-        }
-        if (!states.ContainsKey("Idle"))
-        {
-            states.Add("Idle", new IdleState());
-            states["Idle"].actor = GetParent<Actor>();
-            states["Idle"].manager = this;
-            AddChild(states["Idle"]);
-        }
+        // foreach(var state in GetChildren())
+        // {
+        //     var actorState = state as ActorState;
+        //     if (actorState != null)
+        //     {
+        //         if (actor.GetNode<HasTeam>("HasTeam") != null 
+        //             && actor.GetNode<HasTeam>("HasTeam").team == "enemy"
+        //             && actorState.name == "construction")
+        //         {
+        //             continue;
+        //         }
+        //         states[actorState.name] = actorState;
+        //     }
+        // }
+        // if (!states.ContainsKey("Idle"))
+        // {
+        //     states.Add("Idle", new IdleState());
+        //     states["Idle"].actor = GetParent<Actor>();
+        //     states["Idle"].manager = this;
+        //     AddChild(states["Idle"]);
+        // }
         activeStates = new HashSet<ActorState>();
     }
 
     public void Configure(List<StateConfig> stateConfigs)
     {
-
+        foreach (var config in stateConfigs)
+        {
+            var type = StateProcessor.GetState(config.name);
+            ActorState actorState = Activator.CreateInstance(type) as ActorState;
+            
+            actorState.Config(config);
+            string stateType = actorState.stateType;
+            GD.Print(stateType);
+            states.Add(stateType, actorState);
+            actorState.actor = GetParent<Actor>();
+            actorState.manager = this;
+            AddChild(actorState);
+        }
     }
 
     public override void _Process(float delta)

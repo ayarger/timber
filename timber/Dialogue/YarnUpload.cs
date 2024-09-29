@@ -1,9 +1,8 @@
 using Godot;
-using System;
 using System.Collections.Generic;
-using System.IO;
-using YarnSpinnerGodot.Editor;
 using YarnSpinnerGodot;
+
+
 
 static class YarnManager
 {
@@ -86,18 +85,18 @@ public class YarnUpload : Button
         newYarnProject.ResourceName = fileName;
         //newYarnProject.ResourcePath = path; // Can probably remove in future
         newYarnProject.SourceScripts.Add(path); // Can remove in the future
-        YarnProjectEditorUtility.CompileAllScripts(newYarnProject);
-        YarnProjectEditorUtility.AddLineTagsToFilesInYarnProject(newYarnProject);
-        YarnProjectEditorUtility.UpdateLocalizationCSVs(newYarnProject);
+
+        //TODO: THIS DOES NOT WORK ON THE WEB RIGHT NOW
+
+        YarnEditorUtilityDecoupled.CompileAllScripts(newYarnProject);
+        YarnEditorUtilityDecoupled.AddLineTagsToFilesInYarnProject(newYarnProject);
+
+        //TODO: This function assumes running on OS, not a priority
+        YarnEditorUtilityDecoupled.UpdateLocalizationCSVs(newYarnProject);
+        
         YarnManager.projects[fileName] = newYarnProject;
         //YarnSpinnerGodot.DialogueRunner dialogueRunner = GetTree().CurrentScene.FindNode("DialogueRunner", recursive: true) as YarnSpinnerGodot.DialogueRunner;
         //dialogueRunner.SetProject(newYarnProject);
     }
 
-    private string GenerateUniqueDirectoryName()
-    {
-        var uniqueID = Guid.NewGuid().ToString();
-        string uniqueFolderName = $"YarnProject_{uniqueID}";
-        return uniqueFolderName;
-    }
 }

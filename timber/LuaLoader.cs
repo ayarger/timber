@@ -22,13 +22,17 @@ public class LuaLoader : Node
 	static LuaLoader instance;
 
 	//temporary fake json
-	CombatConfig enemyMeleeCombatConfig = new CombatConfig(1, 10, 0.5f, 0.5f, 0.125f, 1);
-	CombatConfig enemyRangeCombatConfig = new CombatConfig(3, 5, 0.3f, 0.75f, 0.125f, 1.5f);
-	CombatConfig playerCombatConfig = new CombatConfig(2, 20, 0.3f, 0.5f, 0.125f, 0.75f);
-	CombatConfig TowerRangeConfig = new CombatConfig(4, 10, 0.3f, 0.5f, 0.125f, 0.75f);
+	CombatConfig enemyMeleeCombatConfig = new CombatConfig("MeleeCombatState", 1, 10, 0.5f, 0.5f, 0.125f, 1);
+	CombatConfig enemyRangeCombatConfig = new CombatConfig("RangedCombatState", 3, 5, 0.3f, 0.75f, 0.125f, 1.5f);
+	CombatConfig playerCombatConfig = new CombatConfig("MeleeCombatState", 2, 20, 0.3f, 0.5f, 0.125f, 0.75f);
+	CombatConfig TowerRangeConfig = new CombatConfig("RangedCombatState", 4, 10, 0.3f, 0.5f, 0.125f, 0.75f);
 	StatConfig enemyStatConfig = new StatConfig();
 	StatConfig playerStatConfig = new StatConfig();
 
+	StateConfig idleState = new StateConfig() { name = "IdleState" };
+	StateConfig movementState = new StateConfig() { name = "MovementState" };
+
+	CombatConfig ConstructionState = new CombatConfig("ConstructionState", 1, 10, 0.5f, 0.5f, 0.125f, 1);
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
@@ -69,6 +73,8 @@ public class LuaLoader : Node
 
 		List<string> actor_files = manifest.Search("actor_definitions/*");
 
+		StateProcessor.Initialize();
+
 		foreach (string actor_file in actor_files)
         {
 			ArborResource.Load<ActorConfig>(actor_file);
@@ -76,8 +82,10 @@ public class LuaLoader : Node
 
 		foreach(string actor_file in actor_files)
 		{
+			GD.Print("Loading actor file: " + actor_file);
 			yield return ArborResource.WaitFor(actor_file);
             ActorConfig actor_info = ArborResource.Get<ActorConfig>(actor_file);
+			
 
 			//temporary
 			playerStatConfig.stats["health"] = 100;
@@ -88,6 +96,7 @@ public class LuaLoader : Node
             {
 				actor_info.stateConfigs.Add(playerCombatConfig);
 				actor_info.statConfig = playerStatConfig;
+				actor_info.stateConfigs.Add(ConstructionState);
             }
 			else if (actor_info.team=="construction")
 			{
@@ -104,8 +113,9 @@ public class LuaLoader : Node
 				actor_info.stateConfigs.Add(enemyRangeCombatConfig);
 				actor_info.statConfig = enemyStatConfig;
 			}
+			actor_info.stateConfigs.Add(idleState);
+			actor_info.stateConfigs.Add(movementState);
 			
-
             map_code_to_actor_config[actor_info.map_code] = actor_info;
         }
 	}
@@ -195,7 +205,6 @@ public class LuaLoader : Node
 				AddChild(new_tile);
 				new_tile.GlobalTranslation = new Vector3(x * Grid.tileWidth, -1, z * Grid.tileWidth);
 			}
-
 			if(map_code_to_actor_config.ContainsKey(current_char))
             {
 				ActorConfig config = map_code_to_actor_config[current_char];
@@ -416,9 +425,9 @@ public class CombatConfig : StateConfig
 	public float attackRecovery = 0.125f;//anim after attack
 	public float attackCooldown = 1f;
 
-	public CombatConfig(int ar, int damage, float critRate, float windup, float recovery, float cooldown)//temp constructor
+	public CombatConfig(string n, int ar, int damage, float critRate, float windup, float recovery, float cooldown)//temp constructor
     {
-		name = "CombatState";
+		name = n;
 		attackRange = ar;
 		attackDamage = damage;
 		criticalHitRate = critRate;

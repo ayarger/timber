@@ -7,7 +7,7 @@ testluaobject.MyValue = 5
 -- UNSEEN CODE --
 
 function testluaobject:process()
-	Print("Process works!")
+	--Print("Process works!")
 end
 
 -- For testing purposes, this is getting run every 5 seconds

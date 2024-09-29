@@ -12,6 +12,11 @@ public class ConstructionState : CombatState
 	{
 		get { return "ConstructionState"; }
 	}
+
+	public override string stateType
+    {
+        get { return "ConstructionState"; }
+    }
 	
 	public override void Config(StateConfig stateConfig)
 	{
@@ -36,7 +41,7 @@ public class ConstructionState : CombatState
 				attackable = true;
 				ArborCoroutine.StopCoroutinesOnNode(this);
 				manager.DisableState("ConstructionState");
-				manager.EnableState("Idle");
+				manager.EnableState("IdleState");
 				return;
 			}
 

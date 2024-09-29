@@ -4,7 +4,7 @@ using System;
 using System.Collections;
 using static System.Net.Mime.MediaTypeNames;
 
-public class ActorKO : Spatial
+public class ActorKO : Spatial//TODO check if dead or not: bug - spawn multiple KO when killed at the same time
 {
     MeshInstance character_view;
 
@@ -18,8 +18,7 @@ public class ActorKO : Spatial
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
-        character_view = (MeshInstance)GetNode("rotationPoint/view/mesh");
-        GD.Print("starting soon");
+        character_view = (MeshInstance)GetNode("view/mesh");
         ArborCoroutine.StartCoroutine(DoAnimation());
     }
 
@@ -54,7 +53,7 @@ public class ActorKO : Spatial
         {
             if(killedBy!=null)
                 blastDirection = (GlobalTranslation - killedBy.GlobalTranslation).Normalized();
-            blastSpeed = 6;
+            blastSpeed = 8;
             blastRotationSpeed = 15;
             velocity = 0.2f;
             gravity = true;
@@ -65,7 +64,7 @@ public class ActorKO : Spatial
 
         }
 
-        yield return ArborCoroutine.DoOverTime(DoFade, 10.0f);
+        yield return ArborCoroutine.DoOverTime(DoFade, 1.0f);
 
         if (endGame)
         {

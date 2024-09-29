@@ -74,7 +74,6 @@ public class Tower : Actor
 			// enable combatstate
 			ToastManager.SendToast(this, "Switch to Functioning", ToastMessage.ToastType.Notice);
 			// state_manager.SetProcess(true);
-			GetNode<StateManager>("StateManager").DisableState("MovementState");
 		}
 	} 
 
@@ -110,14 +109,10 @@ public class Tower : Actor
 		character_view.SetSurfaceMaterial(0, char_mat);
 
 		StateManager _stateManager = GetNode<Node>("StateManager") as StateManager;
-		IdleState _idleState = _stateManager.states["Idle"] as IdleState;
-		_idleState.has_idle_animation = false;
+		// IdleState _idleState = _stateManager.states["Idle"] as IdleState;
+		// _idleState.has_idle_animation = false;
 		
-		foreach(StateConfig s in config.stateConfigs)
-		{
-			string stateName = s.name;
-			state_manager.states[stateName].Config(s);
-		}
+		state_manager.Configure(config.stateConfigs);
 
 		StatManager statManager = GetNode<StatManager>("StatManager");
 		if (statManager != null)

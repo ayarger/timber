@@ -25,7 +25,8 @@ public class TowerManager : Node
 
 	private TowerManagerStatus status;
 	public List<Tower> tower_spawn_positions = new List<Tower>();
-	CombatConfig TowerRangeConfig = new CombatConfig(20, 10, 0.3f, 0.5f, 0.125f, 0.75f);
+	CombatConfig TowerRangeConfig = new CombatConfig("RangedCombatState", 20, 10, 0.3f, 0.5f, 0.125f, 0.75f);
+	StateConfig IdleConfig = new StateConfig() { name = "IdleState" };
 
 	public override void _Ready()
 	{
@@ -77,6 +78,7 @@ public class TowerManager : Node
 		// for Tower only
 		config.statConfig.stats["buildCost"] = 10;
 		config.stateConfigs.Add(TowerRangeConfig);
+		config.stateConfigs.Add(IdleConfig);
 		config.type = "tower";
 	
 		Tower new_tower = SpawnActorOfType(config, spawnPos);
@@ -111,7 +113,6 @@ public class TowerManager : Node
 		tower_spawn_positions.Add(tower_script);
 
 		new_tower.GlobalTranslation = position;
-		new_tower.AddChild(tower_script);
 		
 		return tower_script;
 	}
