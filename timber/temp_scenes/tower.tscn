@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=2]
+[gd_scene load_steps=15 format=2]
 
 [ext_resource path="res://Components/IsSelectable.tscn" type="PackedScene" id=1]
 [ext_resource path="res://temp_scripts/Tower.cs" type="Script" id=2]
@@ -13,6 +13,7 @@
 
 [sub_resource type="Shader" id=13]
 code = "shader_type spatial;
+render_mode blend_mix; // Enable blending for transparency
 
 uniform sampler2D fowTexture;
 
@@ -28,8 +29,8 @@ uniform sampler2D texture_albedo : hint_albedo;
 uniform float alpha_cutout_threshold : hint_range(0, 1) = 0.5;
 uniform float static_amount = 0.0; // Amount of static pattern (0 to 1)
 
+uniform float alpha : hint_range(0.0, 1.0) = 1.0; 
 
-// Hash function for procedural noise
 float hash(vec2 p) {
     p = fract(p * vec2(123.4, 789.6));
     p += dot(p, p + 45.32);
@@ -37,33 +38,26 @@ float hash(vec2 p) {
 }
 
 void fragment() {
-	float visibility_value = texture(fowTexture,vec2((world_position.x-screenPosX)/screenWidth,((world_position.z-screenPosZ)/screenHeight))).r;
+    float visibility_value = texture(fowTexture, vec2((world_position.x - screenPosX) / screenWidth, (world_position.z - screenPosZ) / screenHeight)).r;
     vec4 tex_color = texture(texture_albedo, UV);
-	ALBEDO = vec3(tex_color.r, tex_color.g, tex_color.b) * visibility_value;
-	
-	if(visibility_value < 0.001f)
-		discard;
-	
-    // Perform alpha cutout
+    ALBEDO = vec3(tex_color.r, tex_color.g, tex_color.b) * visibility_value;
     ALPHA_SCISSOR = alpha_cutout_threshold;
-    if(tex_color.a < 0.5f)
+    if (tex_color.a < alpha_cutout_threshold) {
         discard;
-		
-	
-	if (UV.x > visibility_value || UV.y > visibility_value)
-	{
-		discard;
-	}
-	/*
+    }
+    if (UV.x > visibility_value || UV.y > visibility_value) {
+        discard;
+    }
+    ALPHA = tex_color.a * visibility_value * alpha;
+    
+    /*
     // Generate noise based on UV and time
     float noise = hash(UV * 30.0 + vec2(0, TIME * 5.0));
-
-    // Apply static effect
     vec3 static_color = mix(tex_color.rgb, tex_color.rgb + noise * static_amount, static_amount);
-
-    // Output the final color
-    ALBEDO = static_color;*/
-}"
+    ALBEDO = static_color;
+    */
+}
+"
 
 [sub_resource type="ShaderMaterial" id=10]
 shader = SubResource( 13 )
@@ -74,6 +68,7 @@ shader_param/screenHeight = 5.0
 shader_param/screenWidth = 5.0
 shader_param/alpha_cutout_threshold = 0.5
 shader_param/static_amount = 0.0
+shader_param/alpha = 0.5
 shader_param/texture_albedo = ExtResource( 11 )
 
 [sub_resource type="QuadMesh" id=11]

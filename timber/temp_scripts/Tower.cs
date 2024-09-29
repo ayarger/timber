@@ -70,10 +70,9 @@ public class Tower : Actor
 			towerStatus = TowerStatus.Functioning;
 			config.team = "player";
 			GetNode<HasTeam>("HasTeam").team = config.team;
-			
 			// enable combatstate
+			ConstructionAnimation_complete();
 			ToastManager.SendToast(this, "Switch to Functioning", ToastMessage.ToastType.Notice);
-			// state_manager.SetProcess(true);
 		}
 	} 
 
@@ -138,7 +137,7 @@ public class Tower : Actor
 				// TODO: animation step forward
 				float currVal = _HasStats.GetStat("construction_progress").currVal;
 				float maxVal = _HasStats.GetStat("construction_progress").maxVal;
-				ConstructAnimation_new(currVal / maxVal);
+				ConstructAnimation_in_progress(currVal / maxVal);
 				if(currVal >= maxVal)
 				{
 					HandleTowerStatusChange(TowerStatus.Functioning);
@@ -154,11 +153,16 @@ public class Tower : Actor
 		base.Hurt(damage, isCritical, source);
 	}
 	
-	public void ConstructAnimation_new(float progress)
+	public void ConstructAnimation_in_progress(float progress)
 	{
 		initial_view_scale = new Vector3(view.Scale.x, target_view_scale_y * progress, view.Scale.z);
 	}
 
+	public void ConstructionAnimation_complete()
+	{
+		view.Scale = new Vector3(view.Scale.x*1.3f, view.Scale.y*1.5f, view.Scale.z);
+	}
+	
 	public override void _ExitTree()
 	{
 		Grid.Get(curr_coord).actor = null;
