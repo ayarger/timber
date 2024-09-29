@@ -14,6 +14,21 @@ public class actorDeathEvent
 	}
 }
 
+public class actorHurtEvent
+{
+	public Actor actor;
+	public int damage;
+	public bool isCritical;
+	public Actor source;
+	public actorHurtEvent(Actor a, int d, bool c, Actor s)
+	{
+		actor = a;
+		damage = d;
+		isCritical = c;
+		source = s;
+	}
+}
+
 public class Actor : Spatial
 {
 	// Declare member variables here. Examples:
@@ -85,6 +100,7 @@ public class Actor : Spatial
             ArborResource.Load<Texture>("images/" + config.ko_sprite_filename);
             actorKO = true;
         }
+
 
 		ArborResource.UseResource<Texture>(
 			"images/" + config.idle_sprite_filename,
@@ -242,8 +258,8 @@ public class Actor : Spatial
                 CombatState c = (state_manager.states["CombatState"] as CombatState);
                 if (source != null && !state_manager.IsStateActive("CombatState"))
                 {
-                    Coord targetCoord = Grid.ConvertToCoord(source.GlobalTranslation);
-                    if (c.WithinRange(targetCoord))
+
+                    if (state_manager.states.ContainsKey("MovementState") && !state_manager.IsStateActive("MovementState"))
                     {
                         c.TargetActor = source;
                         state_manager.EnableState("CombatState");
@@ -284,7 +300,6 @@ public class Actor : Spatial
         }
         
         QueueFree();
-
 
 	}
 

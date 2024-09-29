@@ -56,7 +56,6 @@ public class StateManager : Node
             
             actorState.Config(config);
             string stateType = actorState.stateType;
-            GD.Print(stateType);
             states.Add(stateType, actorState);
             actorState.actor = GetParent<Actor>();
             actorState.manager = this;
