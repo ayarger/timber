@@ -36,11 +36,6 @@ public class Bar : Control
         tex_progress.SelfModulate = _color;
     }
 
-    public void toggleVisible(bool visible)
-    {
-        Visible = visible;
-    }
-
     /// <summary>
     /// Update UI on health change
     /// </summary>
@@ -82,6 +77,7 @@ public class Bar : Control
         Color currentColor = new Color(Modulate.r, Modulate.g, Modulate.b, 0);
         FadeIn(1);
         ui_tween.Start();
+        tex_progress.Value = target_data.Stats[data_name].currVal;
 
     }
 

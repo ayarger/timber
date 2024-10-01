@@ -65,7 +65,8 @@ public class Actor : Spatial
 			currentTile = td;
 			td.actor = this;
 		});
-		// update ActorDict after actor is loaded into the scene
+
+		// update ActorDict after actor is loaded into the scene (for displaynig actor info)
 		UpdateActorDict();
 	}
 

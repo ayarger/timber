@@ -148,13 +148,12 @@ public class HasStats : Node
 	public Dictionary<string, Stat> Stats = new Dictionary<string, Stat>();
 	public List<string> Stats_With_Bar = new List<string>();
 
+	[Signal] public delegate void stat_change(string stat_name);
+	BarContainer container;
+	// legacy code -> UIorb UIbar
 	public float curr_health = 100;
 	public float max_health = 100;
 	public float health_ratio = 1;
-	//TODO: max 3 overhead bar can be stacked together
-	[Signal] public delegate void stat_change(string stat_name);
-
-	BarContainer container;
 
 	public override void _Ready()
 	{
@@ -176,6 +175,7 @@ public class HasStats : Node
 				//create stat
 				Stats[name] = new Stat(name, min, max, initial, display);
 
+				//TODO: add to actorConfig
 
 				//create bars
 				if (name == "health")
@@ -193,16 +193,35 @@ public class HasStats : Node
 					}
 				}
 			}
-
-		
-
 			// TODO Prompt player to change display settings if > 3
 		}
 
 	}
 
-	// TODO: remove stat
+	/// <summary>
+    /// Remove stat and its corresponding bar
+    /// </summary>
+    /// <param name="name"></param>
+	public void RemoveStat(string name)
+    {
+        if (Stats.ContainsKey(name))
+        {
+            if (Stats[name].displayOn)
+            {
+				Bar curr_bar = container.bar_dict[name];
+				curr_bar.QueueFree();
+            }
+			Stats.Remove(name);
+        }
 
+		//TODO: remove from actorConfig
+    }
+
+	/// <summary>
+    /// Get Stats
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns></returns>
 	public Stat GetStat(string name)
 	{
 		if (Stats.ContainsKey(name))
@@ -211,10 +230,25 @@ public class HasStats : Node
 	}
 
 
+	public void ToggleBarVisibility(string name, bool visible)
+	{
+		Bar curr_bar = container.bar_dict[name];
+
+		if (curr_bar != null) {
+			if (visible)
+			{
+				curr_bar.FadeIn(0.2f);
+			}
+
+            else
+            {
+				curr_bar.FadeOut(0.2f);
+            }
+		}
+    }
 
 	public override void _Process(float delta)
 	{
 
 	}
-
 }

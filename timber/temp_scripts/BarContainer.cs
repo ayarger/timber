@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 
 public class BarContainer : Control
 {
@@ -12,7 +13,8 @@ public class BarContainer : Control
     int count = 0;
     public float scaling_factor = 6f;
     bool displayOn;
-
+    //get ui bar by corresponding data name
+    public Dictionary<string, Bar> bar_dict;
     public override void _Ready()
     {
         // get target_mesh
@@ -142,6 +144,7 @@ public class BarContainer : Control
         // move the primary bar to top
         new_bar.GetParent().MoveChild(new_bar, 0);
         new_bar.OnCreate();
+        //bar_dict[data_name] = new_bar;
         return new_bar;
     }
 
@@ -154,7 +157,7 @@ public class BarContainer : Control
         container2.Visible = true;
         container2.AddChild(new_bar);
         new_bar.OnCreate();
-
+        //bar_dict[data_name] = new_bar;
         return new_bar;
     }
 
