@@ -31,6 +31,10 @@ public class Bar : Control
         data_name = _data_name;
     }
 
+    /// <summary>
+    /// Change bar color
+    /// </summary>
+    /// <param name="_color"></param>
     public void ChangeColor(Color _color)
     {
         tex_progress.SelfModulate = _color;
@@ -41,7 +45,6 @@ public class Bar : Control
     /// </summary>
     public void OnUIStatChange(StatChangeEvent e)
     {
-        //GD.Print("curr_stat_name: " + data_name, " incoming singal name: " + e.stat_name);
         if (e.stat_name == data_name)
         {
             float target_value = target_data.Stats[data_name].Ratio * 100;

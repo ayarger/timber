@@ -89,8 +89,16 @@ public class StateManager : Node
             }
             activeStates.Add(states[state]);
             states[state].Start();
+            // On CombatState enabled
+            if (states[state].GetType() == typeof(CombatState) ||
+                states[state].GetType() == typeof(MeleeCombatState) ||
+                states[state].GetType() == typeof(RangedCombatState))
+            {
+                EventBus.Publish(new CombatStateEnabledEvent(true, actor));
+            }
+
         }
-        
+
     }
 
     public void DisableState(string state)
@@ -99,6 +107,14 @@ public class StateManager : Node
         {
             activeStates.Remove(states[state]);
             states[state].Stop();
+            // On CombatState enabled
+            if (states[state].GetType() == typeof(CombatState) ||
+                states[state].GetType() == typeof(MeleeCombatState) ||
+                states[state].GetType() == typeof(RangedCombatState))
+            {
+                EventBus.Publish(new CombatStateEnabledEvent(false, actor));
+            }
+
         }
 
     }

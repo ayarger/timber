@@ -130,7 +130,6 @@ public class Stat
 		Ratio = currVal / maxVal;
 		// publish statChange event when clamp function is called
 		EventBus.Publish<StatChangeEvent>(new StatChangeEvent(name));
-		GD.Print(name + "stat change event published");
 	}
 }
 

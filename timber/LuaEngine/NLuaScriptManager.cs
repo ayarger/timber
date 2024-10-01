@@ -115,7 +115,7 @@ public class NLuaScriptManager : Node
 				"return res").String;
 
 			if (res == "{}" || res == ""||res == null) break;
-			GD.Print("Got response: "+res);
+			//GD.Print("Got response: "+res);
 			data = "";
 			Dictionary<string, object>[] cmds = JsonConvert.DeserializeObject<Dictionary<string,object>[]>(res);
 
@@ -152,7 +152,7 @@ public class NLuaScriptManager : Node
 		else if (command == "P")
 		{
 			//Replace with toast later
-			GD.Print(Convert.ToString(cmd["param"]));
+			//GD.Print(Convert.ToString(cmd["param"]));
 		}
 		else if (command == "R")
 		{
@@ -170,7 +170,7 @@ public class NLuaScriptManager : Node
 		}
 		else if(command == "T")
 		{
-			GD.Print(actor.ToString() + " just posted " + cmd["toastString"] + " to the toast!");
+			//GD.Print(actor.ToString() + " just posted " + cmd["toastString"] + " to the toast!");
 
 		}
 		else if (command == "H")
