@@ -5,6 +5,7 @@ package Message;
 option csharp_namespace = "Google.Protobuf.Message";
 
 // /protoc-25/bin/protoc --csharp_out=:. Messages.proto
+// ./../protoc-25/bin/protoc --csharp_out=:. Messages.proto
 
 message GameActor {
     string guid = 1;
@@ -20,7 +21,7 @@ message GameActor {
     repeated string scripts = 8;
 }
 
-message GameConfig {
+message GameConfigData {
     string name = 1;
     string title_screen_background_image = 2;
     string title_screen_logo_image = 3;
@@ -44,3 +45,13 @@ message SimpleString {
     string message = 1;
 }
 
+message ActorCombatConfig {
+    int32 attackRange = 1;
+    int32 attackDamage = 2;
+    float criticalHitRate = 3;
+    float attackWindup = 4;
+	float attackRecovery = 5;
+	float attackCooldown = 6;
+
+    string stateName = 7;
+}
