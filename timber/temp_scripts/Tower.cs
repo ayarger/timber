@@ -1,3 +1,5 @@
+using System;
+using System.Threading.Tasks;
 using Godot;
 
 // TODO: switch to HasStat
@@ -25,6 +27,9 @@ public class Tower : Actor
 	public HasStats _HasStats;
 	public Timer timer;
 
+	private Vector3 defaultTranslation;
+	private float target_view_scale_y = 1.0f;
+
 	public override void _Ready()
 	{
 		base._Ready();
@@ -32,6 +37,7 @@ public class Tower : Actor
 		timer = GetNode<Timer>("Timer");
 		_HasStats = GetNode<HasStats>("HasStats");
 		_HasStats.AddStat("construction_progress", 0, 50, 0, true);
+		defaultTranslation = GetNode<MeshInstance>("view/mesh").Translation;
 	}
 
 	public override void _Input(InputEvent @event)
@@ -64,11 +70,9 @@ public class Tower : Actor
 			towerStatus = TowerStatus.Functioning;
 			config.team = "player";
 			GetNode<HasTeam>("HasTeam").team = config.team;
-			
 			// enable combatstate
+			ConstructionAnimation_complete();
 			ToastManager.SendToast(this, "Switch to Functioning", ToastMessage.ToastType.Notice);
-			// state_manager.SetProcess(true);
-			GetNode<StateManager>("StateManager").DisableState("MovementState");
 		}
 	} 
 
@@ -88,8 +92,9 @@ public class Tower : Actor
 		ShaderMaterial char_mat = (ShaderMaterial)character_view.GetSurfaceMaterial(0).Duplicate();
 
 		shadow_view = (MeshInstance)GetNode("shadow");
-		view.Scale = new Vector3(tex.GetWidth(), tex.GetHeight(), 1.0f) * 0.01f;
-		view.Scale = view.Scale * config.aesthetic_scale_factor;
+		view.Scale = new Vector3(tex.GetWidth(), 0.0f, 1.0f) * 0.01f;
+		view.Scale *= config.aesthetic_scale_factor;
+		target_view_scale_y = tex.GetHeight() * config.aesthetic_scale_factor * 0.01f;
 		initial_load = true;
 		initial_view_scale = view.Scale;
 		desired_scale_x = initial_view_scale.x;
@@ -103,14 +108,10 @@ public class Tower : Actor
 		character_view.SetSurfaceMaterial(0, char_mat);
 
 		StateManager _stateManager = GetNode<Node>("StateManager") as StateManager;
-		IdleState _idleState = _stateManager.states["Idle"] as IdleState;
-		_idleState.has_idle_animation = false;
+		// IdleState _idleState = _stateManager.states["Idle"] as IdleState;
+		// _idleState.has_idle_animation = false;
 		
-		foreach(StateConfig s in config.stateConfigs)
-		{
-			string stateName = s.name;
-			state_manager.states[stateName].Config(s);
-		}
+		state_manager.Configure(config.stateConfigs);
 
 		StatManager statManager = GetNode<StatManager>("StatManager");
 		if (statManager != null)
@@ -132,8 +133,12 @@ public class Tower : Actor
 			DamageTextManager.DrawText(damage, this, "construction");
 			if(_HasStats != null)
 			{
-				_HasStats.GetStat("construction_progress").IncreaseCurrentValue(damage);
-				if(_HasStats.GetStat("construction_progress").currVal >= _HasStats.GetStat("construction_progress").maxVal)
+				_HasStats.GetStat("construction_progress").IncreaseCurrentValue(damage); // increase construction meter
+				// TODO: animation step forward
+				float currVal = _HasStats.GetStat("construction_progress").currVal;
+				float maxVal = _HasStats.GetStat("construction_progress").maxVal;
+				ConstructAnimation_in_progress(currVal / maxVal);
+				if(currVal >= maxVal)
 				{
 					HandleTowerStatusChange(TowerStatus.Functioning);
 					return;
@@ -147,7 +152,17 @@ public class Tower : Actor
 		
 		base.Hurt(damage, isCritical, source);
 	}
+	
+	public void ConstructAnimation_in_progress(float progress)
+	{
+		initial_view_scale = new Vector3(view.Scale.x, target_view_scale_y * progress, view.Scale.z);
+	}
 
+	public void ConstructionAnimation_complete()
+	{
+		view.Scale = new Vector3(view.Scale.x*1.3f, view.Scale.y*1.5f, view.Scale.z);
+	}
+	
 	public override void _ExitTree()
 	{
 		Grid.Get(curr_coord).actor = null;

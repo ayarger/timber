@@ -108,7 +108,7 @@ namespace YarnSpinnerGodot
 
         private static CsvHelper.Configuration.Configuration CsvConfiguration;
 
-        private static CsvHelper.Configuration.Configuration GetConfiguration()
+        public static CsvHelper.Configuration.Configuration GetConfiguration()
         {
             if (CsvConfiguration == null)
             {

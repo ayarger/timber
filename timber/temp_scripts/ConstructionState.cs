@@ -12,6 +12,11 @@ public class ConstructionState : CombatState
 	{
 		get { return "ConstructionState"; }
 	}
+
+	public override string stateType
+    {
+        get { return "ConstructionState"; }
+    }
 	
 	public override void Config(StateConfig stateConfig)
 	{
@@ -36,7 +41,7 @@ public class ConstructionState : CombatState
 				attackable = true;
 				ArborCoroutine.StopCoroutinesOnNode(this);
 				manager.DisableState("ConstructionState");
-				manager.EnableState("Idle");
+				manager.EnableState("IdleState");
 				return;
 			}
 
@@ -155,10 +160,10 @@ public class ConstructionState : CombatState
 		time += delta;
 		/* Return unit to cell if it has been moved by other states */
 		actor.view.Translation += (Vector3.Zero - actor.view.Translation) * 0.1f;
-
+		
 		/* idle / breathing animation */
 		float idle_scale_impact = (1.0f + Mathf.Sin(time * 4 + animation_offset) * 0.025f);
-
+		
 		/* Paper Turning */
 		float current_scale_x = actor.view.Scale.x;
 		float desired_scale_x = current_scale_x;

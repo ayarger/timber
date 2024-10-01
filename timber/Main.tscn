@@ -1,4 +1,4 @@
-[gd_scene load_steps=46 format=2]
+[gd_scene load_steps=50 format=2]
 
 [ext_resource path="res://scenes/GameManager.tscn" type="PackedScene" id=1]
 [ext_resource path="res://DebugSphere.cs" type="Script" id=2]
@@ -35,6 +35,9 @@
 [ext_resource path="res://temp_scripts/TowerRemovalButton.cs" type="Script" id=33]
 [ext_resource path="res://temp_scripts/TowerPlacementButton.cs" type="Script" id=34]
 [ext_resource path="res://temp_scripts/TempCurrencyManager.cs" type="Script" id=35]
+[ext_resource path="res://temp_scenes/ProjectileManager.cs" type="Script" id=36]
+[ext_resource path="res://Dialogue/OptionView.tscn" type="PackedScene" id=37]
+[ext_resource path="res://fonts/Roboto-Regular.ttf" type="DynamicFontData" id=38]
 
 [sub_resource type="GDScript" id=2]
 
@@ -128,6 +131,11 @@ shader_param/start_angle = 0.0
 shader_param/aa_edge_softness = 0.01
 shader_param/start_color = Color( 1, 0, 0, 1 )
 shader_param/end_color = Color( 0, 1, 1, 1 )
+
+[sub_resource type="DynamicFont" id=31]
+size = 55
+outline_size = 1
+font_data = ExtResource( 38 )
 
 [sub_resource type="DynamicFont" id=30]
 size = 40
@@ -285,6 +293,16 @@ margin_bottom = 540.0
 text = "Remove Tower"
 script = ExtResource( 33 )
 
+[node name="CurrencyLabel" type="RichTextLabel" parent="CanvasLayer"]
+margin_left = 1716.0
+margin_top = 474.0
+margin_right = 1896.0
+margin_bottom = 541.0
+custom_fonts/normal_font = SubResource( 31 )
+text = "$100"
+
+[node name="Timer" type="Timer" parent="CanvasLayer/CurrencyLabel"]
+
 [node name="DirectionalLight2" type="DirectionalLight" parent="."]
 transform = Transform( 0.766044, 0.454519, -0.454519, 0, 0.707107, 0.707107, 0.642788, -0.541675, 0.541675, 0, 0, 0 )
 shadow_enabled = true
@@ -394,14 +412,17 @@ margin_right = 40.0
 margin_bottom = 40.0
 mouse_filter = 2
 script = ExtResource( 21 )
+optionViewPrefab = ExtResource( 37 )
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Dialogue/CanvasLayer/OptionsListView"]
 anchor_left = 0.33
 anchor_top = 0.262
 anchor_right = 0.623
 anchor_bottom = 0.76
-margin_right = 40.0
-margin_bottom = 40.0
+margin_left = -434.357
+margin_top = -1868.22
+margin_right = -394.357
+margin_bottom = -1828.22
 
 [node name="LastLineText" type="RichTextLabel" parent="Dialogue/CanvasLayer/OptionsListView"]
 margin_right = 40.0
@@ -451,6 +472,7 @@ rect_scale = Vector2( 2, 2 )
 window_title = "Open a File"
 mode = 0
 access = 2
+show_hidden_files = true
 
 [node name="Select yarn project" type="Button" parent="Dialogue/CanvasLayer"]
 anchor_right = 1.0
@@ -483,6 +505,9 @@ script = ExtResource( 19 )
 
 [node name="TestAttack" type="Node" parent="."]
 script = ExtResource( 30 )
+
+[node name="ProjectileManager" type="Node" parent="."]
+script = ExtResource( 36 )
 
 [connection signal="pressed" from="Dialogue/CanvasLayer/Button" to="Dialogue/CanvasLayer/Button" method="_on_Button_pressed"]
 [connection signal="pressed" from="Dialogue/CanvasLayer/Upload yarn project" to="Dialogue/CanvasLayer/Upload yarn project" method="_on_Button_pressed"]

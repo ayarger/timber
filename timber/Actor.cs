@@ -32,19 +32,20 @@ public class Actor : Spatial
 
 	protected IsSelectable selectable;
 
-	protected Texture idle_sprite;
-	//Initial animation variables
-	public bool initial_load = false;
-	public Vector3 initial_view_scale { get; protected set; } = Vector3.One;
-	public Vector3 initial_rotation { get; protected set; } = Vector3.Zero;
-	public TileData currentTile;
+    protected Texture idle_sprite;
+    //Initial animation variables
+    public bool initial_load = false;
+    public Vector3 initial_view_scale { get; protected set; } = Vector3.One;
+    public Vector3 initial_rotation { get; protected set; } = Vector3.Zero;
+    public TileData currentTile = null;
 
 	protected float desired_scale_x = 1.0f;
 	public float GetDesiredScaleX() { return desired_scale_x; }
 	private Subscription<TileDataLoadedEvent> sub;
 
-	bool dying = false;
-	bool isInvicible = false;
+    bool dying = false;
+    bool isInvicible = false;
+    bool actorKO = false;
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
@@ -78,10 +79,12 @@ public class Actor : Spatial
 			EventBus.Publish<SpawnLightSourceEvent>(new SpawnLightSourceEvent(this));
 		}
 
-		if (config.pre_ko_sprite_filename != null && config.pre_ko_sprite_filename != "")
-			ArborResource.Load<Texture>("images/" + config.pre_ko_sprite_filename);
-		if (config.ko_sprite_filename != null && config.ko_sprite_filename != "")
-			ArborResource.Load<Texture>("images/" + config.ko_sprite_filename);
+        if (config.pre_ko_sprite_filename != null && config.pre_ko_sprite_filename != "")
+            ArborResource.Load<Texture>("images/" + config.pre_ko_sprite_filename);
+        if (config.ko_sprite_filename != null && config.ko_sprite_filename != ""){
+            ArborResource.Load<Texture>("images/" + config.ko_sprite_filename);
+            actorKO = true;
+        }
 
 		ArborResource.UseResource<Texture>(
 			"images/" + config.idle_sprite_filename,
@@ -119,11 +122,7 @@ public class Actor : Spatial
 			this
 		);
 
-		foreach(StateConfig s in config.stateConfigs)
-		{
-			string stateName = s.name;
-			state_manager.states[stateName].Config(s);
-		}
+        state_manager.Configure(config.stateConfigs);
 
 		StatManager statManager = GetNode<StatManager>("StatManager");
 		if(statManager != null)
@@ -237,51 +236,54 @@ public class Actor : Spatial
 				return;
 			}
 
-			//draws aggro
-			if (state_manager.states.ContainsKey("CombatState"))
-			{
-				CombatState c = (state_manager.states["CombatState"] as CombatState);
-				if (source != null)
-				{
-					Coord targetCoord = Grid.ConvertToCoord(source.GlobalTranslation);
-					if (c.WithinRange(targetCoord))
-					{
-						c.TargetActor = source;
-						state_manager.EnableState("CombatState");
-					}
-				}
-			}
-		}
-		else
-		{
-			Kill(source);
-			return;
-		}
+            //draws aggro
+            if (state_manager.states.ContainsKey("CombatState"))
+            {
+                CombatState c = (state_manager.states["CombatState"] as CombatState);
+                if (source != null && !state_manager.IsStateActive("CombatState"))
+                {
+                    Coord targetCoord = Grid.ConvertToCoord(source.GlobalTranslation);
+                    if (c.WithinRange(targetCoord))
+                    {
+                        c.TargetActor = source;
+                        state_manager.EnableState("CombatState");
+                    }
+                }
+            }
+        }
+        else
+        {
+            Kill(source);
+            return;
+        }
 
 		ArborCoroutine.StartCoroutine(HurtAnimation(), this);
 	}
 
-	public void Kill(Actor source = null)//TODO needs clean up in map --- actors cannot move to tile where actor died
-	{
-		currentTile.actor = null;
-		bool endGame = config.name == "Spot";
-		PackedScene scene = (PackedScene)ResourceLoader.Load("res://scenes/ActorKO.tscn");
-		ActorKO new_ko = (ActorKO)scene.Instance();
-		GetParent().AddChild(new_ko);
-		new_ko.GlobalTranslation = GlobalTranslation;
-		new_ko.GlobalRotation = GlobalRotation;
-		new_ko.Scale = Scale;
-		new_ko.GetNode<Spatial>("rotationPoint/view/mesh").Scale = view.Scale;
-		if (config.pre_ko_sprite_filename != "" && config.ko_sprite_filename != "")
-		{
-			new_ko.Configure(ArborResource.Get<Texture>("images/" + config.pre_ko_sprite_filename), ArborResource.Get<Texture>("images/" + config.ko_sprite_filename), endGame, source);
-		}
-		else
-		{
-			new_ko.Configure(ArborResource.Get<Texture>("images/" + config.idle_sprite_filename), ArborResource.Get<Texture>("images/" + config.idle_sprite_filename), endGame, source);
-		}
-
-		QueueFree();
+    public void Kill(Actor source = null)
+    {
+        if (IsQueuedForDeletion()) return;
+        if(currentTile != null) currentTile.actor = null;
+        bool endGame = config.name == "Spot";
+        if(actorKO){
+            PackedScene scene = (PackedScene)ResourceLoader.Load("res://scenes/ActorKO.tscn");
+            ActorKO new_ko = (ActorKO)scene.Instance();
+            GetParent().AddChild(new_ko);
+            new_ko.GlobalTranslation = GlobalTranslation;
+            new_ko.GlobalRotation = GlobalRotation;
+            new_ko.Scale = Scale;
+            new_ko.GetNode<Spatial>("view/mesh").Scale = view.Scale;
+            if (config.pre_ko_sprite_filename != "" && config.ko_sprite_filename != "")
+            {
+                new_ko.Configure(ArborResource.Get<Texture>("images/" + config.pre_ko_sprite_filename), ArborResource.Get<Texture>("images/" + config.ko_sprite_filename), endGame, source);
+            }
+            else
+            {
+                new_ko.Configure(ArborResource.Get<Texture>("images/" + config.idle_sprite_filename), ArborResource.Get<Texture>("images/" + config.idle_sprite_filename), endGame, source);
+            }
+        }
+        
+        QueueFree();
 
 
 	}
