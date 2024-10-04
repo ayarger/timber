@@ -54,12 +54,11 @@ public class ProjectileState : ActorState//TODO collision body to chekc for coll
 
     public void onBodyEntered(Node body)
     {
-        GD.Print("Collision");
         Actor TargetActor = body.GetNode("../..") as Actor;
-        if (TargetActor != null)
+        if (TargetActor != null && !(TargetActor is Projectile))
         {
             
-            if(TargetActor.GetNode<HasTeam>("HasTeam").team != actor.GetNode<HasTeam>("HasTeam").team)
+            if(TargetActor.GetNode<HasTeam>("HasTeam").team != actor.GetNode<HasTeam>("HasTeam").team )
             {
                 Projectile projectile = actor as Projectile;
                 TargetActor.Hurt(projectile.damage, false, projectile.owner);

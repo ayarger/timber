@@ -115,6 +115,7 @@ full=false
 max_remote_stdout_chars_per_second=true
 displ=false
 clear=false
+auto=false
 
 [gui]
 
