@@ -190,9 +190,27 @@ public class ArborResource : Node
         }
         else
         {
-            string s = Encoding.UTF8.GetString(body);
-            JsonSerializerSettings settings = new JsonSerializerSettings();
-            SetResource(key, JsonConvert.DeserializeObject(s, Type.GetType(type), settings));
+            // Get the last part of the string
+            string[] parts = resource.Split('.');
+            string extension = (parts.Length > 1) ? "." + parts[parts.Length - 1] : string.Empty;
+            GD.Print(extension);
+
+            if(extension == ".bin" && type == "ActorConfig")
+            {
+
+                ActorConfig parsedData = ProtobufParser.ParseBinary<ActorConfig>(body, resource, type);
+                JsonSerializerSettings settings = new JsonSerializerSettings();
+                SetResource(key, parsedData);
+
+                GD.Print("We did it! We read: ===========================");
+                GD.Print(parsedData.ToString());
+            }
+            else
+            {
+                string s = Encoding.UTF8.GetString(body);
+                JsonSerializerSettings settings = new JsonSerializerSettings();
+                SetResource(key, JsonConvert.DeserializeObject(s, Type.GetType(type), settings));
+            }
         }
 
         if (assets_currently_loading.Contains(key))
@@ -240,10 +258,12 @@ public class ArborResource : Node
         Godot.Collections.Array extra_params = new Godot.Collections.Array
         {
             resource,
-            typeof(T).Name,
-            new_request,
+            typeof(T).Name,              new_request,
             null
         };
+
+        GD.Print("OBJECT============================");
+        GD.Print(extra_params[0] + " " + extra_params[1]);
 
         new_request.Connect("request_completed", instance, nameof(OnRequestCompleted), extra_params);
         string web_url = @"https://arborinteractive.com/squirrel_rts/mods/" + GetCurrentModID() + @"/resources/" + resource;

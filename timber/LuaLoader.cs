@@ -67,9 +67,14 @@ public class LuaLoader : Node
 	Dictionary<char, ActorConfig> map_code_to_actor_config = new Dictionary<char, ActorConfig>();
     IEnumerator LoadActorConfigs()
     {
-		ArborResource.Load<ModFileManifest>("mod_file_manifest.json");
-		yield return ArborResource.WaitFor("mod_file_manifest.json");
-        ModFileManifest manifest = ArborResource.Get<ModFileManifest>("mod_file_manifest.json");
+		// Test to work with binaries
+		ArborResource.Load<ModFileManifest>("binary_test_mod_file_manifest.json");
+		yield return ArborResource.WaitFor("binary_test_mod_file_manifest.json");
+		ModFileManifest manifest = ArborResource.Get<ModFileManifest>("binary_test_mod_file_manifest.json");
+
+		//ArborResource.Load<ModFileManifest>("mod_file_manifest.json");
+		//yield return ArborResource.WaitFor("mod_file_manifest.json");
+		//ModFileManifest manifest = ArborResource.Get<ModFileManifest>("mod_file_manifest.json");
 
 		List<string> actor_files = manifest.Search("actor_definitions/*");
 

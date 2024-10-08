@@ -65,19 +65,44 @@ public class ProtobufParser : Node
 
     public static T ParseBinary<T>(byte[] body, string resource, string type)
     {
-        T output;    
+        T output;
 
-        if(type == "string")
+        if (type == "string")
         {
             var protobufData = Google.Protobuf.Message.SimpleString.Parser.ParseFrom(body);
-            output = (T)(object) protobufData.ToString();  
+            output = (T)(object)protobufData.ToString();
             GD.Print(output);
+        }
+        else if (type == "ActorConfig")
+        {
+            var protoActor = Google.Protobuf.Message.GameActor.Parser.ParseFrom(body);
+
+                List<string> attachedScripts = new List<string>();
+                foreach (string item in protoActor.Scripts)
+                {
+                    attachedScripts.Append(item);
+                }
+                GD.Print(attachedScripts);
+
+                ActorConfig localActor = new ActorConfig
+                {
+                    guid = Guid.Parse(protoActor.Guid),
+                    name = protoActor.Name,
+                    team = protoActor.Team,
+                    map_code = protoActor.MapCode[0],
+                    aesthetic_scale_factor = protoActor.AestheticScaleFactor,
+                    idle_sprite_filename = protoActor.IdleSpriteFilename,
+                    lives_sprite_filename = protoActor.LivesIconFilename,
+                    scripts = attachedScripts
+                };
+                output = (T)(object)localActor;
         }
         else
         {
             string file_extension = System.IO.Path.GetExtension(resource).ToLower();
 
             // At some point these will likely change. 
+            // TODO: delete this
             if (file_extension == ".Actor")
             {
                 var protoActor = Google.Protobuf.Message.GameActor.Parser.ParseFrom(body);
@@ -215,6 +240,7 @@ public class ProtobufParser : Node
 
         BinaryToFile(localActor.ToByteArray(), name);
     }
+
 
     public static void CreateModFileBinary(ModFileManifest gameObject, string name)
     {
