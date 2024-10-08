@@ -118,7 +118,7 @@ public class UIBar : Control
     /// </summary>
     public void OnUIStatChange(string stat_name)
     {
-        GD.Print("curr_stat_name: " + data_name, " incoming singal name: " + stat_name);
+        //GD.Print("curr_stat_name: " + data_name, " incoming singal name: " + stat_name);
         if (stat_name == data_name)
         {
             float target_value = target_data.health_ratio * 100;

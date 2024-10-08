@@ -21,12 +21,22 @@ public class LuaLoader : Node
 
 	static LuaLoader instance;
 
+	//temporary fake json
+	CombatConfig enemyMeleeCombatConfig = new CombatConfig(1, 10, 0.5f, 0.5f, 0.125f, 1);
+	CombatConfig enemyRangeCombatConfig = new CombatConfig(3, 5, 0.3f, 0.75f, 0.125f, 1.5f);
+	CombatConfig playerCombatConfig = new CombatConfig(2, 20, 0.3f, 0.5f, 0.125f, 0.75f);
+	CombatConfig TowerRangeConfig = new CombatConfig(4, 10, 0.3f, 0.5f, 0.125f, 0.75f);
+	StatConfig enemyStatConfig = new StatConfig();
+	StatConfig playerStatConfig = new StatConfig();
+
+
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
 		instance = this;
 
 		ArborCoroutine.StartCoroutine(Load(), this);
+
 	}
 
 	bool loading_scene = false;
@@ -68,6 +78,35 @@ public class LuaLoader : Node
 		{
 			yield return ArborResource.WaitFor(actor_file);
 			ActorConfig actor_info = ArborResource.Get<ActorConfig>(actor_file);
+
+			//temporary
+			//TODO: update actor config & enemy config
+			playerStatConfig.stats["health"] = 100;
+
+			enemyStatConfig.stats["health"] = 50;
+
+			if (actor_info.team == "player")
+			{
+				actor_info.stateConfigs.Add(playerCombatConfig);
+				actor_info.statConfig = playerStatConfig;
+			}
+			else if (actor_info.team == "construction")
+			{
+				actor_info.stateConfigs.Add(TowerRangeConfig);
+				actor_info.statConfig = playerStatConfig;
+			}
+			else if (actor_info.name == "Chunk")
+			{
+				actor_info.stateConfigs.Add(enemyMeleeCombatConfig);
+				actor_info.statConfig = enemyStatConfig;
+			}
+			else
+			{
+				actor_info.stateConfigs.Add(enemyRangeCombatConfig);
+				actor_info.statConfig = enemyStatConfig;
+			}
+
+
 			map_code_to_actor_config[actor_info.map_code] = actor_info;
 		}
 	}
@@ -195,7 +234,7 @@ public class LuaLoader : Node
 		//viewport.Size = new Vector2(1000, 1000);
 		//GD.Print("setting viewport to " + width + " " + height);
 		Spatial player_node = GetNode<Spatial>("Spot");
-		GD.Print("PLAYER AT " + player_node.GlobalTranslation.x + " " + player_node.GlobalTranslation.z);
+		//GD.Print("PLAYER AT " + player_node.GlobalTranslation.x + " " + player_node.GlobalTranslation.z);
 
 		float new_marker_x = viewport.Size.x * (player_node.GlobalTranslation.x * 0.5f / width);
 		float new_marker_y = viewport.Size.y * (player_node.GlobalTranslation.z * 0.5f / height);
@@ -238,7 +277,7 @@ public class LuaLoader : Node
 	}
 
 
-	Actor SpawnActorOfType(ActorConfig config, Vector3 position)
+	public Actor SpawnActorOfType(ActorConfig config, Vector3 position)
 	{
 		/* Spawn actor scene */
 		PackedScene actor_scene = (PackedScene)ResourceLoader.Load("res://scenes/actor.tscn");
@@ -290,10 +329,14 @@ public class ActorConfig
 	public float aesthetic_scale_factor = 1.0f;
 	public string idle_sprite_filename;
 	public string lives_sprite_filename;
-	public string pre_ko_sprite_filename;
-	public string ko_sprite_filename;
+	public string pre_ko_sprite_filename = "";
+	public string ko_sprite_filename = "";
+	public string type = "actor";
 
 	public List<string> scripts;
+
+	public List<StateConfig> stateConfigs = new List<StateConfig>();
+	public StatConfig statConfig;
 }
 
 [Serializable]
@@ -356,8 +399,41 @@ public class ModFileManifest
 //May move elsewhere
 public class TileDataLoadedEvent { }
 
-//ActorDataLoadedEvent
 public class ActorDataLoadedEvent
 {
 
 }
+//change into different stat in hasStat
+public class StateConfig
+{
+	public string name;
+}
+
+//state configs for actors
+public class CombatConfig : StateConfig
+{
+	public int attackRange = 2;//number of grids
+	public int attackDamage = 10;
+	public float criticalHitRate = 0.3f;
+
+	public float attackWindup = 0.5f;//animation before attack
+	public float attackRecovery = 0.125f;//anim after attack
+	public float attackCooldown = 1f;
+
+	public CombatConfig(int ar, int damage, float critRate, float windup, float recovery, float cooldown)//temp constructor
+	{
+		name = "CombatState";
+		attackRange = ar;
+		attackDamage = damage;
+		criticalHitRate = critRate;
+		attackWindup = windup;
+		attackRecovery = recovery;
+		attackCooldown = cooldown;
+	}
+}
+
+public class StatConfig
+{
+	public Dictionary<string, float> stats = new Dictionary<string, float>();
+}
+

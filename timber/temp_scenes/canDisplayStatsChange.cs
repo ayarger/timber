@@ -48,7 +48,7 @@ public class canDisplayStatsChange : TextureProgress
     public void OnUIStatChange(StatChangeEvent e)
     {
         //check if stats change should be displayed by this specifc orb
-        GD.Print("curr_stat_name: " + data_name, " incoming singal name: " + e.stat_name);
+        //GD.Print("curr_stat_name: " + data_name, " incoming singal name: " + e.stat_name);
         if (e.stat_name == data_name)
         {
             float target_value = player_data.Stats[data_name].Ratio * 100;

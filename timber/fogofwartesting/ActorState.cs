@@ -46,12 +46,22 @@ public abstract class ActorState : Node
 
     }
 
+    public virtual void Config(StateConfig stateConfig)
+    {
 
-//  // Called every frame. 'delta' is the elapsed time since the previous frame.
-//  public override void _Process(float delta)
-//  {
-//      
-//  }
+    }
 
+
+    //  // Called every frame. 'delta' is the elapsed time since the previous frame.
+    //  public override void _Process(float delta)
+    //  {
+    //      
+    //  }
+    public Godot.Collections.Array GetAttackableActorList()
+    {
+        var list_luaLoader = GetNode<LuaLoader>("/root/Main/LuaLoader").GetChildren();
+        var list_towers = GetNode<TowerManager>("/root/Main/TowerManager").GetChildren();
+        return list_luaLoader + list_towers;
+    }
 
 }

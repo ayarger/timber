@@ -13,12 +13,16 @@ public class UIManager : Node
     Color flash_panel_invisible = new Color(1, 1, 1, 0);
     Color flash_panel_visible = new Color(1, 1, 1, 1);
 
+    private static Stack<string> menuStack;
+
     public override void _Ready()
     {
         instance = this;
         flash_panel = GetNode<Panel>("flash_panel");
         flash_panel.MouseFilter = Control.MouseFilterEnum.Ignore;
         flash_panel.Modulate = new Color(1, 1, 1, 0.0f);
+        ToastManager.Initialize(this);
+        menuStack = new Stack<string>();
     }
 
     public override void _Process(float delta)
@@ -47,6 +51,7 @@ public class UIManager : Node
             instance.currMenu = instance.currMenu._parent;
             instance.currMenu.CloseMenu();    
         }
+        menuStack.Clear();
     }
 
     public override void _Input(InputEvent @event)
@@ -57,13 +62,24 @@ public class UIManager : Node
             // Check if the escape key was just pressed
             if (eventKey.Pressed && eventKey.Scancode == (int)KeyList.Escape)
             {
-                SettingsMenu();
+                if (menuStack.Count == 0)
+                {
+                    SettingsMenu();
+                }
+                else
+                {
+                    // close the most recent menu window
+                    instance.currMenu.CloseMenu();
+                    menuStack.Pop();
+                }
             }
         }
+        ToastManager.HandleInput(@event);
     }
 
     void SettingsMenu()
     {
+        menuStack.Push("settings");
         DynamicMenu.Configure(bgColor: new Color(41.0f / 255.0f, 41.0f / 255.0f, 69.0f / 255.0f, 1.0f),
             secondaryColor: new Color(255.0f / 255.0f, 255.0f / 255.0f, 255.0f / 255.0f, 1.0f),
             font: "res://UI/Oxanium-Regular.ttf",

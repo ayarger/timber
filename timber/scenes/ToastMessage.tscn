@@ -1,0 +1,662 @@
+[gd_scene load_steps=19 format=2]
+
+[ext_resource path="res://scenes/ToastResources/ToastMsgPanel.tres" type="StyleBox" id=1]
+[ext_resource path="res://scenes/ToastMessage.cs" type="Script" id=2]
+[ext_resource path="res://scenes/ToastResources/ToastMsgColorBox_notice.tres" type="StyleBox" id=3]
+[ext_resource path="res://scenes/ToastResources/ToastIconExit.png" type="Texture" id=4]
+[ext_resource path="res://scenes/error-icon.png" type="Texture" id=5]
+[ext_resource path="res://fonts/Roboto-Regular.ttf" type="DynamicFontData" id=6]
+[ext_resource path="res://scenes/ToastResources/ToastIconClear.png" type="Texture" id=7]
+[ext_resource path="res://scenes/ToastResources/Toast_sound_.mp3" type="AudioStream" id=8]
+
+[sub_resource type="DynamicFont" id=1]
+size = 26
+outline_color = Color( 0.592157, 0.341176, 0.341176, 1 )
+font_data = ExtResource( 6 )
+
+[sub_resource type="StyleBoxFlat" id=14]
+bg_color = Color( 0.184314, 0.184314, 0.184314, 1 )
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+expand_margin_left = 1.0
+expand_margin_right = 1.0
+
+[sub_resource type="StyleBoxFlat" id=16]
+border_width_left = 5
+border_width_right = 5
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="Theme" id=15]
+VScrollBar/icons/decrement = null
+VScrollBar/icons/decrement_highlight = null
+VScrollBar/icons/decrement_pressed = null
+VScrollBar/icons/increment = null
+VScrollBar/icons/increment_highlight = null
+VScrollBar/icons/increment_pressed = null
+VScrollBar/styles/grabber = SubResource( 14 )
+VScrollBar/styles/grabber_highlight = null
+VScrollBar/styles/grabber_pressed = null
+VScrollBar/styles/scroll = SubResource( 16 )
+VScrollBar/styles/scroll_focus = null
+
+[sub_resource type="DynamicFont" id=12]
+size = 25
+font_data = ExtResource( 6 )
+
+[sub_resource type="Animation" id=7]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath("Panel:rect_position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 590, 183 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Panel:rect_size")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 740, 108 ) ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("Panel/ColorPanel:rect_size")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 146, 108 ) ]
+}
+tracks/3/type = "value"
+tracks/3/path = NodePath("Panel/ColorPanel:rect_position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 0, 0 ) ]
+}
+tracks/4/type = "value"
+tracks/4/path = NodePath("Panel/ColorPanel:custom_styles/panel:corner_radius_top_left")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 20 ]
+}
+tracks/5/type = "value"
+tracks/5/path = NodePath("Panel/ColorPanel:custom_styles/panel:corner_radius_top_right")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 0 ]
+}
+tracks/6/type = "value"
+tracks/6/path = NodePath("Panel/ColorPanel:custom_styles/panel:corner_radius_bottom_right")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 0 ]
+}
+tracks/7/type = "value"
+tracks/7/path = NodePath("Panel/ColorPanel:custom_styles/panel:corner_radius_bottom_left")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 20 ]
+}
+tracks/8/type = "value"
+tracks/8/path = NodePath("Panel/ColorPanel/Sprite:position")
+tracks/8/interp = 1
+tracks/8/loop_wrap = true
+tracks/8/imported = false
+tracks/8/enabled = true
+tracks/8/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 74, 57 ) ]
+}
+tracks/9/type = "value"
+tracks/9/path = NodePath("Panel/ColorPanel/Sprite:scale")
+tracks/9/interp = 1
+tracks/9/loop_wrap = true
+tracks/9/imported = false
+tracks/9/enabled = true
+tracks/9/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 0.146973, 0.146973 ) ]
+}
+tracks/10/type = "value"
+tracks/10/path = NodePath("Panel:margin_left")
+tracks/10/interp = 1
+tracks/10/loop_wrap = true
+tracks/10/imported = false
+tracks/10/enabled = true
+tracks/10/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 590.0 ]
+}
+tracks/11/type = "value"
+tracks/11/path = NodePath("Panel:margin_right")
+tracks/11/interp = 1
+tracks/11/loop_wrap = true
+tracks/11/imported = false
+tracks/11/enabled = true
+tracks/11/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 1330.0 ]
+}
+
+[sub_resource type="Animation" id=8]
+resource_name = "expand_animation"
+tracks/0/type = "value"
+tracks/0/path = NodePath("Panel:rect_size")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.3 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Vector2( 740, 108 ), Vector2( 1480, 400 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Panel/ColorPanel:rect_size")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 0.3 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Vector2( 146, 108 ), Vector2( 100, 74 ) ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("Panel/ColorPanel:rect_position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0, 0.3 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Vector2( 0, 0 ), Vector2( 23, 17 ) ]
+}
+tracks/3/type = "value"
+tracks/3/path = NodePath("Panel/ColorPanel:custom_styles/panel:corner_radius_top_left")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = {
+"times": PoolRealArray( 0, 0.3 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ 20, 20 ]
+}
+tracks/4/type = "value"
+tracks/4/path = NodePath("Panel/ColorPanel:custom_styles/panel:corner_radius_top_right")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/keys = {
+"times": PoolRealArray( 0, 0.3 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ 0, 20 ]
+}
+tracks/5/type = "value"
+tracks/5/path = NodePath("Panel/ColorPanel:custom_styles/panel:corner_radius_bottom_right")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/keys = {
+"times": PoolRealArray( 0, 0.3 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ 0, 20 ]
+}
+tracks/6/type = "value"
+tracks/6/path = NodePath("Panel/ColorPanel:custom_styles/panel:corner_radius_bottom_left")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/keys = {
+"times": PoolRealArray( 0, 0.3 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ 20, 20 ]
+}
+tracks/7/type = "value"
+tracks/7/path = NodePath("Panel/ColorPanel/Sprite:position")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/keys = {
+"times": PoolRealArray( 0, 0.3 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Vector2( 74, 57 ), Vector2( 50, 37 ) ]
+}
+tracks/8/type = "value"
+tracks/8/path = NodePath("Panel/ColorPanel/Sprite:scale")
+tracks/8/interp = 1
+tracks/8/loop_wrap = true
+tracks/8/imported = false
+tracks/8/enabled = true
+tracks/8/keys = {
+"times": PoolRealArray( 0, 0.3 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Vector2( 0.146973, 0.146973 ), Vector2( 0.113281, 0.113281 ) ]
+}
+tracks/9/type = "value"
+tracks/9/path = NodePath("Panel:rect_position")
+tracks/9/interp = 1
+tracks/9/loop_wrap = true
+tracks/9/imported = false
+tracks/9/enabled = false
+tracks/9/keys = {
+"times": PoolRealArray( 0, 0.3 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Vector2( 590, 183 ), Vector2( 220, 183 ) ]
+}
+tracks/10/type = "value"
+tracks/10/path = NodePath("Panel:margin_left")
+tracks/10/interp = 1
+tracks/10/loop_wrap = true
+tracks/10/imported = false
+tracks/10/enabled = true
+tracks/10/keys = {
+"times": PoolRealArray( 0, 0.3 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ 590.0, 220.0 ]
+}
+tracks/11/type = "value"
+tracks/11/path = NodePath("Panel:margin_right")
+tracks/11/interp = 1
+tracks/11/loop_wrap = true
+tracks/11/imported = false
+tracks/11/enabled = true
+tracks/11/keys = {
+"times": PoolRealArray( 0, 0.3 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ 1330.0, 1700.0 ]
+}
+
+[sub_resource type="Animation" id=9]
+resource_name = "hide_animation"
+tracks/0/type = "value"
+tracks/0/path = NodePath("Panel:rect_position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.2, 0.5 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ Vector2( 590, 312 ), Vector2( 590, 332 ), Vector2( 590, 191 ) ]
+}
+
+[sub_resource type="Animation" id=10]
+resource_name = "show_animation"
+tracks/0/type = "value"
+tracks/0/path = NodePath("Panel:rect_position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.3, 0.5 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ Vector2( 590, 197 ), Vector2( 590, 350 ), Vector2( 590, 312 ) ]
+}
+
+[sub_resource type="Animation" id=11]
+resource_name = "shrink_animation"
+tracks/0/type = "value"
+tracks/0/path = NodePath("Panel/ColorPanel:rect_position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.3 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Vector2( 23, 17 ), Vector2( 0, 0 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Panel/ColorPanel:rect_size")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 0.3 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Vector2( 100, 74 ), Vector2( 146, 108 ) ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("Panel/ColorPanel/Sprite:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0, 0.3 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Vector2( 50, 37 ), Vector2( 74, 57 ) ]
+}
+tracks/3/type = "value"
+tracks/3/path = NodePath("Panel/ColorPanel/Sprite:scale")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = {
+"times": PoolRealArray( 0, 0.3 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Vector2( 0.113281, 0.113281 ), Vector2( 0.147, 0.147 ) ]
+}
+tracks/4/type = "value"
+tracks/4/path = NodePath("Panel:rect_size")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/keys = {
+"times": PoolRealArray( 0, 0.3 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Vector2( 1480, 400 ), Vector2( 740, 108 ) ]
+}
+tracks/5/type = "value"
+tracks/5/path = NodePath("Panel/ColorPanel:custom_styles/panel:corner_radius_top_left")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/keys = {
+"times": PoolRealArray( 0, 0.3 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ 20, 20 ]
+}
+tracks/6/type = "value"
+tracks/6/path = NodePath("Panel/ColorPanel:custom_styles/panel:corner_radius_top_right")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/keys = {
+"times": PoolRealArray( 0, 0.3 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ 20, 0 ]
+}
+tracks/7/type = "value"
+tracks/7/path = NodePath("Panel/ColorPanel:custom_styles/panel:corner_radius_bottom_right")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/keys = {
+"times": PoolRealArray( 0, 0.3 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ 20, 0 ]
+}
+tracks/8/type = "value"
+tracks/8/path = NodePath("Panel/ColorPanel:custom_styles/panel:corner_radius_bottom_left")
+tracks/8/interp = 1
+tracks/8/loop_wrap = true
+tracks/8/imported = false
+tracks/8/enabled = true
+tracks/8/keys = {
+"times": PoolRealArray( 0, 0.3 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ 20, 20 ]
+}
+tracks/9/type = "value"
+tracks/9/path = NodePath("Panel:rect_position")
+tracks/9/interp = 1
+tracks/9/loop_wrap = true
+tracks/9/imported = false
+tracks/9/enabled = false
+tracks/9/keys = {
+"times": PoolRealArray( 0, 0.3 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Vector2( 220, 183 ), Vector2( 590, 183 ) ]
+}
+tracks/10/type = "value"
+tracks/10/path = NodePath("Panel:margin_left")
+tracks/10/interp = 1
+tracks/10/loop_wrap = true
+tracks/10/imported = false
+tracks/10/enabled = true
+tracks/10/keys = {
+"times": PoolRealArray( 0, 0.3 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ 220.0, 590.0 ]
+}
+tracks/11/type = "value"
+tracks/11/path = NodePath("Panel:margin_right")
+tracks/11/interp = 1
+tracks/11/loop_wrap = true
+tracks/11/imported = false
+tracks/11/enabled = true
+tracks/11/keys = {
+"times": PoolRealArray( 0, 0.3 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ 1700.0, 1330.0 ]
+}
+
+[node name="ToastMessageControl" type="Control"]
+margin_top = -309.0
+margin_bottom = -309.0
+mouse_filter = 2
+script = ExtResource( 2 )
+
+[node name="Panel" type="Panel" parent="."]
+margin_left = 590.0
+margin_top = 183.0
+margin_right = 1330.0
+margin_bottom = 291.0
+custom_styles/panel = ExtResource( 1 )
+
+[node name="ColorPanel" type="Panel" parent="Panel"]
+margin_right = 146.0
+margin_bottom = 108.0
+mouse_filter = 2
+custom_styles/panel = ExtResource( 3 )
+
+[node name="Sprite" type="Sprite" parent="Panel/ColorPanel"]
+position = Vector2( 74, 57 )
+scale = Vector2( 0.146973, 0.146973 )
+texture = ExtResource( 5 )
+
+[node name="Label" type="Label" parent="Panel"]
+margin_left = 146.0
+margin_top = 12.0
+margin_right = 604.0
+margin_bottom = 97.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_fonts/font = SubResource( 1 )
+text = "ERROR
+No Internet Connection"
+align = 1
+valign = 1
+autowrap = true
+
+[node name="NumMsg_full" type="Label" parent="Panel"]
+visible = false
+margin_top = 92.0
+margin_right = 146.0
+margin_bottom = 171.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_fonts/font = SubResource( 1 )
+text = "1 more message"
+align = 1
+valign = 1
+autowrap = true
+
+[node name="NumOccurred_full" type="Label" parent="Panel"]
+visible = false
+margin_left = 9.0
+margin_top = 180.0
+margin_right = 141.0
+margin_bottom = 259.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_fonts/font = SubResource( 1 )
+text = "Occurred 3 times"
+align = 1
+valign = 1
+autowrap = true
+
+[node name="NumOccurred_short" type="Label" parent="Panel"]
+visible = false
+margin_left = 566.0
+margin_top = 27.0
+margin_right = 735.0
+margin_bottom = 106.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_fonts/font = SubResource( 1 )
+text = "3 Occurred"
+align = 2
+valign = 1
+autowrap = true
+
+[node name="NumMsg_short" type="Label" parent="Panel"]
+margin_left = 582.0
+margin_top = 5.0
+margin_right = 729.0
+margin_bottom = 49.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_fonts/font = SubResource( 1 )
+text = "1 more"
+align = 2
+valign = 1
+autowrap = true
+
+[node name="HistoryScrollContainer" type="ScrollContainer" parent="Panel"]
+margin_left = 142.0
+margin_top = 22.0
+margin_right = 1449.0
+margin_bottom = 372.0
+mouse_filter = 1
+theme = SubResource( 15 )
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/HistoryScrollContainer"]
+margin_right = 1307.0
+margin_bottom = 35.0
+mouse_filter = 2
+
+[node name="LabelTemplate" type="RichTextLabel" parent="Panel/HistoryScrollContainer/VBoxContainer"]
+margin_right = 1307.0
+margin_bottom = 35.0
+rect_min_size = Vector2( 1307, 35 )
+focus_mode = 2
+mouse_filter = 1
+custom_colors/default_color = Color( 0, 0, 0, 1 )
+custom_fonts/normal_font = SubResource( 12 )
+text = "Toast history 1"
+selection_enabled = true
+
+[node name="ClearHistoryButton" type="TextureButton" parent="Panel"]
+margin_left = 80.0
+margin_top = 342.0
+margin_right = 592.0
+margin_bottom = 854.0
+rect_scale = Vector2( 0.0800386, 0.0800386 )
+mouse_filter = 1
+texture_normal = ExtResource( 7 )
+
+[node name="CloseButton" type="TextureButton" parent="Panel"]
+margin_left = 24.0
+margin_top = 343.0
+margin_right = 708.0
+margin_bottom = 1011.0
+rect_scale = Vector2( 0.0629956, 0.0615126 )
+mouse_filter = 1
+texture_normal = ExtResource( 4 )
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+anims/RESET = SubResource( 7 )
+anims/expand_animation = SubResource( 8 )
+anims/hide_animation = SubResource( 9 )
+anims/show_animation = SubResource( 10 )
+anims/shrink_animation = SubResource( 11 )
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 8 )
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 3.0

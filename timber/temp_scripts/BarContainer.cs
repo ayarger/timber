@@ -1,5 +1,17 @@
 using Godot;
 using System;
+using System.Collections.Generic;
+
+public class CombatStateEnabledEvent
+{
+    public bool enabled;
+    public Actor actor;
+    public CombatStateEnabledEvent(bool _enabled, Actor _actor)
+    {
+        enabled = _enabled;
+        actor = _actor;
+    }
+}
 
 public class BarContainer : Control
 {
@@ -14,7 +26,10 @@ public class BarContainer : Control
     int count = 0;
     public float scaling_factor = 6f;
     bool displayOn;
-
+    //get ui bar by corresponding data name
+    public Dictionary<string, Bar> bar_dict;
+    Subscription<CombatStateEnabledEvent> combatStateChangeEvent;
+    public bool combatEnabled = false;
     public override void _Ready()
     {
         // get target_mesh
@@ -36,10 +51,12 @@ public class BarContainer : Control
             Vector3 mesh_position = target_mesh.GlobalTransform.Xform(new Vector3(0, GlobalHeight, 0));
             relativeToshadow = (mesh_position - shadow_position);
         }
+        combatStateChangeEvent = EventBus.Subscribe<CombatStateEnabledEvent>(OnCombatStateChange);
     }
 
-    public void Configure(HasStats _target) { 
-       
+    public void Configure(HasStats _target)
+    {
+
         target_data = _target;
     }
 
@@ -47,24 +64,13 @@ public class BarContainer : Control
     public override void _Process(float delta)
     {
 
-        /*Vector3 shadow_position = target_shadow.GlobalTranslation;
-        Vector3 mesh_position = target_mesh.GlobalTransform.Xform(new Vector3(0,target_mesh.Scale.y/1.05f, 0)); ;
-        relativeToshadow = mesh_position - shadow_position;
-        */
-
-        displayOn = target_selection.am_i_selected || target_selection.AmIHovered();
-        if (displayOn)
-        {
-            ToggleVisibilityOn();
-        }
-
-        else
-        {
-            ToggleVisibilityOff();
-        }
 
         if (IsInstanceValid(target_data))
+        {
+            displayOn = target_selection.am_i_selected || target_selection.AmIHovered() || combatEnabled;
+            Visible = displayOn;
             PursueTarget();
+        }
         else
             QueueFree();
     }
@@ -79,7 +85,7 @@ public class BarContainer : Control
 
         // TODO: UI position should be based on the top of the character
         if (IsInstanceValid(target_shadow))
-            desired_position = (target_shadow.GlobalTranslation + relativeToshadow/1.08f);
+            desired_position = (target_shadow.GlobalTranslation + relativeToshadow / 1.08f);
         var screenPosition = cam.UnprojectPosition(desired_position);
         RectGlobalPosition = screenPosition;
         RectScale = Vector2.One * 0.15f;
@@ -159,6 +165,7 @@ public class BarContainer : Control
         // move the primary bar to top
         new_bar.GetParent().MoveChild(new_bar, 0);
         new_bar.OnCreate();
+        //bar_dict[data_name] = new_bar;
         return new_bar;
     }
 
@@ -171,7 +178,7 @@ public class BarContainer : Control
         container2.Visible = true;
         container2.AddChild(new_bar);
         new_bar.OnCreate();
-
+        //bar_dict[data_name] = new_bar;
         return new_bar;
     }
 
@@ -202,5 +209,45 @@ public class BarContainer : Control
             }
         }
 
+    }
+
+    void OnCombatStateChange(CombatStateEnabledEvent e)
+    {
+        if (e.actor.Name == target_data.GetParent().Name)
+        {
+            combatEnabled = e.enabled;
+        }
+    }
+
+    // Testing
+    public override void _Input(InputEvent @event)
+    {
+        if (@event is InputEventKey eventKey && eventKey.Pressed && !eventKey.Echo)
+        {
+            if (eventKey.Scancode == (int)KeyList.Key3)
+            {
+                RemovePrimary();
+            }
+
+            else if (eventKey.Scancode == (int)KeyList.Key4)
+            {
+                RemoveSecondary(0);
+            }
+
+            else if (eventKey.Scancode == (int)KeyList.Key5)
+            {
+                RemoveSecondary(1);
+            }
+
+            else if (eventKey.Scancode == (int)KeyList.Key8)
+            {
+                ToggleVisibilityOff();
+            }
+
+            else if (eventKey.Scancode == (int)KeyList.Key9)
+            {
+                ToggleVisibilityOn();
+            }
+        }
     }
 }

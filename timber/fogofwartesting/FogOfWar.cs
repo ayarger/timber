@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 
 public class FogOfWar : Viewport
 {
@@ -22,6 +23,8 @@ public class FogOfWar : Viewport
     public PackedScene scene;
     public static FogOfWar instance;
     public static FogOfWar actorInstance;
+
+    private Dictionary<Vector3, FOWLitArea> towerLitAreaDict;
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
@@ -35,6 +38,7 @@ public class FogOfWar : Viewport
         }
         scene = GD.Load<PackedScene>("res://fogofwartesting/FOWLitArea.tscn");
         EventBus.Subscribe<SpawnLightSourceEvent>(AddLitArea);
+        EventBus.Subscribe<RemoveLightSourceEvent>(RemoveLitArea);
         EventBus.Subscribe<TileDataLoadedEvent>((TileDataLoadedEvent e) =>
         {
             screenWidth = Grid.width * 2+50;
@@ -45,6 +49,8 @@ public class FogOfWar : Viewport
             GD.Print($"Fog Of War Set Screen Width: {screenWidth}");
             GD.Print($"Fog Of War Set Screen Height: {screenHeight}");
         });
+
+        towerLitAreaDict = new Dictionary<Vector3, FOWLitArea>();
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -106,7 +112,19 @@ public class FogOfWar : Viewport
         newArea.follow = e.spatial;
         newArea.parent = this;
         AddChild(newArea);
+
+        if (e.forTower)
+        {
+            towerLitAreaDict[e.spatial.GlobalTranslation] = newArea;
+        }
     }
+    
+    public void RemoveLitArea(RemoveLightSourceEvent e)
+    {
+        towerLitAreaDict[e.vec].QueueFree();
+        towerLitAreaDict.Remove(e.vec);
+    }
+    
     //public Color GetAtPixel(Vector3 pos)
     //{
     //    int x = Mathf.RoundToInt(Size.x * (pos.x-screenPosX)/screenWidth);
@@ -118,8 +136,19 @@ public class FogOfWar : Viewport
 public class SpawnLightSourceEvent
 {
     public Spatial spatial;
-    public SpawnLightSourceEvent(Spatial _spatial)
+    public bool forTower;
+    public SpawnLightSourceEvent(Spatial _spatial, bool _forTower = false)
     {
         spatial = _spatial;
+        forTower = _forTower;
+    }
+}
+
+public class RemoveLightSourceEvent
+{
+    public Vector3 vec;
+    public RemoveLightSourceEvent(Vector3 _vec)
+    {
+        vec = _vec;
     }
 }

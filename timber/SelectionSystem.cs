@@ -2,6 +2,7 @@ using Godot;
 using System;
 using System.Security.Cryptography.X509Certificates;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 public class SelectionSystem : Node
 {
@@ -36,8 +37,12 @@ public class SelectionSystem : Node
     {
         instance = this;
         active_cursor = GetNode<CSGMesh>("active_cursor");
+        active_cursor.GetNode<CSGMesh>("active_cursor_tower").Visible = false;
 
         EventBus.Subscribe<EventTileCursorChangedLocation> (OnEventTileCursorChangedLocation);
+        EventBus.Subscribe<TowerManager.EventToggleTowerPlacement> (OnEventToggleTowerPlacement);
+        EventBus.Subscribe<TowerManager.EventCancelTowerPlacement> (OnEventCancelTowerPlacement);
+        
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -202,6 +207,18 @@ public class SelectionSystem : Node
                 }
             }
         }
+    }
+    
+    
+    void OnEventToggleTowerPlacement(TowerManager.EventToggleTowerPlacement e)
+    {
+        active_cursor.GetNode<CSGMesh>("active_cursor_tower").Visible = true;
+
+    }
+
+    void OnEventCancelTowerPlacement(TowerManager.EventCancelTowerPlacement e)
+    {
+        active_cursor.GetNode<CSGMesh>("active_cursor_tower").Visible = false;
     }
 }
 
