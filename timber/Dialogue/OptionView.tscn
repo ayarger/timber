@@ -8,9 +8,12 @@ size = 30
 font_data = ExtResource( 2 )
 
 [node name="OptionView" type="Button"]
-margin_right = 12.0
-margin_bottom = 20.0
+anchor_right = 0.069
+anchor_bottom = 0.103
+margin_right = 0.519989
+margin_bottom = -0.240005
 size_flags_horizontal = 3
 size_flags_vertical = 3
 custom_fonts/font = SubResource( 1 )
+text = "dsfdsf"
 script = ExtResource( 1 )

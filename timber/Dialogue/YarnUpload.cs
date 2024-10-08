@@ -1,6 +1,7 @@
 using Godot;
 using System.Collections.Generic;
 using YarnSpinnerGodot;
+using YarnSpinnerGodot.Editor;
 
 
 
@@ -83,16 +84,16 @@ public class YarnUpload : Button
         string fileName = System.IO.Path.GetFileNameWithoutExtension(path);
         var newYarnProject = GD.Load<CSharpScript>("res://addons/YarnSpinner-Godot/Runtime/YarnProject.cs").New() as YarnSpinnerGodot.YarnProject;
         newYarnProject.ResourceName = fileName;
-        //newYarnProject.ResourcePath = path; // Can probably remove in future
+        newYarnProject.ResourcePath = path; // Can probably remove in future
         newYarnProject.SourceScripts.Add(path); // Can remove in the future
 
         //TODO: THIS DOES NOT WORK ON THE WEB RIGHT NOW
 
-        YarnEditorUtilityDecoupled.CompileAllScripts(newYarnProject);
-        YarnEditorUtilityDecoupled.AddLineTagsToFilesInYarnProject(newYarnProject);
+        YarnProjectEditorUtility.CompileAllScripts(newYarnProject);
+        YarnProjectEditorUtility.AddLineTagsToFilesInYarnProject(newYarnProject);
 
         //TODO: This function assumes running on OS, not a priority
-        YarnEditorUtilityDecoupled.UpdateLocalizationCSVs(newYarnProject);
+        YarnProjectEditorUtility.UpdateLocalizationCSVs(newYarnProject);
         
         YarnManager.projects[fileName] = newYarnProject;
         //YarnSpinnerGodot.DialogueRunner dialogueRunner = GetTree().CurrentScene.FindNode("DialogueRunner", recursive: true) as YarnSpinnerGodot.DialogueRunner;

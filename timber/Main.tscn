@@ -323,7 +323,7 @@ anchor_bottom = 1.0
 [node name="DialogueRunner" type="Node" parent="Dialogue/CanvasLayer"]
 script = ExtResource( 22 )
 variableStoragePath = NodePath("../InMemoryVariableStorage")
-dialogueViewPaths = [ NodePath("../LineView"), NodePath("../OptionsListView") ]
+dialogueViewPaths = [ NodePath("../LineView"), NodePath("../LineView/OptionsListView") ]
 startNode = "Start"
 startAutomatically = false
 lineProviderPath = NodePath("../TextLineProvider")
@@ -405,7 +405,7 @@ __meta__ = {
 "_editor_description_": ""
 }
 
-[node name="OptionsListView" type="Control" parent="Dialogue/CanvasLayer"]
+[node name="OptionsListView" type="Control" parent="Dialogue/CanvasLayer/LineView"]
 anchor_right = 0.963
 anchor_bottom = 0.925
 margin_right = 40.0
@@ -413,21 +413,22 @@ margin_bottom = 40.0
 mouse_filter = 2
 script = ExtResource( 21 )
 optionViewPrefab = ExtResource( 37 )
+lastLineTextPath = NodePath("LastLineText")
+viewControlPath = NodePath("VBoxContainer")
+boxContainerPath = NodePath("VBoxContainer")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Dialogue/CanvasLayer/OptionsListView"]
+[node name="VBoxContainer" type="VBoxContainer" parent="Dialogue/CanvasLayer/LineView/OptionsListView"]
 anchor_left = 0.33
 anchor_top = 0.262
 anchor_right = 0.623
 anchor_bottom = 0.76
-margin_left = -434.357
-margin_top = -1868.22
-margin_right = -394.357
-margin_bottom = -1828.22
+margin_right = 40.0
+margin_bottom = 40.0
 
-[node name="LastLineText" type="RichTextLabel" parent="Dialogue/CanvasLayer/OptionsListView"]
+[node name="LastLineText" type="RichTextLabel" parent="Dialogue/CanvasLayer/LineView/OptionsListView"]
 margin_right = 40.0
 
-[node name="ColorRect" type="ColorRect" parent="Dialogue/CanvasLayer/OptionsListView/LastLineText"]
+[node name="ColorRect" type="ColorRect" parent="Dialogue/CanvasLayer/LineView/OptionsListView/LastLineText"]
 margin_right = 40.0
 margin_bottom = 40.0
 

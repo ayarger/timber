@@ -54,8 +54,8 @@ _global_script_class_icons={
 "CompiledYarnProgram": "",
 "MarkupRegion": "",
 "Value": "",
-"VariableStorage": "res://addons/gdyarn/assets/storage.png",
-"YarnDisplay": "res://addons/gdyarn/assets/display.PNG",
+"VariableStorage": "",
+"YarnDisplay": "",
 "YarnFile": "",
 "YarnImporter": ""
 }
@@ -99,7 +99,7 @@ window/stretch/aspect="expand"
 
 [editor_plugins]
 
-enabled=PoolStringArray(  )
+enabled=PoolStringArray( "res://addons/YarnSpinner-Godot/plugin.cfg" )
 
 [gdnative]
 
