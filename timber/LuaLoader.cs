@@ -425,7 +425,9 @@ public class CombatConfig : StateConfig
 	public float attackRecovery = 0.125f;//anim after attack
 	public float attackCooldown = 1f;
 
-	public CombatConfig(string n, int ar, int damage, float critRate, float windup, float recovery, float cooldown)//temp constructor
+    public CombatConfig() { }
+
+    public CombatConfig(string n, int ar, int damage, float critRate, float windup, float recovery, float cooldown)//temp constructor
     {
 		name = n;
 		attackRange = ar;

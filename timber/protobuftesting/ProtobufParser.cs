@@ -30,10 +30,6 @@ public class ProtobufParser : Node
     // Goal: Trying to make ArborResource have the option to read binary files in a backward-compatible manner.
     //       And make calling these things as minimal as possible (don't change Load / Get in ArborResource)
 
-    // Check how you load: LoadActorConfigs
-    //      - Single function call that loads all actor files 
-    //      - TODO: Maybe fix static configs ...
-
     // Ideas: 
     // OnRequestComplete determines how do we build these constructs
     //      Else:
@@ -105,22 +101,6 @@ public class ProtobufParser : Node
                     scripts = attachedScripts
                 };
                 output = (T)(object)localActor;
-            }
-            else if (file_extension == ".Config")
-            {
-                var gameConfig = Google.Protobuf.Message.GameConfigData.Parser.ParseFrom(body);
-
-                GameConfig localConfig = new GameConfig
-                {
-                    name = gameConfig.Name,
-                    title_screen_background_image = gameConfig.TitleScreenBackgroundImage,
-                    title_screen_logo_image = gameConfig.TitleScreenLogoImage,
-                    initial_scene_file = gameConfig.InitialSceneFile,
-                    gameover_image = gameConfig.GameoverImage,
-                    initial_continue_count = gameConfig.InitialContinueCount,
-                    cursor_image = gameConfig.CursorImage
-                };
-                output = (T)(object)localConfig;
             }
             else if (file_extension == ".JSON")
             {
@@ -234,22 +214,6 @@ public class ProtobufParser : Node
         }
 
         BinaryToFile(localActor.ToByteArray(), name);
-    }
-
-    public static void CreateGameConfigBinary(GameConfig gameObject, string name)
-    {
-        GameConfigData localGameConfig = new GameConfigData
-        {
-            Name = gameObject.name,
-            TitleScreenBackgroundImage = gameObject.title_screen_background_image,
-            TitleScreenLogoImage = gameObject.title_screen_logo_image,
-            InitialSceneFile = gameObject.initial_scene_file,
-            GameoverImage = gameObject.gameover_image,
-            InitialContinueCount = gameObject.initial_continue_count,
-            CursorImage = gameObject.cursor_image
-        };
-
-        BinaryToFile(localGameConfig.ToByteArray(), name);
     }
 
     public static void CreateModFileBinary(ModFileManifest gameObject, string name)

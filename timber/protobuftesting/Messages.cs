@@ -29,24 +29,17 @@ namespace Google.Protobuf.Message {
             "bmFtZRgCIAEoCRIMCgR0ZWFtGAMgASgJEhAKCG1hcF9jb2RlGAQgASgJEh4K",
             "FmFlc3RoZXRpY19zY2FsZV9mYWN0b3IYBSABKAISHAoUaWRsZV9zcHJpdGVf",
             "ZmlsZW5hbWUYBiABKAkSGwoTbGl2ZXNfaWNvbl9maWxlbmFtZRgHIAEoCRIP",
-            "CgdzY3JpcHRzGAggAygJIvMBCg5HYW1lQ29uZmlnRGF0YRIMCgRuYW1lGAEg",
-            "ASgJEiUKHXRpdGxlX3NjcmVlbl9iYWNrZ3JvdW5kX2ltYWdlGAIgASgJEh8K",
-            "F3RpdGxlX3NjcmVlbl9sb2dvX2ltYWdlGAMgASgJEhoKEmluaXRpYWxfc2Nl",
-            "bmVfZmlsZRgEIAEoCRIWCg5nYW1lb3Zlcl9pbWFnZRgFIAEoCRIhChlnYW1l",
-            "b3Zlcl9iYWNrZ3JvdW5kX2ltYWdlGAYgASgJEh4KFmluaXRpYWxfY29udGlu",
-            "dWVfY291bnQYByABKAUSFAoMY3Vyc29yX2ltYWdlGAggASgJIhkKCE1vZEZp",
-            "bGVzEg0KBWZpbGVzGAEgAygJIgUKA01hcCIfCgxTaW1wbGVTdHJpbmcSDwoH",
-            "bWVzc2FnZRgBIAEoCSKwAQoRQWN0b3JDb21iYXRDb25maWcSEwoLYXR0YWNr",
-            "UmFuZ2UYASABKAUSFAoMYXR0YWNrRGFtYWdlGAIgASgFEhcKD2NyaXRpY2Fs",
-            "SGl0UmF0ZRgDIAEoAhIUCgxhdHRhY2tXaW5kdXAYBCABKAISFgoOYXR0YWNr",
-            "UmVjb3ZlcnkYBSABKAISFgoOYXR0YWNrQ29vbGRvd24YBiABKAISEQoJc3Rh",
-            "dGVOYW1lGAcgASgJQhqqAhdHb29nbGUuUHJvdG9idWYuTWVzc2FnZWIGcHJv",
-            "dG8z"));
+            "CgdzY3JpcHRzGAggAygJIhkKCE1vZEZpbGVzEg0KBWZpbGVzGAEgAygJIgUK",
+            "A01hcCIfCgxTaW1wbGVTdHJpbmcSDwoHbWVzc2FnZRgBIAEoCSKwAQoRQWN0",
+            "b3JDb21iYXRDb25maWcSEwoLYXR0YWNrUmFuZ2UYASABKAUSFAoMYXR0YWNr",
+            "RGFtYWdlGAIgASgFEhcKD2NyaXRpY2FsSGl0UmF0ZRgDIAEoAhIUCgxhdHRh",
+            "Y2tXaW5kdXAYBCABKAISFgoOYXR0YWNrUmVjb3ZlcnkYBSABKAISFgoOYXR0",
+            "YWNrQ29vbGRvd24YBiABKAISEQoJc3RhdGVOYW1lGAcgASgJQhqqAhdHb29n",
+            "bGUuUHJvdG9idWYuTWVzc2FnZWIGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Google.Protobuf.WellKnownTypes.TimestampReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::Google.Protobuf.Message.GameActor), global::Google.Protobuf.Message.GameActor.Parser, new[]{ "Guid", "Name", "Team", "MapCode", "AestheticScaleFactor", "IdleSpriteFilename", "LivesIconFilename", "Scripts" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Google.Protobuf.Message.GameConfigData), global::Google.Protobuf.Message.GameConfigData.Parser, new[]{ "Name", "TitleScreenBackgroundImage", "TitleScreenLogoImage", "InitialSceneFile", "GameoverImage", "GameoverBackgroundImage", "InitialContinueCount", "CursorImage" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Google.Protobuf.Message.ModFiles), global::Google.Protobuf.Message.ModFiles.Parser, new[]{ "Files" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Google.Protobuf.Message.Map), global::Google.Protobuf.Message.Map.Parser, null, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Google.Protobuf.Message.SimpleString), global::Google.Protobuf.Message.SimpleString.Parser, new[]{ "Message" }, null, null, null, null),
@@ -496,455 +489,6 @@ namespace Google.Protobuf.Message {
   }
 
   [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
-  public sealed partial class GameConfigData : pb::IMessage<GameConfigData>
-  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      , pb::IBufferMessage
-  #endif
-  {
-    private static readonly pb::MessageParser<GameConfigData> _parser = new pb::MessageParser<GameConfigData>(() => new GameConfigData());
-    private pb::UnknownFieldSet _unknownFields;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pb::MessageParser<GameConfigData> Parser { get { return _parser; } }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pbr::MessageDescriptor Descriptor {
-      get { return global::Google.Protobuf.Message.MessagesReflection.Descriptor.MessageTypes[1]; }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    pbr::MessageDescriptor pb::IMessage.Descriptor {
-      get { return Descriptor; }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public GameConfigData() {
-      OnConstruction();
-    }
-
-    partial void OnConstruction();
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public GameConfigData(GameConfigData other) : this() {
-      name_ = other.name_;
-      titleScreenBackgroundImage_ = other.titleScreenBackgroundImage_;
-      titleScreenLogoImage_ = other.titleScreenLogoImage_;
-      initialSceneFile_ = other.initialSceneFile_;
-      gameoverImage_ = other.gameoverImage_;
-      gameoverBackgroundImage_ = other.gameoverBackgroundImage_;
-      initialContinueCount_ = other.initialContinueCount_;
-      cursorImage_ = other.cursorImage_;
-      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public GameConfigData Clone() {
-      return new GameConfigData(this);
-    }
-
-    /// <summary>Field number for the "name" field.</summary>
-    public const int NameFieldNumber = 1;
-    private string name_ = "";
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public string Name {
-      get { return name_; }
-      set {
-        name_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
-    }
-
-    /// <summary>Field number for the "title_screen_background_image" field.</summary>
-    public const int TitleScreenBackgroundImageFieldNumber = 2;
-    private string titleScreenBackgroundImage_ = "";
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public string TitleScreenBackgroundImage {
-      get { return titleScreenBackgroundImage_; }
-      set {
-        titleScreenBackgroundImage_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
-    }
-
-    /// <summary>Field number for the "title_screen_logo_image" field.</summary>
-    public const int TitleScreenLogoImageFieldNumber = 3;
-    private string titleScreenLogoImage_ = "";
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public string TitleScreenLogoImage {
-      get { return titleScreenLogoImage_; }
-      set {
-        titleScreenLogoImage_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
-    }
-
-    /// <summary>Field number for the "initial_scene_file" field.</summary>
-    public const int InitialSceneFileFieldNumber = 4;
-    private string initialSceneFile_ = "";
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public string InitialSceneFile {
-      get { return initialSceneFile_; }
-      set {
-        initialSceneFile_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
-    }
-
-    /// <summary>Field number for the "gameover_image" field.</summary>
-    public const int GameoverImageFieldNumber = 5;
-    private string gameoverImage_ = "";
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public string GameoverImage {
-      get { return gameoverImage_; }
-      set {
-        gameoverImage_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
-    }
-
-    /// <summary>Field number for the "gameover_background_image" field.</summary>
-    public const int GameoverBackgroundImageFieldNumber = 6;
-    private string gameoverBackgroundImage_ = "";
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public string GameoverBackgroundImage {
-      get { return gameoverBackgroundImage_; }
-      set {
-        gameoverBackgroundImage_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
-    }
-
-    /// <summary>Field number for the "initial_continue_count" field.</summary>
-    public const int InitialContinueCountFieldNumber = 7;
-    private int initialContinueCount_;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public int InitialContinueCount {
-      get { return initialContinueCount_; }
-      set {
-        initialContinueCount_ = value;
-      }
-    }
-
-    /// <summary>Field number for the "cursor_image" field.</summary>
-    public const int CursorImageFieldNumber = 8;
-    private string cursorImage_ = "";
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public string CursorImage {
-      get { return cursorImage_; }
-      set {
-        cursorImage_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public override bool Equals(object other) {
-      return Equals(other as GameConfigData);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool Equals(GameConfigData other) {
-      if (ReferenceEquals(other, null)) {
-        return false;
-      }
-      if (ReferenceEquals(other, this)) {
-        return true;
-      }
-      if (Name != other.Name) return false;
-      if (TitleScreenBackgroundImage != other.TitleScreenBackgroundImage) return false;
-      if (TitleScreenLogoImage != other.TitleScreenLogoImage) return false;
-      if (InitialSceneFile != other.InitialSceneFile) return false;
-      if (GameoverImage != other.GameoverImage) return false;
-      if (GameoverBackgroundImage != other.GameoverBackgroundImage) return false;
-      if (InitialContinueCount != other.InitialContinueCount) return false;
-      if (CursorImage != other.CursorImage) return false;
-      return Equals(_unknownFields, other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public override int GetHashCode() {
-      int hash = 1;
-      if (Name.Length != 0) hash ^= Name.GetHashCode();
-      if (TitleScreenBackgroundImage.Length != 0) hash ^= TitleScreenBackgroundImage.GetHashCode();
-      if (TitleScreenLogoImage.Length != 0) hash ^= TitleScreenLogoImage.GetHashCode();
-      if (InitialSceneFile.Length != 0) hash ^= InitialSceneFile.GetHashCode();
-      if (GameoverImage.Length != 0) hash ^= GameoverImage.GetHashCode();
-      if (GameoverBackgroundImage.Length != 0) hash ^= GameoverBackgroundImage.GetHashCode();
-      if (InitialContinueCount != 0) hash ^= InitialContinueCount.GetHashCode();
-      if (CursorImage.Length != 0) hash ^= CursorImage.GetHashCode();
-      if (_unknownFields != null) {
-        hash ^= _unknownFields.GetHashCode();
-      }
-      return hash;
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public override string ToString() {
-      return pb::JsonFormatter.ToDiagnosticString(this);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void WriteTo(pb::CodedOutputStream output) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      output.WriteRawMessage(this);
-    #else
-      if (Name.Length != 0) {
-        output.WriteRawTag(10);
-        output.WriteString(Name);
-      }
-      if (TitleScreenBackgroundImage.Length != 0) {
-        output.WriteRawTag(18);
-        output.WriteString(TitleScreenBackgroundImage);
-      }
-      if (TitleScreenLogoImage.Length != 0) {
-        output.WriteRawTag(26);
-        output.WriteString(TitleScreenLogoImage);
-      }
-      if (InitialSceneFile.Length != 0) {
-        output.WriteRawTag(34);
-        output.WriteString(InitialSceneFile);
-      }
-      if (GameoverImage.Length != 0) {
-        output.WriteRawTag(42);
-        output.WriteString(GameoverImage);
-      }
-      if (GameoverBackgroundImage.Length != 0) {
-        output.WriteRawTag(50);
-        output.WriteString(GameoverBackgroundImage);
-      }
-      if (InitialContinueCount != 0) {
-        output.WriteRawTag(56);
-        output.WriteInt32(InitialContinueCount);
-      }
-      if (CursorImage.Length != 0) {
-        output.WriteRawTag(66);
-        output.WriteString(CursorImage);
-      }
-      if (_unknownFields != null) {
-        _unknownFields.WriteTo(output);
-      }
-    #endif
-    }
-
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (Name.Length != 0) {
-        output.WriteRawTag(10);
-        output.WriteString(Name);
-      }
-      if (TitleScreenBackgroundImage.Length != 0) {
-        output.WriteRawTag(18);
-        output.WriteString(TitleScreenBackgroundImage);
-      }
-      if (TitleScreenLogoImage.Length != 0) {
-        output.WriteRawTag(26);
-        output.WriteString(TitleScreenLogoImage);
-      }
-      if (InitialSceneFile.Length != 0) {
-        output.WriteRawTag(34);
-        output.WriteString(InitialSceneFile);
-      }
-      if (GameoverImage.Length != 0) {
-        output.WriteRawTag(42);
-        output.WriteString(GameoverImage);
-      }
-      if (GameoverBackgroundImage.Length != 0) {
-        output.WriteRawTag(50);
-        output.WriteString(GameoverBackgroundImage);
-      }
-      if (InitialContinueCount != 0) {
-        output.WriteRawTag(56);
-        output.WriteInt32(InitialContinueCount);
-      }
-      if (CursorImage.Length != 0) {
-        output.WriteRawTag(66);
-        output.WriteString(CursorImage);
-      }
-      if (_unknownFields != null) {
-        _unknownFields.WriteTo(ref output);
-      }
-    }
-    #endif
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public int CalculateSize() {
-      int size = 0;
-      if (Name.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(Name);
-      }
-      if (TitleScreenBackgroundImage.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(TitleScreenBackgroundImage);
-      }
-      if (TitleScreenLogoImage.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(TitleScreenLogoImage);
-      }
-      if (InitialSceneFile.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(InitialSceneFile);
-      }
-      if (GameoverImage.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(GameoverImage);
-      }
-      if (GameoverBackgroundImage.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(GameoverBackgroundImage);
-      }
-      if (InitialContinueCount != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(InitialContinueCount);
-      }
-      if (CursorImage.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(CursorImage);
-      }
-      if (_unknownFields != null) {
-        size += _unknownFields.CalculateSize();
-      }
-      return size;
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(GameConfigData other) {
-      if (other == null) {
-        return;
-      }
-      if (other.Name.Length != 0) {
-        Name = other.Name;
-      }
-      if (other.TitleScreenBackgroundImage.Length != 0) {
-        TitleScreenBackgroundImage = other.TitleScreenBackgroundImage;
-      }
-      if (other.TitleScreenLogoImage.Length != 0) {
-        TitleScreenLogoImage = other.TitleScreenLogoImage;
-      }
-      if (other.InitialSceneFile.Length != 0) {
-        InitialSceneFile = other.InitialSceneFile;
-      }
-      if (other.GameoverImage.Length != 0) {
-        GameoverImage = other.GameoverImage;
-      }
-      if (other.GameoverBackgroundImage.Length != 0) {
-        GameoverBackgroundImage = other.GameoverBackgroundImage;
-      }
-      if (other.InitialContinueCount != 0) {
-        InitialContinueCount = other.InitialContinueCount;
-      }
-      if (other.CursorImage.Length != 0) {
-        CursorImage = other.CursorImage;
-      }
-      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(pb::CodedInputStream input) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      input.ReadRawMessage(this);
-    #else
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
-          default:
-            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
-            break;
-          case 10: {
-            Name = input.ReadString();
-            break;
-          }
-          case 18: {
-            TitleScreenBackgroundImage = input.ReadString();
-            break;
-          }
-          case 26: {
-            TitleScreenLogoImage = input.ReadString();
-            break;
-          }
-          case 34: {
-            InitialSceneFile = input.ReadString();
-            break;
-          }
-          case 42: {
-            GameoverImage = input.ReadString();
-            break;
-          }
-          case 50: {
-            GameoverBackgroundImage = input.ReadString();
-            break;
-          }
-          case 56: {
-            InitialContinueCount = input.ReadInt32();
-            break;
-          }
-          case 66: {
-            CursorImage = input.ReadString();
-            break;
-          }
-        }
-      }
-    #endif
-    }
-
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
-          default:
-            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
-            break;
-          case 10: {
-            Name = input.ReadString();
-            break;
-          }
-          case 18: {
-            TitleScreenBackgroundImage = input.ReadString();
-            break;
-          }
-          case 26: {
-            TitleScreenLogoImage = input.ReadString();
-            break;
-          }
-          case 34: {
-            InitialSceneFile = input.ReadString();
-            break;
-          }
-          case 42: {
-            GameoverImage = input.ReadString();
-            break;
-          }
-          case 50: {
-            GameoverBackgroundImage = input.ReadString();
-            break;
-          }
-          case 56: {
-            InitialContinueCount = input.ReadInt32();
-            break;
-          }
-          case 66: {
-            CursorImage = input.ReadString();
-            break;
-          }
-        }
-      }
-    }
-    #endif
-
-  }
-
-  [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
   public sealed partial class ModFiles : pb::IMessage<ModFiles>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
@@ -959,7 +503,7 @@ namespace Google.Protobuf.Message {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Google.Protobuf.Message.MessagesReflection.Descriptor.MessageTypes[2]; }
+      get { return global::Google.Protobuf.Message.MessagesReflection.Descriptor.MessageTypes[1]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1142,7 +686,7 @@ namespace Google.Protobuf.Message {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Google.Protobuf.Message.MessagesReflection.Descriptor.MessageTypes[3]; }
+      get { return global::Google.Protobuf.Message.MessagesReflection.Descriptor.MessageTypes[2]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1295,7 +839,7 @@ namespace Google.Protobuf.Message {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Google.Protobuf.Message.MessagesReflection.Descriptor.MessageTypes[4]; }
+      get { return global::Google.Protobuf.Message.MessagesReflection.Descriptor.MessageTypes[3]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1485,7 +1029,7 @@ namespace Google.Protobuf.Message {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Google.Protobuf.Message.MessagesReflection.Descriptor.MessageTypes[5]; }
+      get { return global::Google.Protobuf.Message.MessagesReflection.Descriptor.MessageTypes[4]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
