@@ -29,6 +29,7 @@ public class Tower : Actor
 
 	private Vector3 defaultTranslation;
 	private float target_view_scale_y = 1.0f;
+	private MeshInstance iconMesh;
 
 	public override void _Ready()
 	{
@@ -38,6 +39,8 @@ public class Tower : Actor
 		_HasStats = GetNode<HasStats>("HasStats");
 		_HasStats.AddStat("construction_progress", 0, 50, 0, true);
 		defaultTranslation = GetNode<MeshInstance>("view/mesh").Translation;
+		iconMesh = GetNode<MeshInstance>("iconMesh");
+		GetNode<IsSelectable>("IsSelectable").first_time_placement = true;
 	}
 
 	public override void _Input(InputEvent @event)
@@ -62,7 +65,7 @@ public class Tower : Actor
 			towerStatus = TowerStatus.InConstruction;
 			
 			// Debug
-			ToastManager.SendToast(this, "Switch to InConstruction", ToastMessage.ToastType.Notice);
+			// ToastManager.SendToast(this, "Switch to InConstruction", ToastMessage.ToastType.Notice);
 		}
 		
 		else if (newTowerStatus == TowerStatus.Functioning)
@@ -72,7 +75,9 @@ public class Tower : Actor
 			GetNode<HasTeam>("HasTeam").team = config.team;
 			// enable combatstate
 			ConstructionAnimation_complete();
-			ToastManager.SendToast(this, "Switch to Functioning", ToastMessage.ToastType.Notice);
+			GetNode<IconControl>("IconControl").SetIconInvisible();
+			GetNode<IsSelectable>("IsSelectable").first_time_placement = false; // enabled BarContainer display
+			// ToastManager.SendToast(this, "Switch to Functioning", ToastMessage.ToastType.Notice);
 		}
 	} 
 
@@ -107,7 +112,7 @@ public class Tower : Actor
 
 		character_view.SetSurfaceMaterial(0, char_mat);
 
-		StateManager _stateManager = GetNode<Node>("StateManager") as StateManager;
+		// StateManager _stateManager = GetNode<Node>("StateManager") as StateManager;
 		// IdleState _idleState = _stateManager.states["Idle"] as IdleState;
 		// _idleState.has_idle_animation = false;
 		

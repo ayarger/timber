@@ -14,9 +14,9 @@ public class ConstructionState : CombatState
 	}
 
 	public override string stateType
-    {
-        get { return "ConstructionState"; }
-    }
+	{
+		get { return "ConstructionState"; }
+	}
 	
 	public override void Config(StateConfig stateConfig)
 	{
