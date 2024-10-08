@@ -6,9 +6,6 @@
 	<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 </PropertyGroup>
   <ItemGroup>
-    <Content Include="protoc-25\readme.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="AWSSDK.CloudFront" Version="3.7.105.35" />
     <PackageReference Include="AWSSDK.S3" Version="3.7.103.50" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
@@ -24,20 +21,5 @@
   <Import Project="addons\YarnSpinner-Godot\YarnSpinner-Godot.props" />
   <ItemGroup>
     <Folder Include="temp_scenes\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="protoc-25\bin\protoc.exe" />
-    <None Include="protoc-25\include\google\protobuf\any.proto" />
-    <None Include="protoc-25\include\google\protobuf\api.proto" />
-    <None Include="protoc-25\include\google\protobuf\compiler\plugin.proto" />
-    <None Include="protoc-25\include\google\protobuf\descriptor.proto" />
-    <None Include="protoc-25\include\google\protobuf\duration.proto" />
-    <None Include="protoc-25\include\google\protobuf\empty.proto" />
-    <None Include="protoc-25\include\google\protobuf\field_mask.proto" />
-    <None Include="protoc-25\include\google\protobuf\source_context.proto" />
-    <None Include="protoc-25\include\google\protobuf\struct.proto" />
-    <None Include="protoc-25\include\google\protobuf\timestamp.proto" />
-    <None Include="protoc-25\include\google\protobuf\type.proto" />
-    <None Include="protoc-25\include\google\protobuf\wrappers.proto" />
   </ItemGroup>
 </Project>
