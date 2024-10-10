@@ -17,12 +17,20 @@ public class FogOfWar : Viewport
 
     [Export] public bool isActorViewport;
     [Export] public bool isHighVisibility;
+    [Export] public bool isLowRes;
     [Export] public Texture actorFOWTexture;
 
 
     public PackedScene scene;
+
     public static FogOfWar instance;
+    public static FogOfWar instanceHigh;
+    public static FogOfWar instanceLow;
     public static FogOfWar actorInstance;
+
+    private float timer = 0;
+
+    public Image textureCache;
 
     private Dictionary<Vector3, FOWLitArea> towerLitAreaDict;
     // Called when the node enters the scene tree for the first time.
@@ -34,7 +42,21 @@ public class FogOfWar : Viewport
         }
         else
         {
-            instance = this;
+            if (isHighVisibility)
+            {
+                instanceHigh = this;
+            }
+            else
+            {
+                if (isLowRes)
+                {
+                    instanceLow = this;
+                }
+                else
+                {
+                    instance = this;
+                }
+            }
         }
         scene = GD.Load<PackedScene>("res://fogofwartesting/FOWLitArea.tscn");
         EventBus.Subscribe<SpawnLightSourceEvent>(AddLitArea);
@@ -85,17 +107,25 @@ public class FogOfWar : Viewport
         {
             (shader as ShaderMaterial).SetShaderParam("fowTexture", GetTexture());
         }
-        else
+        else if(!isLowRes)
         {
             (shader as ShaderMaterial).SetShaderParam("lowVisibility_texture", GetTexture());
+        }
+
+        timer += delta;
+        if (timer > 1)
+        {
+            if (isLowRes)
+            {
+                textureCache = GetTexture().GetData();
+                textureCache.Unlock();
+                timer = 0;
+            }
         }
         (shader as ShaderMaterial).SetShaderParam("screenWidth", screenWidth);
         (shader as ShaderMaterial).SetShaderParam("screenHeight", screenHeight);
         (shader as ShaderMaterial).SetShaderParam("screenPosX", screenPosX);
         (shader as ShaderMaterial).SetShaderParam("screenPosZ", screenPosZ);
-
-
-
     }
 
     public void AddLitArea(SpawnLightSourceEvent e)
@@ -124,7 +154,44 @@ public class FogOfWar : Viewport
         towerLitAreaDict[e.vec].QueueFree();
         towerLitAreaDict.Remove(e.vec);
     }
-    
+    public static bool IsVisible(float x, float z, bool useHighVisibility)
+    {
+        if (useHighVisibility)
+        {
+            foreach(var i in FogOfWar.instanceHigh.GetChildren())
+            {
+                if(i is FOWLitArea)
+                {
+                    FOWLitArea fla = ((FOWLitArea) i);
+                    Vector3 pos = fla.follow.GlobalTranslation;
+                    if (new Vector2(pos.x, pos.z).DistanceTo(new Vector2(x, z)) < fla.baseRadius)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        //Low visibility.
+        FogOfWar fogOfWar = FogOfWar.instanceLow;
+        Vector2 translatedPos = fogOfWar.Translate(new Vector2(x, z));
+
+        fogOfWar.textureCache.Lock();
+        Color c = fogOfWar.textureCache.GetPixel((int)translatedPos.x, (int)translatedPos.y);
+        fogOfWar.textureCache.Unlock();
+
+        return c.r > .2f;
+    }
+    private Vector2 Translate(Vector2 pos)
+    {
+
+        return new Vector2(
+                (pos.x - screenPosX) / screenWidth * textureCache.GetWidth(),
+                (pos.y - screenPosZ) / screenHeight * textureCache.GetHeight()
+            );
+    }
+
     //public Color GetAtPixel(Vector3 pos)
     //{
     //    int x = Mathf.RoundToInt(Size.x * (pos.x-screenPosX)/screenWidth);
@@ -143,6 +210,10 @@ public class SpawnLightSourceEvent
         forTower = _forTower;
     }
 }
+
+//Using Godot's built in coordinate system
+
+
 
 public class RemoveLightSourceEvent
 {
