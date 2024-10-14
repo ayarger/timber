@@ -15,6 +15,7 @@ public class YarnSelect : Button
 
     private void OnProjectSelected(int id)
     {
+        GD.Print("test");
         string selected = projectSelect.GetItemText(id);
         YarnSpinnerGodot.DialogueRunner dialogueRunner = GetTree().CurrentScene.FindNode("DialogueRunner", recursive: true) as YarnSpinnerGodot.DialogueRunner;
         dialogueRunner.SetProject(YarnManager.projects[selected]);

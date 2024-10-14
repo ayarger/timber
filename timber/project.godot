@@ -99,7 +99,7 @@ window/stretch/aspect="expand"
 
 [editor_plugins]
 
-enabled=PoolStringArray(  )
+enabled=PoolStringArray( "res://addons/YarnSpinner-Godot/plugin.cfg" )
 
 [gdnative]
 
