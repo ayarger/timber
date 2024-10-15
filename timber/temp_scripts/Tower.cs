@@ -30,6 +30,7 @@ public class Tower : Actor
 	private Vector3 defaultTranslation;
 	private float target_view_scale_y = 1.0f;
 	private MeshInstance iconMesh;
+	private Texture full_tex;
 
 	public override void _Ready()
 	{
@@ -97,9 +98,9 @@ public class Tower : Actor
 		ShaderMaterial char_mat = (ShaderMaterial)character_view.GetSurfaceMaterial(0).Duplicate();
 
 		shadow_view = (MeshInstance)GetNode("shadow");
-		view.Scale = new Vector3(tex.GetWidth(), 0.0f, 1.0f) * 0.01f;
-		view.Scale *= config.aesthetic_scale_factor;
 		target_view_scale_y = tex.GetHeight() * config.aesthetic_scale_factor * 0.01f;
+		view.Scale = new Vector3(tex.GetWidth()* 0.01f, target_view_scale_y * 0.3f, 1.0f* 0.01f);
+		view.Scale *= config.aesthetic_scale_factor;
 		initial_load = true;
 		initial_view_scale = view.Scale;
 		desired_scale_x = initial_view_scale.x;
@@ -123,6 +124,7 @@ public class Tower : Actor
 		{
 			statManager.Config(config.statConfig);
 		}
+		
 	}
 
 	public override void Hurt(int damage, bool isCritical, Actor source)
@@ -160,7 +162,7 @@ public class Tower : Actor
 	
 	public void ConstructAnimation_in_progress(float progress)
 	{
-		initial_view_scale = new Vector3(view.Scale.x, target_view_scale_y * progress, view.Scale.z);
+		initial_view_scale = new Vector3(view.Scale.x, target_view_scale_y * (progress * 0.7f + 0.3f), view.Scale.z);
 	}
 
 	public void ConstructionAnimation_complete()

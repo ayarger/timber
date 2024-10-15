@@ -11,7 +11,7 @@ public class IconControl : Node
 
 	private bool isShrinking = false;
 	private bool isExpanding = false;
-	private float shrinkExpandDuration = 0.5f; 
+	private float shrinkExpandDuration = 0.3f; 
 	private float animationProgress = 0.0f;    
 
 	public override void _Ready()
