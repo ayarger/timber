@@ -28,16 +28,15 @@ public class Projectile : Actor
 		// 	ArborResource.Load<Texture>("images/" + config.pre_ko_sprite_filename);
 		// if (config.ko_sprite_filename != null && config.ko_sprite_filename != "")
 		// 	ArborResource.Load<Texture>("images/" + config.ko_sprite_filename);
-		GD.Print("Projectile config: " + config);
+		
 		ArborResource.UseResource<Texture>(
-			//"images/" + config.idle_sprite_filename,
-			"images/" + "acorn.png",
+			"images/" + config.idle_sprite_filename,
 			(Texture tex) =>
 			{
 				GD.Print("Loaded texture: " + tex);
 				ShaderMaterial char_mat = (ShaderMaterial)character_view.GetSurfaceMaterial(0).Duplicate();
 
-				view.Scale = new Vector3(tex.GetWidth(), tex.GetHeight(), 1.0f) * 0.005f;
+				view.Scale = new Vector3(tex.GetWidth(), tex.GetHeight(), 1.0f) * 0.02f;
 				view.Scale = view.Scale * config.aesthetic_scale_factor;
 				initial_load = true;
 				initial_view_scale = view.Scale;

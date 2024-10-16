@@ -24,6 +24,6 @@ function testluaobject:testfunc()
 	--SetDestination(self,self.x+3, self.z)
 	--Hurt(self, 10)
 	--parent.testData = ""..i;
-	Print("Completed Ready")
+	--Print("Completed Ready")
 	--end
 end

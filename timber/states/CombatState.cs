@@ -45,9 +45,4 @@ public abstract class CombatState : ActorState
         attackRecovery = c.attackRecovery;
         attackCooldown = c.attackCooldown;
     }
-
-
-    public abstract Coord FindClosestTileInRange(Coord cur);
-
-    public abstract bool WithinRange(Coord pos);
 }

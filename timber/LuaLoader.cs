@@ -21,18 +21,25 @@ public class LuaLoader : Node
 
 	static LuaLoader instance;
 
-	//temporary fake json
+	//TEMP fake json
 	CombatConfig enemyMeleeCombatConfig = new CombatConfig("MeleeCombatState", 1, 10, 0.5f, 0.5f, 0.125f, 1);
 	CombatConfig enemyRangeCombatConfig = new CombatConfig("RangedCombatState", 3, 5, 0.3f, 0.75f, 0.125f, 1.5f);
 	CombatConfig playerCombatConfig = new CombatConfig("MeleeCombatState", 2, 20, 0.3f, 0.5f, 0.125f, 0.75f);
 	CombatConfig TowerRangeConfig = new CombatConfig("RangedCombatState", 4, 10, 0.3f, 0.5f, 0.125f, 0.75f);
+
+	CombatConfig enemyMeleeChaseState = new CombatConfig("ChaseState", 1, 10, 0.5f, 0.5f, 0.125f, 1);
+	CombatConfig enemyRangeChaseState = new CombatConfig("ChaseState", 3, 5, 0.3f, 0.75f, 0.125f, 1.5f);
+	CombatConfig playerChaseState = new CombatConfig("ChaseState", 2, 20, 0.3f, 0.5f, 0.125f, 0.75f);
+
 	StatConfig enemyStatConfig = new StatConfig();
 	StatConfig playerStatConfig = new StatConfig();
 
 	StateConfig idleState = new StateConfig() { name = "IdleState" };
 	StateConfig movementState = new StateConfig() { name = "MovementState" };
 
+
 	CombatConfig ConstructionState = new CombatConfig("ConstructionState", 1, 10, 0.5f, 0.5f, 0.125f, 1);
+	
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
@@ -97,6 +104,7 @@ public class LuaLoader : Node
 				actor_info.stateConfigs.Add(playerCombatConfig);
 				actor_info.statConfig = playerStatConfig;
 				actor_info.stateConfigs.Add(ConstructionState);
+				actor_info.stateConfigs.Add(playerChaseState);
             }
 			else if (actor_info.team=="construction")
 			{
@@ -106,12 +114,15 @@ public class LuaLoader : Node
             else if(actor_info.name=="Chunk")
             {
 				actor_info.stateConfigs.Add(enemyMeleeCombatConfig);
+				actor_info.stateConfigs.Add(enemyMeleeChaseState);
 				actor_info.statConfig = enemyStatConfig;
             }
             else
             {
 				actor_info.stateConfigs.Add(enemyRangeCombatConfig);
+				actor_info.stateConfigs.Add(enemyRangeChaseState);
 				actor_info.statConfig = enemyStatConfig;
+				ArborResource.Load<Texture>("images/cheese.png");
 			}
 			actor_info.stateConfigs.Add(idleState);
 			actor_info.stateConfigs.Add(movementState);
@@ -415,6 +426,7 @@ public class StateConfig
 }
 
 //state configs for actors
+//Stats should be moved to stat manager
 public class CombatConfig : StateConfig
 { 
 	public int attackRange = 2;//number of grids
@@ -425,7 +437,7 @@ public class CombatConfig : StateConfig
 	public float attackRecovery = 0.125f;//anim after attack
 	public float attackCooldown = 1f;
 
-	public CombatConfig(string n, int ar, int damage, float critRate, float windup, float recovery, float cooldown)//temp constructor
+	public CombatConfig(string n, int ar=1, int damage=10, float critRate=0.5f, float windup=0.5f, float recovery=0.125f, float cooldown=1f)//temp constructor
     {
 		name = n;
 		attackRange = ar;

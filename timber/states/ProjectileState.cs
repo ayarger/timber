@@ -18,7 +18,6 @@ public class ProjectileState : ActorState//TODO collision body to chekc for coll
     public override void Start()
     {
         Node rb = GetParent().GetParent().FindNode("RigidBody");
-        GD.Print("found rigidbody: " + rb);
         rb.Connect("body_entered", this, "onBodyEntered");
     }
 

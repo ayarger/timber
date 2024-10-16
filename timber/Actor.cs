@@ -255,14 +255,13 @@ public class Actor : Spatial
             //draws aggro
             if (state_manager.states.ContainsKey("CombatState"))
             {
-                CombatState c = (state_manager.states["CombatState"] as CombatState);
+                ChaseState c = (state_manager.states["ChaseState"] as ChaseState);
                 if (source != null && !state_manager.IsStateActive("CombatState"))
                 {
-
-                    if (state_manager.states.ContainsKey("MovementState") && !state_manager.IsStateActive("MovementState"))
+                    if (state_manager.states.ContainsKey("ChaseState") && !state_manager.IsStateActive("ChaseState"))
                     {
                         c.TargetActor = source;
-                        state_manager.EnableState("CombatState");
+                        state_manager.EnableState("ChaseState");
                     }
                 }
             }
