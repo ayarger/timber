@@ -18,7 +18,16 @@ public class GameplayCamera : Camera
     public override void _Ready()
     {
         instance = this;
+
+        sub_EventPlayerDefeated = EventBus.Subscribe<EventPlayerDefeated>(OnEventPlayerDefeated);
+
         ForceNewState(new IntroCutsceneCameraState());
+    }
+
+    Subscription<EventPlayerDefeated> sub_EventPlayerDefeated;
+    void OnEventPlayerDefeated(EventPlayerDefeated e)
+    {
+        ForceNewState(new PlayerDefeatedCutsceneCameraState(e.actor_ko));
     }
 
     public override void _Process(float delta)
@@ -79,6 +88,13 @@ public class GameplayCamera : Camera
                 }
             }
         }
+    }
+
+    public override void _ExitTree()
+    {
+        base._ExitTree();
+
+        EventBus.Unsubscribe(sub_EventPlayerDefeated);
     }
 }
 
@@ -160,6 +176,44 @@ public class IntroCutsceneCameraState : GameplayCameraState
     {
         if (time_to_live <= 0.0f)
             return true;
+        return false;
+    }
+
+    public override bool SelectionCursorAllowed()
+    {
+        return false;
+    }
+    public override bool ZoomControlsAllowed()
+    {
+        return false;
+    }
+}
+
+public class PlayerDefeatedCutsceneCameraState : GameplayCameraState
+{
+    Spatial player_ko;
+    Vector3 defeated_player_position;
+
+    public PlayerDefeatedCutsceneCameraState(Spatial _player_ko)
+    {
+        player_ko = _player_ko;
+        if(player_ko != null)
+            defeated_player_position = player_ko.Translation;
+    }
+
+    public override void OnUpdate(float delta)
+    {
+        if (player_ko == null)
+            return;
+
+        Vector3 focus_position = defeated_player_position + new Vector3(0, 0, -2);
+
+        GameplayCamera.SetDesiredXZPosition(focus_position);
+        GameplayCamera.SetDesiredZoom(15.0f);
+    }
+
+    public override bool IsFinished()
+    {
         return false;
     }
 
