@@ -8,6 +8,7 @@ public class IsSelectable : Node
     static HashSet<IsSelectable> selectables = new HashSet<IsSelectable>();
     public static HashSet<IsSelectable> GetSelectables() { return selectables; }
     private bool isRemovingParent = false;
+    public bool first_time_placement = false;
 
     public static HashSet<IsSelectable> GetSelectablesWithinRegion(SelectionRegion region) 
     {

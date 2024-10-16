@@ -56,7 +56,7 @@ public class BarContainer : Control
 
         if (IsInstanceValid(target_data))
         {
-            displayOn = target_selection.am_i_selected || target_selection.AmIHovered() || statChanged;
+            displayOn = !target_selection.first_time_placement && (target_selection.am_i_selected || target_selection.AmIHovered() || statChanged);
             Visible = displayOn;
             PursueTarget();
         }

@@ -39,12 +39,23 @@ public class IdleState : ActorState
             idle_scale_impact = (1.0f + Mathf.Sin(time * 4 + animation_offset) * 0.025f);
         }
 
+        float current_scale_y = actor.view.Scale.y;
+        if (actor.GetNode<Actor>(".").GetActorConfig().type == "tower")
+        {
+            current_scale_y += (actor.initial_view_scale.y - actor.view.Scale.y) * 0.3f;
+        }
+        else
+        {
+            current_scale_y = actor.initial_view_scale.y * idle_scale_impact;
+        }
+        
         /* Paper Turning */
         float current_scale_x = actor.view.Scale.x;
         current_scale_x += (actor.GetDesiredScaleX() - current_scale_x) * 0.2f;
-        actor.view.Scale = new Vector3(current_scale_x, actor.initial_view_scale.y * idle_scale_impact,
-            actor.view.Scale.z);
+        actor.view.Scale = new Vector3(current_scale_x, current_scale_y, actor.view.Scale.z);
     }
+    
+    
 
     public void SetAnimationOffset(float val)
     {

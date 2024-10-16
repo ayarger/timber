@@ -48,8 +48,9 @@ public class UIManager : Node
     {
         while(instance.currMenu != null)
         {
+            instance.currMenu.CloseMenu();
             instance.currMenu = instance.currMenu._parent;
-            instance.currMenu.CloseMenu();    
+             
         }
         menuStack.Clear();
     }

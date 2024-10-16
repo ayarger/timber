@@ -54,6 +54,13 @@ public class TowerManager : Node
 		Coord cur = Grid.ConvertToCoord(new Vector3(cursorPos.x , 0, cursorPos.z));
 		Vector3 spawnPos = Grid.ConvertToWorldPos(cur);
 		EventBus.Publish(new EventCancelTowerPlacement());
+		
+		if (!FogOfWar.IsVisible(cursorPos.x, cursorPos.z, true))
+		{
+			ToastManager.SendToast(this, "You have to walk closer!", ToastMessage.ToastType.Warning, 2f);
+			return;
+		}
+		
 		if (Grid.Get(cur).actor != null)
 		{
 			// please ignore this, will fix
@@ -84,7 +91,6 @@ public class TowerManager : Node
 		Tower new_tower = SpawnActorOfType(config, spawnPos);
 		new_tower.Configure(config);
 		new_tower.curr_coord = cur;
-		SpawnAnimate(new_tower);
 		EventBus.Publish(new TileDataLoadedEvent());
 		
 		// Copied from MoveToNearestTile()
@@ -154,44 +160,6 @@ public class TowerManager : Node
 		{
 		}
 	}
-	
-	public void SpawnAnimate(Tower tower)
-	{
-		var tween = tower.GetNode<Tween>("Tween");
-		var mesh = tower.GetNode<MeshInstance>("view/mesh");
-		Vector3 startScale = new Vector3(1, 0, 1);
-		Vector3 endScale = new Vector3(1, 1, 1); 
-
-		float deltaY = (endScale.y - startScale.y) / 2.0f;
-		Vector3 startPosition = mesh.Translation + new Vector3(0, -deltaY, 0);
-		Vector3 endPosition = mesh.Translation; 
-
-		mesh.Scale = startScale;
-		mesh.Translation = startPosition;
-
-		tween.InterpolateProperty(
-			mesh,
-			"scale",
-			startScale,
-			endScale,
-			1.0f,
-			Tween.TransitionType.Sine,
-			Tween.EaseType.Out
-		);
-
-		tween.InterpolateProperty(
-			mesh,
-			"translation",
-			startPosition,
-			endPosition,
-			1.0f, 
-			Tween.TransitionType.Sine,
-			Tween.EaseType.Out
-		);
-
-		tween.Start();
-	}
-
 	
 	public void OnTowerPlacementButtonPressed()
 	{

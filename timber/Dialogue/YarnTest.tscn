@@ -7,21 +7,21 @@
 [ext_resource path="res://addons/YarnSpinner-Godot/Runtime/Views/LineView.cs" type="Script" id=5]
 [ext_resource path="res://addons/YarnSpinner-Godot/Runtime/Views/OptionsListView.cs" type="Script" id=6]
 [ext_resource path="res://Dialogue/OptionView.tscn" type="PackedScene" id=7]
-[ext_resource path="res://FantasqueSansMono-Regular.ttf" type="DynamicFontData" id=8]
 [ext_resource path="res://Dialogue/StartDialogueButton.cs" type="Script" id=9]
 [ext_resource path="res://Dialogue/YarnSelect.cs" type="Script" id=10]
+[ext_resource path="res://fonts/Roboto-Regular.ttf" type="DynamicFontData" id=11]
 
 [sub_resource type="DynamicFont" id=1]
 size = 25
-font_data = ExtResource( 8 )
+font_data = ExtResource( 11 )
 
 [sub_resource type="DynamicFont" id=28]
 size = 25
-font_data = ExtResource( 8 )
+font_data = ExtResource( 11 )
 
 [sub_resource type="DynamicFont" id=29]
 size = 40
-font_data = ExtResource( 8 )
+font_data = ExtResource( 11 )
 
 [node name="Control" type="Control"]
 anchor_right = 1.0
@@ -64,22 +64,27 @@ margin_right = 59.0
 margin_bottom = 40.0
 
 [node name="LineText" type="RichTextLabel" parent="CanvasLayer/LineView/ViewControl"]
-anchor_top = 1.52
+anchor_top = 1.026
 anchor_right = 1.0
-anchor_bottom = 1.982
+anchor_bottom = 1.554
 margin_left = -23.0
-margin_top = -298.16
+margin_top = -0.0803833
 margin_right = 17.0
-margin_bottom = -258.16
+margin_bottom = 0.0951538
 custom_fonts/normal_font = SubResource( 1 )
-text = "Dialogue text goes here"
+visible_characters = 1000
+percent_visible = 43.4783
+text = "fdsfadsfdsf
+"
 
 [node name="ColorRect" type="ColorRect" parent="CanvasLayer/LineView/ViewControl/LineText"]
 show_behind_parent = true
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_right = 40.0
-margin_bottom = 40.0
+margin_left = -22.632
+margin_top = -21.608
+margin_right = 17.368
+margin_bottom = 18.392
 color = Color( 0.282353, 0.0745098, 0.0745098, 1 )
 
 [node name="CharacterNameText" type="RichTextLabel" parent="CanvasLayer/LineView/ViewControl"]
@@ -167,6 +172,7 @@ margin_right = 12.0
 margin_bottom = 20.0
 text = "Upload"
 script = ExtResource( 2 )
+fileDialogPath = NodePath("FileDialog")
 
 [node name="FileDialog" type="FileDialog" parent="CanvasLayer/Upload yarn project"]
 margin_right = 416.0
@@ -175,6 +181,7 @@ rect_min_size = Vector2( 400, 140 )
 window_title = "Open a File"
 mode = 0
 access = 2
+show_hidden_files = true
 
 [node name="Select yarn project" type="Button" parent="CanvasLayer"]
 anchor_left = 0.012
@@ -185,6 +192,7 @@ margin_right = 12.0
 margin_bottom = 20.0
 text = "Select"
 script = ExtResource( 10 )
+popupPath = NodePath("PopupMenu")
 
 [node name="PopupMenu" type="PopupMenu" parent="CanvasLayer/Select yarn project"]
 margin_right = 20.0
@@ -194,3 +202,4 @@ margin_bottom = 20.0
 [connection signal="pressed" from="CanvasLayer/Upload yarn project" to="CanvasLayer/Upload yarn project" method="_on_Button_pressed"]
 [connection signal="file_selected" from="CanvasLayer/Upload yarn project/FileDialog" to="CanvasLayer/Upload yarn project" method="_on_FileDialog_file_selected"]
 [connection signal="pressed" from="CanvasLayer/Select yarn project" to="CanvasLayer/Select yarn project" method="ShowPopupMenu"]
+[connection signal="id_pressed" from="CanvasLayer/Select yarn project/PopupMenu" to="CanvasLayer/Select yarn project" method="OnProjectSelected"]
