@@ -18,7 +18,7 @@ public class Actor : Spatial
 {
 	// Declare member variables here. Examples:
 	// private int a = 2;
-	// private string b = "text";
+	// private string b = "text"; 
 
 	protected ActorConfig config;
 
