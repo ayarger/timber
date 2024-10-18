@@ -29,6 +29,8 @@ public class Tower : Actor
 
 	private Vector3 defaultTranslation;
 	private float target_view_scale_y = 1.0f;
+	private MeshInstance iconMesh;
+	private Texture full_tex;
 
 	public override void _Ready()
 	{
@@ -38,6 +40,8 @@ public class Tower : Actor
 		_HasStats = GetNode<HasStats>("HasStats");
 		_HasStats.AddStat("construction_progress", 0, 50, 0, true);
 		defaultTranslation = GetNode<MeshInstance>("view/mesh").Translation;
+		iconMesh = GetNode<MeshInstance>("iconMesh");
+		GetNode<IsSelectable>("IsSelectable").first_time_placement = true;
 	}
 
 	public override void _Input(InputEvent @event)
@@ -62,7 +66,7 @@ public class Tower : Actor
 			towerStatus = TowerStatus.InConstruction;
 			
 			// Debug
-			ToastManager.SendToast(this, "Switch to InConstruction", ToastMessage.ToastType.Notice);
+			// ToastManager.SendToast(this, "Switch to InConstruction", ToastMessage.ToastType.Notice);
 		}
 		
 		else if (newTowerStatus == TowerStatus.Functioning)
@@ -72,7 +76,9 @@ public class Tower : Actor
 			GetNode<HasTeam>("HasTeam").team = config.team;
 			// enable combatstate
 			ConstructionAnimation_complete();
-			ToastManager.SendToast(this, "Switch to Functioning", ToastMessage.ToastType.Notice);
+			GetNode<IconControl>("IconControl").SetIconInvisible();
+			GetNode<IsSelectable>("IsSelectable").first_time_placement = false; // enabled BarContainer display
+			// ToastManager.SendToast(this, "Switch to Functioning", ToastMessage.ToastType.Notice);
 		}
 	} 
 
@@ -92,9 +98,9 @@ public class Tower : Actor
 		ShaderMaterial char_mat = (ShaderMaterial)character_view.GetSurfaceMaterial(0).Duplicate();
 
 		shadow_view = (MeshInstance)GetNode("shadow");
-		view.Scale = new Vector3(tex.GetWidth(), 0.0f, 1.0f) * 0.01f;
-		view.Scale *= config.aesthetic_scale_factor;
 		target_view_scale_y = tex.GetHeight() * config.aesthetic_scale_factor * 0.01f;
+		view.Scale = new Vector3(tex.GetWidth()* 0.01f, target_view_scale_y * 0.3f, 1.0f* 0.01f);
+		view.Scale *= config.aesthetic_scale_factor;
 		initial_load = true;
 		initial_view_scale = view.Scale;
 		desired_scale_x = initial_view_scale.x;
@@ -107,7 +113,7 @@ public class Tower : Actor
 
 		character_view.SetSurfaceMaterial(0, char_mat);
 
-		StateManager _stateManager = GetNode<Node>("StateManager") as StateManager;
+		// StateManager _stateManager = GetNode<Node>("StateManager") as StateManager;
 		// IdleState _idleState = _stateManager.states["Idle"] as IdleState;
 		// _idleState.has_idle_animation = false;
 		
@@ -118,6 +124,7 @@ public class Tower : Actor
 		{
 			statManager.Config(config.statConfig);
 		}
+		
 	}
 
 	public override void Hurt(int damage, bool isCritical, Actor source)
@@ -155,7 +162,7 @@ public class Tower : Actor
 	
 	public void ConstructAnimation_in_progress(float progress)
 	{
-		initial_view_scale = new Vector3(view.Scale.x, target_view_scale_y * progress, view.Scale.z);
+		initial_view_scale = new Vector3(view.Scale.x, target_view_scale_y * (progress * 0.7f + 0.3f), view.Scale.z);
 	}
 
 	public void ConstructionAnimation_complete()

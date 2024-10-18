@@ -58,6 +58,8 @@ public class LuaLoader : Node
 		yield return ArborResource.WaitFor("game.config");
         GameConfig game_config = ArborResource.Get<GameConfig>("game.config");
 
+		GD.Print("Loading scene");
+
 		yield return LoadActorConfigs();
         yield return LoadScene(game_config.initial_scene_file);
 

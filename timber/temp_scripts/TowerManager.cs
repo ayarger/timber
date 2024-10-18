@@ -54,6 +54,13 @@ public class TowerManager : Node
 		Coord cur = Grid.ConvertToCoord(new Vector3(cursorPos.x , 0, cursorPos.z));
 		Vector3 spawnPos = Grid.ConvertToWorldPos(cur);
 		EventBus.Publish(new EventCancelTowerPlacement());
+		
+		if (!FogOfWar.IsVisible(cursorPos.x, cursorPos.z, true))
+		{
+			ToastManager.SendToast(this, "You have to walk closer!", ToastMessage.ToastType.Warning, 2f);
+			return;
+		}
+		
 		if (Grid.Get(cur).actor != null)
 		{
 			// please ignore this, will fix

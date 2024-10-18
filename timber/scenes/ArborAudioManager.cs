@@ -122,7 +122,6 @@ public class ArborAudioManager : Node
             void DoIncreaseVolume(float progress)
             {
                 player.VolumeDb = (min_volume + master_volume * (-min_volume) * (progress));
-                GD.Print("Fade in: " + player.VolumeDb);
             }
             yield return ArborCoroutine.DoOverTime(DoIncreaseVolume, 1.0f);
         }

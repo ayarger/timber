@@ -32,6 +32,10 @@ public class FogOfWar : Viewport
 
     public Image textureCache;
 
+    Subscription<SpawnLightSourceEvent> sub_SpawnLightSourceEvent;
+    Subscription<RemoveLightSourceEvent> sub_RemoveLightSourceEvent;
+    Subscription<TileDataLoadedEvent> sub_TileDataLoadedEvent;
+
     private Dictionary<Vector3, FOWLitArea> towerLitAreaDict;
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -59,20 +63,31 @@ public class FogOfWar : Viewport
             }
         }
         scene = GD.Load<PackedScene>("res://fogofwartesting/FOWLitArea.tscn");
-        EventBus.Subscribe<SpawnLightSourceEvent>(AddLitArea);
-        EventBus.Subscribe<RemoveLightSourceEvent>(RemoveLitArea);
-        EventBus.Subscribe<TileDataLoadedEvent>((TileDataLoadedEvent e) =>
-        {
-            screenWidth = Grid.width * 2+50;
-            screenHeight = Grid.height * 2 + 50;
-            screenPosX = -25;
-            screenPosZ = -25;
-
-            GD.Print($"Fog Of War Set Screen Width: {screenWidth}");
-            GD.Print($"Fog Of War Set Screen Height: {screenHeight}");
-        });
+        sub_SpawnLightSourceEvent = EventBus.Subscribe<SpawnLightSourceEvent>(AddLitArea);
+        sub_RemoveLightSourceEvent = EventBus.Subscribe<RemoveLightSourceEvent>(RemoveLitArea);
+        sub_TileDataLoadedEvent = EventBus.Subscribe<TileDataLoadedEvent>(OnTileDataLoadedEvent);
 
         towerLitAreaDict = new Dictionary<Vector3, FOWLitArea>();
+    }
+
+    void OnTileDataLoadedEvent(TileDataLoadedEvent e)
+    {
+        screenWidth = Grid.width * 2 + 50;
+        screenHeight = Grid.height * 2 + 50;
+        screenPosX = -25;
+        screenPosZ = -25;
+
+        GD.Print($"Fog Of War Set Screen Width: {screenWidth}");
+        GD.Print($"Fog Of War Set Screen Height: {screenHeight}");
+    }
+
+    public override void _ExitTree()
+    {
+        base._ExitTree();
+
+        EventBus.Unsubscribe(sub_SpawnLightSourceEvent);
+        EventBus.Unsubscribe(sub_RemoveLightSourceEvent);
+        EventBus.Unsubscribe(sub_TileDataLoadedEvent);
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.
