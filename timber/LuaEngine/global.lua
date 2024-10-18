@@ -34,46 +34,6 @@ function WaitForSeconds(secs)
 end
 
 
-function SetDestination(obj, xdelta, zdelta)
-	coroutine.yield(
-		{obj=obj.object_name,
-		type="M",
-		x=xdelta,
-		z=zdelta}
-		)
-end
-
-function Print(str)
-	coroutine.yield(
-		{obj="global",
-		type="P",
-		param=str})
-end
-
-function Hurt(obj, damage)
-	coroutine.yield(
-		{obj=obj.object_name,
-		type="H",
-		damage=damage}
-		)
-end
-
-function Kill(obj, source)
-	coroutine.yield(
-		{obj=obj.object_name,
-		type="K",
-		killSource=source.object_name}
-		)
-end
-
---Just float currently
-function GetValue(obj,key)
-	local coroutine_data = {coroutine.yield(
-		{obj=obj,
-		type="R",
-		param=key})}
-	return coroutine_data[#coroutine_data]
-end
 
 -- For anything relating to process
 function global:tick(delta)

@@ -10,6 +10,9 @@ using System.Security.AccessControl;
 using System.Xml.Linq;
 using Script = MoonSharp.Interpreter.Script;
 using MoonSharp.Interpreter.Loaders;
+using System.Linq;
+using System.Reflection;
+using Newtonsoft.Json.Serialization;
 
 public class NLuaScriptManager : Node
 {
@@ -25,6 +28,8 @@ public class NLuaScriptManager : Node
 	public static Dictionary<string,Spatial> luaActors; //This can have duplicate actors, if actors have more than one script.
 
 	public static string testClassName = "testluaobject";
+
+	public static Dictionary<string, MethodInfo> luaMethods;
 
 
     //Must be ran before making any instances of a class. 
@@ -143,48 +148,59 @@ public class NLuaScriptManager : Node
 		string command = Convert.ToString(cmd["type"]);
 		Actor actor = luaActors.ContainsKey(name) ? luaActors[name] as Actor : null;
 
-		//Parse commands. Will need to refactor to a better system.
-		if (command == "M")
-		{
-			int amtX = Convert.ToInt32(cmd["x"]);
-			int amtZ = Convert.ToInt32(cmd["z"]);
-			TestMovement.SetDestination(actor, new Vector3(Grid.tileWidth * amtX, luaActors[name].GlobalTranslation.y, Grid.tileWidth * amtZ));
-		}
-		else if (command == "P")
-		{
-			//Replace with toast later
-			GD.Print(Convert.ToString(cmd["param"]));
-		}
-		else if (command == "R")
-		{
-			//Same deal with newlines
-			//Get data, just x position rn for demonstration
-			string key = Convert.ToString(cmd["param"]);
-			if (key == "x")
-			{
-				return luaActors[name].GlobalTranslation.x / Grid.tileWidth;
-			}
-			else if (key=="z")
-			{
-				return luaActors[name].GlobalTranslation.z / Grid.tileWidth;
-			}
-		}
-		else if(command == "T")
-		{
-			GD.Print(actor.ToString() + " just posted " + cmd["toastString"] + " to the toast!");
+		LuaAPI.currentActor = actor;
 
-		}
-		else if (command == "H")
+		try
 		{
-			int damage = Convert.ToInt32(cmd["damage"]);
-			actor.Hurt(damage, false, null);
+			return LuaCommand.RunMethod(luaMethods[command], cmd);
 		}
-		else if (command == "K")
+		catch (Exception e)
 		{
-			string killSourceName = Convert.ToString(cmd["obj"]);
-			Actor source = luaActors.ContainsKey(killSourceName) ? luaActors[killSourceName] as Actor : null;
-			actor.Kill(source);
+			GD.Print(e.ToString());
 		}
+
+		////Parse commands. Will need to refactor to a better system.
+		//if (command == "M")
+		//{
+		//	int amtX = Convert.ToInt32(cmd["x"]);
+		//	int amtZ = Convert.ToInt32(cmd["z"]);
+		//	TestMovement.SetDestination(actor, new Vector3(Grid.tileWidth * amtX, luaActors[name].GlobalTranslation.y, Grid.tileWidth * amtZ));
+		//}
+		//else if (command == "P")
+		//{
+		//	//Replace with toast later
+		//	GD.Print(Convert.ToString(cmd["param"]));
+		//}
+		//else if (command == "R")
+		//{
+		//	//Same deal with newlines
+		//	//Get data, just x position rn for demonstration
+		//	string key = Convert.ToString(cmd["param"]);
+		//	if (key == "x")
+		//	{
+		//		return luaActors[name].GlobalTranslation.x / Grid.tileWidth;
+		//	}
+		//	else if (key=="z")
+		//	{
+		//		return luaActors[name].GlobalTranslation.z / Grid.tileWidth;
+		//	}
+		//}
+		//else if(command == "T")
+		//{
+		//	GD.Print(actor.ToString() + " just posted " + cmd["toastString"] + " to the toast!");
+
+		//}
+		//else if (command == "H")
+		//{
+		//	int damage = Convert.ToInt32(cmd["damage"]);
+		//	actor.Hurt(damage, false, null);
+		//}
+		//else if (command == "K")
+		//{
+		//	string killSourceName = Convert.ToString(cmd["obj"]);
+		//	Actor source = luaActors.ContainsKey(killSourceName) ? luaActors[killSourceName] as Actor : null;
+		//	actor.Kill(source);
+		//}
 
 		return null;
 	}
@@ -201,9 +217,59 @@ public class NLuaScriptManager : Node
 		GD.Print(a);
 	}
 
+	[LuaCommand("TestName")]
+	public static void Test()
+	{
+
+    }
+    [LuaCommand("TestName2")]
+    public static void Test2()
+    {
+
+    }
+
+
     public override void _Ready()
     {
         GD.Print("Lua initialized");
+
+		//C# attributes and code-gen
+		luaMethods = LuaCommand.FindAllFunctionsWithAttribute();
+		string codegen = "";
+
+		foreach (var luaMethod in luaMethods) {
+			string parametersString1 = "";
+            string parametersString2 = "";
+            foreach (var par in luaMethod.Value.GetParameters())
+			{
+				parametersString1 += ", _" + par.Name;
+				parametersString2 += ",\r\n\t\t" + par.Name + " = _" + par.Name;
+            }
+
+			//TODO:Fix later
+			string objectString = (luaMethod.Key == "GetValue" ? "obj" : "obj.object_name");
+
+			if(luaMethod.Key == "Print")
+			{
+				objectString = "\"global\"";
+				parametersString1 = parametersString1.Substring(1);
+			}
+			else
+			{
+				parametersString1 = "obj" + parametersString1;
+			}
+
+
+            bool hasReturnValue = luaMethod.Value.ReturnType != typeof(void);
+            string func = "function " + luaMethod.Key + "(" + parametersString1 + ")\r\n\tlocal coroutine_data = {coroutine.yield(\r\n\t\t{obj = " + objectString + ",\r\n\t\ttype=\"" + luaMethod.Key + "\"" + parametersString2 + "}\r\n\t\t)}"
+				+ (hasReturnValue ? "\r\n\treturn coroutine_data[#coroutine_data]" : "")
+                + "\r\nend\r\n";
+			codegen += func;
+        }
+        GD.Print("Code Gen:");
+        GD.Print(codegen);
+		GD.Print("End Code Gen");
+
 
         GD.Print("Lua:" + ResourceLoader.Exists("res://LuaEngine/testmodules/protoc.lua"));
         Instance = this;
@@ -234,7 +300,7 @@ public class NLuaScriptManager : Node
 
 		Godot.File global = new Godot.File();
 		global.Open($"LuaEngine/{globalClass}.lua", Godot.File.ModeFlags.Read);
-		luaState.DoString(global.GetAsText());
+		luaState.DoString(codegen + "\n" + global.GetAsText());
 
 		//FOR TESTING
 		Godot.File x = new Godot.File();
@@ -295,4 +361,71 @@ public class LuaExceptionEvent
 	{
 
 	}
+}
+[System.AttributeUsage(System.AttributeTargets.Method)]
+public class LuaCommand : System.Attribute
+{
+	public string Name { get; set; }
+    public LuaCommand(string name)
+    {
+        Name = name;
+    }
+    public static Dictionary<string, MethodInfo> FindAllFunctionsWithAttribute()
+    {
+        var typesWithMyAttribute =
+            from a in AppDomain.CurrentDomain.GetAssemblies()
+            from t in a.GetTypes()
+            from f in t.GetMethods()
+            let attributes = f.GetCustomAttributes(typeof(LuaCommand), true)
+            where attributes != null && attributes.Length > 0
+            select new { Method = f, Attribute = attributes.Cast<LuaCommand>().First() };
+
+		Dictionary<string, MethodInfo> ans = new Dictionary<string, MethodInfo>();
+
+		foreach (var attribute in typesWithMyAttribute)
+		{
+			GD.Print(attribute.Attribute.Name);
+			ans[attribute.Attribute.Name] = attribute.Method;
+		}
+		GD.Print("Number of funcs with attribute:" + typesWithMyAttribute.Count());
+		return ans;
+
+    }
+
+	public static object RunMethod(MethodInfo methodInfo, Dictionary<string, object> cmd)
+	{
+		List<object> args = new List<object>();
+		foreach(var pi in methodInfo.GetParameters())
+		{
+			object o;
+
+			if(pi.ParameterType == typeof(string))
+			{
+				o = Convert.ToString(cmd[pi.Name]);
+			}
+			else if(pi.ParameterType == typeof(int))
+            {
+                o = Convert.ToInt32(cmd[pi.Name]);
+            }
+            else if (pi.ParameterType == typeof(float))
+            {
+                o = (float) Convert.ToDouble(cmd[pi.Name]);
+            }
+            else if (pi.ParameterType == typeof(double))
+            {
+                o = Convert.ToDouble(cmd[pi.Name]);
+            }
+            else if (pi.ParameterType == typeof(bool))
+            {
+				throw new Exception("bools in lua api are not yet supported!");
+            }
+			else
+            {
+                throw new Exception("unsupported datatype in lua api!");
+            }
+            args.Add(o);
+		}
+		return methodInfo.Invoke(null, args.ToArray());
+	}
+
 }
