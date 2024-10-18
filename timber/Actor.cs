@@ -79,12 +79,17 @@ public class Actor : Spatial
 			EventBus.Publish<SpawnLightSourceEvent>(new SpawnLightSourceEvent(this));
 		}
 
-		if (config.pre_ko_sprite_filename != null && config.pre_ko_sprite_filename != "")
+		if (!String.IsNullOrEmpty(config.pre_ko_sprite_filename))
+		{
 			ArborResource.Load<Texture>("images/" + config.pre_ko_sprite_filename);
-		if (config.ko_sprite_filename != null && config.ko_sprite_filename != ""){
-			ArborResource.Load<Texture>("images/" + config.ko_sprite_filename);
-			actorKO = true;
 		}
+			
+		if (String.IsNullOrEmpty(config.ko_sprite_filename))
+		{
+			config.ko_sprite_filename = config.idle_sprite_filename;
+		}
+		ArborResource.Load<Texture>("images/" + config.ko_sprite_filename);
+		actorKO = true;
 
 		ArborResource.UseResource<Texture>(
 			"images/" + config.idle_sprite_filename,
