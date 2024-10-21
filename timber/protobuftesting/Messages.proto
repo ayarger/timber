@@ -25,22 +25,43 @@ message ModFiles {
     repeated string files = 1;
 }
 
-message Map {
-    // Gonna have to do something different 
-    // TODO: See how is rows and cols calculated
+message LevelLayout {
+    // This is hard, ideally we revamp the way we store these
+    int32 rows = 1;
+    int32 cols = 2;
+    string map = 3;
+}
+
+message LevelConfig {
+    string name = 1;
+    repeated string basic_background_tracks = 2;
+    repeated string combat_background_tracks = 3;
+    string success_img = 4;
+    string failure_img = 5;
+    string subsequent_level = 6;
+}
+
+message GameConfig {
+    string name = 1;
+    string title_background = 2;
+    string title_logo = 3;
+    string initial_scene = 4;
+    string gameover_img = 5;
+    string gameover_background = 6;
+    int32 initial_continue_count = 7;
+    string cursor_image = 8;
 }
 
 message SimpleString {
     string message = 1;
 }
 
-message ActorCombatConfig {
+message GameActorCombatConfig {
     int32 attackRange = 1;
     int32 attackDamage = 2;
     float criticalHitRate = 3;
     float attackWindup = 4;
 	float attackRecovery = 5;
 	float attackCooldown = 6;
-
     string stateName = 7;
 }

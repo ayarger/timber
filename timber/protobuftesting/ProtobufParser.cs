@@ -6,15 +6,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-
 using Google.Protobuf;
 using Google.Protobuf.Message;
 using System.Diagnostics;
-using Amazon.Auth.AccessControlPolicy;
-using Amazon.S3.Model;
-using System.Diagnostics.Eventing.Reader;
-using System.Reflection;
-using System.Runtime.InteropServices;
+using Newtonsoft.Json.Linq;
+
+
+//      Else:
+//          - GameConfig (game.config)
+//          - ActorConfig (Spot.Actor)
+//          - ModFileManifest (mod_file_manifest.json)
+//          - 
+//      STRING:
+//          - level1.layout
+//          - level1.config
+
 
 public class ProtobufParser : Node
 {
@@ -27,43 +33,7 @@ public class ProtobufParser : Node
         instance = this;
     }
 
-    // Goal: Trying to make ArborResource have the option to read binary files in a backward-compatible manner.
-    //       And make calling these things as minimal as possible (don't change Load / Get in ArborResource)
-
-    // Ideas: 
-    // OnRequestComplete determines how do we build these constructs
-    //      Else:
-    //          - GameConfig (game.config)
-    //          - ActorConfig (Spot.Actor)
-    //          - ModFileManifest (mod_file_manifest.json)
-    //          - 
-    //      STRING:
-    //          - level1.layout
-    //          - level1.config
-
-
-    // Not a new <T>, but can't call OnRequestCompleted and SetResource the same way
-    //      - SetResource(key, JsonConvert.DeserializeObject(s, Type.GetType(type), settings))
-
-
-
-    // TODO: Add control logic to ArborResource.SetResources(), so they can handle the new <T> Type
-    //else 
-    //{
-    //    string file_extension = System.IO.Path.GetExtension(resource).ToLower();
-    //    if(file_extension == ".bin")
-    //    {
-    //        ParseBinary<>
-    //    }
-    //    else 
-    //    {
-    //        string s = Encoding.UTF8.GetString(body);
-    //        JsonSerializerSettings settings = new JsonSerializerSettings();
-    //        SetResource(key, JsonConvert.DeserializeObject(s, Type.GetType(type), settings));
-    //    }
-    //}
-
-    public static T ParseBinary<T>(byte[] body, string resource, string type)
+    public static T ParseBinary<T>(byte[] body, string type)
     {
         T output;
 
@@ -71,7 +41,6 @@ public class ProtobufParser : Node
         {
             var protobufData = Google.Protobuf.Message.SimpleString.Parser.ParseFrom(body);
             output = (T)(object)protobufData.ToString();
-            GD.Print(output);
         }
         else if (type == "ActorConfig")
         {
@@ -80,9 +49,8 @@ public class ProtobufParser : Node
                 List<string> attachedScripts = new List<string>();
                 foreach (string item in protoActor.Scripts)
                 {
-                    attachedScripts.Append(item);
+                    attachedScripts.Add(item);
                 }
-                GD.Print(attachedScripts);
 
                 ActorConfig localActor = new ActorConfig
                 {
@@ -96,80 +64,52 @@ public class ProtobufParser : Node
                     scripts = attachedScripts
                 };
                 output = (T)(object)localActor;
+        }
+        else if (type == "ModFileManifest")
+        {
+            var protoModFiles = Google.Protobuf.Message.ModFiles.Parser.ParseFrom(body);
+
+            List<string> stored_mod_files = new List<string>();
+            foreach (string item in protoModFiles.Files)
+            {
+                stored_mod_files.Add(item);
+            }
+
+            ModFileManifest localModFileManifest = new ModFileManifest()
+            {
+                mod_files = stored_mod_files
+            };
+            output = (T)(object)localModFileManifest;
+        }
+        else if (type == "GameConfig")
+        {
+            var protoConfig = Google.Protobuf.Message.GameConfig.Parser.ParseFrom(body);
+
+            GameConfig localConfig = new GameConfig
+            {
+                name = protoConfig.Name,
+                title_screen_background_image = protoConfig.TitleBackground,
+                title_screen_logo_image = protoConfig.TitleLogo,
+                initial_scene_file = protoConfig.InitialScene,
+                gameover_image = protoConfig.GameoverImg,
+                initial_continue_count = protoConfig.InitialContinueCount,
+                cursor_image = protoConfig.CursorImage
+            };
+            output = (T)(object)localConfig;
         }
         else
         {
-            string file_extension = System.IO.Path.GetExtension(resource).ToLower();
-
-            // At some point these will likely change. 
-            // TODO: delete this
-            if (file_extension == ".Actor")
-            {
-                var protoActor = Google.Protobuf.Message.GameActor.Parser.ParseFrom(body);
-
-                List<string> attachedScripts = new List<string>();
-                foreach (string item in protoActor.Scripts)
-                {
-                    attachedScripts.Append(item);
-                }
-                GD.Print(attachedScripts);
-
-                ActorConfig localActor = new ActorConfig
-                {
-                    guid = Guid.Parse(protoActor.Guid),
-                    name = protoActor.Name,
-                    team = protoActor.Team,
-                    map_code = protoActor.MapCode[0],
-                    aesthetic_scale_factor = protoActor.AestheticScaleFactor,
-                    idle_sprite_filename = protoActor.IdleSpriteFilename,
-                    lives_sprite_filename = protoActor.LivesIconFilename,
-                    scripts = attachedScripts
-                };
-                output = (T)(object)localActor;
-            }
-            else if (file_extension == ".JSON")
-            {
-                var modFile = Google.Protobuf.Message.ModFiles.Parser.ParseFrom(body);
-                List<string> list = new List<string>();
-
-                foreach (string item in modFile.Files)
-                {
-                    list.Append(item);
-                }
-
-                ModFileManifest modFilesArray = new ModFileManifest
-                {
-                    mod_files = list
-                };
-
-                output = (T)(object)modFilesArray;
-            }
-            else if (file_extension == ".CombatConfig")
-            {
-                var combatConfig = Google.Protobuf.Message.ActorCombatConfig.Parser.ParseFrom(body);
-
-                CombatConfig localConfig = new CombatConfig
-                {
-                    name = combatConfig.StateName,
-                    attackRange = combatConfig.AttackRange,
-                    attackDamage = combatConfig.AttackDamage,
-                    criticalHitRate = combatConfig.CriticalHitRate,
-                    attackCooldown = combatConfig.AttackCooldown,
-                    attackRecovery = combatConfig.AttackRecovery,
-                    attackWindup = combatConfig.AttackWindup
-                };
-
-                output = (T)(object)localConfig;
-            }
-            else
-            {
-                output = (T)(object)"";
-            }
+            var protoActor = Google.Protobuf.Message.SimpleString.Parser.ParseFrom(body);
+            string localString = protoActor.Message;
+            output = (T)(object)localString;
         }
+
         return output;
     }
 
-    // Checks if we are grabbing a binary file off AWS
+
+
+    // Check if we are grabbing a binary file off AWS
     public bool isBinaryFile(string filename)
     {
         string format = filename.Substring(filename.Length() - 4);
@@ -182,12 +122,11 @@ public class ProtobufParser : Node
         return true;
     }
 
-    // If we want to rebuild an old proto file
+    // If we want to rebuild a .proto file
     void buildProtoFile(string filename)
     {
         string filepath = "./protoc-25/bin/protoc --csharp_out=:. " + filename + ".proto";
         // string filepath = "./../protoc-25/bin/protoc --csharp_out=:. " + filename + ".proto";  if in protobuftesting folder
-
 
         Process process = new Process
         {
@@ -204,19 +143,79 @@ public class ProtobufParser : Node
         process.Start();
         string result = process.StandardOutput.ReadToEnd();
         process.WaitForExit();
-
-        GD.Print(result);
     }
 
-
-    // CREATING BINARY FILES GIVEN 
     public static void BinaryToFile(byte[] data, string name)
     {
-        string level = "./temp_data/";   // TODO: Which folder should we store uploaded data? Temp data?
-        string filepath = name + ".bin";
+        string filepath = "./protobuftesting/" + name + ".bin";
         System.IO.File.WriteAllBytes(filepath, data);
     }
 
+    // Converting JSON to Binary
+    private void ActorJSONtoBinary(string fileName)
+    {
+        string filepath = "./protobuftesting/" + fileName;
+        string jsonContent = System.IO.File.ReadAllText(filepath);
+
+        JObject jsonObj = JObject.Parse(jsonContent);
+
+        GameActor actor = new GameActor
+        {
+            Guid = jsonObj["guid"]?.ToString(),
+            Name = jsonObj["name"]?.ToString(),
+            Team = jsonObj["team"]?.ToString(),
+            MapCode = jsonObj["map_code"]?.ToString(),
+            AestheticScaleFactor = jsonObj["aesthetic_scale_factor"]?.ToObject<float>() ?? 1.0f,
+            IdleSpriteFilename = jsonObj["idle_sprite_filename"]?.ToString(),
+            LivesIconFilename = jsonObj["lives_icon_filename"]?.ToString(),
+        };
+
+        JArray scriptsArray = (JArray)jsonObj["scripts"];
+        if (scriptsArray != null)
+        {
+            foreach (var script in scriptsArray)
+            {
+                actor.Scripts.Add(script.ToString());
+            }
+        }
+
+        string binaryName = "./protobuftesting/" + System.IO.Path.GetFileNameWithoutExtension(fileName) + ".bin";
+
+        using (FileStream output = System.IO.File.Create(binaryName))
+        {
+            actor.WriteTo(output); 
+        }
+    }
+
+    private void ModManifestJSONtoBinary(string fileName)
+    {
+        string filepath = "./protobuftesting/" + fileName;
+        string jsonContent = System.IO.File.ReadAllText(filepath);
+
+        JObject jsonObj = JObject.Parse(jsonContent);
+
+        ModFiles mods = new ModFiles();
+
+        JArray scriptsArray = (JArray)jsonObj["mod_files"];
+
+        if (scriptsArray != null)
+        {
+            foreach (var script in scriptsArray)
+            {
+                mods.Files.Add(script.ToString());
+            }
+        }
+
+        string binaryName = "./protobuftesting/" + System.IO.Path.GetFileNameWithoutExtension(fileName) + ".bin";
+
+        using (FileStream output = System.IO.File.Create(binaryName))
+        {
+            mods.WriteTo(output);
+        }
+    }
+
+
+    // Creating Binaries given Protobuf Class
 
     public static void CreateActorBinary(ActorConfig gameObject, string name)
     {
@@ -248,67 +247,9 @@ public class ProtobufParser : Node
 
         foreach (string mod in gameObject.mod_files)
         {
-            localMods.Files.Append(mod);
+            localMods.Files.Add(mod);
         }
 
         BinaryToFile(localMods.ToByteArray(), name);
-    }
-
-    public static void CreateCombatConfig(CombatConfig gameObject, string name)
-    {
-        string state = gameObject.name;
-
-        ActorCombatConfig localCombatConfig = new ActorCombatConfig
-        {
-            AttackRange = gameObject.attackRange,
-            AttackDamage = gameObject.attackDamage,
-            CriticalHitRate = gameObject.criticalHitRate,
-            AttackWindup = gameObject.attackWindup,
-            AttackRecovery = gameObject.attackRecovery,
-            AttackCooldown = gameObject.attackCooldown
-        };
-
-        BinaryToFile(localCombatConfig.ToByteArray(), name);
-    }
-
-
-    // TODO: Need to change how we store map data if we want to serialize
-    public static void CreateMapBinary(GameConfig gameObject, string name)
-    {
-
-    }
-
-    // TODO: Should players be able to make protobuf files?
-    void makeProtoFile()
-    {
-
-    }
-
-
-    // TODO: Unfinished Functions
-    // TODO: Maybe there is a future we want users to easily write json files, but store them as binaries in the cloud?
-    public void SerializeJSONFile(string filename, string filepath)
-    {
-        // Read in JSON file
-
-        // Make Protobuf Object
-        Google.Protobuf.Message.GameActor cuff = new Google.Protobuf.Message.GameActor();
-
-        // Serialize to Binary
-        byte[] cuffData = cuff.ToByteArray();
-
-        // Dump Data
-        System.IO.File.WriteAllBytes("./protobuftesting/cuff.bin", cuffData);
-
-    }
-
-
-    // Maybe instead of we use a custom Binary return format? 
-    [Serializable]
-    public class BinaryData
-    {
-        public string type;
-
-        public byte[] Data;
     }
 }

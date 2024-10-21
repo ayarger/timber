@@ -53,12 +53,17 @@ public class LuaLoader : Node
 	{
 		loading_scene = true;
 
-        /* Load game config */
-        ArborResource.Load<GameConfig>("game.config");
-		yield return ArborResource.WaitFor("game.config");
-        GameConfig game_config = ArborResource.Get<GameConfig>("game.config");
+        // JUSTIN: Test to work with binries
+        ArborResource.Load<GameConfig>("game.config.bin");
+        yield return ArborResource.WaitFor("game.config.bin");
+        GameConfig game_config = ArborResource.Get<GameConfig>("game.config.bin");
 
-		yield return LoadActorConfigs();
+        /* Load game config */
+        // ArborResource.Load<GameConfig>("game.config");
+        // yield return ArborResource.WaitFor("game.config");
+        // GameConfig game_config = ArborResource.Get<GameConfig>("game.config");
+
+        yield return LoadActorConfigs();
         yield return LoadScene(game_config.initial_scene_file);
 
         loading_scene = false;
@@ -67,10 +72,10 @@ public class LuaLoader : Node
 	Dictionary<char, ActorConfig> map_code_to_actor_config = new Dictionary<char, ActorConfig>();
     IEnumerator LoadActorConfigs()
     {
-		// Test to work with binaries
-		ArborResource.Load<ModFileManifest>("binary_test_mod_file_manifest.json");
-		yield return ArborResource.WaitFor("binary_test_mod_file_manifest.json");
-		ModFileManifest manifest = ArborResource.Get<ModFileManifest>("binary_test_mod_file_manifest.json");
+		// JUSTIN: Test to work with binaries
+		ArborResource.Load<ModFileManifest>("binary_mod_file_manifest.bin");
+		yield return ArborResource.WaitFor("binary_mod_file_manifest.bin");
+		ModFileManifest manifest = ArborResource.Get<ModFileManifest>("binary_mod_file_manifest.bin");
 
 		//ArborResource.Load<ModFileManifest>("mod_file_manifest.json");
 		//yield return ArborResource.WaitFor("mod_file_manifest.json");

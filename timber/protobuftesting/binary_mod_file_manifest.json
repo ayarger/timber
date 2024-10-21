@@ -1,11 +1,5 @@
 {
   "mod_files": [
-    "game.config",
-    "mod_file_manifest.json",
-    "actor_definitions/chunk.actor",
-    "actor_definitions/cuff.actor",
-    "actor_definitions/mickey.actor",
-    "actor_definitions/spot.actor",
     "dialogue/level1.dialogue",
     "images/chunk_idle.png",
     "images/chunk_idle.png.import",
@@ -31,7 +25,11 @@
     "sounds/240622__karma-ron__image31_s-ambient-pad.wav",
     "sounds/vocal_gameover.wav",
 
+    "game.config.bin",
+    "binary_mod_file_manifest.json",
     "actor_definitions/chunk.bin",
-    "actor_definitions/cuff.bin"
+    "actor_definitions/cuff.bin",
+	"actor_definitions/mickey.bin",
+    "actor_definitions/spot.bin"
   ]
 }

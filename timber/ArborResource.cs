@@ -190,26 +190,36 @@ public class ArborResource : Node
         }
         else
         {
-            // Get the last part of the string
             string[] parts = resource.Split('.');
             string extension = (parts.Length > 1) ? "." + parts[parts.Length - 1] : string.Empty;
-            GD.Print(extension);
 
-            if(extension == ".bin" && type == "ActorConfig")
+            if(extension == ".bin")
             {
-
-                ActorConfig parsedData = ProtobufParser.ParseBinary<ActorConfig>(body, resource, type);
-                JsonSerializerSettings settings = new JsonSerializerSettings();
-                SetResource(key, parsedData);
-
-                GD.Print("We did it! We read: ===========================");
-                GD.Print(parsedData.ToString());
+                if(type == "ActorConfig") { 
+                    var parsedData = ProtobufParser.ParseBinary<ActorConfig>(body, type);
+                    SetResource(key, parsedData);
+                }
+                else if(type == "GameConfig")
+                {
+                    var parsedData = ProtobufParser.ParseBinary<GameConfig>(body, type);
+                    SetResource(key, parsedData);
+                }
+                else if(type == "ModFileManifest")
+                {
+                    var parsedData = ProtobufParser.ParseBinary<ModFileManifest>(body, type);
+                    SetResource(key, parsedData);
+                }
             }
             else
             {
                 string s = Encoding.UTF8.GetString(body);
                 JsonSerializerSettings settings = new JsonSerializerSettings();
                 SetResource(key, JsonConvert.DeserializeObject(s, Type.GetType(type), settings));
+
+                GD.Print("--------------------------------");
+                GD.Print("Reading Data");
+                GD.Print(type);
+                GD.Print("--------------------------------");
             }
         }
 
@@ -261,9 +271,6 @@ public class ArborResource : Node
             typeof(T).Name,              new_request,
             null
         };
-
-        GD.Print("OBJECT============================");
-        GD.Print(extra_params[0] + " " + extra_params[1]);
 
         new_request.Connect("request_completed", instance, nameof(OnRequestCompleted), extra_params);
         string web_url = @"https://arborinteractive.com/squirrel_rts/mods/" + GetCurrentModID() + @"/resources/" + resource;
