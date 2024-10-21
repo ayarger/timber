@@ -425,6 +425,7 @@ public class TileDataLoadedEvent{ }
 public class StateConfig
 {
 	public string name;
+	public Dictionary<string,float> stateStats = new Dictionary<string, float>();
 }
 
 //state configs for actors

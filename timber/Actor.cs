@@ -43,7 +43,7 @@ public class Actor : Spatial
 	protected SpatialMaterial character_material;
 	protected MeshInstance shadow_view;
 	protected StateManager state_manager;
-   
+   	protected RigidBody rb;
 
 	protected IsSelectable selectable;
 
@@ -73,6 +73,7 @@ public class Actor : Spatial
 		character_view_shadow = (MeshInstance)GetNode("view/shadowMesh");
 		shadow_view = (MeshInstance)GetNode("shadow");
 		selectable = GetNode<IsSelectable>("IsSelectable");
+		rb = GetNode<RigidBody>("RigidBody");
 		time = GlobalTranslation.x + GlobalTranslation.z;
 		animation_offset = GD.Randf() * 100.0f;
 		sub = EventBus.Subscribe<TileDataLoadedEvent>((TileDataLoadedEvent e) =>
@@ -101,7 +102,6 @@ public class Actor : Spatial
 			actorKO = true;
 		}
 
-
 		ArborResource.UseResource<Texture>(
 			"images/" + config.idle_sprite_filename,
 			(Texture tex) =>
@@ -113,6 +113,8 @@ public class Actor : Spatial
 				/* Scale */
 				view.Scale = new Vector3(tex.GetWidth(), tex.GetHeight(), 1.0f) * 0.01f;
 				view.Scale = view.Scale * config.aesthetic_scale_factor;
+				rb.Scale = new Vector3(view.Scale.x, view.Scale.y, rb.Scale.z);
+				rb.GlobalTranslation = new Vector3(rb.GlobalTranslation.x, rb.GlobalTranslation.y+rb.Scale.y/2, rb.GlobalTranslation.z);
 				initial_load = true;
 				initial_view_scale = view.Scale;
 				desired_scale_x = initial_view_scale.x;
