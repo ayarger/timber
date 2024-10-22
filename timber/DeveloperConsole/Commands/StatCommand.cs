@@ -14,9 +14,9 @@ public class StatCommand : ConsoleCommand
 
     public override List<string> ValidArgs()
     {
-        List<string> args = new List<string> { "increase", "decrease", "change", "max", "create","get" };
+        List<string> args = new List<string> { "increase", "decrease", "change", "max", "create", "get" };
         return args;
-    }     
+    }
 
     public override bool Process(string[] args)
     {

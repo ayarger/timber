@@ -21,7 +21,7 @@ public class Actor : Spatial
 	// private string b = "text";
 
 	protected ActorConfig config;
-
+	public BarContainer bar_container;
 	public Spatial view { get; protected set; } // Good for scaling operations.
 	protected MeshInstance character_view;
 	protected MeshInstance character_view_shadow;
@@ -42,6 +42,7 @@ public class Actor : Spatial
 	protected float desired_scale_x = 1.0f;
 	public float GetDesiredScaleX() { return desired_scale_x; }
 	private Subscription<TileDataLoadedEvent> sub;
+	private Subscription<ActorDataLoadedEvent> actorLoadedEvent;
 
 	bool dying = false;
 	bool isInvicible = false;
@@ -49,8 +50,8 @@ public class Actor : Spatial
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
+		actorLoadedEvent = EventBus.Subscribe<ActorDataLoadedEvent>(MeshRelativeToShadow);
 		previous_position = GlobalTranslation;
-
 		view = (Spatial)GetNode("view");
 		state_manager = (StateManager)GetNode("StateManager");
 		character_view = (MeshInstance)GetNode("view/mesh");
@@ -65,6 +66,8 @@ public class Actor : Spatial
 			currentTile = td;
 			td.actor = this;
 		});
+
+
 
 		// update ActorDict after actor is loaded into the scene (for displaynig actor info)
 		UpdateActorDict();
@@ -114,8 +117,9 @@ public class Actor : Spatial
 				//character_material.AlbedoTexture = idle_sprite;
 				character_view.SetSurfaceMaterial(0, char_mat);
 				character_view_shadow.SetSurfaceMaterial(0, char_mat_shadow);
-
 				shadow_view.SetSurfaceMaterial(0, shadow_mat);
+				// finishing loading actor data
+				EventBus.Publish(new ActorDataLoadedEvent());
 			},
 			this
 		);
@@ -213,6 +217,7 @@ public class Actor : Spatial
 		shadow_mat.SetShaderParam("screenHeight", FogOfWar.instance.screenHeight);
 		shadow_mat.SetShaderParam("screenPosX", FogOfWar.instance.screenPosX);
 		shadow_mat.SetShaderParam("screenPosZ", FogOfWar.instance.screenPosZ);
+
 	}
 
 	public virtual void Hurt(int damage, bool isCritical, Actor source)
@@ -293,7 +298,20 @@ public class Actor : Spatial
 		console_manager.ActorDict[this.Name.ToLower()] = this;
 	}
 
-   public override void _ExitTree()
+	public void MeshRelativeToShadow(ActorDataLoadedEvent e)
+	{
+		GD.Print("Done loading actor resources");
+		if (IsInstanceValid(bar_container))
+		{
+			GD.Print("relative pos calc starts");
+			Vector3 shadow_position = bar_container.target_shadow.GlobalTranslation;
+			Vector3 mesh_position = character_view.GlobalTransform.Xform(new Vector3(0, character_view.Scale.y, character_view.Scale.z)); ;
+			bar_container.relativeToshadow = mesh_position - shadow_position;
+			GD.Print($"relativePos set to: {bar_container.relativeToshadow}");
+		}
+	}
+
+	public override void _ExitTree()
    {
 	   EventBus.Unsubscribe(sub);
 	   base._ExitTree();
