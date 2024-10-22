@@ -24,6 +24,8 @@ public class ProjectileState : ActorState//TODO collision body to chekc for coll
     float rotationSpeed = 5, horizontalSpeed = 10f, verticalSpeed = 1f, lifeTime = 5f, timer = 0, bounceDecay = 0.8f;
     float gravity = 60f;
     Vector3 direction = Vector3.Zero;
+    bool isActive = true;
+
     public override void Animate(float delta)
     {
         actor.view.Rotation += Vector3.Back * rotationSpeed * delta;
@@ -42,6 +44,7 @@ public class ProjectileState : ActorState//TODO collision body to chekc for coll
         verticalSpeed = verticalSpeed - gravity * delta;
         if(actor.GlobalTranslation.y < 0)
         {
+            isActive = false;
             verticalSpeed = -verticalSpeed * bounceDecay;
         }
     }
@@ -58,14 +61,18 @@ public class ProjectileState : ActorState//TODO collision body to chekc for coll
     public void onBodyEntered(Node body)
     {
         Actor TargetActor = body.GetNode("..") as Actor;
-        if (TargetActor != null && !(TargetActor is Projectile))
+        if (isActive && TargetActor != null && !(TargetActor is Projectile))
         {
             
             if(TargetActor.GetNode<HasTeam>("HasTeam").team != actor.GetNode<HasTeam>("HasTeam").team )
             {
                 Projectile projectile = actor as Projectile;
                 TargetActor.Hurt(projectile.damage, false, projectile.owner);
-                projectile.Kill();
+            
+                ProjectileBounceState p = manager.states["ProjectileBounceState"] as ProjectileBounceState;
+                p.setDirection(direction, horizontalSpeed, verticalSpeed);
+                isActive = false;
+                manager.EnableState("ProjectileBounceState");
             }
             
         }

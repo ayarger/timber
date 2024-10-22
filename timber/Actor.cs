@@ -139,6 +139,11 @@ public class Actor : Spatial
 			},
 			this
 		);
+		if(config.team == "player"){
+			foreach(var config in config.stateConfigs){
+				GD.Print("CONFIG: " + config.name);
+			}
+		}
 
 		state_manager.Configure(config.stateConfigs);
 
@@ -263,7 +268,7 @@ public class Actor : Spatial
 			ChaseState c = (state_manager.states["ChaseState"] as ChaseState);
 			if (source != null && !state_manager.IsStateActive("CombatState"))
 			{
-				if (state_manager.states.ContainsKey("ChaseState") && !state_manager.IsStateActive("ChaseState"))
+				if (!state_manager.IsStateActive("MovementState") && !state_manager.IsStateActive("ChaseState"))
 				{
 					c.TargetActor = source;
 					state_manager.EnableState("ChaseState");

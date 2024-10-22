@@ -37,12 +37,11 @@ public abstract class CombatState : ActorState
 
     public override void Config(StateConfig stateConfig)
     {
-        CombatConfig c = stateConfig as CombatConfig;
-        attackRange = c.attackRange;
-        attackDamage = c.attackDamage;
-        criticalHitRate = c.criticalHitRate;
-        attackWindup = c.attackWindup;
-        attackRecovery = c.attackRecovery;
-        attackCooldown = c.attackCooldown;
+        attackRange = (int)stateConfig.stateStats["attackRange"];
+        attackDamage = (int)stateConfig.stateStats["attackDamage"];
+        criticalHitRate = stateConfig.stateStats["criticalHitRate"];
+        attackWindup = stateConfig.stateStats["attackWindup"];
+        attackRecovery = stateConfig.stateStats["attackRecovery"];
+        attackCooldown = stateConfig.stateStats["attackCooldown"];
     }
 }

@@ -26,7 +26,7 @@ public class MeleeCombatState : CombatState
 
 	public override void Start()
 	{
-		GD.Print("MeleeCombatState started");
+		GD.Print("MeleeCombatState started by " + actor.Name);
 		inclusiveStates = new HashSet<string>();
 		ArborCoroutine.StopCoroutinesOnNode(this);
 		animation_offset = GD.Randf() * 100.0f;
@@ -36,17 +36,6 @@ public class MeleeCombatState : CombatState
 		//    attackDamage = 40;
 		//    attackCooldown = 0.75f;
 		//}
-	}
-
-	public override void Config(StateConfig stateConfig)
-	{
-		CombatConfig c = stateConfig as CombatConfig;
-		attackRange = c.attackRange;
-		attackDamage = c.attackDamage;
-		criticalHitRate = c.criticalHitRate;
-		attackWindup = c.attackWindup;
-		attackRecovery = c.attackRecovery;
-		attackCooldown = c.attackCooldown;
 	}
 
 	public override void Update(float delta)

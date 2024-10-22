@@ -31,13 +31,11 @@ public class ChaseState : ActorState
         inclusiveStates = new HashSet<string>();
         waypoints = new List<Vector3>();
         ArborCoroutine.StopCoroutinesOnNode(this);
-        GD.Print("ChaseState started");
     }
 
     public override void Config(StateConfig stateConfig)
 	{
-		CombatConfig c = stateConfig as CombatConfig;
-		attackRange = c.attackRange;
+		attackRange = (int)stateConfig.stateStats["attackRange"];
 	}
 
     public override void Update(float delta)
@@ -45,7 +43,6 @@ public class ChaseState : ActorState
         //Manage waypoints
         if (waypoints.Count > 0)
         {
-            GD.Print("MOVING TO WAYPOINT of length " + waypoints.Count);
             Vector3 dest = waypoints[0];
             Vector3 disp = dest - actor.GlobalTranslation;
             Vector3 totalDist = waypoints[waypoints.Count - 1] - actor.GlobalTranslation;
@@ -82,13 +79,11 @@ public class ChaseState : ActorState
         }
         else
         {
-            GD.Print("NO WAYPOINTS");
             Coord dest = Grid.ConvertToCoord(TargetActor.GlobalTranslation);
             if(TestMovement.WithinRange(dest, actor, attackRange))
             {
                 CombatState cs = manager.states["CombatState"] as CombatState;
                 cs.TargetActor = TargetActor;
-                GD.Print("SWITCHING TO COMBAT");
                 manager.EnableState("CombatState");
                 manager.DisableState(name);
             }else{
@@ -97,10 +92,8 @@ public class ChaseState : ActorState
                 List<Vector3> a = TestMovement.PathFind(actor.GlobalTranslation, vectorDest);
                 if (a.Count > 0)
                 {
-                    GD.Print("FINDING NEW PATH");
                     waypoints = a;
                 }else{
-                    GD.Print("NO PATH");
                     manager.DisableState(name);
                 }
                 return;

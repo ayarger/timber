@@ -21,15 +21,50 @@ public class LuaLoader : Node
 
 	static LuaLoader instance;
 
-	//TEMP fake json
-	CombatConfig enemyMeleeCombatConfig = new CombatConfig("MeleeCombatState", 1, 10, 0.5f, 0.5f, 0.125f, 1);
-	CombatConfig enemyRangeCombatConfig = new CombatConfig("RangedCombatState", 3, 5, 0.3f, 0.75f, 0.125f, 1.5f);
-	CombatConfig playerCombatConfig = new CombatConfig("MeleeCombatState", 2, 20, 0.3f, 0.5f, 0.125f, 0.75f);
-	CombatConfig TowerRangeConfig = new CombatConfig("RangedCombatState", 4, 10, 0.3f, 0.5f, 0.125f, 0.75f);
 
-	CombatConfig enemyMeleeChaseState = new CombatConfig("ChaseState", 1, 10, 0.5f, 0.5f, 0.125f, 1);
-	CombatConfig enemyRangeChaseState = new CombatConfig("ChaseState", 3, 5, 0.3f, 0.75f, 0.125f, 1.5f);
-	CombatConfig playerChaseState = new CombatConfig("ChaseState", 2, 20, 0.3f, 0.5f, 0.125f, 0.75f);
+	//TEMP fake json
+	StateConfig enemyMeleeCombatConfig = new StateConfig() { name = "MeleeCombatState", 
+		stateStats = { 
+			{ "attackRange", 1 }, 
+			{ "attackDamage", 10 }, 
+			{ "criticalHitRate", 0.5f }, 
+			{ "attackWindup", 0.5f }, 
+			{ "attackRecovery", 0.125f }, 
+			{ "attackCooldown", 1 } } };
+	StateConfig enemyRangeCombatConfig = new StateConfig() { name = "RangedCombatState",
+		stateStats = {
+			{ "attackRange", 3 },
+			{ "attackDamage", 5 },
+			{ "criticalHitRate", 0.3f },
+			{ "attackWindup", 0.75f },
+			{ "attackRecovery", 0.125f },
+			{ "attackCooldown", 1.5f } } };
+	StateConfig playerCombatConfig = new StateConfig() { name = "MeleeCombatState",
+		stateStats = {
+			{ "attackRange", 2 },
+			{ "attackDamage", 20 },
+			{ "criticalHitRate", 0.3f },
+			{ "attackWindup", 0.5f },
+			{ "attackRecovery", 0.125f },
+			{ "attackCooldown", 0.75f } } };
+	StateConfig TowerRangeConfig = new StateConfig() { name = "RangedCombatState",
+		stateStats = {
+			{ "attackRange", 4 },
+			{ "attackDamage", 10 },
+			{ "criticalHitRate", 0.3f },
+			{ "attackWindup", 0.5f },
+			{ "attackRecovery", 0.125f },
+			{ "attackCooldown", 0.75f } } };
+
+	StateConfig enemyMeleeChaseState = new StateConfig() { name = "ChaseState",
+		stateStats = {
+			{ "attackRange", 1 }}};
+	StateConfig enemyRangeChaseState = new StateConfig() { name = "ChaseState",
+		stateStats = {
+			{ "attackRange", 3 }}};
+	StateConfig playerChaseState = new StateConfig() { name = "ChaseState",
+		stateStats = {
+			{ "attackRange", 2 }}};
 
 	StatConfig enemyStatConfig = new StatConfig();
 	StatConfig playerStatConfig = new StatConfig();
@@ -37,8 +72,14 @@ public class LuaLoader : Node
 	StateConfig idleState = new StateConfig() { name = "IdleState" };
 	StateConfig movementState = new StateConfig() { name = "MovementState" };
 
-
-	CombatConfig ConstructionState = new CombatConfig("ConstructionState", 1, 10, 0.5f, 0.5f, 0.125f, 1);
+	StateConfig ConstructionState = new StateConfig() { name = "ConstructionState",
+		stateStats = {
+			{ "attackRange", 1 },
+			{ "attackDamage", 10 },
+			{ "criticalHitRate", 0.5f },
+			{ "attackWindup", 0.5f },
+			{ "attackRecovery", 0.125f },
+			{ "attackCooldown", 1 } } };
 	
 
 	// Called when the node enters the scene tree for the first time.
@@ -118,6 +159,7 @@ public class LuaLoader : Node
 				actor_info.stateConfigs.Add(enemyMeleeCombatConfig);
 				actor_info.stateConfigs.Add(enemyMeleeChaseState);
 				actor_info.statConfig = enemyStatConfig;
+				
             }
             else
             {

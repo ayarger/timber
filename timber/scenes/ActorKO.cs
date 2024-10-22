@@ -58,9 +58,9 @@ public class ActorKO : Spatial//TODO check if dead or not: bug - spawn multiple 
         {
             if(killedBy!=null)
                 blastDirection = (GlobalTranslation - killedBy.GlobalTranslation).Normalized();
-            blastSpeed = 1;
+            blastSpeed = 8f;
             blastRotationSpeed = 15;
-            velocity = 0.05f;
+            velocity = 0.25f;
             gravity = true;
         }
 

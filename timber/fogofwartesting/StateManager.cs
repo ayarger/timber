@@ -109,11 +109,11 @@ public class StateManager : Node
 			activeStates.Add(states[state]);
 			states[state].Start();
 		}
-		
 	}
 
 	public void DisableState(string state)
 	{
+
 		if (states.ContainsKey(state) && activeStates.Contains(states[state]))
 		{
 			activeStates.Remove(states[state]);

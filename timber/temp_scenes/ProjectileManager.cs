@@ -26,7 +26,9 @@ public class ProjectileManager : Node
 		config.idle_sprite_filename = "cheese.png";
 		config.aesthetic_scale_factor = 0.05f;
 		StateConfig projectileState = new StateConfig() { name = "ProjectileState" };
+		StateConfig ProjectileBounceState = new StateConfig() { name = "ProjectileBounceState" };
 		config.stateConfigs.Add(projectileState);
+		config.stateConfigs.Add(ProjectileBounceState);
 
 		HasTeam team = owner.GetNode<HasTeam>("HasTeam");
 		if (team != null)
