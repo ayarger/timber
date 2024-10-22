@@ -53,17 +53,17 @@ public class LuaLoader : Node
 	{
 		loading_scene = true;
 
-        // JUSTIN: Test to work with binries
-        ArborResource.Load<GameConfig>("game.config.bin");
-        yield return ArborResource.WaitFor("game.config.bin");
-        GameConfig game_config = ArborResource.Get<GameConfig>("game.config.bin");
+		// JUSTIN: Test to work with binries
+		ArborResource.Load<GameConfig>("game.config.bin");
+		yield return ArborResource.WaitFor("game.config.bin");
+		GameConfig game_config = ArborResource.Get<GameConfig>("game.config.bin");
 
-        /* Load game config */
-        // ArborResource.Load<GameConfig>("game.config");
-        // yield return ArborResource.WaitFor("game.config");
-        // GameConfig game_config = ArborResource.Get<GameConfig>("game.config");
+		/* Load game config */
+		//ArborResource.Load<GameConfig>("game.config");
+		//yield return ArborResource.WaitFor("game.config");
+		//GameConfig game_config = ArborResource.Get<GameConfig>("game.config");
 
-        yield return LoadActorConfigs();
+		yield return LoadActorConfigs();
         yield return LoadScene(game_config.initial_scene_file);
 
         loading_scene = false;
