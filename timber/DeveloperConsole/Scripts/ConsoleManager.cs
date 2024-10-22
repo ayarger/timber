@@ -66,7 +66,10 @@ public class ConsoleManager : Control
         }
     }
 
-    //TODO iterate through the folder to find all command.tscn
+    /// <summary>
+    /// Load all commands under DeveloperConsole/Commands
+    /// </summary>
+    /// <param name="folderPath"></param>
     public void LoadCommands(string folderPath)
     {
         var systemFolderPath = ProjectSettings.GlobalizePath(folderPath);
@@ -99,7 +102,7 @@ public class ConsoleManager : Control
     }
 
     /// <summary>
-    /// Input control for console panel toggle, fetching last command entered and autocompletion 
+    /// Input control for console panel toggle. Supports fetching last command entered and autocompletion 
     /// </summary>
     /// <param name="event"></param>
     public override void _Input(InputEvent @event)
