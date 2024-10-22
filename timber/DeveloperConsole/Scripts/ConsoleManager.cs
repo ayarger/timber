@@ -53,6 +53,7 @@ public class ConsoleManager : Control
         //GetAllCommands();
         //hoInstantiateCommands();
         LoadCommands("DeveloperConsole/Commands/");
+        GD.Print(commandList);
 
         // make sure the console is accessible when the game is on pause
         // TODO Pause cases
@@ -124,7 +125,7 @@ public class ConsoleManager : Control
                 consoleInput.Text = lastCommand;
                 consoleInput.GrabFocus();
                 consoleInput.CaretPosition = consoleInput.Text.Length;
-                GD.Print($" consoleInput Length: {consoleInput.Text.Length} caret pos:{consoleInput.CaretPosition}");
+                //GD.Print($" consoleInput Length: {consoleInput.Text.Length} caret pos:{consoleInput.CaretPosition}");
             }
 
             // autocompletion
@@ -169,12 +170,12 @@ public class ConsoleManager : Control
         // serach for matching arguments if curr_args is not empty
         if (curr_args.Length > 0)
         {
-            GD.Print($"curr match in : {curr_match.CommandWord}\n");
-            GD.Print($"curr args: {curr_args[0]}\n");
+            // GD.Print($"curr match in : {curr_match.CommandWord}\n");
+            // GD.Print($"curr args: {curr_args[0]}\n");
             matchingCommands = curr_match.FindMatchingCommands(curr_args);
             foreach (string match in matchingCommands)
             {
-                GD.Print("match found");
+                //GD.Print("match found");
                 consoleOutput.Text = $"{curr_match.CommandWord} {match}";
                 //show actor names if curr_match uses actor info after mathcing args found
                 if (curr_match.NeedActroInfo)
@@ -198,27 +199,39 @@ public class ConsoleManager : Control
         string input_command = input_string[0]; //parse command
         string[] curr_args = new string[input_string.Length - 1];// the rest are arguments
         Array.Copy(input_string, 1, curr_args, 0, input_string.Length - 1);
+        ConsoleCommand curr_command = null;
 
-        //starts comparing input to commandList
+        //TODO logic refactor
+
+
         foreach(var command in commandList)
         {
-            if (!input_command.Equals(command.CommandWord, StringComparison.OrdinalIgnoreCase))
+            if (input_command.Equals(command.CommandWord, StringComparison.OrdinalIgnoreCase))
             {
-                consoleOutput.Text = $"invalid command\n{consoleOutput.Text}";
-                return;
+                curr_command = command;
+                break;
             }
 
-            if (command.Process(curr_args))
+        }
+
+        if (curr_command != null)
+        {
+
+            if (curr_command.Process(curr_args))
             {
                 //update consoleOutput based on process result
-                consoleOutput.Text = $"{command.CommandOutput}\n{consoleOutput.Text}";
+                consoleOutput.Text = $"{curr_command.CommandOutput}\n{consoleOutput.Text}";
             }
 
             else
             {
                 consoleOutput.Text = $"invalid arguments\n{consoleOutput.Text}";
             }
+            return;
         }
+
+        consoleOutput.Text = $"invalid command\n{consoleOutput.Text}";
+        return;
     }
 
 
