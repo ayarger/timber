@@ -197,6 +197,9 @@ PerformTrace = false
 
 [node name="FogOfWar" parent="." instance=ExtResource( 16 )]
 
+[node name="LowResVisibility" parent="FogOfWar" index="3"]
+size = Vector2( 160, 160 )
+
 [node name="Node" type="Spatial" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.55476, 0 )
 script = ExtResource( 9 )

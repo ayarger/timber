@@ -13,13 +13,11 @@ public class LuaAPI
 
     [LuaCommand("SetDestination")]
     public static void Move(int x, int z) {
-        GD.Print(x);
-        GD.Print(z);
 
         TestMovement.SetDestination(currentActor, new Vector3(Grid.tileWidth * x, currentActor.GlobalTranslation.y, Grid.tileWidth * z));
     }
 
-    [LuaCommand("Print")]
+    [LuaCommand("Print", false)]
     public static void Print(string param)
     {
         GD.Print(param);
@@ -29,7 +27,36 @@ public class LuaAPI
     [LuaCommand("PrintName")]
     public static void PrintName()
     {
-        GD.Print("My name is: "+currentActor.Name);
+        GD.Print("My name is: " + currentActor.Name);
+    }
+
+    [LuaCommand("GetThree", false)]
+    public static int GetThree()
+    {
+        return 3;
+    }
+
+    [LuaCommand("GetFarthestActor")]
+    public static Spatial GetFarthestActor()
+    {
+        float max = -1;
+        Spatial closest = null;
+        foreach(Spatial i in NLuaScriptManager.luaActors.Values)
+        {
+            float dist = i.GlobalTranslation.DistanceSquaredTo(currentActor.GlobalTranslation);
+            if(dist > max)
+            {
+                max = dist;
+                closest = i;
+            }
+        }
+        return closest;
+    }
+
+    [LuaCommand("PrintNameOfActor", false)]
+    public static void PrintNameOfActor(Spatial actor)
+    {
+        GD.Print("I got an actor!: " + actor.GlobalTranslation);
     }
 
     [LuaCommand("GetValue")]

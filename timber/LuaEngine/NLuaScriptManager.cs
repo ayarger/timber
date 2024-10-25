@@ -29,7 +29,7 @@ public class NLuaScriptManager : Node
 
 	public static string testClassName = "testluaobject";
 
-	public static Dictionary<string, MethodInfo> luaMethods;
+	public static Dictionary<string, LuaMethodInfo> luaMethods;
 
 
 	//Must be ran before making any instances of a class. 
@@ -116,6 +116,8 @@ public class NLuaScriptManager : Node
 				prm += ","+arg;
 			}
 
+			//Print(data);
+			if (data != "") Print(data);
 			//Run our coroutine with any required parameters (currently, just delta if we are running a tick update).
 			res = luaState.DoString($"local co, res = coroutine.resume(timber_runner,global {prm}, {{{data}}})\n" +
 				"return res").String;
@@ -131,8 +133,19 @@ public class NLuaScriptManager : Node
 				object result = HandleCommand(cmd);
 				if (result != null)
 				{
-					string name = Convert.ToString(cmd["obj"]);
-					data += name + "=" + result; //Replace with serializing JSON?
+					string id = Convert.ToString(cmd["id"]);
+					//TODO: Support returning actors
+					if(result.GetType() == typeof(string))
+					{
+						result = $"\"{result}\"";
+                    }
+                    else if (typeof(Spatial).IsAssignableFrom(result.GetType()))
+                    {
+						//Return actor's name, which in lua context is the actual object.
+                        result = luaActors.Where((pair) => { return pair.Value == result; }).FirstOrDefault().Key;
+                    }
+                    //data is a manually created Lua table
+                    data += id + "=" + result; //Replace with serializing JSON?
 					data += ",";
 				}
 
@@ -152,7 +165,7 @@ public class NLuaScriptManager : Node
 
 		try
 		{
-			return LuaCommand.RunMethod(luaMethods[command], cmd);
+			return LuaCommand.RunMethod(luaMethods[command].MethodInfo, cmd);
 		}
 		catch (Exception e)
 		{
@@ -240,19 +253,27 @@ public class NLuaScriptManager : Node
 		foreach (var luaMethod in luaMethods) {
 			string parametersString1 = "";
             string parametersString2 = "";
-            foreach (var par in luaMethod.Value.GetParameters())
+            foreach (var par in luaMethod.Value.MethodInfo.GetParameters())
 			{
 				parametersString1 += ", _" + par.Name;
-				parametersString2 += ",\r\n\t\t" + par.Name + " = _" + par.Name;
+				//If parameter is an actor, make sure to get the actor's name
+				if(typeof(Spatial).IsAssignableFrom(par.ParameterType))
+                {
+                    parametersString2 += ",\r\n\t\t" + par.Name + " = _" + par.Name + ".object_name";
+                }
+				else
+                {
+                    parametersString2 += ",\r\n\t\t" + par.Name + " = _" + par.Name;
+                }
             }
 
 			//TODO:Fix later
 			string objectString = (luaMethod.Key == "GetValue" ? "obj" : "obj.object_name");
 
-			if(luaMethod.Key == "Print")
+			if(!luaMethod.Value.UsesNode)
 			{
 				objectString = "\"global\"";
-				parametersString1 = parametersString1.Substring(1);
+				parametersString1 = parametersString1.Length > 0 ? parametersString1.Substring(1) : "";
 			}
 			else
 			{
@@ -260,7 +281,7 @@ public class NLuaScriptManager : Node
 			}
 
 
-            bool hasReturnValue = luaMethod.Value.ReturnType != typeof(void);
+            bool hasReturnValue = luaMethod.Value.MethodInfo.ReturnType != typeof(void);
             string func = "function " + luaMethod.Key + "(" + parametersString1 + ")\r\n\tlocal coroutine_data = {coroutine.yield(\r\n\t\t{obj = " + objectString + ",\r\n\t\ttype=\"" + luaMethod.Key + "\"" + parametersString2 + "}\r\n\t\t)}"
 				+ (hasReturnValue ? "\r\n\treturn coroutine_data[#coroutine_data]" : "")
                 + "\r\nend\r\n";
@@ -309,7 +330,6 @@ public class NLuaScriptManager : Node
 		string objectName = GenerateObjectName();
 
 		GD.Print("Lua initialized");
-		GD.Print($"{luaState.DoString("return 5+20")}");
 
 
 
@@ -366,11 +386,13 @@ public class LuaExceptionEvent
 public class LuaCommand : System.Attribute
 {
 	public string Name { get; set; }
-    public LuaCommand(string name)
+    public bool UsesNode { get; set; }
+    public LuaCommand(string name, bool usesNode = true)
     {
         Name = name;
+        UsesNode = usesNode;
     }
-    public static Dictionary<string, MethodInfo> FindAllFunctionsWithAttribute()
+    public static Dictionary<string, LuaMethodInfo> FindAllFunctionsWithAttribute()
     {
         var typesWithMyAttribute =
             from a in AppDomain.CurrentDomain.GetAssemblies()
@@ -380,12 +402,12 @@ public class LuaCommand : System.Attribute
             where attributes != null && attributes.Length > 0
             select new { Method = f, Attribute = attributes.Cast<LuaCommand>().First() };
 
-		Dictionary<string, MethodInfo> ans = new Dictionary<string, MethodInfo>();
+		Dictionary<string, LuaMethodInfo> ans = new Dictionary<string, LuaMethodInfo>();
 
 		foreach (var attribute in typesWithMyAttribute)
 		{
 			GD.Print(attribute.Attribute.Name);
-			ans[attribute.Attribute.Name] = attribute.Method;
+			ans[attribute.Attribute.Name] = new LuaMethodInfo(attribute.Method, attribute.Attribute.UsesNode);
 		}
 		GD.Print("Number of funcs with attribute:" + typesWithMyAttribute.Count());
 		return ans;
@@ -415,6 +437,11 @@ public class LuaCommand : System.Attribute
             {
                 o = Convert.ToDouble(cmd[pi.Name]);
             }
+            else if (typeof(Spatial).IsAssignableFrom(pi.ParameterType))
+            {
+				//THIS SHOULD ONLY BE GODOT OBJECTS LISTED IN luaActors
+				o = NLuaScriptManager.luaActors[Convert.ToString(cmd[pi.Name])];
+            }
             else if (pi.ParameterType == typeof(bool))
             {
 				throw new Exception("bools in lua api are not yet supported!");
@@ -426,6 +453,20 @@ public class LuaCommand : System.Attribute
             args.Add(o);
 		}
 		return methodInfo.Invoke(null, args.ToArray());
+	}
+
+}
+
+public class LuaMethodInfo
+{
+	public MethodInfo MethodInfo { get; private set; }
+
+	public bool UsesNode { get; private set; }
+
+	public LuaMethodInfo(MethodInfo methodInfo, bool usesNode)
+	{
+		MethodInfo = methodInfo;
+		UsesNode = usesNode;
 	}
 
 }

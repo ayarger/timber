@@ -20,7 +20,16 @@ global.keywords = {
 	z=true,
 }
 
+global.unique_number_gen = 0
 
+function GetUniqueId()
+	global.unique_number_gen = global.unique_number_gen + 1
+	-- just in case
+	if global.unique_number_gen > 200000000 then
+		global.unique_number_gen = 0
+	end
+	return "ID"..tostring(global.unique_number_gen)
+end
 
 --- Delays execution for secs seconds.
 -- If the event is called again while it is waiting, there will be two instances of the event running.
@@ -53,8 +62,15 @@ function global:receive(message)
 		if global.game_objects[i]==nil then
 			table.insert(to_remove,i)
 		else
+			-- For every game object, find all functions that have the same name as the message
+			-- and run them as coroutines.
+			-- EG: if message is "Ready", run all ready functions.
 			if type(global.game_objects[i][message])=="function" then
-				table.insert(new_coroutines,{global.game_objects[i],coroutine.create(global.game_objects[i][message])})
+				-- FORMAT: Game object, new coroutine, unique coroutine ID identifier
+				table.insert(new_coroutines,
+					{global.game_objects[i],
+					coroutine.create(global.game_objects[i][message]), 
+					GetUniqueId()})
 			end
 		end
 	end
@@ -75,7 +91,7 @@ function global:advance_coroutines(coroutine_list)
 		local to_remove = {}
 		for i=1,#coroutine_list do
 			-- If there was data returned from C# due to the command, pass it back to the coroutine
-			local return_data = data[coroutine_list[i][1].object_name]==nil and 0 or data[coroutine_list[i][1].object_name]
+			local return_data = data[coroutine_list[i][3]]==nil and 0 or data[coroutine_list[i][3]]
 			-- Run the coroutine
 			local code, res = coroutine.resume(coroutine_list[i][2],coroutine_list[i][1], return_data)
 			if res then
@@ -83,6 +99,7 @@ function global:advance_coroutines(coroutine_list)
 					table.insert(global.awaiting_coroutines,coroutine_list[i])
 					table.insert(to_remove, i)
 				else
+					res.id = coroutine_list[i][3]
 					commands[i]=res
 				end
 			else
