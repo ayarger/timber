@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Collections
 using System.Collections.Generic;
 
 public class CombatStateEnabledEvent
@@ -25,9 +26,7 @@ public class BarContainer : Control
     public Vector3 relativeToshadow;
     int count = 0;
     public float scaling_factor = 6f;
-    bool displayOn;
-    //get ui bar by corresponding data name
-    public Dictionary<string, Bar> bar_dict;
+    bool displayOn, statChanged;
     Subscription<CombatStateEnabledEvent> combatStateChangeEvent;
     public bool combatEnabled = false;
     public override void _Ready()
@@ -54,9 +53,21 @@ public class BarContainer : Control
         combatStateChangeEvent = EventBus.Subscribe<CombatStateEnabledEvent>(OnCombatStateChange);
     }
 
-    public void Configure(HasStats _target)
+    public void ShowOnStatChanged()
     {
+        ArborCoroutine.StopCoroutinesOnNode(this);
+        statChanged = true;
+        ArborCoroutine.StartCoroutine(turnOffVisibilityOnCooldown());
+    }
 
+    IEnumerator turnOffVisibilityOnCooldown()
+    {
+        yield return ArborCoroutine.WaitForSeconds(4);
+        statChanged = false;
+    }
+
+    public void Configure(HasStats _target) { 
+       
         target_data = _target;
     }
 
@@ -67,7 +78,7 @@ public class BarContainer : Control
 
         if (IsInstanceValid(target_data))
         {
-            displayOn = target_selection.am_i_selected || target_selection.AmIHovered() || combatEnabled;
+            displayOn = !target_selection.first_time_placement && (target_selection.am_i_selected || target_selection.AmIHovered() || statChanged || combatEnabled);
             Visible = displayOn;
             PursueTarget();
         }

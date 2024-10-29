@@ -4,17 +4,17 @@ using System;
 public class Bar : Control
 {
 
-    HasStats target_data;
+	HasStats target_data;
 
-    String data_name;
+	String data_name;
 
-    int index;
+	int index;
 
-    TextureProgress tex_progress;
+	TextureProgress tex_progress;
 
-    Tween ui_tween;
+	Tween ui_tween;
 
-    Subscription<StatChangeEvent> statChangeEvent;
+	Subscription<StatChangeEvent> statChangeEvent;
 
     public override void _Ready()
     {
@@ -25,11 +25,11 @@ public class Bar : Control
         statChangeEvent = EventBus.Subscribe<StatChangeEvent>(OnUIStatChange);
     }
 
-    public void Configure(HasStats _target, string _data_name)
-    {
-        target_data = _target;
-        data_name = _data_name;
-    }
+	public void Configure(HasStats _target, string _data_name)
+	{
+		target_data = _target;
+		data_name = _data_name;
+	}
 
     /// <summary>
     /// Change bar color
@@ -65,9 +65,9 @@ public class Bar : Control
         }
     }
 
-    public void OnCreate()
-    {
-        RectScale = new Vector2(0, 0);
+	public void OnCreate()
+	{
+		RectScale = new Vector2(0, 0);
 
         // Setup the tween to scale the child from 0 to 1 (original size).
         ui_tween.InterpolateProperty(this,"rect_scale", RectScale,new Vector2(1, 1), 0.3f,Tween.TransitionType.Back, Tween.EaseType.Out);
@@ -82,21 +82,21 @@ public class Bar : Control
         ui_tween.Start();
         tex_progress.Value = target_data.Stats[data_name].currVal;
 
-    }
+	}
 
-    public void FadeIn(float duration)
-    {
-        Color currentColor = Modulate;
-        ui_tween.InterpolateProperty(this, "modulate:a", currentColor.a, 1, duration, Tween.TransitionType.Linear, Tween.EaseType.Out);
-        ui_tween.Start();
-    }
+	public void FadeIn(float duration)
+	{
+		Color currentColor = Modulate;
+		ui_tween.InterpolateProperty(this, "modulate:a", currentColor.a, 1, duration, Tween.TransitionType.Linear, Tween.EaseType.Out);
+		ui_tween.Start();
+	}
 
-    public void FadeOut(float duration)
-    {
-        Color currentColor = Modulate;
-        ui_tween.InterpolateProperty(this, "modulate:a", currentColor.a, 0, duration, Tween.TransitionType.Linear, Tween.EaseType.In);
-        ui_tween.Start();
-    }
+	public void FadeOut(float duration)
+	{
+		Color currentColor = Modulate;
+		ui_tween.InterpolateProperty(this, "modulate:a", currentColor.a, 0, duration, Tween.TransitionType.Linear, Tween.EaseType.In);
+		ui_tween.Start();
+	}
 
-    // TODO destroy the UI bar on stat remove event
+	// TODO destroy the UI bar on stat remove event
 }

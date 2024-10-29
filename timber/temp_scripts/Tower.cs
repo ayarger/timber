@@ -1,3 +1,5 @@
+using System;
+using System.Threading.Tasks;
 using Godot;
 
 // TODO: switch to HasStat
@@ -25,6 +27,11 @@ public class Tower : Actor
 	public HasStats _HasStats;
 	public Timer timer;
 
+	private Vector3 defaultTranslation;
+	private float target_view_scale_y = 1.0f;
+	private MeshInstance iconMesh;
+	private Texture full_tex;
+
 	public override void _Ready()
 	{
 		base._Ready();
@@ -32,6 +39,9 @@ public class Tower : Actor
 		timer = GetNode<Timer>("Timer");
 		_HasStats = GetNode<HasStats>("HasStats");
 		_HasStats.AddStat("construction_progress", 0, 50, 0, true);
+		defaultTranslation = GetNode<MeshInstance>("view/mesh").Translation;
+		iconMesh = GetNode<MeshInstance>("iconMesh");
+		GetNode<IsSelectable>("IsSelectable").first_time_placement = true;
 	}
 
 	public override void _Input(InputEvent @event)
@@ -56,7 +66,7 @@ public class Tower : Actor
 			towerStatus = TowerStatus.InConstruction;
 			
 			// Debug
-			ToastManager.SendToast(this, "Switch to InConstruction", ToastMessage.ToastType.Notice);
+			// ToastManager.SendToast(this, "Switch to InConstruction", ToastMessage.ToastType.Notice);
 		}
 		
 		else if (newTowerStatus == TowerStatus.Functioning)
@@ -64,11 +74,11 @@ public class Tower : Actor
 			towerStatus = TowerStatus.Functioning;
 			config.team = "player";
 			GetNode<HasTeam>("HasTeam").team = config.team;
-			
 			// enable combatstate
-			ToastManager.SendToast(this, "Switch to Functioning", ToastMessage.ToastType.Notice);
-			// state_manager.SetProcess(true);
-			GetNode<StateManager>("StateManager").DisableState("MovementState");
+			ConstructionAnimation_complete();
+			GetNode<IconControl>("IconControl").SetIconInvisible();
+			GetNode<IsSelectable>("IsSelectable").first_time_placement = false; // enabled BarContainer display
+			// ToastManager.SendToast(this, "Switch to Functioning", ToastMessage.ToastType.Notice);
 		}
 	} 
 
@@ -88,8 +98,9 @@ public class Tower : Actor
 		ShaderMaterial char_mat = (ShaderMaterial)character_view.GetSurfaceMaterial(0).Duplicate();
 
 		shadow_view = (MeshInstance)GetNode("shadow");
-		view.Scale = new Vector3(tex.GetWidth(), tex.GetHeight(), 1.0f) * 0.01f;
-		view.Scale = view.Scale * config.aesthetic_scale_factor;
+		target_view_scale_y = tex.GetHeight() * config.aesthetic_scale_factor * 0.01f;
+		view.Scale = new Vector3(tex.GetWidth()* 0.01f, target_view_scale_y * 0.3f, 1.0f* 0.01f);
+		view.Scale *= config.aesthetic_scale_factor;
 		initial_load = true;
 		initial_view_scale = view.Scale;
 		desired_scale_x = initial_view_scale.x;
@@ -102,21 +113,18 @@ public class Tower : Actor
 
 		character_view.SetSurfaceMaterial(0, char_mat);
 
-		StateManager _stateManager = GetNode<Node>("StateManager") as StateManager;
-		IdleState _idleState = _stateManager.states["Idle"] as IdleState;
-		_idleState.has_idle_animation = false;
+		// StateManager _stateManager = GetNode<Node>("StateManager") as StateManager;
+		// IdleState _idleState = _stateManager.states["Idle"] as IdleState;
+		// _idleState.has_idle_animation = false;
 		
-		foreach(StateConfig s in config.stateConfigs)
-		{
-			string stateName = s.name;
-			state_manager.states[stateName].Config(s);
-		}
+		state_manager.Configure(config.stateConfigs);
 
 		StatManager statManager = GetNode<StatManager>("StatManager");
 		if (statManager != null)
 		{
 			statManager.Config(config.statConfig);
 		}
+		
 	}
 
 	public override void Hurt(int damage, bool isCritical, Actor source)
@@ -132,8 +140,12 @@ public class Tower : Actor
 			DamageTextManager.DrawText(damage, this, "construction");
 			if(_HasStats != null)
 			{
-				_HasStats.GetStat("construction_progress").IncreaseCurrentValue(damage);
-				if(_HasStats.GetStat("construction_progress").currVal >= _HasStats.GetStat("construction_progress").maxVal)
+				_HasStats.GetStat("construction_progress").IncreaseCurrentValue(damage); // increase construction meter
+				// TODO: animation step forward
+				float currVal = _HasStats.GetStat("construction_progress").currVal;
+				float maxVal = _HasStats.GetStat("construction_progress").maxVal;
+				ConstructAnimation_in_progress(currVal / maxVal);
+				if(currVal >= maxVal)
 				{
 					HandleTowerStatusChange(TowerStatus.Functioning);
 					return;
@@ -147,7 +159,17 @@ public class Tower : Actor
 		
 		base.Hurt(damage, isCritical, source);
 	}
+	
+	public void ConstructAnimation_in_progress(float progress)
+	{
+		initial_view_scale = new Vector3(view.Scale.x, target_view_scale_y * (progress * 0.7f + 0.3f), view.Scale.z);
+	}
 
+	public void ConstructionAnimation_complete()
+	{
+		view.Scale = new Vector3(view.Scale.x*1.3f, view.Scale.y*1.5f, view.Scale.z);
+	}
+	
 	public override void _ExitTree()
 	{
 		Grid.Get(curr_coord).actor = null;

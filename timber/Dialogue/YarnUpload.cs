@@ -1,9 +1,9 @@
 using Godot;
-using System;
 using System.Collections.Generic;
-using System.IO;
-using YarnSpinnerGodot.Editor;
 using YarnSpinnerGodot;
+using YarnSpinnerGodot.Editor;
+
+
 
 static class YarnManager
 {
@@ -84,20 +84,20 @@ public class YarnUpload : Button
         string fileName = System.IO.Path.GetFileNameWithoutExtension(path);
         var newYarnProject = GD.Load<CSharpScript>("res://addons/YarnSpinner-Godot/Runtime/YarnProject.cs").New() as YarnSpinnerGodot.YarnProject;
         newYarnProject.ResourceName = fileName;
-        //newYarnProject.ResourcePath = path; // Can probably remove in future
+        newYarnProject.ResourcePath = path; // Can probably remove in future
         newYarnProject.SourceScripts.Add(path); // Can remove in the future
+
+        //TODO: THIS DOES NOT WORK ON THE WEB RIGHT NOW
+
         YarnProjectEditorUtility.CompileAllScripts(newYarnProject);
         YarnProjectEditorUtility.AddLineTagsToFilesInYarnProject(newYarnProject);
+
+        //TODO: This function assumes running on OS, not a priority
         YarnProjectEditorUtility.UpdateLocalizationCSVs(newYarnProject);
+        
         YarnManager.projects[fileName] = newYarnProject;
         //YarnSpinnerGodot.DialogueRunner dialogueRunner = GetTree().CurrentScene.FindNode("DialogueRunner", recursive: true) as YarnSpinnerGodot.DialogueRunner;
         //dialogueRunner.SetProject(newYarnProject);
     }
 
-    private string GenerateUniqueDirectoryName()
-    {
-        var uniqueID = Guid.NewGuid().ToString();
-        string uniqueFolderName = $"YarnProject_{uniqueID}";
-        return uniqueFolderName;
-    }
 }

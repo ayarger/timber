@@ -62,7 +62,9 @@ namespace YarnSpinnerGodot
             {
                 _stringTable = value;
                 _stringTableJSON= JsonSerializer.Serialize(_stringTable, YarnProject.JSONOptions);
+#if TOOLS
                 YarnProjectEditorUtility.ClearJSONCache();
+#endif
             }
         }
         
@@ -130,7 +132,9 @@ namespace YarnSpinnerGodot
             stringTable.Add(key, value);
             _stringTable = stringTable;
             _stringTableJSON = JsonSerializer.Serialize(_stringTable, YarnProject.JSONOptions);
+#if TOOLS
             YarnProjectEditorUtility.ClearJSONCache();
+#endif
         }
 
         /// <summary>

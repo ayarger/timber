@@ -77,7 +77,7 @@ namespace YarnSpinnerGodot
 		
 		public override void _EnterTree()
 		{
-			if (!debugTextViewPath.IsEmpty() && debugTextView == null)
+			if ((debugTextViewPath != null && !debugTextViewPath.IsEmpty()) && debugTextView == null)
 			{
 				debugTextView = GetNode<RichTextLabel>(debugTextViewPath);
 			}

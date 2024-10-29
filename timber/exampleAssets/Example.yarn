@@ -1,11 +1,14 @@
-title: Start
+﻿title: Start
 tags:
 colorID: 0
 position: 120,-245
 ---
-Do you like Godot? #line:7d0d96d 
--> Yes #line:5a3dd7d5 
-    Right on! #line:515f5806 
--> No #line:b6c02e0 
-    Well, thats unfortunate... #line:97f72e11 
+Companion: Hi there! What do you feel like doing today? #line:0c89d0f 
+
+-> Player: I want to go swimming. #line:0bb7541 
+    Companion: Okay, let's go swimming. #line:0be8611 
+-> Player: I'd prefer to go hiking. #line:02c386a 
+    Companion: Cool, we'll go hiking then. #line:0f17d03 
+    
+Player: Sounds good! #line:0947824 
 ===
