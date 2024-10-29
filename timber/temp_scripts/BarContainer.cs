@@ -1,6 +1,6 @@
 using Godot;
 using System;
-using System.Collections
+using System.Collections;
 using System.Collections.Generic;
 
 public class CombatStateEnabledEvent
@@ -29,6 +29,7 @@ public class BarContainer : Control
     bool displayOn, statChanged;
     Subscription<CombatStateEnabledEvent> combatStateChangeEvent;
     public bool combatEnabled = false;
+    public Dictionary<string, Bar> bar_dict;
     public override void _Ready()
     {
         // get target_mesh

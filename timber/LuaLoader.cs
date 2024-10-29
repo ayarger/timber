@@ -77,391 +77,391 @@ public class LuaLoader : Node
 		ArborResource.Load<ModFileManifest>("mod_file_manifest.json");
 		yield return ArborResource.WaitFor("mod_file_manifest.json");
 		ModFileManifest manifest = ArborResource.Get<ModFileManifest>("mod_file_manifest.json");
-    IEnumerator LoadActorConfigs()
-    {
-		// JUSTIN: Test to work with binaries
-		ArborResource.Load<ModFileManifest>("binary_mod_file_manifest.bin");
-		yield return ArborResource.WaitFor("binary_mod_file_manifest.bin");
-		ModFileManifest manifest = ArborResource.Get<ModFileManifest>("binary_mod_file_manifest.bin");
-
-		//ArborResource.Load<ModFileManifest>("mod_file_manifest.json");
-		//yield return ArborResource.WaitFor("mod_file_manifest.json");
-		//ModFileManifest manifest = ArborResource.Get<ModFileManifest>("mod_file_manifest.json");
-
-		List<string> actor_files = manifest.Search("actor_definitions/*");
-
-		StateProcessor.Initialize();
-
-		foreach (string actor_file in actor_files)
+		IEnumerator LoadActorConfigs()
 		{
-			ArborResource.Load<ActorConfig>(actor_file);
+			// JUSTIN: Test to work with binaries
+			ArborResource.Load<ModFileManifest>("binary_mod_file_manifest.bin");
+			yield return ArborResource.WaitFor("binary_mod_file_manifest.bin");
+			ModFileManifest manifest = ArborResource.Get<ModFileManifest>("binary_mod_file_manifest.bin");
+
+			//ArborResource.Load<ModFileManifest>("mod_file_manifest.json");
+			//yield return ArborResource.WaitFor("mod_file_manifest.json");
+			//ModFileManifest manifest = ArborResource.Get<ModFileManifest>("mod_file_manifest.json");
+
+			List<string> actor_files = manifest.Search("actor_definitions/*");
+
+			StateProcessor.Initialize();
+
+			foreach (string actor_file in actor_files)
+			{
+				ArborResource.Load<ActorConfig>(actor_file);
+			}
+
+			foreach (string actor_file in actor_files)
+			{
+				GD.Print("Loading actor file: " + actor_file);
+				yield return ArborResource.WaitFor(actor_file);
+				ActorConfig actor_info = ArborResource.Get<ActorConfig>(actor_file);
+
+
+				//temporary
+				//TODO: update actor config & enemy config
+				playerStatConfig.stats["health"] = 100;
+
+				enemyStatConfig.stats["health"] = 50;
+
+				if (actor_info.team == "player")
+				{
+					actor_info.stateConfigs.Add(playerCombatConfig);
+					actor_info.statConfig = playerStatConfig;
+					actor_info.stateConfigs.Add(ConstructionState);
+				}
+				else if (actor_info.team == "construction")
+				{
+					actor_info.stateConfigs.Add(TowerRangeConfig);
+					actor_info.statConfig = playerStatConfig;
+				}
+				else if (actor_info.name == "Chunk")
+				{
+					actor_info.stateConfigs.Add(enemyMeleeCombatConfig);
+					actor_info.statConfig = enemyStatConfig;
+				}
+				else
+				{
+					actor_info.stateConfigs.Add(enemyRangeCombatConfig);
+					actor_info.statConfig = enemyStatConfig;
+				}
+				actor_info.stateConfigs.Add(idleState);
+				actor_info.stateConfigs.Add(movementState);
+
+				map_code_to_actor_config[actor_info.map_code] = actor_info;
+			}
 		}
 
-		foreach (string actor_file in actor_files)
+		IEnumerator LoadScene(string scene_filename)
 		{
-			GD.Print("Loading actor file: " + actor_file);
-			yield return ArborResource.WaitFor(actor_file);
-            ActorConfig actor_info = ArborResource.Get<ActorConfig>(actor_file);
-			
+			ViewportTexture fog_of_war_visibility_texture = new ViewportTexture();
 
-			//temporary
-			//TODO: update actor config & enemy config
-			playerStatConfig.stats["health"] = 100;
+			string image_filename = "images/" + scene_filename + ".png";
+			ArborResource.Load<Texture>(image_filename);
 
-			enemyStatConfig.stats["health"] = 50;
+			string layout_filename = "scenes/" + scene_filename + ".layout";
+			ArborResource.Load<string>(layout_filename);
 
-			if (actor_info.team == "player")
+			string config_filename = "scenes/" + scene_filename + ".config";
+			ArborResource.Load<string>(config_filename);
+
+			/* Load Audio */
+			ArborResource.UseResource(
+				"sounds/pre_battle.ogg",
+				(AudioStream audio) =>
+				{
+					ArborAudioManager.RequestBGM(audio);
+				},
+				this
+			);
+
+			ArborResource.Load<AudioStream>("sounds/bgm_btd_defeat.ogg");
+			yield return ArborResource.WaitFor("sounds/bgm_btd_defeat.ogg");
+
+			yield return ArborResource.WaitFor(image_filename);
+			yield return ArborResource.WaitFor(layout_filename);
+			yield return ArborResource.WaitFor(config_filename);
+
+			Texture scene_tile_texture = ArborResource.Get<Texture>(image_filename);
+			string layout_file_contents = ArborResource.Get<string>(layout_filename);
+			string config_file_contents = ArborResource.Get<string>(config_filename);
+
+			List<Vector3> player_actor_spawn_positions = new List<Vector3>();
+
+			List<ShaderMaterial> tile_mats = new List<ShaderMaterial>();
+
+			int width = 0;
+			int height = 0;
+			int x = 0;
+			int z = 0;
+			//May move tile data elsewhere
+			//Possibly load tile width
+			var tileData = new List<List<TileData>>();
+			tileData.Add(new List<TileData>());
+			for (int i = 0; i < layout_file_contents.Length; i++)
 			{
-				actor_info.stateConfigs.Add(playerCombatConfig);
-				actor_info.statConfig = playerStatConfig;
-				actor_info.stateConfigs.Add(ConstructionState);
-            }
-			else if (actor_info.team=="construction")
-			{
-				actor_info.stateConfigs.Add(TowerRangeConfig);
-				actor_info.statConfig = playerStatConfig;
+				char current_char = layout_file_contents[i];
+				char next_char = ' ';
+				if (i < layout_file_contents.Length - 1)
+					next_char = layout_file_contents[i + 1];
+
+				/* special cases */
+				if (current_char == '\n')
+				{
+					tileData.Add(new List<TileData>());
+					width = x;
+					x = 0;
+					z++;
+					continue;
+				}
+
+				if (current_char == '\r')
+				{
+					continue;
+				}
+
+				if (current_char == 'e')
+				{
+					tileData[z].Add(new TileData('e', new Coord(x, z)));
+				}
+				else
+				{
+					tileData[z].Add(new TileData('.', new Coord(x, z)));
+					PackedScene tile_scene = (PackedScene)ResourceLoader.Load("res://scenes/Tile.tscn");
+					CSGBox new_tile = (CSGBox)tile_scene.Instance();
+					ShaderMaterial mat = (ShaderMaterial)new_tile.Material;
+					tile_mats.Add(mat);
+
+					mat.SetShaderParam("albedo_texture", scene_tile_texture);
+					mat.SetShaderParam("visibility_texture", fog_of_war_visibility_texture);
+					AddChild(new_tile);
+					new_tile.GlobalTranslation = new Vector3(x * Grid.tileWidth, -1, z * Grid.tileWidth);
+				}
+				if (map_code_to_actor_config.ContainsKey(current_char))
+				{
+					ActorConfig config = map_code_to_actor_config[current_char];
+					Vector3 spawn_pos = new Vector3(x * Grid.tileWidth, 0, z * Grid.tileWidth);
+					Actor new_actor = SpawnActorOfType(config, spawn_pos);
+
+					if (config.team.ToLower().Trim() == "player")
+						player_actor_spawn_positions.Add(spawn_pos);
+
+					//Test Code:
+					if (current_char == 'm' || current_char == 'q')
+					{
+						NLuaScriptManager.Instance
+							.CreateActor(NLuaScriptManager.testClassName, NLuaScriptManager.GenerateObjectName(), new_actor);
+					}
+				}
+
+				x++;
 			}
-			else if (actor_info.name == "Chunk")
+			tileData.RemoveAt(tileData.Count - 1);
+			var tempTileData = new List<TileData[]>();
+			foreach (var td in tileData) tempTileData.Add(td.ToArray());
+			Grid.tiledata = tempTileData.ToArray();
+
+			EventBus.Publish(new TileDataLoadedEvent());
+			height = z;
+
+			/* Configure fog of war */
+			Viewport viewport = GetParent().GetNode<Viewport>("FogOfWar/HighVisibility");
+
+
+			//viewport.RenderTargetClearMode = Godot.Viewport.ClearMode.Never;
+			float pixels_per_tile = 10;
+			//viewport.Size = new Vector2(width, height);
+			//viewport.Size = new Vector2(1000, 1000);
+			//GD.Print("setting viewport to " + width + " " + height);
+			Spatial player_node = GetNode<Spatial>("Spot");
+			//GD.Print("PLAYER AT " + player_node.GlobalTranslation.x + " " + player_node.GlobalTranslation.z);
+
+			float new_marker_x = viewport.Size.x * (player_node.GlobalTranslation.x * 0.5f / width);
+			float new_marker_y = viewport.Size.y * (player_node.GlobalTranslation.z * 0.5f / height);
+
+			yield return null;
+			yield return null;
+
+			//Deprecated
+			//fog_of_war_visibility_texture = new ViewportTexture();
+
+			//fog_of_war_visibility_texture.ViewportPath = viewport.GetPath();
+
+			yield return null;
+			yield return null;
+
+
+			Vector2 new_marker_pos = new Vector2(new_marker_x, new_marker_y);
+			GD.Print("NEW MARKER POS " + new_marker_pos.x + " " + new_marker_pos.y);
+
+			//GD.Print("fog_of_war_visibility_texture.size() " + fog_of_war_visibility_texture.GetSize());
+
+
+			Sprite visibility_marker = GetParent().GetNode<Sprite>("FogOfWar/HighVisibility/Sprite");
+			visibility_marker.Position = new_marker_pos;
+
+			yield return null;
+			yield return null;
+			//I think you need to set the param every frame? Done in FogOfWar.cs
+			//foreach(ShaderMaterial mat in tile_mats)
+			//{
+			//	mat.SetShaderParam("visibility_texture", fog_of_war_visibility_texture);
+			//}
+
+			/* Finish up */
+			Vector3 avg_pos = Vector3.Zero;
+			foreach (Vector3 pos in player_actor_spawn_positions)
+				avg_pos += pos;
+			avg_pos /= player_actor_spawn_positions.Count;
+			most_recent_load_scene_result = new LoadSceneResult() { average_position_of_player_actors = avg_pos };
+		}
+
+
+		  Actor SpawnActorOfType(ActorConfig config, Vector3 position)
+		{
+			/* Spawn actor scene */
+			PackedScene actor_scene = (PackedScene)ResourceLoader.Load("res://scenes/actor.tscn");
+			Spatial new_actor = (Spatial)actor_scene.Instance();
+			new_actor.Name = config.name;
+			AddChild(new_actor);
+
+			Actor actor_script = new_actor as Actor;
+
+			new_actor.GlobalTranslation = position;
+
+			actor_script.Configure(config);
+
+			/* customize actor aesthetics */
+
+			/* Load scripts of an actor */
+			foreach (string script_name in config.scripts)
 			{
-				actor_info.stateConfigs.Add(enemyMeleeCombatConfig);
-				actor_info.statConfig = enemyStatConfig;
+				string source_path = System.IO.Directory.GetCurrentDirectory() + @"\resources\scripts\" + script_name + ".gd";
+				LoadScriptAtLocation(source_path, new_actor);
 			}
-			else
-			{
-				actor_info.stateConfigs.Add(enemyRangeCombatConfig);
-				actor_info.statConfig = enemyStatConfig;
-			}
-			actor_info.stateConfigs.Add(idleState);
-			actor_info.stateConfigs.Add(movementState);
-			
-            map_code_to_actor_config[actor_info.map_code] = actor_info;
-        }
+			return actor_script;
+		}
+
+		void LoadScriptAtLocation(string location, Node owning_actor)
+		{
+			return;
+			GD.Print("Attempting to load external file [" + location + "]");
+			Script loaded_gdscript = (Script)GD.Load(location);
+
+			Node new_script_node = new Node();
+			new_script_node.SetScript(loaded_gdscript);
+
+			//new_script_node.Call("_Ready");
+			owning_actor.AddChild(new_script_node);
+			new_script_node._Ready();
+			new_script_node.SetProcess(true);
+			GD.Print("Done attaching external script [" + location + "] to actor [" + owning_actor.Name + "]");
+		}
+	}
+}
+
+	[Serializable]
+	public class ActorConfig
+	{
+		public Guid guid;
+		public string name = "???";
+		public string team = "player";
+		public char map_code = '?';
+		public float aesthetic_scale_factor = 1.0f;
+		public string idle_sprite_filename;
+		public string lives_sprite_filename;
+		public string pre_ko_sprite_filename = "";
+		public string ko_sprite_filename = "";
+		public string type = "actor";
+
+		public List<string> scripts;
+
+		public List<StateConfig> stateConfigs = new List<StateConfig>();
+		public StatConfig statConfig;
 	}
 
-	IEnumerator LoadScene(string scene_filename)
+	[Serializable]
+	public class ScriptInfo
 	{
-		ViewportTexture fog_of_war_visibility_texture = new ViewportTexture();
+		public string name;
+	}
 
-		string image_filename = "images/" + scene_filename + ".png";
-		ArborResource.Load<Texture>(image_filename);
+	public class LoadSceneResult
+	{
+		public Vector3 average_position_of_player_actors = Vector3.Zero;
+	}
 
-		string layout_filename = "scenes/" + scene_filename + ".layout";
-		ArborResource.Load<string>(layout_filename);
+	[Serializable]
+	public class SceneConfig
+	{
+		public string name = null;
+		public List<string> basic_background_tracks = new List<string>();
+		public List<string> combat_background_tracks = new List<string>();
+		public string intro_text_scroll = null;
+		public string success_image = null;
+		public string failure_image = null;
+		public string subsequent_scene_file = null;
+	}
 
-		string config_filename = "scenes/" + scene_filename + ".config";
-		ArborResource.Load<string>(config_filename);
+	[Serializable]
+	public class GameConfig
+	{
+		public string name = null;
+		public string title_screen_background_image = null;
+		public string title_screen_logo_image = null;
+		public string initial_scene_file = null;
+		public string gameover_image = null;
+		public int initial_continue_count = 3;
+		public string cursor_image = null;
+	}
 
-		/* Load Audio */
-		ArborResource.UseResource(
-			"sounds/pre_battle.ogg",
-			(AudioStream audio) =>
-			{
-				ArborAudioManager.RequestBGM(audio);
-			},
-			this
-		);
+	[Serializable]
+	public class ModFileManifest
+	{
+		public List<string> mod_files = new List<string>();
 
-		ArborResource.Load<AudioStream>("sounds/bgm_btd_defeat.ogg");
-		yield return ArborResource.WaitFor("sounds/bgm_btd_defeat.ogg");
-
-		yield return ArborResource.WaitFor(image_filename);
-		yield return ArborResource.WaitFor(layout_filename);
-		yield return ArborResource.WaitFor(config_filename);
-
-		Texture scene_tile_texture = ArborResource.Get<Texture>(image_filename);
-		string layout_file_contents = ArborResource.Get<string>(layout_filename);
-		string config_file_contents = ArborResource.Get<string>(config_filename);
-
-		List<Vector3> player_actor_spawn_positions = new List<Vector3>();
-
-		List<ShaderMaterial> tile_mats = new List<ShaderMaterial>();
-
-		int width = 0;
-		int height = 0;
-		int x = 0;
-		int z = 0;
-		//May move tile data elsewhere
-		//Possibly load tile width
-		var tileData = new List<List<TileData>>();
-		tileData.Add(new List<TileData>());
-		for (int i = 0; i < layout_file_contents.Length; i++)
+		public List<string> Search(string pattern)
 		{
-			char current_char = layout_file_contents[i];
-			char next_char = ' ';
-			if (i < layout_file_contents.Length - 1)
-				next_char = layout_file_contents[i + 1];
+			List<string> matchingStrings = new List<string>();
+			Regex regex = new Regex(pattern);
 
-			/* special cases */
-			if (current_char == '\n')
+			foreach (string str in mod_files)
 			{
-				tileData.Add(new List<TileData>());
-				width = x;
-				x = 0;
-				z++;
-				continue;
-			}
-
-			if (current_char == '\r')
-			{
-				continue;
-			}
-
-			if (current_char == 'e')
-			{
-				tileData[z].Add(new TileData('e', new Coord(x, z)));
-			}
-			else
-			{
-				tileData[z].Add(new TileData('.', new Coord(x, z)));
-				PackedScene tile_scene = (PackedScene)ResourceLoader.Load("res://scenes/Tile.tscn");
-				CSGBox new_tile = (CSGBox)tile_scene.Instance();
-				ShaderMaterial mat = (ShaderMaterial)new_tile.Material;
-				tile_mats.Add(mat);
-
-				mat.SetShaderParam("albedo_texture", scene_tile_texture);
-				mat.SetShaderParam("visibility_texture", fog_of_war_visibility_texture);
-				AddChild(new_tile);
-				new_tile.GlobalTranslation = new Vector3(x * Grid.tileWidth, -1, z * Grid.tileWidth);
-			}
-			if(map_code_to_actor_config.ContainsKey(current_char))
-            {
-				ActorConfig config = map_code_to_actor_config[current_char];
-				Vector3 spawn_pos = new Vector3(x * Grid.tileWidth, 0, z * Grid.tileWidth);
-				Actor new_actor = SpawnActorOfType(config, spawn_pos);
-
-				if (config.team.ToLower().Trim() == "player")
-					player_actor_spawn_positions.Add(spawn_pos);
-
-				//Test Code:
-				if (current_char == 'm' || current_char == 'q')
+				if (regex.IsMatch(str))
 				{
-					NLuaScriptManager.Instance
-						.CreateActor(NLuaScriptManager.testClassName, NLuaScriptManager.GenerateObjectName(), new_actor);
+					matchingStrings.Add(str);
 				}
 			}
 
-			x++;
+			return matchingStrings;
 		}
-		tileData.RemoveAt(tileData.Count - 1);
-		var tempTileData = new List<TileData[]>();
-		foreach (var td in tileData) tempTileData.Add(td.ToArray());
-		Grid.tiledata = tempTileData.ToArray();
-
-		EventBus.Publish(new TileDataLoadedEvent());
-		height = z;
-
-		/* Configure fog of war */
-		Viewport viewport = GetParent().GetNode<Viewport>("FogOfWar/HighVisibility");
-
-
-		//viewport.RenderTargetClearMode = Godot.Viewport.ClearMode.Never;
-		float pixels_per_tile = 10;
-		//viewport.Size = new Vector2(width, height);
-		//viewport.Size = new Vector2(1000, 1000);
-		//GD.Print("setting viewport to " + width + " " + height);
-		Spatial player_node = GetNode<Spatial>("Spot");
-		//GD.Print("PLAYER AT " + player_node.GlobalTranslation.x + " " + player_node.GlobalTranslation.z);
-
-		float new_marker_x = viewport.Size.x * (player_node.GlobalTranslation.x * 0.5f / width);
-		float new_marker_y = viewport.Size.y * (player_node.GlobalTranslation.z * 0.5f / height);
-
-		yield return null;
-		yield return null;
-
-		//Deprecated
-		//fog_of_war_visibility_texture = new ViewportTexture();
-
-		//fog_of_war_visibility_texture.ViewportPath = viewport.GetPath();
-
-		yield return null;
-		yield return null;
-
-
-		Vector2 new_marker_pos = new Vector2(new_marker_x, new_marker_y);
-		GD.Print("NEW MARKER POS " + new_marker_pos.x + " " + new_marker_pos.y);
-
-		//GD.Print("fog_of_war_visibility_texture.size() " + fog_of_war_visibility_texture.GetSize());
-
-
-		Sprite visibility_marker = GetParent().GetNode<Sprite>("FogOfWar/HighVisibility/Sprite");
-		visibility_marker.Position = new_marker_pos;
-
-		yield return null;
-		yield return null;
-		//I think you need to set the param every frame? Done in FogOfWar.cs
-		//foreach(ShaderMaterial mat in tile_mats)
-		//{
-		//	mat.SetShaderParam("visibility_texture", fog_of_war_visibility_texture);
-		//}
-
-		/* Finish up */
-		Vector3 avg_pos = Vector3.Zero;
-		foreach (Vector3 pos in player_actor_spawn_positions)
-			avg_pos += pos;
-		avg_pos /= player_actor_spawn_positions.Count;
-		most_recent_load_scene_result = new LoadSceneResult() { average_position_of_player_actors = avg_pos };
 	}
 
+	//May move elsewhere
+	public class TileDataLoadedEvent { }
 
-	public Actor SpawnActorOfType(ActorConfig config, Vector3 position)
+	public class ActorDataLoadedEvent
 	{
-		/* Spawn actor scene */
-		PackedScene actor_scene = (PackedScene)ResourceLoader.Load("res://scenes/actor.tscn");
-		Spatial new_actor = (Spatial)actor_scene.Instance();
-		new_actor.Name = config.name;
-		AddChild(new_actor);
 
-		Actor actor_script = new_actor as Actor;
+	}
+	//change into different stat in hasStat
+	public class StateConfig
+	{
+		public string name;
+	}
 
-		new_actor.GlobalTranslation = position;
+	//state configs for actors
+	public class CombatConfig : StateConfig
+	{
+		public int attackRange = 2;//number of grids
+		public int attackDamage = 10;
+		public float criticalHitRate = 0.3f;
 
-		actor_script.Configure(config);
+		public float attackWindup = 0.5f;//animation before attack
+		public float attackRecovery = 0.125f;//anim after attack
+		public float attackCooldown = 1f;
 
-		/* customize actor aesthetics */
+		public CombatConfig() { }
 
-		/* Load scripts of an actor */
-		foreach (string script_name in config.scripts)
+		public CombatConfig(string n, int ar, int damage, float critRate, float windup, float recovery, float cooldown)//temp constructor
 		{
-			string source_path = System.IO.Directory.GetCurrentDirectory() + @"\resources\scripts\" + script_name + ".gd";
-			LoadScriptAtLocation(source_path, new_actor);
+			name = n;
+			attackRange = ar;
+			attackDamage = damage;
+			criticalHitRate = critRate;
+			attackWindup = windup;
+			attackRecovery = recovery;
+			attackCooldown = cooldown;
 		}
-		return actor_script;
 	}
 
-	void LoadScriptAtLocation(string location, Node owning_actor)
+	public class StatConfig
 	{
-		return;
-		GD.Print("Attempting to load external file [" + location + "]");
-		Script loaded_gdscript = (Script)GD.Load(location);
-
-		Node new_script_node = new Node();
-		new_script_node.SetScript(loaded_gdscript);
-
-		//new_script_node.Call("_Ready");
-		owning_actor.AddChild(new_script_node);
-		new_script_node._Ready();
-		new_script_node.SetProcess(true);
-		GD.Print("Done attaching external script [" + location + "] to actor [" + owning_actor.Name + "]");
+		public Dictionary<string, float> stats = new Dictionary<string, float>();
 	}
-}
-
-[Serializable]
-public class ActorConfig
-{
-	public Guid guid;
-	public string name = "???";
-	public string team = "player";
-	public char map_code = '?';
-	public float aesthetic_scale_factor = 1.0f;
-	public string idle_sprite_filename;
-	public string lives_sprite_filename;
-	public string pre_ko_sprite_filename = "";
-	public string ko_sprite_filename = "";
-	public string type = "actor";
-
-	public List<string> scripts;
-
-	public List<StateConfig> stateConfigs = new List<StateConfig>();
-	public StatConfig statConfig;
-}
-
-[Serializable]
-public class ScriptInfo
-{
-	public string name;
-}
-
-public class LoadSceneResult
-{
-	public Vector3 average_position_of_player_actors = Vector3.Zero;
-}
-
-[Serializable]
-public class SceneConfig
-{
-	public string name = null;
-	public List<string> basic_background_tracks = new List<string>();
-	public List<string> combat_background_tracks = new List<string>();
-	public string intro_text_scroll = null;
-	public string success_image = null;
-	public string failure_image = null;
-	public string subsequent_scene_file = null;
-}
-
-[Serializable]
-public class GameConfig
-{
-	public string name = null;
-	public string title_screen_background_image = null;
-	public string title_screen_logo_image = null;
-	public string initial_scene_file = null;
-	public string gameover_image = null;
-	public int initial_continue_count = 3;
-	public string cursor_image = null;
-}
-
-[Serializable]
-public class ModFileManifest
-{
-	public List<string> mod_files = new List<string>();
-
-	public List<string> Search(string pattern)
-	{
-		List<string> matchingStrings = new List<string>();
-		Regex regex = new Regex(pattern);
-
-		foreach (string str in mod_files)
-		{
-			if (regex.IsMatch(str))
-			{
-				matchingStrings.Add(str);
-			}
-		}
-
-		return matchingStrings;
-	}
-}
-
-//May move elsewhere
-public class TileDataLoadedEvent { }
-
-public class ActorDataLoadedEvent
-{
-
-}
-//change into different stat in hasStat
-public class StateConfig
-{
-	public string name;
-}
-
-//state configs for actors
-public class CombatConfig : StateConfig
-{
-	public int attackRange = 2;//number of grids
-	public int attackDamage = 10;
-	public float criticalHitRate = 0.3f;
-
-	public float attackWindup = 0.5f;//animation before attack
-	public float attackRecovery = 0.125f;//anim after attack
-	public float attackCooldown = 1f;
-
-    public CombatConfig() { }
-
-    public CombatConfig(string n, int ar, int damage, float critRate, float windup, float recovery, float cooldown)//temp constructor
-    {
-		name = n;
-		attackRange = ar;
-		attackDamage = damage;
-		criticalHitRate = critRate;
-		attackWindup = windup;
-		attackRecovery = recovery;
-		attackCooldown = cooldown;
-	}
-}
-
-public class StatConfig
-{
-	public Dictionary<string, float> stats = new Dictionary<string, float>();
-}
-
