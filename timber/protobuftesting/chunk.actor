@@ -1,0 +1,10 @@
+{
+  "guid":"5c86a7b4-dd60-4d9f-9f77-71467e4151d2",
+  "name": "Chunk",
+  "team": "enemy",
+  "map_code":"q",
+  "aesthetic_scale_factor":1.15,
+  "idle_sprite_filename": "chunk_idle.png",
+  "lives_icon_filename": "spot_lives.png",
+  "scripts": ["LogActorName"]
+}
