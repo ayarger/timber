@@ -26,13 +26,15 @@ public class LuaLoader : Node
 	CombatConfig enemyRangeCombatConfig = new CombatConfig("RangedCombatState", 3, 5, 0.3f, 0.75f, 0.125f, 1.5f);
 	CombatConfig playerCombatConfig = new CombatConfig("MeleeCombatState", 2, 20, 0.3f, 0.5f, 0.125f, 0.75f);
 	CombatConfig TowerRangeConfig = new CombatConfig("RangedCombatState", 4, 10, 0.3f, 0.5f, 0.125f, 0.75f);
-	StatConfig enemyStatConfig = new StatConfig();
+
+    StatConfig enemyStatConfig = new StatConfig();
 	StatConfig playerStatConfig = new StatConfig();
 
 	StateConfig idleState = new StateConfig() { name = "IdleState" };
 	StateConfig movementState = new StateConfig() { name = "MovementState" };
 
 	CombatConfig ConstructionState = new CombatConfig("ConstructionState", 1, 10, 0.5f, 0.5f, 0.125f, 1);
+
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
@@ -107,23 +109,32 @@ public class LuaLoader : Node
 				actor_info.stateConfigs.Add(playerCombatConfig);
 				actor_info.statConfig = playerStatConfig;
 				actor_info.stateConfigs.Add(ConstructionState);
+
+				string playerName = playerCombatConfig.name + ".CombatConfig";
+                ProtobufParser.SerializeCombatConfig(playerCombatConfig, playerName);
             }
-			else if (actor_info.team=="construction")
+            else if (actor_info.team=="construction")
 			{
 				actor_info.stateConfigs.Add(TowerRangeConfig);
 				actor_info.statConfig = playerStatConfig;
-			}
+
+                ProtobufParser.SerializeCombatConfig(TowerRangeConfig, "TowerRangeConfig.CombatConfig");
+            }
             else if(actor_info.name=="Chunk")
             {
 				actor_info.stateConfigs.Add(enemyMeleeCombatConfig);
 				actor_info.statConfig = enemyStatConfig;
+
+                ProtobufParser.SerializeCombatConfig(enemyMeleeCombatConfig, "enemyMeleeCombatConfig.CombatConfig");
             }
             else
             {
 				actor_info.stateConfigs.Add(enemyRangeCombatConfig);
 				actor_info.statConfig = enemyStatConfig;
-			}
-			actor_info.stateConfigs.Add(idleState);
+
+                ProtobufParser.SerializeCombatConfig(enemyRangeCombatConfig, "enemyRangeCombatConfig.CombatConfig");
+            }
+            actor_info.stateConfigs.Add(idleState);
 			actor_info.stateConfigs.Add(movementState);
 			
             map_code_to_actor_config[actor_info.map_code] = actor_info;

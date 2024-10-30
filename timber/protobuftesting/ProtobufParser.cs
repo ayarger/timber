@@ -97,6 +97,23 @@ public class ProtobufParser : Node
             };
             output = (T)(object)localConfig;
         }
+        else if (type == "CombatConfig")
+        {
+            var protoConfig = Google.Protobuf.Message.GameActorCombatConfig.Parser.ParseFrom(body);
+
+            CombatConfig localConfig = new CombatConfig
+            {
+                name = protoConfig.StateName,
+                attackRange = protoConfig.AttackRange,
+                attackDamage = protoConfig.AttackDamage,
+                criticalHitRate = protoConfig.CriticalHitRate,
+                attackWindup = protoConfig.AttackWindup,
+                attackRecovery = protoConfig.AttackRecovery,
+                attackCooldown = protoConfig.AttackCooldown
+            };
+
+            output = (T)(object)localConfig;
+        }
         else
         {
             var protoActor = Google.Protobuf.Message.SimpleString.Parser.ParseFrom(body);
@@ -107,6 +124,23 @@ public class ProtobufParser : Node
         return output;
     }
 
+
+    // Serialize 
+    public static void SerializeCombatConfig(CombatConfig config, string filename)
+    {
+        GameActorCombatConfig protoCombatConfig = new GameActorCombatConfig
+        {
+            StateName = config.name,
+            AttackRange = config.attackRange,
+            AttackDamage = config.attackDamage,
+            CriticalHitRate = config.criticalHitRate,
+            AttackWindup = config.attackWindup,
+            AttackRecovery = config.attackRecovery,
+            AttackCooldown = config.attackCooldown
+        };
+
+        BinaryToFile(protoCombatConfig.ToByteArray(), filename);
+    }
 
 
     // Check if we are grabbing a binary file off AWS
