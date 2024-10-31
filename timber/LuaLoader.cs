@@ -110,29 +110,23 @@ public class LuaLoader : Node
 				actor_info.statConfig = playerStatConfig;
 				actor_info.stateConfigs.Add(ConstructionState);
 
-				string playerName = playerCombatConfig.name + ".CombatConfig";
-                ProtobufParser.SerializeCombatConfig(playerCombatConfig, playerName);
+				// string playerName = playerCombatConfig.name + ".CombatConfig";
+				// ProtobufParser.SerializeCombatConfig(playerCombatConfig, playerName);
             }
             else if (actor_info.team=="construction")
 			{
 				actor_info.stateConfigs.Add(TowerRangeConfig);
 				actor_info.statConfig = playerStatConfig;
-
-                ProtobufParser.SerializeCombatConfig(TowerRangeConfig, "TowerRangeConfig.CombatConfig");
             }
             else if(actor_info.name=="Chunk")
             {
 				actor_info.stateConfigs.Add(enemyMeleeCombatConfig);
 				actor_info.statConfig = enemyStatConfig;
-
-                ProtobufParser.SerializeCombatConfig(enemyMeleeCombatConfig, "enemyMeleeCombatConfig.CombatConfig");
             }
             else
             {
 				actor_info.stateConfigs.Add(enemyRangeCombatConfig);
 				actor_info.statConfig = enemyStatConfig;
-
-                ProtobufParser.SerializeCombatConfig(enemyRangeCombatConfig, "enemyRangeCombatConfig.CombatConfig");
             }
             actor_info.stateConfigs.Add(idleState);
 			actor_info.stateConfigs.Add(movementState);
