@@ -33,55 +33,35 @@ public class RangedCombatState : CombatState
 		if (TargetActor != null && IsInstanceValid(TargetActor))//TODO check if actor is dead
 		{
 			Coord dest = Grid.ConvertToCoord(TargetActor.GlobalTranslation);
-			MovementState b = null;
-			if (manager.states.ContainsKey("MovementState"))
-			 	b = (manager.states["MovementState"] as MovementState);
-
-
-			if (attackable && !TestMovement.WithinRange(dest, actor, attackRange))
+			ChaseState cs = null;
+			if (manager.states.ContainsKey("ChaseState"))
 			{
-				if(b==null){
-					manager.DisableState("CombatState");
-					return;
-				}
+				cs = manager.states["ChaseState"] as ChaseState;
+			}
+
+
+			if (!TestMovement.WithinRange(dest, actor, attackRange))
+			{
 				ArborCoroutine.StopCoroutinesOnNode(this);
 				attacking = false;
 				attackable = true;
 				//check if there are closer target
-				foreach (var actors in GetAttackableActorList())
-				{
+				Actor newTarget = findEnemyInRange();
 
-					var actorInRange = actors as Actor;
-					if (actorInRange != null && actorInRange.GetNode<HasTeam>("HasTeam").team != actor.GetNode<HasTeam>("HasTeam").team)
-					{
-						Coord actorPos = Grid.ConvertToCoord(actorInRange.GlobalTranslation);
-						Coord cur = Grid.ConvertToCoord(actor.GlobalTranslation);
-						if ((cur - actorPos).Mag() < attackRange && (cur.x == actorPos.x || cur.z == actorPos.z))
-						{
-							TargetActor = actorInRange;
-							return;
-						}
-					}
+				if(newTarget != null){
+					TargetActor = newTarget;
 				}
-
-				if (b.waypoints.Count == 0)
+				else
 				{
-					ArborCoroutine.StopCoroutinesOnNode(b);
-					Coord coordDest = TestMovement.FindClosestTileInRange(Grid.ConvertToCoord(TargetActor.GlobalTranslation), actor, attackRange);
-					Vector3 vectorDest = new Vector3(coordDest.x * Grid.tileWidth, .1f, coordDest.z * Grid.tileWidth);
-					ArborCoroutine.StartCoroutine(TestMovement.PathFindAsync(actor.GlobalTranslation, vectorDest, (List<Vector3> a) =>
+					if(cs == null)
 					{
-						if (a.Count > 0)
-						{
-							manager.EnableState("MovementState");
-							b.waypoints = a;
-						}
-					}), b);
+						manager.DisableState("CombatState");
+					}
+
+					cs.TargetActor = TargetActor;
+					manager.EnableState("ChaseState");
 					manager.DisableState("CombatState");
-					return;
-
-
-                }
+				}
             }
             else if (attackable)
             {

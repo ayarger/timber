@@ -1,5 +1,7 @@
 
 
+using Godot;
+
 public abstract class CombatState : ActorState
 {
     // Declare member variables here. Examples:
@@ -27,6 +29,7 @@ public abstract class CombatState : ActorState
     {
         get { return "CombatState"; }
     }
+    
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -43,5 +46,26 @@ public abstract class CombatState : ActorState
         attackWindup = stateConfig.stateStats["attackWindup"];
         attackRecovery = stateConfig.stateStats["attackRecovery"];
         attackCooldown = stateConfig.stateStats["attackCooldown"];
+    }
+
+    public Actor findEnemyInRange()
+    {
+        Actor target = null;
+        foreach (var actors in GetAttackableActorList())
+        {
+            
+            var actorInRange = actors as Actor;
+            if (actorInRange != null && actorInRange.GetNode<HasTeam>("HasTeam").team != actor.GetNode<HasTeam>("HasTeam").team)
+            {
+                Coord actorPos = Grid.ConvertToCoord(actorInRange.GlobalTranslation);
+                Coord cur = Grid.ConvertToCoord(actor.GlobalTranslation);
+                if ((cur - actorPos).Mag() < attackRange)
+                {
+                    target = actorInRange;
+                    break;
+                }
+            }
+        }
+        return target;
     }
 }

@@ -26,7 +26,7 @@ public class LuaLoader : Node
 	StateConfig enemyMeleeCombatConfig = new StateConfig() { name = "MeleeCombatState", 
 		stateStats = { 
 			{ "attackRange", 1 }, 
-			{ "attackDamage", 10 }, 
+			{ "attackDamage", 20 }, 
 			{ "criticalHitRate", 0.5f }, 
 			{ "attackWindup", 0.5f }, 
 			{ "attackRecovery", 0.125f }, 
@@ -135,7 +135,8 @@ public class LuaLoader : Node
 			GD.Print("Loading actor file: " + actor_file);
 			yield return ArborResource.WaitFor(actor_file);
             ActorConfig actor_info = ArborResource.Get<ActorConfig>(actor_file);
-			
+			if(actor_info.stateConfigs.Count > 0)
+				GD.Print(actor_info.stateConfigs.Count);
 
 			//temporary
 			playerStatConfig.stats["health"] = 100;
@@ -144,32 +145,32 @@ public class LuaLoader : Node
 			
 			if (actor_info.team == "player")
             {
-				actor_info.stateConfigs.Add(playerCombatConfig);
+				//actor_info.stateConfigs.Add(playerCombatConfig);
 				actor_info.statConfig = playerStatConfig;
-				actor_info.stateConfigs.Add(ConstructionState);
-				actor_info.stateConfigs.Add(playerChaseState);
+				// actor_info.stateConfigs.Add(ConstructionState);
+				// actor_info.stateConfigs.Add(playerChaseState);
             }
 			else if (actor_info.team=="construction")
 			{
-				actor_info.stateConfigs.Add(TowerRangeConfig);
+				//actor_info.stateConfigs.Add(TowerRangeConfig);
 				actor_info.statConfig = playerStatConfig;
 			}
             else if(actor_info.name=="Chunk")
             {
-				actor_info.stateConfigs.Add(enemyMeleeCombatConfig);
-				actor_info.stateConfigs.Add(enemyMeleeChaseState);
+				// actor_info.stateConfigs.Add(enemyMeleeCombatConfig);
+				// actor_info.stateConfigs.Add(enemyMeleeChaseState);
 				actor_info.statConfig = enemyStatConfig;
 				
             }
             else
             {
-				actor_info.stateConfigs.Add(enemyRangeCombatConfig);
-				actor_info.stateConfigs.Add(enemyRangeChaseState);
+				// actor_info.stateConfigs.Add(enemyRangeCombatConfig);
+				// actor_info.stateConfigs.Add(enemyRangeChaseState);
 				actor_info.statConfig = enemyStatConfig;
 				ArborResource.Load<Texture>("images/cheese.png");
 			}
-			actor_info.stateConfigs.Add(idleState);
-			actor_info.stateConfigs.Add(movementState);
+			// actor_info.stateConfigs.Add(idleState);
+			// actor_info.stateConfigs.Add(movementState);
 			
             map_code_to_actor_config[actor_info.map_code] = actor_info;
         }

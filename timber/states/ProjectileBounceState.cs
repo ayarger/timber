@@ -19,7 +19,7 @@ public class ProjectileBounceState : ActorState//TODO collision body to chekc fo
     {
     }
 
-    float rotationSpeed = 5, horizontalSpeed = 10f, verticalSpeed = 1f, lifeTime = 2f, timer = 0, bounceDecay = 0.8f, horizontalAcceleration = -3f;
+    float rotationSpeed = 5, horizontalSpeed = 10f, verticalSpeed = 1f, lifeTime = 2f, timer = 0, bounceDecay = 0.8f, horizontalAcceleration = -4f;
     float gravity = 60f;
     Vector3 direction = Vector3.Zero;
     bool isActive = true, bounceOn = true;
@@ -54,7 +54,6 @@ public class ProjectileBounceState : ActorState//TODO collision body to chekc fo
         }
         if(horizontalSpeed > 0)
             horizontalSpeed = horizontalSpeed + horizontalAcceleration * delta;
-
     }
 
     public void setDirection(Vector3 d, float directionalSpeed, float Vi)

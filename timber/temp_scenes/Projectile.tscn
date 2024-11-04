@@ -140,7 +140,6 @@ shader_param/texture_albedo = ExtResource( 6 )
 script = ExtResource( 8 )
 
 [node name="RigidBody" type="RigidBody" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
 gravity_scale = 0.0
 contacts_reported = 5
 contact_monitor = true

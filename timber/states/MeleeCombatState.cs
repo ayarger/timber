@@ -57,30 +57,21 @@ public class MeleeCombatState : CombatState
 				attacking = false;
 				attackable = true;
 				//check if there are closer target
-				foreach (var actors in GetAttackableActorList())
-				{
-
-					var actorInRange = actors as Actor;
-					if (actorInRange != null && actorInRange.GetNode<HasTeam>("HasTeam").team != actor.GetNode<HasTeam>("HasTeam").team)
-					{
-						Coord actorPos = Grid.ConvertToCoord(actorInRange.GlobalTranslation);
-						Coord cur = Grid.ConvertToCoord(actor.GlobalTranslation);
-						if ((cur - actorPos).Mag() < attackRange)
-						{
-							TargetActor = actorInRange;
-							return;
-						}
-					}
+				Actor newTarget = findEnemyInRange();
+				if(newTarget != null){
+					TargetActor = newTarget;
 				}
-
-				if(cs == null)
+				else
 				{
+					if(cs == null)
+					{
+						manager.DisableState("CombatState");
+					}
+
+					cs.TargetActor = TargetActor;
+					manager.EnableState("ChaseState");
 					manager.DisableState("CombatState");
 				}
-
-                cs.TargetActor = TargetActor;
-                manager.EnableState("ChaseState");
-                manager.DisableState("CombatState");
             }
             else if (attackable)
             {
