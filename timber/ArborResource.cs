@@ -21,11 +21,15 @@ public class ArborResource : Node
 
     static ArborResource instance;
 
+    static Stopwatch globalStopwatch;
+
     public override void _Ready()
     {
         base._Ready();
 
         instance = this;
+
+        globalStopwatch = new Stopwatch();
 
         if (OS.GetName() == "Web" || OS.GetName() == "HTML5")
         {
@@ -83,6 +87,16 @@ public class ArborResource : Node
         }
 
         GD.Print("retrieved [" + key + "]");
+
+        globalStopwatch.Stop();
+        TimeSpan elapsedTime = globalStopwatch.Elapsed;
+
+        GD.Print("LATENCY for " + resource + " : --------------------");
+        GD.Print($"Latency Elapsed Time: {elapsedTime.TotalMilliseconds} ms");
+        GD.Print("-----------------------------");
+
+        globalStopwatch.Reset();
+
 
         if (type == "Texture")
         {
@@ -198,23 +212,20 @@ public class ArborResource : Node
             Stopwatch stopwatch2 = new Stopwatch();
             stopwatch1.Start();
             stopwatch2.Start();
-            string binaryOrNot = "";
 
             if (extension == ".bin")
             {
-                binaryOrNot = "binary";
                 if(type == "ActorConfig") { 
                     var parsedData = ProtobufParser.ParseBinary<ActorConfig>(body, type);
                     stopwatch1.Stop();
                     SetResource(key, parsedData);
-                    stopwatch2.Stop();
+                    // JUSTIN: Set resource only takes time for JSON implementation, binary does not take time
                 }
                 else if(type == "GameConfig")
                 {
                     var parsedData = ProtobufParser.ParseBinary<GameConfig>(body, type);
                     stopwatch1.Stop();
                     SetResource(key, parsedData);
-                    stopwatch2.Stop();
                 }
                 else if(type == "ModFileManifest")
                 {
@@ -224,16 +235,15 @@ public class ArborResource : Node
                     stopwatch2.Stop();
                 }
 
-                TimeSpan elapsedTime = stopwatch1.Elapsed;
+                TimeSpan elapsedTime1 = stopwatch1.Elapsed;
                 TimeSpan elapsedTime2 = stopwatch2.Elapsed;
-                GD.Print("TIME TAKEN For " + binaryOrNot + " " + type + ": -----------------------");
-                GD.Print($"Elapsed Time: {elapsedTime.TotalMilliseconds} ms");
-                GD.Print($"Elapsed Time Function: {elapsedTime2.TotalMilliseconds} ms");
+                GD.Print("Deserialization time for " + type + " binary  -----------------------");
+                GD.Print($"Protobuf Parser time: {elapsedTime1.TotalMilliseconds} ms");
+                GD.Print($"Function Time: {elapsedTime2.TotalMilliseconds} ms");
                 GD.Print("--------------------------------------------");
             }
             else
             {
-                binaryOrNot = "string";
                 string s = Encoding.UTF8.GetString(body);
                 JsonSerializerSettings settings = new JsonSerializerSettings();
 
@@ -245,9 +255,9 @@ public class ArborResource : Node
 
                 TimeSpan elapsedTime1 = stopwatch1.Elapsed;
                 TimeSpan elapsedTime2 = stopwatch2.Elapsed;
-                GD.Print("TIME TAKEN For " + binaryOrNot + " " + type + ": -----------------------");
-                GD.Print($"Elapsed Time Parsing: {elapsedTime1.TotalMilliseconds} ms");
-                GD.Print($"Elapsed Time Function: {elapsedTime2.TotalMilliseconds} ms");
+                GD.Print("Deserialization time for " + type + " (string): --------------------");
+                GD.Print($"Parsing Time: {elapsedTime1.TotalMilliseconds} ms (Doesn't do anything for JSON)");
+                GD.Print($"Function Time: {elapsedTime2.TotalMilliseconds} ms");
                 GD.Print("--------------------------------------------");
 
             }
@@ -301,6 +311,9 @@ public class ArborResource : Node
             typeof(T).Name,              new_request,
             null
         };
+
+        GD.Print("Global stopwatch started: ");
+        globalStopwatch.Start();
 
         new_request.Connect("request_completed", instance, nameof(OnRequestCompleted), extra_params);
         string web_url = @"https://arborinteractive.com/squirrel_rts/mods/" + GetCurrentModID() + @"/resources/" + resource;

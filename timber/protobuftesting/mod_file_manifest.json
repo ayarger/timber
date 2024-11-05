@@ -29,6 +29,11 @@
     "scenes/level1.layout",
     "scripts/LogActorName.gd",
     "sounds/240622__karma-ron__image31_s-ambient-pad.wav",
-    "sounds/vocal_gameover.wav"
+    "sounds/vocal_gameover.wav",
+	
+	"configs/ConstructionState.CombatConfig.bin",
+	"configs/enemyMeleeCombatConfig.CombatConfig.bin",
+	"configs/enemyRangeCombatConfig.CombatConfig.bin"
+	"configs/MeleeCombatState.CombatConfig.bin"
   ]
 }

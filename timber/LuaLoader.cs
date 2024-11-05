@@ -55,12 +55,12 @@ public class LuaLoader : Node
 	{
 		loading_scene = true;
 
-		// JUSTIN: Test to work with binries
-		ArborResource.Load<GameConfig>("game.config.bin");
+        /* Load game config */
+        // JUSTIN: Option to load binary
+        ArborResource.Load<GameConfig>("game.config.bin");
 		yield return ArborResource.WaitFor("game.config.bin");
 		GameConfig game_config = ArborResource.Get<GameConfig>("game.config.bin");
 
-		/* Load game config */
 		//ArborResource.Load<GameConfig>("game.config");
 		//yield return ArborResource.WaitFor("game.config");
 		//GameConfig game_config = ArborResource.Get<GameConfig>("game.config");
@@ -74,14 +74,14 @@ public class LuaLoader : Node
 	Dictionary<char, ActorConfig> map_code_to_actor_config = new Dictionary<char, ActorConfig>();
     IEnumerator LoadActorConfigs()
     {
-		// JUSTIN: Test to work with binaries
-		ArborResource.Load<ModFileManifest>("binary_mod_file_manifest.bin");
-		yield return ArborResource.WaitFor("binary_mod_file_manifest.bin");
-		ModFileManifest manifest = ArborResource.Get<ModFileManifest>("binary_mod_file_manifest.bin");
+		// JUSTIN: Option to load binary
+		//ArborResource.Load<ModFileManifest>("binary_mod_file_manifest.bin");
+		//yield return ArborResource.WaitFor("binary_mod_file_manifest.bin");
+		//ModFileManifest manifest = ArborResource.Get<ModFileManifest>("binary_mod_file_manifest.bin");
 
-		//ArborResource.Load<ModFileManifest>("mod_file_manifest.json");
-		//yield return ArborResource.WaitFor("mod_file_manifest.json");
-		//ModFileManifest manifest = ArborResource.Get<ModFileManifest>("mod_file_manifest.json");
+		ArborResource.Load<ModFileManifest>("mod_file_manifest.json");
+		yield return ArborResource.WaitFor("mod_file_manifest.json");
+		ModFileManifest manifest = ArborResource.Get<ModFileManifest>("mod_file_manifest.json");
 
 		List<string> actor_files = manifest.Search("actor_definitions/*");
 
@@ -109,9 +109,6 @@ public class LuaLoader : Node
 				actor_info.stateConfigs.Add(playerCombatConfig);
 				actor_info.statConfig = playerStatConfig;
 				actor_info.stateConfigs.Add(ConstructionState);
-
-				// string playerName = playerCombatConfig.name + ".CombatConfig";
-				// ProtobufParser.SerializeCombatConfig(playerCombatConfig, playerName);
             }
             else if (actor_info.team=="construction")
 			{
