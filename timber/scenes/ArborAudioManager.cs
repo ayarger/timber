@@ -51,9 +51,9 @@ public class ArborAudioManager : Node
     static AudioStreamPlayer GetAvailableSFXAudioPlayer()
     {
         /* Find an audio player that is finished playing */
-        foreach(AudioStreamPlayer audio_player in sfx_audio_players)
+        foreach (AudioStreamPlayer audio_player in sfx_audio_players)
         {
-            if(!audio_player.Playing)
+            if (!audio_player.Playing)
                 return audio_player;
         }
 
@@ -76,7 +76,7 @@ public class ArborAudioManager : Node
         return sfx_audio_player;
     }
 
-    public static AudioStreamPlayer RequestBGM(AudioStream stream, bool start_loud=false,  bool loop=true)
+    public static AudioStreamPlayer RequestBGM(AudioStream stream, bool start_loud = false, bool loop = true)
     {
         AudioStreamPlayer current_bgm_player = GetCurrentBGMPlayer();
         AudioStreamPlayer other_bgm_player = GetOtherBGMPlayer();
@@ -87,7 +87,7 @@ public class ArborAudioManager : Node
         return current_bgm_player;
     }
 
-    static IEnumerator DoRequestBGM(AudioStreamPlayer current_bgm_player, AudioStreamPlayer other_bgm_player, AudioStream stream, bool start_loud, bool loop) 
+    static IEnumerator DoRequestBGM(AudioStreamPlayer current_bgm_player, AudioStreamPlayer other_bgm_player, AudioStream stream, bool start_loud, bool loop)
     {
         ArborCoroutine.StartCoroutine(FadeOut(other_bgm_player), instance);
 
@@ -97,7 +97,7 @@ public class ArborAudioManager : Node
 
     }
 
-    static IEnumerator FadeIn(AudioStreamPlayer player, AudioStream stream, bool start_loud=false, bool loop=true)
+    static IEnumerator FadeIn(AudioStreamPlayer player, AudioStream stream, bool start_loud = false, bool loop = true)
     {
         if (loop)
         {
@@ -113,11 +113,11 @@ public class ArborAudioManager : Node
 
         player.Stop();
         player.Stream = stream;
-        if(!start_loud)
+        if (!start_loud)
             player.VolumeDb = min_volume;
         player.Play();
 
-        if(!start_loud)
+        if (!start_loud)
         {
             void DoIncreaseVolume(float progress)
             {

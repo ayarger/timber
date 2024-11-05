@@ -98,7 +98,15 @@ public class StateManager : Node
 			{
 				if (!states[state].inclusiveStates.Contains(aState.name))
 				{
-					foreach (var s in activeStates) s.Stop();
+					foreach (var s in activeStates) 
+					{
+						s.Stop();
+						if (s.GetType().BaseType == typeof(CombatState))
+						{
+							EventBus.Publish(new CombatStateEnabledEvent(false, actor));
+						}
+					}
+					
 					clearStates = true;
 					break;
 				}
@@ -108,7 +116,13 @@ public class StateManager : Node
 				activeStates.Clear();
 			}
 			activeStates.Add(states[state]);
+
 			states[state].Start();
+
+			if (states[state].GetType().BaseType == typeof(CombatState))
+			{
+				EventBus.Publish(new CombatStateEnabledEvent(true, actor));
+			}
 		}
 		
 	}
@@ -118,7 +132,13 @@ public class StateManager : Node
 		if (states.ContainsKey(state) && activeStates.Contains(states[state]))
 		{
 			activeStates.Remove(states[state]);
+
 			states[state].Stop();
+
+			if (states[state].GetType().BaseType == typeof(CombatState))
+			{
+				EventBus.Publish(new CombatStateEnabledEvent(false, actor));
+			}
 		}
 
 	}
