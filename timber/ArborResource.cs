@@ -21,15 +21,13 @@ public class ArborResource : Node
 
     static ArborResource instance;
 
-    static Stopwatch globalStopwatch;
+    static Dictionary<string, Stopwatch> stopwatchList = new Dictionary<string, Stopwatch>();
 
     public override void _Ready()
     {
         base._Ready();
 
         instance = this;
-
-        globalStopwatch = new Stopwatch();
 
         if (OS.GetName() == "Web" || OS.GetName() == "HTML5")
         {
@@ -88,15 +86,12 @@ public class ArborResource : Node
 
         GD.Print("retrieved [" + key + "]");
 
-        globalStopwatch.Stop();
-        TimeSpan elapsedTime = globalStopwatch.Elapsed;
 
+        stopwatchList[key].Stop();
         GD.Print("LATENCY for " + resource + " : --------------------");
-        GD.Print($"Latency Elapsed Time: {elapsedTime.TotalMilliseconds} ms");
+        GD.Print($"Latency Elapsed Time: {stopwatchList[key].ElapsedMilliseconds} ms");
         GD.Print("-----------------------------");
-
-        globalStopwatch.Reset();
-
+        stopwatchList.Remove(key);
 
         if (type == "Texture")
         {
@@ -308,12 +303,14 @@ public class ArborResource : Node
         Godot.Collections.Array extra_params = new Godot.Collections.Array
         {
             resource,
-            typeof(T).Name,              new_request,
+            typeof(T).Name,              
+            new_request,
             null
         };
 
-        GD.Print("Global stopwatch started: ");
-        globalStopwatch.Start();
+        Stopwatch sw = Stopwatch.StartNew();
+        stopwatchList.Add(resource, sw);
+        GD.Print("Added stopwatch to key: " + resource);
 
         new_request.Connect("request_completed", instance, nameof(OnRequestCompleted), extra_params);
         string web_url = @"https://arborinteractive.com/squirrel_rts/mods/" + GetCurrentModID() + @"/resources/" + resource;
