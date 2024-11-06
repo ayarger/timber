@@ -40,7 +40,7 @@ public class Actor : Spatial
 	public Spatial view { get; protected set; } // Good for scaling operations.
 	protected MeshInstance character_view;
 	protected MeshInstance character_view_shadow;
-	protected SpatialMaterial character_material;
+	protected ShaderMaterial character_material;
 	protected MeshInstance shadow_view;
 	protected StateManager state_manager;
    	protected RigidBody rb;
@@ -53,6 +53,8 @@ public class Actor : Spatial
 	public Vector3 initial_view_scale { get; protected set; } = Vector3.One;
 	public Vector3 initial_rotation { get; protected set; } = Vector3.Zero;
 	public TileData currentTile = null;
+
+	public Dictionary<string, Texture> sprite_textures = new Dictionary<string, Texture>();
 
 	protected float desired_scale_x = 1.0f;
 	public float GetDesiredScaleX() { return desired_scale_x; }
@@ -71,6 +73,7 @@ public class Actor : Spatial
 		state_manager = (StateManager)GetNode("StateManager");
 		character_view = (MeshInstance)GetNode("view/mesh");
 		character_view_shadow = (MeshInstance)GetNode("view/shadowMesh");
+		character_material = (ShaderMaterial)character_view.GetSurfaceMaterial(0).Duplicate();
 		shadow_view = (MeshInstance)GetNode("shadow");
 		selectable = GetNode<IsSelectable>("IsSelectable");
 		rb = GetNode<RigidBody>("RigidBody");
@@ -100,6 +103,16 @@ public class Actor : Spatial
 		if (config.ko_sprite_filename != null && config.ko_sprite_filename != ""){
 			ArborResource.Load<Texture>("images/" + config.ko_sprite_filename);
 			actorKO = true;
+		}
+
+		foreach(var sprites in config.sprite_filenames){
+			ArborResource.Load<Texture>("images/" + sprites);
+			//store the texture in the dictionary
+			sprite_textures[sprites] = ArborResource.Get<Texture>("images/" + sprites);
+		}
+		if(config.name == "Spot"){
+			ArborResource.Load<Texture>("images/" + "spot_step_left.png");
+			sprite_textures["spot_step_left.png"] = ArborResource.Get<Texture>("images/" + "spot_step_left.png");
 		}
 
 		ArborResource.UseResource<Texture>(
@@ -308,6 +321,12 @@ public class Actor : Spatial
         }
 
         QueueFree();
+	}
+
+	public void SetActorTexture(string texture_name){
+		Texture tex = sprite_textures[texture_name];
+		character_material.SetShaderParam("texture_albedo", tex);
+		character_view.SetSurfaceMaterial(0, character_material);
 	}
 
    public void UpdateActorDict()

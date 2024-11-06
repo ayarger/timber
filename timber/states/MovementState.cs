@@ -15,6 +15,8 @@ public class MovementState : ActorState
         get { return "MovementState"; }
     }
     public List<Vector3> waypoints = new List<Vector3>();
+
+    List<Texture> movementTextures = new List<Texture>();
     float mvmSpeed = 4f; //Pull from HasStats
 
     // Called when the node enters the scene tree for the first time.
@@ -98,6 +100,7 @@ public class MovementState : ActorState
         const float rot_frequency = 10f;
         const float rot_amplitude = 0.1f;
         actor.view.Rotation = actor.initial_rotation + new Vector3(0, 0, rot_amplitude * Mathf.Sin(timer * rot_frequency));
+        
 
         /* Position */
         const float pos_amplitude = 0.5f;

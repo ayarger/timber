@@ -22,64 +22,19 @@ public class LuaLoader : Node
 	static LuaLoader instance;
 
 
-	//TEMP fake json
-	StateConfig enemyMeleeCombatConfig = new StateConfig() { name = "MeleeCombatState", 
-		stateStats = { 
-			{ "attackRange", 1 }, 
-			{ "attackDamage", 20 }, 
-			{ "criticalHitRate", 0.5f }, 
-			{ "attackWindup", 0.5f }, 
-			{ "attackRecovery", 0.125f }, 
-			{ "attackCooldown", 1 } } };
-	StateConfig enemyRangeCombatConfig = new StateConfig() { name = "RangedCombatState",
-		stateStats = {
-			{ "attackRange", 3 },
-			{ "attackDamage", 5 },
-			{ "criticalHitRate", 0.3f },
-			{ "attackWindup", 0.75f },
-			{ "attackRecovery", 0.125f },
-			{ "attackCooldown", 1.5f } } };
-	StateConfig playerCombatConfig = new StateConfig() { name = "MeleeCombatState",
-		stateStats = {
-			{ "attackRange", 2 },
-			{ "attackDamage", 20 },
-			{ "criticalHitRate", 0.3f },
-			{ "attackWindup", 0.5f },
-			{ "attackRecovery", 0.125f },
-			{ "attackCooldown", 0.75f } } };
-	StateConfig TowerRangeConfig = new StateConfig() { name = "RangedCombatState",
-		stateStats = {
-			{ "attackRange", 4 },
-			{ "attackDamage", 10 },
-			{ "criticalHitRate", 0.3f },
-			{ "attackWindup", 0.5f },
-			{ "attackRecovery", 0.125f },
-			{ "attackCooldown", 0.75f } } };
-
-	StateConfig enemyMeleeChaseState = new StateConfig() { name = "ChaseState",
-		stateStats = {
-			{ "attackRange", 1 }}};
-	StateConfig enemyRangeChaseState = new StateConfig() { name = "ChaseState",
-		stateStats = {
-			{ "attackRange", 3 }}};
-	StateConfig playerChaseState = new StateConfig() { name = "ChaseState",
-		stateStats = {
-			{ "attackRange", 2 }}};
+	//TEMP fake json example
+	// StateConfig enemyMeleeCombatConfig = new StateConfig() { name = "MeleeCombatState", 
+	// 	stateStats = { 
+	// 		{ "attackRange", 1 }, 
+	// 		{ "attackDamage", 20 }, 
+	// 		{ "criticalHitRate", 0.5f }, 
+	// 		{ "attackWindup", 0.5f }, 
+	// 		{ "attackRecovery", 0.125f }, 
+	// 		{ "attackCooldown", 1 } } };
 
 	StatConfig enemyStatConfig = new StatConfig();
 	StatConfig playerStatConfig = new StatConfig();
 
-	StateConfig idleState = new StateConfig() { name = "IdleState" };
-	StateConfig movementState = new StateConfig() { name = "MovementState" };
-
-	StateConfig ConstructionState = new StateConfig() { name = "ConstructionState",
-		stateStats = {
-			{ "attackRange", 1 },
-			{ "attackDamage", 10 },
-			{ "criticalHitRate", 0.5f },
-			{ "attackWindup", 0.5f },
-			{ "attackRecovery", 0.125f },
-			{ "attackCooldown", 1 } } };
 	
 
 	// Called when the node enters the scene tree for the first time.
@@ -147,30 +102,21 @@ public class LuaLoader : Node
             {
 				//actor_info.stateConfigs.Add(playerCombatConfig);
 				actor_info.statConfig = playerStatConfig;
-				// actor_info.stateConfigs.Add(ConstructionState);
-				// actor_info.stateConfigs.Add(playerChaseState);
             }
 			else if (actor_info.team=="construction")
 			{
-				//actor_info.stateConfigs.Add(TowerRangeConfig);
 				actor_info.statConfig = playerStatConfig;
 			}
             else if(actor_info.name=="Chunk")
             {
-				// actor_info.stateConfigs.Add(enemyMeleeCombatConfig);
-				// actor_info.stateConfigs.Add(enemyMeleeChaseState);
 				actor_info.statConfig = enemyStatConfig;
 				
             }
             else
             {
-				// actor_info.stateConfigs.Add(enemyRangeCombatConfig);
-				// actor_info.stateConfigs.Add(enemyRangeChaseState);
 				actor_info.statConfig = enemyStatConfig;
 				ArborResource.Load<Texture>("images/cheese.png");
 			}
-			// actor_info.stateConfigs.Add(idleState);
-			// actor_info.stateConfigs.Add(movementState);
 			
             map_code_to_actor_config[actor_info.map_code] = actor_info;
         }
@@ -396,6 +342,8 @@ public class ActorConfig
 	public string pre_ko_sprite_filename = "";
 	public string ko_sprite_filename = "";
 	public string type = "actor";
+
+	public List<string> sprite_filenames = new List<string>();
 
 	public List<string> scripts;
 
