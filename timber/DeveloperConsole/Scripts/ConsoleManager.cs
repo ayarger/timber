@@ -5,6 +5,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 
+public class EditModeEvent
+{
+    public bool activated;
+    public EditModeEvent(bool _activated)
+    {
+        activated = _activated;
+    }
+}
+
 public class ConsoleManager : Control
 {
     [Export]
@@ -23,8 +32,14 @@ public class ConsoleManager : Control
     [Export]
     // this is configured through actor.cs when actors were loaded into the scene tree
     public Dictionary<string, Actor> ActorDict = new Dictionary<string, Actor>();
-    //autoComplete multiple matches
-    private List<string> matchingCommands = new List<string>();
+
+    [Export]
+    ConsoleCommand curr_match;
+
+    [Export]
+    List<string> matchingCommands = new List<string>();
+
+
     private int autocompleteIndex = -1;
     private string baseInput = "";
 
@@ -34,17 +49,27 @@ public class ConsoleManager : Control
         consoleInput = GetNode<LineEdit>("../ConsolePanel/Input");
         consoleOutput = GetNode<TextEdit>("../ConsolePanel/Output");
         consoleInput.Connect("text_entered", this, nameof(OnCommandEntered));
-        //consoleInput.Connect("text_changed", this, nameof(OnSuggestionSelected));
+        consoleInput.Connect("text_changed", this, nameof(OnSuggestionSelected));
         //GetAllCommands();
         //hoInstantiateCommands();
         LoadCommands("DeveloperConsole/Commands/");
+        GD.Print(commandList);
+
         // make sure the console is accessible when the game is on pause
         // TODO Pause cases
         //PauseMode = PauseModeEnum.Process;
         //consolePanel.PauseMode = PauseModeEnum.Process;
+        curr_match = commandList.FirstOrDefault(cmd => cmd.CommandWord.StartsWith(""));
+        foreach (string arg in curr_match.ValidArgs())
+        {
+            consoleOutput.Text += $"{curr_match.CommandWord} {arg}\n";
+        }
     }
 
-    //TODO iterate through the folder to find all command.tscn
+    /// <summary>
+    /// Load all commands under DeveloperConsole/Commands
+    /// </summary>
+    /// <param name="folderPath"></param>
     public void LoadCommands(string folderPath)
     {
         var systemFolderPath = ProjectSettings.GlobalizePath(folderPath);
@@ -76,6 +101,10 @@ public class ConsoleManager : Control
 
     }
 
+    /// <summary>
+    /// Input control for console panel toggle. Supports fetching last command entered and autocompletion 
+    /// </summary>
+    /// <param name="event"></param>
     public override void _Input(InputEvent @event)
     {
         // Toggle console panel visibility on pressing [`]
@@ -83,13 +112,14 @@ public class ConsoleManager : Control
         {
             if (eventKey.Scancode == 96)
             {
-                GD.Print("console toggle");
+                GetTree().SetInputAsHandled();
                 consolePanel.Visible = !consolePanel.Visible;
+                //Publish editMode event
+                GD.Print($"EditModeOn:{consolePanel.Visible}");
+                EventBus.Publish(new EditModeEvent(consolePanel.Visible));
                 //automatically focus on the lineEdit when console is visible
                 if (consolePanel.Visible) consoleInput.GrabFocus();
-                // Pause the game while accessing the command console
-                // TODO some of the functionality should remain accessible
-                //GetTree().Paused = consolePanel.Visible;
+
             }
 
             // fetch last command entered
@@ -97,28 +127,23 @@ public class ConsoleManager : Control
             {
                 consoleInput.Text = lastCommand;
                 consoleInput.GrabFocus();
-                consoleInput.CaretPosition = lastCommand.Length;
-                GD.Print(consoleInput.CaretPosition);
+                consoleInput.CaretPosition = consoleInput.Text.Length;
+                //GD.Print($" consoleInput Length: {consoleInput.Text.Length} caret pos:{consoleInput.CaretPosition}");
             }
 
             // autocompletion
             if (eventKey.Scancode == (uint)KeyList.Tab && consolePanel.Visible)
             {
-                consoleInput.Text = consoleOutput.Text;
+                consoleInput.Text = curr_match.CommandWord;
+                if (matchingCommands.Count > 0)
+                {
+                    consoleInput.Text += $" {matchingCommands[0]}";
+                    consoleInput.GrabFocus();
+                }
                 consoleInput.GrabFocus();
-                consoleInput.CaretPosition = consoleInput.Text.Length;
+                //consoleInput.CaretPosition = consoleInput.Text.Length;
             }
         }
-    }
-
-    private void GetAllCommands()
-    {
-        commands.Add("stat");
-        commands.Add("currency");
-        commands.Add("help");
-        commands.Add("random");
-        commands.Add("test");
-        commands.Add("show");
     }
 
     private void OnCommandEntered(string input)
@@ -134,161 +159,101 @@ public class ConsoleManager : Control
         ProcessCommand(input);
     }
 
+    //TODO Show auto complete suggestion in a different window
     private void OnSuggestionSelected(string inputText)
     {
-        string match = commands.FirstOrDefault(cmd => cmd.StartsWith(inputText));
-        if (!string.IsNullOrEmpty(match))
+        string[] input_string = inputText.Split(' ');
+        string input_command = input_string[0];
+        string[] curr_args = new string[input_string.Length - 1];
+        Array.Copy(input_string, 1, curr_args, 0, input_string.Length - 1);
+        // search for matching command word
+        curr_match = commandList.FirstOrDefault(cmd => cmd.CommandWord.StartsWith(input_command));
+
+
+        // serach for matching arguments if curr_args is not empty
+        if (curr_args.Length > 0)
         {
-            consoleOutput.Text = $"{match}\n";
+            // GD.Print($"curr match in : {curr_match.CommandWord}\n");
+            // GD.Print($"curr args: {curr_args[0]}\n");
+            matchingCommands = curr_match.FindMatchingCommands(curr_args);
+            foreach (string match in matchingCommands)
+            {
+                //GD.Print("match found");
+                consoleOutput.Text = $"{curr_match.CommandWord} {match}";
+                //show actor names if curr_match uses actor info after mathcing args found
+                if (curr_match.NeedActroInfo)
+                {
+                    ShowActors();
+                }
+            }
         }
     }
 
-    public void ProcessCommand (string input)
+    public void ProcessCommand(string input)
     {
-        if(input.ToLower() == "help")
+        if (input.ToLower() == "help")
         {
             ShowHelp();
             return;
         }
 
         string[] input_string = input.Split(' ');
-        consoleOutput.Text += $"Command: {input}\n";
+        consoleOutput.Text = $"Command: {input}\n{consoleOutput.Text}";
         string input_command = input_string[0]; //parse command
-        string[] args = new string[input_string.Length - 1];// the rest are arguments
-        Array.Copy(input_string, 1, args, 0, input_string.Length - 1);
-        GD.Print(args);
-        //starts comparing input to commandList
-        foreach(var command in commandList)
+        string[] curr_args = new string[input_string.Length - 1];// the rest are arguments
+        Array.Copy(input_string, 1, curr_args, 0, input_string.Length - 1);
+        ConsoleCommand curr_command = null;
+
+        //TODO logic refactor
+
+
+        foreach (var command in commandList)
         {
             if (input_command.Equals(command.CommandWord, StringComparison.OrdinalIgnoreCase))
             {
-                consoleOutput.Text = command.Process(args)
-                    ? $"{command.CommandOutput}\n {consoleOutput.Text}"
-                    : $"invalid arguments\n {consoleOutput.Text}";
-                return;
+                curr_command = command;
+                break;
             }
+
         }
-        consoleOutput.Text = $"invalid command\n {consoleOutput.Text}";
-    }
 
-    //TODO: create a function that resize the output box based on output text
-
-    void ParseCommand(string input)
-    {
-        string[] inputString = input.Split(' ');
-        consoleOutput.Text += $"Command: {input}\n";
-
-        string command = inputString[0]; //parse command
-        string[] args = new string[inputString.Length - 1];// the rest are arguments
-        Array.Copy(inputString, 1, args, 0, inputString.Length - 1);
-
-        //TODO refacotr stat releated commands(start with name? stat? operations)
-        switch (command)
+        if (curr_command != null)
         {
-            case "help":
-                if (args.Length == 0)
-                {
-                    ShowHelp();
-                }
-                break;
 
-            case "stat":
-                if (args.Length > 2) {
-                    //Get actor
-                    curr_actor = GetParent().GetParent().GetParent().GetParent().GetNode<Spatial>($"LuaLoader/{args[1]}");
-                    GD.Print(args);
-                }
+            if (curr_command.Process(curr_args))
+            {
+                //update consoleOutput based on process result
+                consoleOutput.Text = $"{curr_command.CommandOutput}\n{consoleOutput.Text}";
+            }
 
-                if (curr_actor != null)
-                {
-                    //Get specific stat
-                    Stat curr_stat = curr_actor.GetNode<HasStats>("HasStats").GetStat(args[2]);
-
-                    if (args.Length == 3)
-                    {
-                        consoleOutput.Text += $"{args[1]} {curr_stat.name}: {curr_stat.currVal}";
-                    }
-                    if (args.Length == 4)
-                    {
-                        int amount = int.Parse(args[3]);
-                        switch (args[0])
-                        {
-                            case "increse":
-                                curr_stat.IncreaseCurrentValue(amount);
-                                consoleOutput.Text += $"{args[1]} {args[2]} changed to {curr_stat.currVal}";
-                                break;
-                            case "decrease":
-                                curr_stat.DecreaseCurrentValue(amount);
-                                consoleOutput.Text += $"{args[1]} {args[2]} changed to {curr_stat.currVal}";
-                                break;
-                            case "change":
-                                curr_stat.SetVal(amount);
-                                consoleOutput.Text += $"{args[1]} {args[2]} changed to {curr_stat.currVal}";
-                                break;
-                            case "max":
-                                curr_stat.SetMaxVal(amount);
-                                consoleOutput.Text = $"{args[1]} max {args[2]} set to {amount}";
-                                break;
-                            case "create":
-                                curr_actor.GetNode<HasStats>("HasStats").AddStat(args[2],0,100,amount,false);
-                                curr_stat = curr_actor.GetNode<HasStats>("HasStats").GetStat(args[2]);
-                                consoleOutput.Text = $"{args[1]} {args[2]} created. (current value: {curr_stat.currVal})";
-                                break;
-                        }
-                        
-                    }
-                }
-                break;
-            
-            case "currency":
-                if (args.Length == 1)
-                {
-                    string arg = args[0].ToLower();
-                    switch (arg)
-                    {
-                        case "checkamount":
-                            consoleOutput.Text = $"current currency: {TempCurrencyManager.GetCurrencyAmount()}";
-                            break;
-                        default:
-                            consoleOutput.Text = "invalid arguments";
-                            break;
-                    }
-                }
-                else if (args.Length >= 2)
-                {
-                    string arg = args[0].ToLower();
-                    int amount = args[1].ToInt();
-                    if (args.Length == 2)
-                    {
-                        switch (arg)
-                        {
-                            case "increase":
-                                TempCurrencyManager.IncreaseMoney(amount);
-                                break;
-                            case "decrease":
-                                TempCurrencyManager.DecreaseMoney(amount);
-                                break;
-                            case "change":
-                                TempCurrencyManager.ChangeMoney(amount);
-                                break;
-                        }
-                    }
-                }
-                break;
-
-            case "random":
-                break;
-
-            default:
-                consoleOutput.Text = "Invalid command";
-                lastCommand = "";
-                break;
-
+            else
+            {
+                consoleOutput.Text = $"invalid arguments\n{consoleOutput.Text}";
+            }
+            return;
         }
 
+        consoleOutput.Text = $"invalid command\n{consoleOutput.Text}";
+        return;
     }
+
+
     void ShowHelp()
     {
-        commandList.ForEach(item => consoleOutput.Text += $"{item.Usage}\n");
+        commandList.ForEach(item => consoleOutput.Text = $"{item.Usage}\n{consoleOutput.Text}");
+    }
+
+    //TODO: show Actors in a popup or make the name tag available
+    void ShowActors()
+    {
+        foreach (string key in ActorDict.Keys)
+        {
+            consoleOutput.Text = $"{consoleOutput.Text}\n{key}";
+        }
+    }
+
+    void HideActors()
+    {
+
     }
 }

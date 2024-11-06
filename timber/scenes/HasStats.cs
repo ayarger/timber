@@ -151,15 +151,16 @@ public class HasStats : Node
 	public float curr_health = 100;
 	public float max_health = 100;
 	public float health_ratio = 1;
-	//TODO: max 3 overhead progress bar can be stacked together
-	[Signal] public delegate void stat_change(string stat_name);
+
+	Subscription<StatChangeEvent> statChangeEventSubscription;
+
 
 	BarContainer container;
 
 	public override void _Ready()
 	{
 		container = BarContainer.Create(this);
-		EventBus.Subscribe<StatChangeEvent>(updateOnStatChanged);
+		statChangeEventSubscription = EventBus.Subscribe<StatChangeEvent>(updateOnStatChanged);
 	}
 
 	public void updateOnStatChanged(StatChangeEvent e)
@@ -213,6 +214,19 @@ public class HasStats : Node
 			return Stats[name];
 		return null;
 	}
+
+	public void Reset()
+    {
+		Stats.Clear();
+		Stats_With_Bar.Clear();
+		container.ClearBars();
+
+		if(statChangeEventSubscription != null)
+        {
+			EventBus.Unsubscribe(statChangeEventSubscription);
+			statChangeEventSubscription = EventBus.Subscribe<StatChangeEvent>(updateOnStatChanged);
+        }
+    }
 
 
 

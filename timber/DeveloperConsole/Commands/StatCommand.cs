@@ -9,6 +9,7 @@ public class StatCommand : ConsoleCommand
 	{
 		commandWord = "stat";
 		usage = "stat [operation] [actorName] [statname] ([amount])\n" + "Operations: increase decrease change max create get";
+		needActorInfo = true;
 	}
 
 	public override List<string> ValidArgs()
