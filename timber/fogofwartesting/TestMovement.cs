@@ -81,6 +81,55 @@ public class TestMovement : Node
 		return ans;
 
 	}
+	
+	public static Coord FindClosestTileInRange(Coord cur, Actor actor, int attackRange)
+	{
+		if (cur.x < 0 || cur.z < 0 || cur.z >= Grid.height || cur.x >= Grid.width)
+		{
+			//actor.movetotile(OOB);
+			return new Coord(0, 0);
+		}
+
+		//Flood fill
+		Coord actorPos = Grid.ConvertToCoord(actor.GlobalTranslation);
+
+		Coord dist = actorPos - cur;
+		Coord movement = new Coord(0, 0);
+		if (Math.Abs(dist.x) + Math.Abs(dist.z) <= attackRange)
+		{
+			return actorPos;
+		}
+
+		while (Math.Abs(dist.x) + Math.Abs(dist.z) > attackRange)
+		{
+			if (Math.Abs(dist.x) > Math.Abs(dist.z))
+			{
+				movement.x += -(dist.x / Math.Abs(dist.x));
+				dist.x += -(dist.x / Math.Abs(dist.x));
+
+			}
+			else
+			{
+				movement.z += -(dist.z / Math.Abs(dist.z));
+				dist.z += -(dist.z / Math.Abs(dist.z));
+
+			}
+		}
+		return actorPos + movement;
+
+	}
+
+	public static bool WithinRange(Coord pos, Actor actor, int attackRange)
+	{
+		Coord actorCoord = Grid.ConvertToCoord(actor.GlobalTranslation);
+
+		float dist = Math.Abs(pos.x - actorCoord.x)
+			+ Math.Abs(pos.z - actorCoord.z);
+
+		//GD.Print("actorCoord: " + actorCoord.x + " " + actorCoord.z + " dist: " + dist);
+
+		return dist <= attackRange || (pos.x == actorCoord.x && pos.z == actorCoord.z);
+	}
 
 	static bool LineOfSight(Coord a, Coord b)
 	{

@@ -92,6 +92,8 @@ YarnGlobals="*res://addons/gdyarn/autoloads/execution_states.gd"
 
 [debug]
 
+shapes/collision/shape_color=Color( 0.0627451, 0.286275, 0.886275, 1 )
+shapes/collision/contact_color=Color( 0.564706, 0.0784314, 0.0431373, 1 )
 debug_collision_shapes=true
 debug_navigation=true
 
@@ -105,7 +107,7 @@ window/stretch/aspect="expand"
 
 [editor_plugins]
 
-enabled=PoolStringArray( "res://addons/YarnSpinner-Godot/plugin.cfg" )
+enabled=PoolStringArray(  )
 
 [gdnative]
 
@@ -121,6 +123,7 @@ full=false
 max_remote_stdout_chars_per_second=true
 displ=false
 clear=false
+auto=false
 
 [gui]
 

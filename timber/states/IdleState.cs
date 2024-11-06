@@ -83,9 +83,9 @@ public class IdleState : ActorState
 
                     if (dist <= detectionRange)
                     {
-                        CombatState cs = manager.states["CombatState"] as CombatState;
+                        ChaseState cs = manager.states["ChaseState"] as ChaseState;
                         cs.TargetActor = actorInRange;
-                        manager.EnableState("CombatState");
+                        manager.EnableState("ChaseState");
                     }
                 }
             }

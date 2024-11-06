@@ -21,18 +21,21 @@ public class LuaLoader : Node
 
 	static LuaLoader instance;
 
-	//temporary fake json
-	CombatConfig enemyMeleeCombatConfig = new CombatConfig("MeleeCombatState", 1, 10, 0.5f, 0.5f, 0.125f, 1);
-	CombatConfig enemyRangeCombatConfig = new CombatConfig("RangedCombatState", 3, 5, 0.3f, 0.75f, 0.125f, 1.5f);
-	CombatConfig playerCombatConfig = new CombatConfig("MeleeCombatState", 2, 20, 0.3f, 0.5f, 0.125f, 0.75f);
-	CombatConfig TowerRangeConfig = new CombatConfig("RangedCombatState", 4, 10, 0.3f, 0.5f, 0.125f, 0.75f);
+
+	//TEMP fake json example
+	// StateConfig enemyMeleeCombatConfig = new StateConfig() { name = "MeleeCombatState", 
+	// 	stateStats = { 
+	// 		{ "attackRange", 1 }, 
+	// 		{ "attackDamage", 20 }, 
+	// 		{ "criticalHitRate", 0.5f }, 
+	// 		{ "attackWindup", 0.5f }, 
+	// 		{ "attackRecovery", 0.125f }, 
+	// 		{ "attackCooldown", 1 } } };
+
 	StatConfig enemyStatConfig = new StatConfig();
 	StatConfig playerStatConfig = new StatConfig();
 
-	StateConfig idleState = new StateConfig() { name = "IdleState" };
-	StateConfig movementState = new StateConfig() { name = "MovementState" };
-
-	CombatConfig ConstructionState = new CombatConfig("ConstructionState", 1, 10, 0.5f, 0.5f, 0.125f, 1);
+	
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
@@ -75,13 +78,13 @@ public class LuaLoader : Node
     IEnumerator LoadActorConfigs()
     {
 		// JUSTIN: Test to work with binaries
-		ArborResource.Load<ModFileManifest>("binary_mod_file_manifest.bin");
-		yield return ArborResource.WaitFor("binary_mod_file_manifest.bin");
-		ModFileManifest manifest = ArborResource.Get<ModFileManifest>("binary_mod_file_manifest.bin");
+		// ArborResource.Load<ModFileManifest>("binary_mod_file_manifest.bin");
+		// yield return ArborResource.WaitFor("binary_mod_file_manifest.bin");
+		// ModFileManifest manifest = ArborResource.Get<ModFileManifest>("binary_mod_file_manifest.bin");
 
-		//ArborResource.Load<ModFileManifest>("mod_file_manifest.json");
-		//yield return ArborResource.WaitFor("mod_file_manifest.json");
-		//ModFileManifest manifest = ArborResource.Get<ModFileManifest>("mod_file_manifest.json");
+		ArborResource.Load<ModFileManifest>("mod_file_manifest.json");
+		yield return ArborResource.WaitFor("mod_file_manifest.json");
+		ModFileManifest manifest = ArborResource.Get<ModFileManifest>("mod_file_manifest.json");
 
 		List<string> actor_files = manifest.Search("actor_definitions/*");
 
@@ -96,8 +99,10 @@ public class LuaLoader : Node
 		{
 			GD.Print("Loading actor file: " + actor_file);
 			yield return ArborResource.WaitFor(actor_file);
+
             ActorConfig actor_info = ArborResource.Get<ActorConfig>(actor_file);
-			
+			if(actor_info.stateConfigs.Count > 0)
+				GD.Print(actor_info.stateConfigs.Count);
 
 			//temporary
 			playerStatConfig.stats["health"] = 100;
@@ -106,27 +111,23 @@ public class LuaLoader : Node
 			
 			if (actor_info.team == "player")
             {
-				actor_info.stateConfigs.Add(playerCombatConfig);
+				//actor_info.stateConfigs.Add(playerCombatConfig);
 				actor_info.statConfig = playerStatConfig;
-				actor_info.stateConfigs.Add(ConstructionState);
             }
 			else if (actor_info.team=="construction")
 			{
-				actor_info.stateConfigs.Add(TowerRangeConfig);
 				actor_info.statConfig = playerStatConfig;
 			}
             else if(actor_info.name=="Chunk")
             {
-				actor_info.stateConfigs.Add(enemyMeleeCombatConfig);
 				actor_info.statConfig = enemyStatConfig;
+				
             }
             else
             {
-				actor_info.stateConfigs.Add(enemyRangeCombatConfig);
 				actor_info.statConfig = enemyStatConfig;
+				ArborResource.Load<Texture>("images/cheese.png");
 			}
-			actor_info.stateConfigs.Add(idleState);
-			actor_info.stateConfigs.Add(movementState);
 			
             map_code_to_actor_config[actor_info.map_code] = actor_info;
         }
@@ -353,6 +354,8 @@ public class ActorConfig
 	public string ko_sprite_filename = "";
 	public string type = "actor";
 
+	public List<string> sprite_filenames = new List<string>();
+
 	public List<string> scripts;
 
 	public List<StateConfig> stateConfigs = new List<StateConfig>();
@@ -424,9 +427,11 @@ public class TileDataLoadedEvent{ }
 public class StateConfig
 {
 	public string name;
+	public Dictionary<string,float> stateStats = new Dictionary<string, float>();
 }
 
 //state configs for actors
+//Stats should be moved to stat manager
 public class CombatConfig : StateConfig
 { 
 	public int attackRange = 2;//number of grids
@@ -439,7 +444,7 @@ public class CombatConfig : StateConfig
 
     public CombatConfig() { }
 
-    public CombatConfig(string n, int ar, int damage, float critRate, float windup, float recovery, float cooldown)//temp constructor
+	public CombatConfig(string n, int ar=1, int damage=10, float critRate=0.5f, float windup=0.5f, float recovery=0.125f, float cooldown=1f)//temp constructor
     {
 		name = n;
 		attackRange = ar;
