@@ -18,17 +18,17 @@ function testluaobject:testfunc()
 	WaitForSeconds(1)
 	SetDestination(self,self.x-3, self.z)
 	--Hurt(self, 10)
-	Print("I am at x-position: "..self.x)
+	--Print("I am at x-position: "..self.x)
 	WaitForSeconds(2)
 	
-	Print("Closest Actor"..GetFarthestActor(self).object_name)
+	--Print("Closest Actor"..GetFarthestActor(self).object_name)
 	
 	local test = GetFarthestActor(self)
-	PrintNameOfActor(test)
+	--PrintNameOfActor(test)
 	
 	SetDestination(self,self.x+3, self.z)
 	--Hurt(self, 10)
 	--parent.testData = ""..i;
-	Print("Completed Ready")
+	--Print("Completed Ready")
 	--end
 end

@@ -23,10 +23,12 @@ public class ProjectileManager : Node
 		// ToastManager.SendToast(this, "Tower coord: [" + cur.x + "," + cur.z + "]", ToastMessage.ToastType.Notice, 1f);
 		ActorConfig config = new ActorConfig();
 		config.name = "Projectile";
-		config.idle_sprite_filename = "acorn.png";
+		config.idle_sprite_filename = "cheese.png";
 		config.aesthetic_scale_factor = 0.05f;
 		StateConfig projectileState = new StateConfig() { name = "ProjectileState" };
+		StateConfig ProjectileBounceState = new StateConfig() { name = "ProjectileBounceState" };
 		config.stateConfigs.Add(projectileState);
+		config.stateConfigs.Add(ProjectileBounceState);
 
 		HasTeam team = owner.GetNode<HasTeam>("HasTeam");
 		if (team != null)

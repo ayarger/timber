@@ -4,7 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-public class MovementState : ActorState
+public class ChaseState : ActorState
 {
     // Declare member variables here. Examples:
     // private int a = 2;
@@ -12,12 +12,12 @@ public class MovementState : ActorState
 
     public override string name
     {
-        get { return "MovementState"; }
+        get { return "ChaseState"; }
     }
     public List<Vector3> waypoints = new List<Vector3>();
-
-    List<Texture> movementTextures = new List<Texture>();
     float mvmSpeed = 4f; //Pull from HasStats
+    int attackRange = 2;
+    public Actor TargetActor;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -31,12 +31,15 @@ public class MovementState : ActorState
         inclusiveStates = new HashSet<string>();
         waypoints = new List<Vector3>();
         ArborCoroutine.StopCoroutinesOnNode(this);
-
     }
+
+    public override void Config(StateConfig stateConfig)
+	{
+		attackRange = (int)stateConfig.stateStats["attackRange"];
+	}
 
     public override void Update(float delta)
     {
-
         //Manage waypoints
         if (waypoints.Count > 0)
         {
@@ -67,19 +70,34 @@ public class MovementState : ActorState
             {
                 actor.GlobalTranslation = dest;
                 waypoints.RemoveAt(0);
-                if (waypoints.Count == 0)
-                {
-                    manager.DisableState(name);
-                }
             }
             else
             {
                 actor.GlobalTranslation += mvmSpeed * disp.Normalized()*delta;
             }
+            
         }
         else
         {
-            manager.DisableState(name);
+            Coord dest = Grid.ConvertToCoord(TargetActor.GlobalTranslation);
+            if(TestMovement.WithinRange(dest, actor, attackRange))
+            {
+                CombatState cs = manager.states["CombatState"] as CombatState;
+                cs.TargetActor = TargetActor;
+                manager.EnableState("CombatState");
+                manager.DisableState(name);
+            }else{
+                Coord coordDest = TestMovement.FindClosestTileInRange(Grid.ConvertToCoord(TargetActor.GlobalTranslation), actor, attackRange);
+                Vector3 vectorDest = new Vector3(coordDest.x * Grid.tileWidth, .1f, coordDest.z * Grid.tileWidth);
+                List<Vector3> a = TestMovement.PathFind(actor.GlobalTranslation, vectorDest);
+                if (a.Count > 0)
+                {
+                    waypoints = a;
+                }else{
+                    manager.DisableState(name);
+                }
+                return;
+            }
         }
     }
 
@@ -100,7 +118,6 @@ public class MovementState : ActorState
         const float rot_frequency = 10f;
         const float rot_amplitude = 0.1f;
         actor.view.Rotation = actor.initial_rotation + new Vector3(0, 0, rot_amplitude * Mathf.Sin(timer * rot_frequency));
-        
 
         /* Position */
         const float pos_amplitude = 0.5f;

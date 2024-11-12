@@ -26,27 +26,16 @@ public class MeleeCombatState : CombatState
 
 	public override void Start()
 	{
+		GD.Print("MeleeCombatState started by " + actor.Name);
 		inclusiveStates = new HashSet<string>();
 		ArborCoroutine.StopCoroutinesOnNode(this);
 		animation_offset = GD.Randf() * 100.0f;
 		attackable = true;
-
 		//if (actor.GetNode<HasTeam>("HasTeam").team == "player")//Hardcode different actor stats
 		//{
 		//    attackDamage = 40;
 		//    attackCooldown = 0.75f;
 		//}
-	}
-
-	public override void Config(StateConfig stateConfig)
-	{
-		CombatConfig c = stateConfig as CombatConfig;
-		attackRange = c.attackRange;
-		attackDamage = c.attackDamage;
-		criticalHitRate = c.criticalHitRate;
-		attackWindup = c.attackWindup;
-		attackRecovery = c.attackRecovery;
-		attackCooldown = c.attackCooldown;
 	}
 
 	public override void Update(float delta)
@@ -55,60 +44,34 @@ public class MeleeCombatState : CombatState
 		if (TargetActor != null && IsInstanceValid(TargetActor))//TODO check if actor is dead
 		{
 			Coord dest = Grid.ConvertToCoord(TargetActor.GlobalTranslation);
-			MovementState b = null;
-			if (manager.states.ContainsKey("MovementState"))
+			ChaseState cs = null;
+			if (manager.states.ContainsKey("ChaseState"))
 			{
-				b = manager.states["MovementState"] as MovementState;
+				cs = manager.states["ChaseState"] as ChaseState;
 			}
 
-			if (!WithinRange(dest))
+			if (!TestMovement.WithinRange(dest, actor, attackRange))
 			{
+				GD.Print("Not in range");
 				ArborCoroutine.StopCoroutinesOnNode(this);
 				attacking = false;
 				attackable = true;
 				//check if there are closer target
-				foreach (var actors in GetAttackableActorList())
+				Actor newTarget = findEnemyInRange();
+				if(newTarget != null){
+					TargetActor = newTarget;
+				}
+				else
 				{
-
-					var actorInRange = actors as Actor;
-					if (actorInRange != null && actorInRange.GetNode<HasTeam>("HasTeam").team != actor.GetNode<HasTeam>("HasTeam").team)
+					if(cs == null)
 					{
-						Coord actorPos = Grid.ConvertToCoord(actorInRange.GlobalTranslation);
-						Coord cur = Grid.ConvertToCoord(actor.GlobalTranslation);
-						if ((cur - actorPos).Mag() < attackRange)
-						{
-							TargetActor = actorInRange;
-							return;
-						}
+						manager.DisableState("CombatState");
 					}
-				}
 
-				if(b == null)
-				{
+					cs.TargetActor = TargetActor;
+					manager.EnableState("ChaseState");
 					manager.DisableState("CombatState");
 				}
-
-				if (b.waypoints.Count == 0)
-				{
-					ArborCoroutine.StopCoroutinesOnNode(b);
-					Coord coordDest = FindClosestTileInRange(Grid.ConvertToCoord(TargetActor.GlobalTranslation));
-					Vector3 vectorDest = new Vector3(coordDest.x * Grid.tileWidth, .1f, coordDest.z * Grid.tileWidth);
-					ArborCoroutine.StartCoroutine(TestMovement.PathFindAsync(actor.GlobalTranslation, vectorDest, (List<Vector3> a) =>
-					{
-						if (a.Count > 0)
-						{
-							manager.EnableState("MovementState");
-							b.waypoints = a;
-						}
-					}), b);
-					manager.DisableState("CombatState");
-					return;
-
-
-                }
-                //b.TargetActor = TargetActor;
-                //manager.EnableState("ChaseState");
-                //manager.DisableState("CombatState");
             }
             else if (attackable)
             {
@@ -132,6 +95,7 @@ public class MeleeCombatState : CombatState
     {
         attacking = true;
         attackable = false;
+		//actor.SetActorTexture("spot_step_left.png");
         yield return ArborCoroutine.WaitForSeconds(attackWindup);
 
 		attacking = false;
@@ -189,52 +153,4 @@ public class MeleeCombatState : CombatState
 
 	}
 
-	public override Coord FindClosestTileInRange(Coord cur)
-	{
-		if (cur.x < 0 || cur.z < 0 || cur.z >= Grid.height || cur.x >= Grid.width)
-		{
-			//actor.movetotile(OOB);
-			return new Coord(0, 0);
-		}
-
-		//Flood fill
-		Coord actorPos = Grid.ConvertToCoord(actor.GlobalTranslation);
-
-		Coord dist = actorPos - cur;
-		Coord movement = new Coord(0, 0);
-		if (Math.Abs(dist.x) + Math.Abs(dist.z) <= attackRange)
-		{
-			return actorPos;
-		}
-
-		GD.Print((dist).x, " ", (dist).z);
-
-		while (Math.Abs(dist.x) + Math.Abs(dist.z) > attackRange)
-		{
-			if (Math.Abs(dist.x) > Math.Abs(dist.z))
-			{
-				movement.x += -(dist.x / Math.Abs(dist.x));
-				dist.x += -(dist.x / Math.Abs(dist.x));
-
-			}
-			else
-			{
-				movement.z += -(dist.z / Math.Abs(dist.z));
-				dist.z += -(dist.z / Math.Abs(dist.z));
-
-			}
-		}
-		return actorPos + movement;
-
-	}
-
-	public override bool WithinRange(Coord pos)
-	{
-		Coord actorCoord = Grid.ConvertToCoord(actor.GlobalTranslation);
-
-		float dist = Math.Abs(pos.x - actorCoord.x)
-			+ Math.Abs(pos.z - actorCoord.z);
-
-		return dist <= attackRange;
-	}
 }
