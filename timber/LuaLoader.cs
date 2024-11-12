@@ -433,28 +433,22 @@ public class StateConfig
 //state configs for actors
 //Stats should be moved to stat manager
 public class CombatConfig : StateConfig
-{ 
-	public int attackRange = 2;//number of grids
-	public int attackDamage = 10;
-	public float criticalHitRate = 0.3f;
-
-	public float attackWindup = 0.5f;//animation before attack
-	public float attackRecovery = 0.125f;//anim after attack
-	public float attackCooldown = 1f;
-
-    public CombatConfig() { }
-
-	public CombatConfig(string n, int ar=1, int damage=10, float critRate=0.5f, float windup=0.5f, float recovery=0.125f, float cooldown=1f)//temp constructor
-    {
+{
+	public CombatConfig(string n, int ar = 1, int damage = 10, float critRate = 0.5f, float windup = 0.5f, float recovery = 0.125f, float cooldown = 1f)
+	{
 		name = n;
-		attackRange = ar;
-		attackDamage = damage;
-		criticalHitRate = critRate;
-		attackWindup = windup;
-		attackRecovery = recovery;
-		attackCooldown = cooldown;
-    }
+		stateStats = new Dictionary<string, float>
+		{
+			{ "attackRange", ar },
+			{ "attackDamage", damage },
+			{ "criticalHitRate", critRate },
+			{ "attackWindup", windup },
+			{ "attackRecovery", recovery },
+			{ "attackCooldown", cooldown }
+		};
+	}
 }
+
 
 public class StatConfig
 {

@@ -56,6 +56,7 @@ public class StateManager : Node
 			
 			actorState.Config(config);
 			string stateType = actorState.stateType;
+			GD.Print(stateType);
 			states[stateType] = actorState;
 			actorState.actor = GetParent<Actor>();
 			actorState.manager = this;
@@ -86,8 +87,8 @@ public class StateManager : Node
 		if (!states.ContainsKey(state))
 		{
 			GD.PrintErr("Attempted to enable non-existent state [" + state + "]");
-            return;
-        }
+			return;
+		}
 
 		ActorState desired_state = states[state];
 
@@ -109,11 +110,11 @@ public class StateManager : Node
 			activeStates.Add(states[state]);
 			states[state].Start();
 		}
+		
 	}
 
 	public void DisableState(string state)
 	{
-
 		if (states.ContainsKey(state) && activeStates.Contains(states[state]))
 		{
 			activeStates.Remove(states[state]);

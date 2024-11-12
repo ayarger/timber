@@ -186,6 +186,5 @@ public class ConstructionState : CombatState
 		}
 
 	}
-
-
+	
 }

@@ -94,28 +94,47 @@ public class TestMovement : Node
 		Coord actorPos = Grid.ConvertToCoord(actor.GlobalTranslation);
 
 		Coord dist = actorPos - cur;
-		Coord movement = new Coord(0, 0);
-		if (Math.Abs(dist.x) + Math.Abs(dist.z) <= attackRange)
+		if (Math.Abs(dist.x) + Math.Abs(dist.z) <= attackRange && Grid.Get(actorPos).actor == null)
 		{
 			return actorPos;
 		}
 
-		while (Math.Abs(dist.x) + Math.Abs(dist.z) > attackRange)
+		Queue<Coord> queue = new Queue<Coord>();
+		HashSet<Coord> visited = new HashSet<Coord>();
+		queue.Enqueue(actorPos);
+		visited.Add(actorPos);
+
+		while (queue.Count > 0)
 		{
-			if (Math.Abs(dist.x) > Math.Abs(dist.z))
-			{
-				movement.x += -(dist.x / Math.Abs(dist.x));
-				dist.x += -(dist.x / Math.Abs(dist.x));
+			Coord current = queue.Dequeue();
+			dist = current - cur;
 
+			// Check if current tile is within range and unoccupied
+			if (Math.Abs(dist.x) + Math.Abs(dist.z) <= attackRange && Grid.Get(current).actor == null)
+			{
+				return current;
 			}
-			else
-			{
-				movement.z += -(dist.z / Math.Abs(dist.z));
-				dist.z += -(dist.z / Math.Abs(dist.z));
 
+			// Enqueue neighboring tiles in all directions
+			List<Coord> neighbors = new List<Coord>
+			{
+				new Coord(current.x + 1, current.z),
+				new Coord(current.x - 1, current.z),
+				new Coord(current.x, current.z + 1),
+				new Coord(current.x, current.z - 1)
+			};
+
+			foreach (Coord neighbor in neighbors)
+			{
+				// Only add to queue if within bounds and not visited
+				if (neighbor.x >= 0 && neighbor.z >= 0 && neighbor.x < Grid.width && neighbor.z < Grid.height && !visited.Contains(neighbor))
+				{
+					queue.Enqueue(neighbor);
+					visited.Add(neighbor);
+				}
 			}
 		}
-		return actorPos + movement;
+		return actorPos;
 
 	}
 
