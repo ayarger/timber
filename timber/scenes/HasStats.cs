@@ -228,9 +228,14 @@ public class HasStats : Node
         }
     }
 
+    public override void _ExitTree()
+    {
+		Reset();
+    }
 
 
-	public override void _Process(float delta)
+
+    public override void _Process(float delta)
 	{
 
 	}
