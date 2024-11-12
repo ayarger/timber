@@ -157,6 +157,11 @@ public class HasStats : Node
 
 	BarContainer container;
 
+	public override void _EnterTree()
+    {
+
+    }
+
 	public override void _Ready()
 	{
 		container = BarContainer.Create(this);
@@ -182,6 +187,7 @@ public class HasStats : Node
 		// Add new stat into the dictionary
 		if (display && Stats_With_Bar.Count < 3)
 		{
+			Stats_With_Bar.Add(name);
 			Stats_With_Bar.Add(name);
 			int index = Stats_With_Bar.Count - 1;
 			
@@ -224,16 +230,15 @@ public class HasStats : Node
 		if(statChangeEventSubscription != null)
         {
 			EventBus.Unsubscribe(statChangeEventSubscription);
-			statChangeEventSubscription = EventBus.Subscribe<StatChangeEvent>(updateOnStatChanged);
+			statChangeEventSubscription = null;
         }
     }
 
     public override void _ExitTree()
     {
 		Reset();
-    }
-
-
+		base._ExitTree();
+	}
 
     public override void _Process(float delta)
 	{

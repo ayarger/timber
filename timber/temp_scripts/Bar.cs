@@ -48,7 +48,6 @@ public class Bar : Control
 	/// </summary>
 	public void OnUIStatChange(StatChangeEvent e)
 	{
-		
 		//GD.Print("curr_stat_name: " + data_name, " incoming singal name: " + e.stat_name);
 		if (e.stat_name == data_name)
 		{
@@ -99,6 +98,21 @@ public class Bar : Control
 		Color currentColor = Modulate;
 		ui_tween.InterpolateProperty(this, "modulate:a", currentColor.a, 0, duration, Tween.TransitionType.Linear, Tween.EaseType.In);
 		ui_tween.Start();
+	}
+
+    public override void _ExitTree()
+    {
+        if(statChangeEvent != null)
+        {
+			EventBus.Unsubscribe(statChangeEvent);
+			statChangeEvent = null;
+        }
+
+		if (ui_tween != null)
+		{
+			ui_tween.StopAll();
+		}
+		base._ExitTree();
 	}
 
 	// TODO destroy the UI bar on stat remove event

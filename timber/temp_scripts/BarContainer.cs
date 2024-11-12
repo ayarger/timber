@@ -235,6 +235,38 @@ public class BarContainer : Control
 
     public void ClearBars()
     {
-        this.QueueFree();
+        ArborCoroutine.StopCoroutinesOnNode(this);
+        target_data = null;
+        target_mesh = null;
+        target_shadow = null;
+        target_selection = null;
+
+        VBoxContainer container1 = GetNode<VBoxContainer>("container1");
+        VBoxContainer container2 = GetNode<VBoxContainer>("container1/container2");
+
+        foreach (Node child in container1.GetChildren())
+        {
+            if (child is Bar bar)
+            {
+                container1.RemoveChild(bar);
+                bar.QueueFree();
+            }
+        }
+
+        foreach (Node child in container2.GetChildren())
+        {
+            if (child is Bar bar)
+            {
+                container2.RemoveChild(bar);
+                bar.QueueFree();
+            }
+        }
+
+    }
+
+    public override void _ExitTree()
+    {
+        ClearBars();
+        base._ExitTree();
     }
 }

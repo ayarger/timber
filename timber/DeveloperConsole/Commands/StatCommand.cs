@@ -71,7 +71,6 @@ public class StatCommand : ConsoleCommand
 							curr_stat = curr_actor.GetNode<HasStats>("HasStats").GetStat(args[2]);
 							break;
 					}
-
 					commandOutput = $"{actorName} {statName} changed to: {curr_stat.currVal} / {curr_stat.maxVal}";
 					return true;
 
