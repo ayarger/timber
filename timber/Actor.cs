@@ -36,6 +36,7 @@ public class Actor : Spatial
 	// private string b = "text"; 
 
 	protected ActorConfig config;
+	public String actorName { get { return config.name; } }
 
 	public Spatial view { get; protected set; } // Good for scaling operations.
 	protected MeshInstance character_view;

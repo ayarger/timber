@@ -107,14 +107,17 @@ public class MovementState : ActorState
         const float rot_amplitude = 0.1f;
         actor.view.Rotation = actor.initial_rotation + new Vector3(0, 0, rot_amplitude * Mathf.Sin(timer * rot_frequency));
         
-        if(animationTimer > Mathf.Pi/(rot_frequency) && animationTimer < 2*Mathf.Pi/(rot_frequency))
-        {
-            actor.SetActorTexture("spot_step_left.png");//HARDCODE TEST
-        }else if(animationTimer > 2*Mathf.Pi/(rot_frequency))
-        {
-            animationTimer = 0.0f;
-            actor.SetActorTexture("spot_step_right.png");//HARDCODE TEST
+        if(actor.actorName == "Spot"){
+            if(animationTimer > Mathf.Pi/(rot_frequency) && animationTimer < 2*Mathf.Pi/(rot_frequency))
+            {
+                actor.SetActorTexture("spot_step_left.png");//HARDCODE TEST
+            }else if(animationTimer > 2*Mathf.Pi/(rot_frequency))
+            {
+                animationTimer = 0.0f;
+                actor.SetActorTexture("spot_step_right.png");//HARDCODE TEST
+            }
         }
+        
         
         /* Position */
         const float pos_amplitude = 0.5f;

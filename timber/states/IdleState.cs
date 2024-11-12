@@ -20,6 +20,7 @@ public class IdleState : ActorState
 
     public override void Start()
     {
+        //actor.SetActorTexture("spot_idle.png");
         animation_offset = GD.Randf() * 100.0f;
     }
 
