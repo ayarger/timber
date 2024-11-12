@@ -1,4 +1,4 @@
-[gd_scene load_steps=50 format=2]
+[gd_scene load_steps=54 format=2]
 
 [ext_resource path="res://scenes/GameManager.tscn" type="PackedScene" id=1]
 [ext_resource path="res://DebugSphere.cs" type="Script" id=2]
@@ -38,8 +38,14 @@
 [ext_resource path="res://temp_scenes/ProjectileManager.cs" type="Script" id=36]
 [ext_resource path="res://Dialogue/OptionView.tscn" type="PackedScene" id=37]
 [ext_resource path="res://fonts/Roboto-Regular.ttf" type="DynamicFontData" id=38]
+[ext_resource path="res://picture-in-picture/blur_bg_mtd.png" type="Texture" id=39]
+[ext_resource path="res://Bounce.cs" type="Script" id=40]
+[ext_resource path="res://picture-in-picture/EditModeManager.cs" type="Script" id=41]
 
 [sub_resource type="GDScript" id=2]
+
+[sub_resource type="ViewportTexture" id=32]
+viewport_path = NodePath("Viewport")
 
 [sub_resource type="SpatialMaterial" id=1]
 flags_unshaded = true
@@ -152,6 +158,42 @@ font_data = ExtResource( 28 )
 [node name="Main" type="Spatial"]
 script = SubResource( 2 )
 
+[node name="Editor" type="Node2D" parent="."]
+
+[node name="Camera2D" type="Camera2D" parent="Editor"]
+current = true
+script = ExtResource( 41 )
+
+[node name="Editor_bg" type="Sprite" parent="Editor"]
+position = Vector2( -1924, -1078 )
+z_index = -1
+texture = ExtResource( 39 )
+centered = false
+
+[node name="computer_screen" type="Sprite" parent="Editor"]
+position = Vector2( -1179, -1012 )
+scale = Vector2( 0.582407, 0.582407 )
+z_index = 1
+texture = SubResource( 32 )
+centered = false
+
+[node name="Editor_spot" type="Sprite" parent="Editor"]
+position = Vector2( -1639.12, -242.875 )
+scale = Vector2( 1.93848, 1.93848 )
+texture = ExtResource( 13 )
+script = ExtResource( 40 )
+
+[node name="Viewport" type="Viewport" parent="."]
+size = Vector2( 1920, 1080 )
+render_target_v_flip = true
+render_target_update_mode = 3
+
+[node name="GameplayCamera" type="Camera" parent="Viewport"]
+transform = Transform( 1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 14.5959, 15.5959 )
+current = true
+fov = 25.8
+script = ExtResource( 3 )
+
 [node name="GameManager" parent="." instance=ExtResource( 1 )]
 script = ExtResource( 8 )
 
@@ -163,12 +205,6 @@ script = ExtResource( 35 )
 
 [node name="TowerManager" type="Node" parent="."]
 script = ExtResource( 26 )
-
-[node name="GameplayCamera" type="Camera" parent="."]
-transform = Transform( 1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 14.5959, 15.5959 )
-current = true
-fov = 25.8
-script = ExtResource( 3 )
 
 [node name="DebugSphere" type="CSGSphere" parent="."]
 visible = false
@@ -513,6 +549,7 @@ script = ExtResource( 30 )
 [node name="ProjectileManager" type="Node" parent="."]
 script = ExtResource( 36 )
 
+[connection signal="item_rect_changed" from="Editor/Camera2D" to="Editor/Camera2D" method="_on_Camera2D_item_rect_changed"]
 [connection signal="pressed" from="Dialogue/CanvasLayer/Button" to="Dialogue/CanvasLayer/Button" method="_on_Button_pressed"]
 [connection signal="pressed" from="Dialogue/CanvasLayer/Upload yarn project" to="Dialogue/CanvasLayer/Upload yarn project" method="_on_Button_pressed"]
 [connection signal="file_selected" from="Dialogue/CanvasLayer/Upload yarn project/FileDialog" to="Dialogue/CanvasLayer/Upload yarn project" method="_on_FileDialog_file_selected"]
