@@ -189,9 +189,9 @@ public class ConsoleManager : Control
         }
     }
 
-    public void ProcessCommand (string input)
+    public void ProcessCommand(string input)
     {
-        if(input.ToLower() == "help")
+        if (input.ToLower() == "help")
         {
             ShowHelp();
             return;
@@ -207,7 +207,7 @@ public class ConsoleManager : Control
         //TODO logic refactor
 
 
-        foreach(var command in commandList)
+        foreach (var command in commandList)
         {
             if (input_command.Equals(command.CommandWord, StringComparison.OrdinalIgnoreCase))
             {

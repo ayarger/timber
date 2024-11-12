@@ -154,10 +154,17 @@ public class HasStats : Node
 	public float max_health = 100;
 	public float health_ratio = 1;
 
+	Subscription<StatChangeEvent> statChangeEventSubscription;
+
+	public override void _EnterTree()
+    {
+
+    }
+
 	public override void _Ready()
 	{
 		container = BarContainer.Create(this);
-		EventBus.Subscribe<StatChangeEvent>(updateOnStatChanged);
+		statChangeEventSubscription = EventBus.Subscribe<StatChangeEvent>(updateOnStatChanged);
 	}
 
 	public void updateOnStatChanged(StatChangeEvent e)
@@ -179,6 +186,7 @@ public class HasStats : Node
 		// Add new stat into the dictionary
 		if (display && Stats_With_Bar.Count < 3)
 		{
+			Stats_With_Bar.Add(name);
 			Stats_With_Bar.Add(name);
 			int index = Stats_With_Bar.Count - 1;
 
@@ -241,6 +249,17 @@ public class HasStats : Node
 		return null;
 	}
 
+	public void Reset()
+    {
+		Stats.Clear();
+		Stats_With_Bar.Clear();
+		container.ClearBars();
+		if(statChangeEventSubscription != null)
+        {
+			EventBus.Unsubscribe(statChangeEventSubscription);
+			statChangeEventSubscription = null;
+        }
+	}
 
 	public void ToggleBarVisibility(string name, bool visible)
 	{
@@ -257,9 +276,16 @@ public class HasStats : Node
 				curr_bar.FadeOut(0.2f);
             }
 		}
+		
     }
 
-	public override void _Process(float delta)
+    public override void _ExitTree()
+    {
+		Reset();
+		base._ExitTree();
+	}
+
+    public override void _Process(float delta)
 	{
 
 	}

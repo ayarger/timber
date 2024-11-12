@@ -40,30 +40,36 @@ public class Bar : Control
         tex_progress.SelfModulate = _color;
     }
 
-    /// <summary>
-    /// Update UI on health change
-    /// </summary>
-    public void OnUIStatChange(StatChangeEvent e)
-    {
-        if (e.stat_name == data_name)
-        {
-            float target_value = target_data.Stats[data_name].Ratio * 100;
-            // Stop any ongoing tween operation.
-            ui_tween.StopAll();
-            //GD.Print(tex_progress.Value);
-            ui_tween.InterpolateProperty(
-                tex_progress,
-                "value",
-                tex_progress.Value,
-                target_value,
-                0.5f,
-                Tween.TransitionType.Linear,
-                Tween.EaseType.InOut
-            );
-            // start tween 
-            ui_tween.Start();
-        }
-    }
+	public void toggleVisible(bool visible)
+	{
+		Visible = visible;
+	}
+
+	/// <summary>
+	/// Update UI on health change
+	/// </summary>
+	public void OnUIStatChange(StatChangeEvent e)
+	{
+		//GD.Print("curr_stat_name: " + data_name, " incoming singal name: " + e.stat_name);
+		if (e.stat_name == data_name)
+		{
+			float target_value = target_data.Stats[data_name].Ratio * 100;
+			// Stop any ongoing tween operation.
+			ui_tween.StopAll();
+			//GD.Print(tex_progress.Value);
+			ui_tween.InterpolateProperty(
+				tex_progress,
+				"value",
+				tex_progress.Value,
+				target_value,
+				0.5f,
+				Tween.TransitionType.Linear,
+				Tween.EaseType.InOut
+			);
+			// start tween 
+			ui_tween.Start();
+		}
+	}
 
 	public void OnCreate()
 	{
@@ -96,6 +102,21 @@ public class Bar : Control
 		Color currentColor = Modulate;
 		ui_tween.InterpolateProperty(this, "modulate:a", currentColor.a, 0, duration, Tween.TransitionType.Linear, Tween.EaseType.In);
 		ui_tween.Start();
+	}
+
+    public override void _ExitTree()
+    {
+        if(statChangeEvent != null)
+        {
+			EventBus.Unsubscribe(statChangeEvent);
+			statChangeEvent = null;
+        }
+
+		if (ui_tween != null)
+		{
+			ui_tween.StopAll();
+		}
+		base._ExitTree();
 	}
 
 	// TODO destroy the UI bar on stat remove event
