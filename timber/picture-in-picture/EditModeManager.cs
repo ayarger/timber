@@ -46,43 +46,43 @@ public class EditModeManager : Camera2D
 
     private void UpdateScaleAndPosition()
     {
-        var windowSize = OS.WindowSize;
+        Vector2 viewportSize = GetViewportRect().Size; // Use viewport size
 
-        if (edit_mode)
+        if (!edit_mode) // Game mode: focus on computer_screen
+        {
+            // Use computer_screen size for game mode zoom level and position
+            Vector2 comp_tex_size = computer_screen.Texture.GetSize();
+            Vector2 comp_scaled_size = new Vector2(comp_tex_size.x * computer_screen.Scale.x, comp_tex_size.y * computer_screen.Scale.y);
+
+            // Calculate the zoom level to fit computer_screen in the viewport
+            float zoomX = viewportSize.x / comp_scaled_size.x;
+            float zoomY = viewportSize.y / comp_scaled_size.y;
+            game_mode_zoom_level = Mathf.Min(zoomX, zoomY);
+
+            // Calculate the center position for computer_screen
+            game_mode_position = computer_screen.Position + (comp_tex_size * computer_screen.Scale * 0.5f);
+            desired_zoom_level = game_mode_zoom_level * 0.33f;
+        }
+        else // Edit mode: zoom out to show the entire bg_screen
         {
             // Use bg_screen size to calculate zoom and position
             Vector2 bg_tex_size = bg_screen.Texture.GetSize();
             Vector2 bg_scaled_size = new Vector2(bg_tex_size.x * bg_screen.Scale.x, bg_tex_size.y * bg_screen.Scale.y);
 
-            // Calculate the zoom level to fit the entire bg_screen in the window
-            float zoomX = windowSize.x / bg_scaled_size.x;
-            float zoomY = windowSize.y / bg_scaled_size.y;
+            // Calculate the zoom level to fit the entire bg_screen in the viewport
+            float zoomX = viewportSize.x / bg_scaled_size.x;
+            float zoomY = viewportSize.y / bg_scaled_size.y;
             edit_mode_zoom_level = Mathf.Min(zoomX, zoomY);
 
             // Calculate the center position for bg_screen
             edit_mode_position = bg_screen.Position + bg_tex_size * bg_screen.Scale * 0.5f;
             desired_zoom_level = edit_mode_zoom_level;
         }
-        else
-        {
-            // Use computer_screen size for game mode zoom level and position
-            Vector2 comp_tex_size = computer_screen.Texture.GetSize();
-            Vector2 comp_scaled_size = new Vector2(comp_tex_size.x * computer_screen.Scale.x, comp_tex_size.y * computer_screen.Scale.y);
-
-            // Calculate the zoom level for game mode
-            float screen_to_window_ratio = comp_scaled_size.x / windowSize.x;
-            game_mode_zoom_level = screen_to_window_ratio;
-
-            // Center position on computer_screen with offset
-            game_mode_position = computer_screen.Position + (comp_tex_size * computer_screen.Scale * 0.5f);
-            desired_zoom_level = game_mode_zoom_level;
-        }
     }
 
     // This method is called whenever the window size changes
     private void OnWindowSizeChanged()
     {
-        GD.Print(OS.WindowSize);
         UpdateScaleAndPosition();
     }
 }
