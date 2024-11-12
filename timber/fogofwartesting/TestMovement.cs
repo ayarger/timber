@@ -81,6 +81,74 @@ public class TestMovement : Node
 		return ans;
 
 	}
+	
+	public static Coord FindClosestTileInRange(Coord cur, Actor actor, int attackRange)
+	{
+		if (cur.x < 0 || cur.z < 0 || cur.z >= Grid.height || cur.x >= Grid.width)
+		{
+			//actor.movetotile(OOB);
+			return new Coord(0, 0);
+		}
+
+		//Flood fill
+		Coord actorPos = Grid.ConvertToCoord(actor.GlobalTranslation);
+
+		Coord dist = actorPos - cur;
+		if (Math.Abs(dist.x) + Math.Abs(dist.z) <= attackRange && Grid.Get(actorPos).actor == null)
+		{
+			return actorPos;
+		}
+
+		Queue<Coord> queue = new Queue<Coord>();
+		HashSet<Coord> visited = new HashSet<Coord>();
+		queue.Enqueue(actorPos);
+		visited.Add(actorPos);
+
+		while (queue.Count > 0)
+		{
+			Coord current = queue.Dequeue();
+			dist = current - cur;
+
+			// Check if current tile is within range and unoccupied
+			if (Math.Abs(dist.x) + Math.Abs(dist.z) <= attackRange && Grid.Get(current).actor == null)
+			{
+				return current;
+			}
+
+			// Enqueue neighboring tiles in all directions
+			List<Coord> neighbors = new List<Coord>
+			{
+				new Coord(current.x + 1, current.z),
+				new Coord(current.x - 1, current.z),
+				new Coord(current.x, current.z + 1),
+				new Coord(current.x, current.z - 1)
+			};
+
+			foreach (Coord neighbor in neighbors)
+			{
+				// Only add to queue if within bounds and not visited
+				if (neighbor.x >= 0 && neighbor.z >= 0 && neighbor.x < Grid.width && neighbor.z < Grid.height && !visited.Contains(neighbor))
+				{
+					queue.Enqueue(neighbor);
+					visited.Add(neighbor);
+				}
+			}
+		}
+		return actorPos;
+
+	}
+
+	public static bool WithinRange(Coord pos, Actor actor, int attackRange)
+	{
+		Coord actorCoord = Grid.ConvertToCoord(actor.GlobalTranslation);
+
+		float dist = Math.Abs(pos.x - actorCoord.x)
+			+ Math.Abs(pos.z - actorCoord.z);
+
+		//GD.Print("actorCoord: " + actorCoord.x + " " + actorCoord.z + " dist: " + dist);
+
+		return dist <= attackRange || (pos.x == actorCoord.x && pos.z == actorCoord.z);
+	}
 
 	static bool LineOfSight(Coord a, Coord b)
 	{

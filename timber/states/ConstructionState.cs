@@ -20,13 +20,12 @@ public class ConstructionState : CombatState
 	
 	public override void Config(StateConfig stateConfig)
 	{
-		CombatConfig c = stateConfig as CombatConfig;
-		attackRange = c.attackRange;
-		attackDamage = c.attackDamage;
-		criticalHitRate = 0;
-		attackWindup = c.attackWindup;
-		attackRecovery = c.attackRecovery;
-		attackCooldown = c.attackCooldown;
+		attackRange = (int)stateConfig.stateStats["attackRange"];
+        attackDamage = (int)stateConfig.stateStats["attackDamage"];
+        criticalHitRate = stateConfig.stateStats["criticalHitRate"];
+        attackWindup = stateConfig.stateStats["attackWindup"];
+        attackRecovery = stateConfig.stateStats["attackRecovery"];
+        attackCooldown = stateConfig.stateStats["attackCooldown"];
 	}
 
 	public override void Update(float delta)
@@ -86,7 +85,7 @@ public class ConstructionState : CombatState
 				if (movementState.waypoints.Count == 0)
 				{
 					ArborCoroutine.StopCoroutinesOnNode(movementState);
-					Coord coordDest = FindClosestTileInRange(Grid.ConvertToCoord(TargetActor.GlobalTranslation));
+					Coord coordDest = TestMovement.FindClosestTileInRange(Grid.ConvertToCoord(TargetActor.GlobalTranslation), actor, attackRange);
 					Vector3 vectorDest = new Vector3(coordDest.x * Grid.tileWidth, .1f, coordDest.z * Grid.tileWidth);
 					ArborCoroutine.StartCoroutine(TestMovement.PathFindAsync(actor.GlobalTranslation, vectorDest, (List<Vector3> a) =>
 					{
@@ -187,53 +186,5 @@ public class ConstructionState : CombatState
 		}
 
 	}
-
-	public override Coord FindClosestTileInRange(Coord cur)
-	{
-		if (cur.x < 0 || cur.z < 0 || cur.z >= Grid.height || cur.x >= Grid.width)
-		{
-			//actor.movetotile(OOB);
-			return new Coord(0, 0);
-		}
-
-		//Flood fill
-		Coord actorPos = Grid.ConvertToCoord(actor.GlobalTranslation);
-
-		Coord dist = actorPos - cur;
-		Coord movement = new Coord(0, 0);
-		if (Math.Abs(dist.x) + Math.Abs(dist.z) <= attackRange)
-		{
-			return actorPos;
-		}
-
-		GD.Print((dist).x, " ", (dist).z);
-
-		while (Math.Abs(dist.x) + Math.Abs(dist.z) > attackRange)
-		{
-			if (Math.Abs(dist.x) > Math.Abs(dist.z))
-			{
-				movement.x += -(dist.x / Math.Abs(dist.x));
-				dist.x += -(dist.x / Math.Abs(dist.x));
-
-			}
-			else
-			{
-				movement.z += -(dist.z / Math.Abs(dist.z));
-				dist.z += -(dist.z / Math.Abs(dist.z));
-
-			}
-		}
-		return actorPos + movement;
-
-	}
-
-	public override bool WithinRange(Coord pos)
-	{
-		Coord actorCoord = Grid.ConvertToCoord(actor.GlobalTranslation);
-
-		float dist = Math.Abs(pos.x - actorCoord.x)
-			+ Math.Abs(pos.z - actorCoord.z);
-
-		return dist <= attackRange;
-	}
+	
 }

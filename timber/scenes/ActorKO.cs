@@ -58,13 +58,13 @@ public class ActorKO : Spatial//TODO check if dead or not: bug - spawn multiple 
         {
             if(killedBy!=null)
                 blastDirection = (GlobalTranslation - killedBy.GlobalTranslation).Normalized();
-            blastSpeed = 8;
+            blastSpeed = 8f;
             blastRotationSpeed = 15;
             velocity = 0.25f;
             gravity = true;
         }
 
-        yield return ArborCoroutine.WaitForSeconds(1.0f);
+        yield return ArborCoroutine.WaitForSeconds(2.0f);
 
         void DoFade(float progress)
         {

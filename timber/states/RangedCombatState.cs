@@ -33,55 +33,35 @@ public class RangedCombatState : CombatState
 		if (TargetActor != null && IsInstanceValid(TargetActor))//TODO check if actor is dead
 		{
 			Coord dest = Grid.ConvertToCoord(TargetActor.GlobalTranslation);
-			MovementState b = null;
-			if (manager.states.ContainsKey("MovementState"))
-			 	b = (manager.states["MovementState"] as MovementState);
-
-
-			if (attackable && !WithinRange(dest))
+			ChaseState cs = null;
+			if (manager.states.ContainsKey("ChaseState"))
 			{
-				if(b==null){
-					manager.DisableState("CombatState");
-					return;
-				}
+				cs = manager.states["ChaseState"] as ChaseState;
+			}
+
+
+			if (!TestMovement.WithinRange(dest, actor, attackRange))
+			{
 				ArborCoroutine.StopCoroutinesOnNode(this);
 				attacking = false;
 				attackable = true;
 				//check if there are closer target
-				foreach (var actors in GetAttackableActorList())
-				{
+				Actor newTarget = findEnemyInRange();
 
-					var actorInRange = actors as Actor;
-					if (actorInRange != null && actorInRange.GetNode<HasTeam>("HasTeam").team != actor.GetNode<HasTeam>("HasTeam").team)
-					{
-						Coord actorPos = Grid.ConvertToCoord(actorInRange.GlobalTranslation);
-						Coord cur = Grid.ConvertToCoord(actor.GlobalTranslation);
-						if ((cur - actorPos).Mag() < attackRange && (cur.x == actorPos.x || cur.z == actorPos.z))
-						{
-							TargetActor = actorInRange;
-							return;
-						}
-					}
+				if(newTarget != null){
+					TargetActor = newTarget;
 				}
-
-				if (b.waypoints.Count == 0)
+				else
 				{
-					ArborCoroutine.StopCoroutinesOnNode(b);
-					Coord coordDest = FindClosestTileInRange(Grid.ConvertToCoord(TargetActor.GlobalTranslation));
-					Vector3 vectorDest = new Vector3(coordDest.x * Grid.tileWidth, .1f, coordDest.z * Grid.tileWidth);
-					ArborCoroutine.StartCoroutine(TestMovement.PathFindAsync(actor.GlobalTranslation, vectorDest, (List<Vector3> a) =>
+					if(cs == null)
 					{
-						if (a.Count > 0)
-						{
-							manager.EnableState("MovementState");
-							b.waypoints = a;
-						}
-					}), b);
+						manager.DisableState("CombatState");
+					}
+
+					cs.TargetActor = TargetActor;
+					manager.EnableState("ChaseState");
 					manager.DisableState("CombatState");
-					return;
-
-
-                }
+				}
             }
             else if (attackable)
             {
@@ -159,44 +139,5 @@ public class RangedCombatState : CombatState
 			actor.view.Rotation = actor.initial_rotation + new Vector3(0, 0, direction * rot_amplitude * rotateTime * (rotateTime - attackWindup));
 		}
 
-	}
-
-	public override Coord FindClosestTileInRange(Coord cur)
-	{
-		if (cur.x < 0 || cur.z < 0 || cur.z >= Grid.height || cur.x >= Grid.width)
-		{
-			//actor.movetotile(OOB);
-			return new Coord(0, 0);
-		}
-
-		//Flood fill
-		Coord actorPos = Grid.ConvertToCoord(actor.GlobalTranslation);
-
-		Coord dist = actorPos - cur;
-		if(dist.x < dist.z)
-		{
-			if(dist.x != 0)
-				return new Coord(cur.x, actorPos.z);
-			if(dist.x < 0)
-				return new Coord(actorPos.x, cur.z - attackRange);
-			return new Coord(actorPos.x, cur.z + attackRange);
-		}
-
-		if(dist.z != 0)
-			return new Coord(actorPos.x, cur.z);
-
-		if (dist.z < 0)
-			return new Coord(cur.x - attackRange, actorPos.z);
-		return new Coord(cur.x + attackRange, actorPos.z);
-	}
-
-	public override bool WithinRange(Coord pos)
-	{
-		Coord actorCoord = Grid.ConvertToCoord(actor.GlobalTranslation);
-
-		float dist = Math.Abs(pos.x - actorCoord.x)
-			+ Math.Abs(pos.z - actorCoord.z);
-
-		return dist <= attackRange || (pos.x == actorCoord.x && pos.z == actorCoord.z);
 	}
 }

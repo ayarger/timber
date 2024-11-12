@@ -87,8 +87,8 @@ public class StateManager : Node
 		if (!states.ContainsKey(state))
 		{
 			GD.PrintErr("Attempted to enable non-existent state [" + state + "]");
-            return;
-        }
+			return;
+		}
 
 		ActorState desired_state = states[state];
 
