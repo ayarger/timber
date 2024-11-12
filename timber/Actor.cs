@@ -110,9 +110,11 @@ public class Actor : Spatial
 			//store the texture in the dictionary
 			sprite_textures[sprites] = ArborResource.Get<Texture>("images/" + sprites);
 		}
+
+		//HARDCODE
 		if(config.name == "Spot"){
 			ArborResource.Load<Texture>("images/" + "spot_step_left.png");
-			sprite_textures["spot_step_left.png"] = ArborResource.Get<Texture>("images/" + "spot_step_left.png");
+			ArborResource.Load<Texture>("images/" + "spot_step_right.png");
 		}
 
 		ArborResource.UseResource<Texture>(
@@ -324,9 +326,17 @@ public class Actor : Spatial
 	}
 
 	public void SetActorTexture(string texture_name){
-		Texture tex = sprite_textures[texture_name];
-		character_material.SetShaderParam("texture_albedo", tex);
-		character_view.SetSurfaceMaterial(0, character_material);
+		if(sprite_textures.ContainsKey(texture_name))
+		{
+			Texture tex = sprite_textures[texture_name];
+			character_material.SetShaderParam("texture_albedo", tex);
+			character_view.SetSurfaceMaterial(0, character_material);
+		}else{
+			Texture tex = ArborResource.Get<Texture>("images/" + texture_name);
+			sprite_textures[texture_name] = tex;
+			character_material.SetShaderParam("texture_albedo", tex);
+			character_view.SetSurfaceMaterial(0, character_material);
+		}
 	}
 
    public void UpdateActorDict()

@@ -95,7 +95,6 @@ public class MeleeCombatState : CombatState
     {
         attacking = true;
         attackable = false;
-		//actor.SetActorTexture("spot_step_left.png");
         yield return ArborCoroutine.WaitForSeconds(attackWindup);
 
 		attacking = false;

@@ -31,7 +31,11 @@ public class MovementState : ActorState
         inclusiveStates = new HashSet<string>();
         waypoints = new List<Vector3>();
         ArborCoroutine.StopCoroutinesOnNode(this);
+    }
 
+    public override void Config(StateConfig stateConfig)
+    {
+        
     }
 
     public override void Update(float delta)
@@ -92,16 +96,26 @@ public class MovementState : ActorState
     }
 
     float timer = 0.0f;
+    float animationTimer = 0.0f;
     public override void Animate(float delta)
     {
         timer += delta;
+        animationTimer += delta;
 
         /* Rotation */
         const float rot_frequency = 10f;
         const float rot_amplitude = 0.1f;
         actor.view.Rotation = actor.initial_rotation + new Vector3(0, 0, rot_amplitude * Mathf.Sin(timer * rot_frequency));
         
-
+        if(animationTimer > Mathf.Pi/(rot_frequency) && animationTimer < 2*Mathf.Pi/(rot_frequency))
+        {
+            actor.SetActorTexture("spot_step_left.png");//HARDCODE TEST
+        }else if(animationTimer > 2*Mathf.Pi/(rot_frequency))
+        {
+            animationTimer = 0.0f;
+            actor.SetActorTexture("spot_step_right.png");//HARDCODE TEST
+        }
+        
         /* Position */
         const float pos_amplitude = 0.5f;
         const float posfrequency = 10f;
