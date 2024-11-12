@@ -232,4 +232,9 @@ public class BarContainer : Control
             }
         }
     }
+
+    public void ClearBars()
+    {
+        this.QueueFree();
+    }
 }
