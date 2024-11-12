@@ -14,6 +14,7 @@ using System.Reflection;
 using Amazon.Runtime.Internal.Transform;
 using System.Runtime.CompilerServices;
 using Amazon.Auth.AccessControlPolicy;
+using Amazon.Auth.AccessControlPolicy.ActionIdentifiers;
 
 public class ArborResource : Node
 {
@@ -22,6 +23,8 @@ public class ArborResource : Node
     static ArborResource instance;
 
     static Dictionary<string, Stopwatch> stopwatchList = new Dictionary<string, Stopwatch>();
+
+    static Stopwatch timeline;
 
     public override void _Ready()
     {
@@ -47,6 +50,11 @@ public class ArborResource : Node
 
             InitializeFileDialogueWeb();
         }
+
+        timeline = new Stopwatch();
+        timeline.Start();
+
+        GD.Print("! Timeline Stopwatch Started");
     }
 
     public void OnCallbackAssociatedNodeExitTree(object destroyed_node)
@@ -84,14 +92,29 @@ public class ArborResource : Node
             return;
         }
 
-        GD.Print("retrieved [" + key + "]");
+        //GD.Print("retrieved [" + key + "]");
 
+        TimeSpan elapsedSnapshot = timeline.Elapsed;
+        GD.Print("[Request Complete] " + key + ": at (" + elapsedSnapshot + ")");
 
-        stopwatchList[key].Stop();
-        GD.Print("LATENCY for " + resource + " : --------------------");
-        GD.Print($"Latency Elapsed Time: {stopwatchList[key].ElapsedMilliseconds} ms");
-        GD.Print("-----------------------------");
-        stopwatchList.Remove(key);
+        if (stopwatchList.ContainsKey(key))
+        {
+            if (!stopwatchList[key].IsRunning) { GD.Print("Error: " + key + " stopwatch is not running!"); }
+            TimeSpan elapsed;
+            try
+            {
+                stopwatchList[key].Stop();
+                elapsed = stopwatchList[key].Elapsed;
+            }
+            catch (Exception ex)
+            {
+                elapsed = TimeSpan.Zero;
+                Console.WriteLine($"An error occurred: {ex.Message}");
+            }
+
+            //GD.Print($"! LATENCY FOR " + resource + " ELAPSED TIME: " + elapsed.Milliseconds);
+            stopwatchList.Remove(key);
+        }
 
         if (type == "Texture")
         {
@@ -232,10 +255,10 @@ public class ArborResource : Node
 
                 TimeSpan elapsedTime1 = stopwatch1.Elapsed;
                 TimeSpan elapsedTime2 = stopwatch2.Elapsed;
-                GD.Print("Deserialization time for " + type + " binary  -----------------------");
-                GD.Print($"Protobuf Parser time: {elapsedTime1.TotalMilliseconds} ms");
-                GD.Print($"Function Time: {elapsedTime2.TotalMilliseconds} ms");
-                GD.Print("--------------------------------------------");
+                //GD.Print("Deserialization time for " + type + " binary  -----------------------");
+                //GD.Print($"Protobuf Parser time: {elapsedTime1.TotalMilliseconds} ms");
+                //GD.Print($"Function Time: {elapsedTime2.TotalMilliseconds} ms");
+                //GD.Print("--------------------------------------------");
             }
             else
             {
@@ -250,10 +273,10 @@ public class ArborResource : Node
 
                 TimeSpan elapsedTime1 = stopwatch1.Elapsed;
                 TimeSpan elapsedTime2 = stopwatch2.Elapsed;
-                GD.Print("Deserialization time for " + type + " (string): --------------------");
-                GD.Print($"Parsing Time: {elapsedTime1.TotalMilliseconds} ms (Doesn't do anything for JSON)");
-                GD.Print($"Function Time: {elapsedTime2.TotalMilliseconds} ms");
-                GD.Print("--------------------------------------------");
+                //GD.Print("Deserialization time for " + type + " (string): --------------------");
+                //GD.Print($"Parsing Time: {elapsedTime1.TotalMilliseconds} ms (Doesn't do anything for JSON)");
+                //GD.Print($"Function Time: {elapsedTime2.TotalMilliseconds} ms");
+                //GD.Print("--------------------------------------------");
 
             }
         }
@@ -308,9 +331,14 @@ public class ArborResource : Node
             null
         };
 
+        // Justin: Sometimes we call load on the same thing multiple times?
+        GD.Print("Attempted to load: " + resource);
         Stopwatch sw = Stopwatch.StartNew();
-        stopwatchList.Add(resource, sw);
-        GD.Print("Added stopwatch to key: " + resource);
+        if (!stopwatchList.ContainsKey(resource))
+        {
+            stopwatchList.Add(resource, sw);
+            //GD.Print("Added stopwatch to key: " + resource);
+        }
 
         new_request.Connect("request_completed", instance, nameof(OnRequestCompleted), extra_params);
         string web_url = @"https://arborinteractive.com/squirrel_rts/mods/" + GetCurrentModID() + @"/resources/" + resource;
@@ -325,7 +353,11 @@ public class ArborResource : Node
         };
 
         new_request.Request(web_url, headers);
-        GD.Print("web retrieving [" + resource + "]");
+        // TODO: Justin change back
+        //GD.Print("web retrieving [" + resource + "]");
+
+        TimeSpan elapsedSnapshot = timeline.Elapsed;
+        GD.Print("[Load Request] " + resource + ": at (" + elapsedSnapshot + ")");
     }
 
     public static T Get<T>(string asset_path_relative_to_external_resources_folder) where T : class

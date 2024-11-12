@@ -57,13 +57,13 @@ public class LuaLoader : Node
 
 		/* Load game config */
 		// JUSTIN: Option to load binary
-		//      ArborResource.Load<GameConfig>("game.config.bin");
-		//yield return ArborResource.WaitFor("game.config.bin");
-		//GameConfig game_config = ArborResource.Get<GameConfig>("game.config.bin");
+		ArborResource.Load<GameConfig>("game.config.bin");
+		yield return ArborResource.WaitFor("game.config.bin");
+		GameConfig game_config = ArborResource.Get<GameConfig>("game.config.bin");
 
-		ArborResource.Load<GameConfig>("game.config");
-		yield return ArborResource.WaitFor("game.config");
-		GameConfig game_config = ArborResource.Get<GameConfig>("game.config");
+		//ArborResource.Load<GameConfig>("game.config");
+		//yield return ArborResource.WaitFor("game.config");
+		//GameConfig game_config = ArborResource.Get<GameConfig>("game.config");
 
 		yield return LoadActorConfigs();
         yield return LoadScene(game_config.initial_scene_file);
@@ -75,13 +75,13 @@ public class LuaLoader : Node
     IEnumerator LoadActorConfigs()
     {
 		// JUSTIN: Option to load binary
-		//ArborResource.Load<ModFileManifest>("binary_mod_file_manifest.bin");
-		//yield return ArborResource.WaitFor("binary_mod_file_manifest.bin");
-		//ModFileManifest manifest = ArborResource.Get<ModFileManifest>("binary_mod_file_manifest.bin");
+		ArborResource.Load<ModFileManifest>("binary_mod_file_manifest.bin");
+		yield return ArborResource.WaitFor("binary_mod_file_manifest.bin");
+		ModFileManifest manifest = ArborResource.Get<ModFileManifest>("binary_mod_file_manifest.bin");
 
-		ArborResource.Load<ModFileManifest>("mod_file_manifest.json");
-		yield return ArborResource.WaitFor("mod_file_manifest.json");
-		ModFileManifest manifest = ArborResource.Get<ModFileManifest>("mod_file_manifest.json");
+		//ArborResource.Load<ModFileManifest>("mod_file_manifest.json");
+		//yield return ArborResource.WaitFor("mod_file_manifest.json");
+		//ModFileManifest manifest = ArborResource.Get<ModFileManifest>("mod_file_manifest.json");
 
 		List<string> actor_files = manifest.Search("actor_definitions/*");
 
@@ -134,6 +134,8 @@ public class LuaLoader : Node
 
     IEnumerator LoadScene (string scene_filename)
 	{
+		GD.Print("! Load Scene: " + scene_filename);
+
 		ViewportTexture fog_of_war_visibility_texture = new ViewportTexture();
 
         string image_filename = "images/" + scene_filename + ".png";
