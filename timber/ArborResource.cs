@@ -332,7 +332,7 @@ public class ArborResource : Node
         };
 
         // Justin: Sometimes we call load on the same thing multiple times?
-        GD.Print("Attempted to load: " + resource);
+        //GD.Print("Attempted to load: " + resource);
         Stopwatch sw = Stopwatch.StartNew();
         if (!stopwatchList.ContainsKey(resource))
         {
@@ -350,6 +350,7 @@ public class ArborResource : Node
         var headers = new string[]
         {
             "Cache-Control: max-age=999999", // Cache data for 1 hour (3600 seconds)
+            "Connection: keep-alive"  
         };
 
         new_request.Request(web_url, headers);

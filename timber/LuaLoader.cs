@@ -51,6 +51,7 @@ public class LuaLoader : Node
 		return instance.loading_scene;
 	}
 
+
 	IEnumerator Load()
 	{
 		loading_scene = true;
@@ -65,7 +66,7 @@ public class LuaLoader : Node
 		//yield return ArborResource.WaitFor("game.config");
 		//GameConfig game_config = ArborResource.Get<GameConfig>("game.config");
 
-		yield return LoadActorConfigs();
+		//yield return LoadActorConfigs();
         yield return LoadScene(game_config.initial_scene_file);
 
         loading_scene = false;
@@ -134,7 +135,21 @@ public class LuaLoader : Node
 
     IEnumerator LoadScene (string scene_filename)
 	{
-		GD.Print("! Load Scene: " + scene_filename);
+        ArborResource.Load<ModFileManifest>("binary_mod_file_manifest.bin");
+        yield return ArborResource.WaitFor("binary_mod_file_manifest.bin");
+        ModFileManifest manifest = ArborResource.Get<ModFileManifest>("binary_mod_file_manifest.bin");
+
+        List<string> actor_files = manifest.Search("actor_definitions/*");
+
+        StateProcessor.Initialize();
+
+        foreach (string actor_file in actor_files)
+        {
+            ArborResource.Load<ActorConfig>(actor_file);
+        }
+
+
+        GD.Print("! Load Scene: " + scene_filename);
 
 		ViewportTexture fog_of_war_visibility_texture = new ViewportTexture();
 
@@ -147,6 +162,7 @@ public class LuaLoader : Node
         string config_filename = "scenes/" + scene_filename + ".config";
         ArborResource.Load<string>(config_filename);
 
+
 		/* Load Audio */
 		ArborResource.UseResource(
 			"sounds/pre_battle.ogg",
@@ -158,11 +174,51 @@ public class LuaLoader : Node
 		);
 
 		ArborResource.Load<AudioStream>("sounds/bgm_btd_defeat.ogg");
-		yield return ArborResource.WaitFor("sounds/bgm_btd_defeat.ogg");
+        //yield return ArborResource.WaitFor("sounds/bgm_btd_defeat.ogg");
 
+        //yield return ArborResource.WaitFor(layout_filename);
+        //yield return ArborResource.WaitFor(config_filename);
         yield return ArborResource.WaitFor(image_filename);
-        yield return ArborResource.WaitFor(layout_filename);
-        yield return ArborResource.WaitFor(config_filename);
+
+        foreach (string actor_file in actor_files)
+        {
+            GD.Print("Loading actor file: " + actor_file);
+            //yield return ArborResource.WaitFor(actor_file);
+            ActorConfig actor_info = ArborResource.Get<ActorConfig>(actor_file);
+
+
+            //temporary
+            playerStatConfig.stats["health"] = 100;
+
+            enemyStatConfig.stats["health"] = 50;
+
+            if (actor_info.team == "player")
+            {
+                actor_info.stateConfigs.Add(playerCombatConfig);
+                actor_info.statConfig = playerStatConfig;
+                actor_info.stateConfigs.Add(ConstructionState);
+            }
+            else if (actor_info.team == "construction")
+            {
+                actor_info.stateConfigs.Add(TowerRangeConfig);
+                actor_info.statConfig = playerStatConfig;
+            }
+            else if (actor_info.name == "Chunk")
+            {
+                actor_info.stateConfigs.Add(enemyMeleeCombatConfig);
+                actor_info.statConfig = enemyStatConfig;
+            }
+            else
+            {
+                actor_info.stateConfigs.Add(enemyRangeCombatConfig);
+                actor_info.statConfig = enemyStatConfig;
+            }
+            actor_info.stateConfigs.Add(idleState);
+            actor_info.stateConfigs.Add(movementState);
+
+            map_code_to_actor_config[actor_info.map_code] = actor_info;
+        }
+
 
         Texture scene_tile_texture = ArborResource.Get<Texture>(image_filename);
         string layout_file_contents = ArborResource.Get<string>(layout_filename);
@@ -261,16 +317,16 @@ public class LuaLoader : Node
         float new_marker_x = viewport.Size.x * (player_node.GlobalTranslation.x * 0.5f / width);
 		float new_marker_y = viewport.Size.y * (player_node.GlobalTranslation.z * 0.5f / height);
 
-		yield return null;
-		yield return null;
+		//yield return null;
+		//yield return null;
 
 		//Deprecated
 		//fog_of_war_visibility_texture = new ViewportTexture();
 
 		//fog_of_war_visibility_texture.ViewportPath = viewport.GetPath();
 
-        yield return null;
-        yield return null;
+        //yield return null;
+        //yield return null;
 
 
         Vector2 new_marker_pos = new Vector2(new_marker_x, new_marker_y);
@@ -282,13 +338,14 @@ public class LuaLoader : Node
         Sprite visibility_marker = GetParent().GetNode<Sprite>("FogOfWar/HighVisibility/Sprite");
 		visibility_marker.Position = new_marker_pos;
 
-		yield return null;
-		yield return null;
-		//I think you need to set the param every frame? Done in FogOfWar.cs
-		//foreach(ShaderMaterial mat in tile_mats)
-		//{
-		//	mat.SetShaderParam("visibility_texture", fog_of_war_visibility_texture);
-		//}
+        //yield return null;
+        //yield return null;
+
+        //I think you need to set the param every frame? Done in FogOfWar.cs
+        //foreach(ShaderMaterial mat in tile_mats)
+        //{
+        //	mat.SetShaderParam("visibility_texture", fog_of_war_visibility_texture);
+        //}
 
         /* Finish up */
         Vector3 avg_pos = Vector3.Zero;
