@@ -362,10 +362,11 @@ public class Actor : Spatial
 	}
 
 	public override void _ExitTree()
-   {
-	   EventBus.Unsubscribe(sub);
-	   base._ExitTree();
-   }
+    {
+		EventBus.Unsubscribe(sub);
+		EventBus.Unsubscribe(actorLoadedEvent);
+		base._ExitTree();
+	}
 
 	IEnumerator HurtAnimation()//TODO add actual animation
 	{

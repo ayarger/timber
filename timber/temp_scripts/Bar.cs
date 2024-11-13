@@ -68,6 +68,10 @@ public class Bar : Control
 			);
 			// start tween 
 			ui_tween.Start();
+			if (target_value == 0)
+            {
+				//TODO
+            }
 		}
 	}
 
@@ -87,7 +91,6 @@ public class Bar : Control
         FadeIn(1);
         ui_tween.Start();
         tex_progress.Value = target_data.Stats[data_name].currVal;
-
 	}
 
 	public void FadeIn(float duration)
@@ -118,6 +121,4 @@ public class Bar : Control
 		}
 		base._ExitTree();
 	}
-
-	// TODO destroy the UI bar on stat remove event
 }

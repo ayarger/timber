@@ -175,7 +175,5 @@ public class StateManager : Node
 		{
 			DisableState(state.name);
 		}
-	   
-		
 	}
 }

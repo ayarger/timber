@@ -226,9 +226,12 @@ public class BarContainer : Control
 
     void OnCombatStateChange(CombatStateEnabledEvent e)
     {
-        if (e.actor.Name == target_data.GetParent().Name)
+        if (e.actor != null)
         {
-            combatEnabled = e.enabled;
+            if (e.actor.Name == target_data.GetParent().Name)
+            {
+                combatEnabled = e.enabled;
+            }
         }
     }
 
@@ -298,6 +301,7 @@ public class BarContainer : Control
     public override void _ExitTree()
     {
         ClearBars();
+        EventBus.Unsubscribe(combatStateChangeEvent);
         base._ExitTree();
     }
 }

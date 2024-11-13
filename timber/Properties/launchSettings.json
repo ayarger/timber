@@ -1,0 +1,7 @@
+{
+  "profiles": {
+    "lua_experiment": {
+      "commandName": "Executable"
+    }
+  }
+}
