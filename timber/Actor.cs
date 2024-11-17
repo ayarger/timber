@@ -106,17 +106,7 @@ public class Actor : Spatial
 			actorKO = true;
 		}
 
-		foreach(var sprites in config.sprite_filenames){
-			ArborResource.Load<Texture>("images/" + sprites);
-			//store the texture in the dictionary
-			sprite_textures[sprites] = ArborResource.Get<Texture>("images/" + sprites);
-		}
-
-		//HARDCODE
-		if(config.name == "Spot"){
-			ArborResource.Load<Texture>("images/" + "spot_step_left.png");
-			ArborResource.Load<Texture>("images/" + "spot_step_right.png");
-		}
+		ArborCoroutine.StartCoroutine(loadTextures(), this);
 
 		ArborResource.UseResource<Texture>(
 			"images/" + config.idle_sprite_filename,
@@ -252,6 +242,27 @@ public class Actor : Spatial
 		shadow_mat.SetShaderParam("screenPosZ", FogOfWar.instance.screenPosZ);
 	}
 
+	IEnumerator loadTextures(){
+
+		foreach(var sprites in config.sprite_filenames){
+			ArborResource.Load<Texture>("images/" + sprites);
+			//store the texture in the dictionary
+			sprite_textures[sprites] = ArborResource.Get<Texture>("images/" + sprites);
+		}
+
+		//HARDCODE
+		if(config.name == "Spot"){
+			ArborResource.Load<Texture>("images/" + "spot_step_left.png");
+			ArborResource.Load<Texture>("images/" + "spot_step_right.png");
+		}
+
+		foreach(var sprites in config.sprite_filenames){
+			yield return ArborResource.WaitFor("images/" + sprites);
+			Texture tex = ArborResource.Get<Texture>("images/" + sprites);
+			sprite_textures[sprites] = tex;
+		}
+	}
+
 	public virtual void Hurt(int damage, bool isCritical, Actor source)
 	{
 		int damage_to_deal = isCritical ? damage * 2 : damage;
@@ -334,6 +345,10 @@ public class Actor : Spatial
 			character_view.SetSurfaceMaterial(0, character_material);
 		}else{
 			Texture tex = ArborResource.Get<Texture>("images/" + texture_name);
+			if(tex == null){
+				GD.Print("Texture not found: " + texture_name);
+				return;
+			}
 			sprite_textures[texture_name] = tex;
 			character_material.SetShaderParam("texture_albedo", tex);
 			character_view.SetSurfaceMaterial(0, character_material);

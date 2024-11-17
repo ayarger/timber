@@ -31,6 +31,7 @@ public class MovementState : ActorState
         inclusiveStates = new HashSet<string>();
         waypoints = new List<Vector3>();
         ArborCoroutine.StopCoroutinesOnNode(this);
+        actor.SetActorTexture("spot_step_right.png");
     }
 
     public override void Config(StateConfig stateConfig)
@@ -104,7 +105,7 @@ public class MovementState : ActorState
 
         /* Rotation */
         const float rot_frequency = 10f;
-        const float rot_amplitude = 0.1f;
+        const float rot_amplitude = 0.075f;
         actor.view.Rotation = actor.initial_rotation + new Vector3(0, 0, rot_amplitude * Mathf.Sin(timer * rot_frequency));
         
         if(actor.actorName == "Spot"){
