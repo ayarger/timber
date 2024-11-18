@@ -260,7 +260,7 @@ public class Actor : Spatial
 	{
 		int damage_to_deal = isCritical ? damage * 2 : damage;
 
-        if (isCritical) // for testing
+		if (isCritical) // for testing
 		{
 			DamageTextManager.DrawText(damage_to_deal, this, "criticalDamage");
 		}
@@ -282,7 +282,7 @@ public class Actor : Spatial
 			return;
 		}
 
-            //draws aggro
+			//draws aggro
 		if (state_manager.states.ContainsKey("CombatState"))
 		{
 			ChaseState c = (state_manager.states["ChaseState"] as ChaseState);
@@ -295,7 +295,7 @@ public class Actor : Spatial
 				}
 			}
 		}
-        
+		
 
 		ArborCoroutine.StartCoroutine(HurtAnimation(), this);
 	}
@@ -307,27 +307,27 @@ public class Actor : Spatial
 
 		dying = true;
 
-        if (IsQueuedForDeletion()) return;
+		if (IsQueuedForDeletion()) return;
 		if(currentTile != null) currentTile.actor = null;
 		bool endGame = config.name == "Spot";
 
-        PackedScene scene = (PackedScene)ResourceLoader.Load("res://scenes/ActorKO.tscn");
-        ActorKO new_ko = (ActorKO)scene.Instance();
-        GetParent().AddChild(new_ko);
-        new_ko.GlobalTranslation = GlobalTranslation;
-        new_ko.GlobalRotation = GlobalRotation;
-        new_ko.Scale = Scale;
+		PackedScene scene = (PackedScene)ResourceLoader.Load("res://scenes/ActorKO.tscn");
+		ActorKO new_ko = (ActorKO)scene.Instance();
+		GetParent().AddChild(new_ko);
+		new_ko.GlobalTranslation = GlobalTranslation;
+		new_ko.GlobalRotation = GlobalRotation;
+		new_ko.Scale = Scale;
 
-        if (actorKO)
+		if (actorKO)
 		{
-            new_ko.Configure(ArborResource.Get<Texture>("images/" + config.pre_ko_sprite_filename), ArborResource.Get<Texture>("images/" + config.ko_sprite_filename), endGame, source);
-        }
+			new_ko.Configure(ArborResource.Get<Texture>("images/" + config.pre_ko_sprite_filename), ArborResource.Get<Texture>("images/" + config.ko_sprite_filename), endGame, source);
+		}
 		else
 		{
-            new_ko.Configure(ArborResource.Get<Texture>("images/" + config.idle_sprite_filename), ArborResource.Get<Texture>("images/" + config.idle_sprite_filename), endGame, source);
-        }
+			new_ko.Configure(ArborResource.Get<Texture>("images/" + config.idle_sprite_filename), ArborResource.Get<Texture>("images/" + config.idle_sprite_filename), endGame, source);
+		}
 
-        QueueFree();
+		QueueFree();
 	}
 
 	public void SetActorTexture(string texture_name){

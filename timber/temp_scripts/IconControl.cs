@@ -1,4 +1,6 @@
+using System;
 using Godot;
+using MoonSharp.Interpreter;
 
 public class IconControl : Node
 {
@@ -13,6 +15,13 @@ public class IconControl : Node
 	private bool isExpanding = false;
 	private float shrinkExpandDuration = 0.3f; 
 	private float animationProgress = 0.0f;    
+	
+	private const float MinScale = 0.0f;
+	private const float MaxScale = 1.0f;
+	private const float MinProgress = 0.0f;
+	private const float MaxProgress = 1.0f;
+
+	private Action shrinkCompleteCallback; // Callback to notify shrink is complete
 
 	public override void _Ready()
 	{
@@ -23,19 +32,8 @@ public class IconControl : Node
 
 	public override void _Process(float delta)
 	{
-		// Handle floating effect
-		time += delta * floatSpeed;
+		UpdateFloatingEffect(delta);
 
-		float newY = Mathf.Sin(time) * floatHeight + offset_y;
-
-		Transform meshTransform = _iconMesh.Transform;
-		Vector3 currentTranslation = meshTransform.origin;
-
-		currentTranslation.y = newY;
-		meshTransform.origin = currentTranslation;
-		_iconMesh.Transform = meshTransform;
-
-		// Handle shrink/expand animations
 		if (isShrinking)
 		{
 			AnimateShrink(delta);
@@ -47,8 +45,24 @@ public class IconControl : Node
 		}
 	}
 
-	public void SetIconInvisible()
+	
+	private void UpdateFloatingEffect(float delta)
 	{
+		time += delta * floatSpeed;
+		float newY = Mathf.Sin(time) * floatHeight + offset_y;
+
+		Transform meshTransform = _iconMesh.Transform;
+		Vector3 currentTranslation = meshTransform.origin;
+
+		currentTranslation.y = newY;
+		meshTransform.origin = currentTranslation;
+		_iconMesh.Transform = meshTransform;
+	}
+
+
+	public void SetIconInvisible(Action callback = null)
+	{
+		shrinkCompleteCallback = callback; // Set the callback if provided
 		StartShrink();
 	}
 	
@@ -58,50 +72,85 @@ public class IconControl : Node
 		StartExpand();
 	}
 
-	// Function to shrink the mesh to size 0
 	public void StartShrink()
 	{
+		ResetAnimationState();
 		isShrinking = true;
-		isExpanding = false;
-		animationProgress = 0.0f;
 	}
 
-	// Function to expand the mesh back to size 1
 	public void StartExpand()
 	{
-		isShrinking = false;
+		ResetAnimationState();
 		isExpanding = true;
-		animationProgress = 0.0f;
 	}
 
 	private void AnimateShrink(float delta)
 	{
 		animationProgress += delta / shrinkExpandDuration;
-		animationProgress = Mathf.Clamp(animationProgress, 0.0f, 1.0f);
+		animationProgress = Mathf.Clamp(animationProgress, MinProgress, MaxProgress);
 
-		// Interpolate the scale from 1 to 0
-		float newScale = Mathf.Lerp(1.0f, 0.0f, animationProgress);
+		float newScale = Mathf.Lerp(MaxScale, MinScale, animationProgress);
 		_iconMesh.Scale = new Vector3(newScale, newScale, newScale);
 
-		if (animationProgress >= 1.0f)
+		if (animationProgress >= MaxProgress)
 		{
 			isShrinking = false;
 			_iconMesh.Visible = false;
+			shrinkCompleteCallback?.Invoke();
 		}
 	}
 
 	private void AnimateExpand(float delta)
 	{
 		animationProgress += delta / shrinkExpandDuration;
-		animationProgress = Mathf.Clamp(animationProgress, 0.0f, 1.0f);
+		animationProgress = Mathf.Clamp(animationProgress, MinProgress, MaxProgress);
 
-		// Interpolate the scale from 0 to 1
-		float newScale = Mathf.Lerp(0.0f, 1.0f, animationProgress);
+		float newScale = Mathf.Lerp(MinScale, MaxScale, animationProgress);
 		_iconMesh.Scale = new Vector3(newScale, newScale, newScale);
 
-		if (animationProgress >= 1.0f)
+		if (animationProgress >= MaxProgress)
 		{
 			isExpanding = false;
 		}
 	}
+	
+	private void ResetAnimationState()
+	{
+		isShrinking = false;
+		isExpanding = false;
+		animationProgress = MinProgress;
+	}
+	
+	public void SetAnimationVariation(int variationIndex)
+	{
+		switch (variationIndex)
+		{
+			case 0:
+				floatSpeed = 1.5f;
+				floatHeight = 0.3f;
+				shrinkExpandDuration = 0.5f;
+				break;
+
+			case 1:
+				floatSpeed = 3.0f;
+				floatHeight = 0.8f;
+				shrinkExpandDuration = 0.2f;
+				break;
+
+			case 2:
+				floatSpeed = 2.0f;
+				floatHeight = 0.5f;
+				shrinkExpandDuration = 0.3f;
+				break;
+
+			default:
+				GD.Print("Unknown variation index, applying default settings.");
+				floatSpeed = 2.0f;
+				floatHeight = 0.5f;
+				shrinkExpandDuration = 0.3f;
+				break;
+		}
+	}
+
+
 }

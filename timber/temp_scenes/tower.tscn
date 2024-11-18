@@ -17,7 +17,7 @@
 flags_transparent = true
 albedo_texture = ExtResource( 6 )
 
-[sub_resource type="Shader" id=13]
+[sub_resource type="Shader" id=16]
 code = "shader_type spatial;
 render_mode blend_mix; // Enable blending for transparency
 
@@ -66,7 +66,7 @@ void fragment() {
 "
 
 [sub_resource type="ShaderMaterial" id=10]
-shader = SubResource( 13 )
+shader = SubResource( 16 )
 shader_param/world_position = null
 shader_param/screenPosX = 0.0
 shader_param/screenPosZ = 0.0
@@ -79,7 +79,7 @@ shader_param/texture_albedo = ExtResource( 11 )
 
 [sub_resource type="QuadMesh" id=11]
 
-[sub_resource type="Shader" id=14]
+[sub_resource type="Shader" id=17]
 code = "shader_type spatial;
 
 uniform sampler2D fowTexture;
@@ -122,7 +122,7 @@ void fragment() {
 "
 
 [sub_resource type="ShaderMaterial" id=12]
-shader = SubResource( 14 )
+shader = SubResource( 17 )
 shader_param/world_position = null
 shader_param/screenPosX = 0.0
 shader_param/screenPosZ = 0.0

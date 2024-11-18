@@ -63,10 +63,6 @@ public class TempCurrencyManager : Node
 		{
 			currencyLabel.Text = $"${currency}";
 
-			// Update the text
-			currencyLabel.Text = $"${currency}";
-
-			// Create a size bounce effect by animating the scale
 			var originalScale = currencyLabel.RectScale;
 			currencyLabel.RectScale = new Vector2(1.2f, 1.2f); 
 			var originalColor = currencyLabel.Modulate;
