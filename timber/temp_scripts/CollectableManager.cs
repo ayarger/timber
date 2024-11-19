@@ -6,6 +6,7 @@ using Amazon.CloudFront.Model;
 public class CollectableManager : Node
 {
 	private static Dictionary<Coord, List<Collectable>> allCollectables = new Dictionary<Coord, List<Collectable>>();
+	private static bool isUpdatingCurrencyManager = false; 
 	public override void _Ready()
 	{
 		SetProcessInput(true);
@@ -53,7 +54,13 @@ public class CollectableManager : Node
 		Collectable collectable_script = new_collectable as Collectable;
 
 		new_collectable.GlobalTranslation = position;
-		allCollectables[Grid.ConvertToCoord(position)].Add(collectable_script);
+		var coord = Grid.ConvertToCoord(position);
+		if (!allCollectables.ContainsKey(coord))
+		{
+			allCollectables[coord] = new List<Collectable>();
+		}
+		allCollectables[coord].Add(collectable_script);		
+		collectable_script.SetCoord(position);
 		return collectable_script;
 	}
 
@@ -62,4 +69,20 @@ public class CollectableManager : Node
 		return allCollectables[coord];
 	}
 
+	public static void UpdateCurrencyManager(Coord coord)
+	{
+		// let the player collect all coins in that grid. 
+		if (!isUpdatingCurrencyManager)
+		{
+			isUpdatingCurrencyManager = true;
+			var total_amount = 0;
+			foreach (var collectable in allCollectables[coord])
+			{
+				total_amount += collectable.GetCollectableValue();
+			}
+			TempCurrencyManager.IncreaseMoney(total_amount);
+			allCollectables[coord].Clear();
+			isUpdatingCurrencyManager = false;
+		}
+	}
 }

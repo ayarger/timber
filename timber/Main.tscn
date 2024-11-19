@@ -162,6 +162,8 @@ script = ExtResource( 4 )
 [node name="TempCurrencyManager" type="Node" parent="."]
 script = ExtResource( 35 )
 
+[node name="Tween" type="Tween" parent="TempCurrencyManager"]
+
 [node name="TempCollectableManager" type="Node" parent="."]
 script = ExtResource( 39 )
 
@@ -517,6 +519,7 @@ script = ExtResource( 30 )
 [node name="ProjectileManager" type="Node" parent="."]
 script = ExtResource( 36 )
 
+[connection signal="tween_all_completed" from="TempCurrencyManager/Tween" to="TempCurrencyManager" method="_on_Tween_tween_all_completed"]
 [connection signal="pressed" from="Dialogue/CanvasLayer/Button" to="Dialogue/CanvasLayer/Button" method="_on_Button_pressed"]
 [connection signal="pressed" from="Dialogue/CanvasLayer/Upload yarn project" to="Dialogue/CanvasLayer/Upload yarn project" method="_on_Button_pressed"]
 [connection signal="file_selected" from="Dialogue/CanvasLayer/Upload yarn project/FileDialog" to="Dialogue/CanvasLayer/Upload yarn project" method="_on_FileDialog_file_selected"]
