@@ -60,18 +60,18 @@ public class LuaLoader : Node
 	{
 		loading_scene = true;
 
-		// JUSTIN: Test to work with binries
-		//ArborResource.Load<GameConfig>("game.config.bin");
-		//yield return ArborResource.WaitFor("game.config.bin");
-		//GameConfig game_config = ArborResource.Get<GameConfig>("game.config.bin");
+        // JUSTIN: Test to work with binries
+        //ArborResource.Load<GameConfig>("game.config.bin");
+        //yield return ArborResource.WaitFor("game.config.bin");
+        //GameConfig game_config = ArborResource.Get<GameConfig>("game.config.bin");
 
-		/* Load game config */
-		ArborResource.Load<GameConfig>("game.config");
-		yield return ArborResource.WaitFor("game.config");
-		GameConfig game_config = ArborResource.Get<GameConfig>("game.config");
-
+        /* Load game config */
         TimeSpan elapsedSnapshot = timeline.Elapsed;
         GD.Print("Loading scene: " + elapsedSnapshot);
+
+        ArborResource.Load<GameConfig>("game.config");
+		yield return ArborResource.WaitFor("game.config");
+		GameConfig game_config = ArborResource.Get<GameConfig>("game.config");
 
 		//yield return LoadActorConfigs();
         yield return LoadScene(game_config.initial_scene_file);
@@ -141,6 +141,9 @@ public class LuaLoader : Node
 
     IEnumerator LoadScene (string scene_filename)
 	{
+        TimeSpan elapsedSnapshot = timeline.Elapsed;
+        GD.Print("! Load Scene: " + scene_filename + " at " + elapsedSnapshot);
+
         ArborResource.Load<ModFileManifest>("mod_file_manifest.json");
         yield return ArborResource.WaitFor("mod_file_manifest.json");
         ModFileManifest manifest = ArborResource.Get<ModFileManifest>("mod_file_manifest.json");
@@ -153,9 +156,6 @@ public class LuaLoader : Node
         {
             ArborResource.Load<ActorConfig>(actor_file);
         }
-
-
-        GD.Print("! Load Scene: " + scene_filename);
 
         ViewportTexture fog_of_war_visibility_texture = new ViewportTexture();
 
@@ -199,8 +199,8 @@ public class LuaLoader : Node
             //yield return ArborResource.WaitFor(actor_file);
 
             ActorConfig actor_info = ArborResource.Get<ActorConfig>(actor_file);
-            if (actor_info.stateConfigs.Count > 0)
-                GD.Print(actor_info.stateConfigs.Count);
+            //if (actor_info.stateConfigs.Count > 0)
+            //    GD.Print(actor_info.stateConfigs.Count);
 
             //temporary
             playerStatConfig.stats["health"] = 100;
@@ -229,6 +229,10 @@ public class LuaLoader : Node
 
             map_code_to_actor_config[actor_info.map_code] = actor_info;
         }
+
+        elapsedSnapshot = timeline.Elapsed;
+        GD.Print("Actors loaded at " + elapsedSnapshot);
+
 
         Texture scene_tile_texture = ArborResource.Get<Texture>(image_filename);
         string layout_file_contents = ArborResource.Get<string>(layout_filename);
@@ -312,8 +316,11 @@ public class LuaLoader : Node
 		EventBus.Publish(new TileDataLoadedEvent());
 		height = z;
 
-		/* Configure fog of war */
-		Viewport viewport = GetParent().GetNode<Viewport>("FogOfWar/HighVisibility");
+        elapsedSnapshot = timeline.Elapsed;
+		GD.Print("Map loaded at " + elapsedSnapshot);
+
+        /* Configure fog of war */
+        Viewport viewport = GetParent().GetNode<Viewport>("FogOfWar/HighVisibility");
 		
 
 		//viewport.RenderTargetClearMode = Godot.Viewport.ClearMode.Never;
@@ -362,7 +369,10 @@ public class LuaLoader : Node
 			avg_pos += pos;
 		avg_pos /= player_actor_spawn_positions.Count;
         most_recent_load_scene_result = new LoadSceneResult() { average_position_of_player_actors = avg_pos };
-	}
+
+        elapsedSnapshot = timeline.Elapsed;
+		GD.Print("Fog of war loaded at " + elapsedSnapshot);
+    }
 
 
 	public Actor SpawnActorOfType(ActorConfig config, Vector3 position)
