@@ -194,62 +194,31 @@ public class ArborResource : Node
             string[] parts = resource.Split('.');
             string extension = (parts.Length > 1) ? "." + parts[parts.Length - 1] : string.Empty;
 
-            Stopwatch stopwatch1 = new Stopwatch();
-            Stopwatch stopwatch2 = new Stopwatch();
-            stopwatch1.Start();
-            stopwatch2.Start();
-            string binaryOrNot = "";
+            // Set Resouce = Negligable for Protobuf.
 
             if (extension == ".bin")
             {
-                binaryOrNot = "binary";
                 if(type == "ActorConfig") { 
                     var parsedData = ProtobufParser.ParseBinary<ActorConfig>(body, type);
-                    stopwatch1.Stop();
                     SetResource(key, parsedData);
-                    stopwatch2.Stop();
                 }
                 else if(type == "GameConfig")
                 {
                     var parsedData = ProtobufParser.ParseBinary<GameConfig>(body, type);
-                    stopwatch1.Stop();
                     SetResource(key, parsedData);
-                    stopwatch2.Stop();
                 }
                 else if(type == "ModFileManifest")
                 {
                     var parsedData = ProtobufParser.ParseBinary<ModFileManifest>(body, type);
-                    stopwatch1.Stop();
                     SetResource(key, parsedData);
-                    stopwatch2.Stop();
                 }
-
-                TimeSpan elapsedTime = stopwatch1.Elapsed;
-                TimeSpan elapsedTime2 = stopwatch2.Elapsed;
-                GD.Print("TIME TAKEN For " + binaryOrNot + " " + type + ": -----------------------");
-                GD.Print($"Elapsed Time: {elapsedTime.TotalMilliseconds} ms");
-                GD.Print($"Elapsed Time Function: {elapsedTime2.TotalMilliseconds} ms");
-                GD.Print("--------------------------------------------");
             }
             else
             {
-                binaryOrNot = "string";
                 string s = Encoding.UTF8.GetString(body);
                 JsonSerializerSettings settings = new JsonSerializerSettings();
 
-                stopwatch1.Stop();
-
                 SetResource(key, JsonConvert.DeserializeObject(s, Type.GetType(type), settings));
-
-                stopwatch2.Stop();
-
-                TimeSpan elapsedTime1 = stopwatch1.Elapsed;
-                TimeSpan elapsedTime2 = stopwatch2.Elapsed;
-                GD.Print("TIME TAKEN For " + binaryOrNot + " " + type + ": -----------------------");
-                GD.Print($"Elapsed Time Parsing: {elapsedTime1.TotalMilliseconds} ms");
-                GD.Print($"Elapsed Time Function: {elapsedTime2.TotalMilliseconds} ms");
-                GD.Print("--------------------------------------------");
-
             }
         }
 
