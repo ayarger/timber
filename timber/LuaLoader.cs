@@ -68,7 +68,7 @@ public class LuaLoader : Node
 
 		GD.Print("Loading scene");
 
-		yield return LoadActorConfigs();
+		//yield return LoadActorConfigs();
         yield return LoadScene(game_config.initial_scene_file);
 
         loading_scene = false;
@@ -78,13 +78,13 @@ public class LuaLoader : Node
     IEnumerator LoadActorConfigs()
     {
 		// JUSTIN: Test to work with binaries
-		//ArborResource.Load<ModFileManifest>("binary_mod_file_manifest.bin");
-		//yield return ArborResource.WaitFor("binary_mod_file_manifest.bin");
-		//ModFileManifest manifest = ArborResource.Get<ModFileManifest>("binary_mod_file_manifest.bin");
+		ArborResource.Load<ModFileManifest>("binary_mod_file_manifest.bin");
+		yield return ArborResource.WaitFor("binary_mod_file_manifest.bin");
+		ModFileManifest manifest = ArborResource.Get<ModFileManifest>("binary_mod_file_manifest.bin");
 
-		ArborResource.Load<ModFileManifest>("mod_file_manifest.json");
-		yield return ArborResource.WaitFor("mod_file_manifest.json");
-		ModFileManifest manifest = ArborResource.Get<ModFileManifest>("mod_file_manifest.json");
+		//ArborResource.Load<ModFileManifest>("mod_file_manifest.json");
+		//yield return ArborResource.WaitFor("mod_file_manifest.json");
+		//ModFileManifest manifest = ArborResource.Get<ModFileManifest>("mod_file_manifest.json");
 
 		List<string> actor_files = manifest.Search("actor_definitions/*");
 
@@ -135,7 +135,23 @@ public class LuaLoader : Node
 
     IEnumerator LoadScene (string scene_filename)
 	{
-		ViewportTexture fog_of_war_visibility_texture = new ViewportTexture();
+        ArborResource.Load<ModFileManifest>("mod_file_manifest.json");
+        yield return ArborResource.WaitFor("mod_file_manifest.json");
+        ModFileManifest manifest = ArborResource.Get<ModFileManifest>("mod_file_manifest.json");
+
+        List<string> actor_files = manifest.Search("actor_definitions/*");
+
+        StateProcessor.Initialize();
+
+        foreach (string actor_file in actor_files)
+        {
+            ArborResource.Load<ActorConfig>(actor_file);
+        }
+
+
+        GD.Print("! Load Scene: " + scene_filename);
+
+        ViewportTexture fog_of_war_visibility_texture = new ViewportTexture();
 
         string image_filename = "images/" + scene_filename + ".png";
 		ArborResource.Load<Texture>(image_filename);
@@ -157,11 +173,56 @@ public class LuaLoader : Node
 		);
 
 		ArborResource.Load<AudioStream>("sounds/bgm_btd_defeat.ogg");
-		yield return ArborResource.WaitFor("sounds/bgm_btd_defeat.ogg");
 
+        //yield return ArborResource.WaitFor("sounds/bgm_btd_defeat.ogg");
+
+        //yield return ArborResource.WaitFor(image_filename);
+        //yield return ArborResource.WaitFor(layout_filename);
+        //yield return ArborResource.WaitFor(config_filename);
+
+
+        // JUSTIN: Image is the largest file, should limit time by largest constraining download. 
+        // JUSTIN: A little unsafe. Works fine under testing.
         yield return ArborResource.WaitFor(image_filename);
-        yield return ArborResource.WaitFor(layout_filename);
-        yield return ArborResource.WaitFor(config_filename);
+
+        foreach (string actor_file in actor_files)
+        {
+            GD.Print("Loading actor file: " + actor_file);
+
+			// JUSTIN: No need with previous yield return.
+            //yield return ArborResource.WaitFor(actor_file);
+
+            ActorConfig actor_info = ArborResource.Get<ActorConfig>(actor_file);
+            if (actor_info.stateConfigs.Count > 0)
+                GD.Print(actor_info.stateConfigs.Count);
+
+            //temporary
+            playerStatConfig.stats["health"] = 100;
+
+            enemyStatConfig.stats["health"] = 50;
+
+            if (actor_info.team == "player")
+            {
+                //actor_info.stateConfigs.Add(playerCombatConfig);
+                actor_info.statConfig = playerStatConfig;
+            }
+            else if (actor_info.team == "construction")
+            {
+                actor_info.statConfig = playerStatConfig;
+            }
+            else if (actor_info.name == "Chunk")
+            {
+                actor_info.statConfig = enemyStatConfig;
+
+            }
+            else
+            {
+                actor_info.statConfig = enemyStatConfig;
+                ArborResource.Load<Texture>("images/cheese.png");
+            }
+
+            map_code_to_actor_config[actor_info.map_code] = actor_info;
+        }
 
         Texture scene_tile_texture = ArborResource.Get<Texture>(image_filename);
         string layout_file_contents = ArborResource.Get<string>(layout_filename);
@@ -260,16 +321,16 @@ public class LuaLoader : Node
         float new_marker_x = viewport.Size.x * (player_node.GlobalTranslation.x * 0.5f / width);
 		float new_marker_y = viewport.Size.y * (player_node.GlobalTranslation.z * 0.5f / height);
 
-		yield return null;
-		yield return null;
+		//yield return null;
+		//yield return null;
 
 		//Deprecated
 		//fog_of_war_visibility_texture = new ViewportTexture();
 
 		//fog_of_war_visibility_texture.ViewportPath = viewport.GetPath();
 
-        yield return null;
-        yield return null;
+        //yield return null;
+        //yield return null;
 
 
         Vector2 new_marker_pos = new Vector2(new_marker_x, new_marker_y);
@@ -281,8 +342,8 @@ public class LuaLoader : Node
         Sprite visibility_marker = GetParent().GetNode<Sprite>("FogOfWar/HighVisibility/Sprite");
 		visibility_marker.Position = new_marker_pos;
 
-		yield return null;
-		yield return null;
+		//yield return null;
+		//yield return null;
 		//I think you need to set the param every frame? Done in FogOfWar.cs
 		//foreach(ShaderMaterial mat in tile_mats)
 		//{
