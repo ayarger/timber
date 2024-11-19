@@ -194,7 +194,6 @@ public class Actor : Spatial
 	Vector3 previous_position = Vector3.Zero;
 	void ComputeSharedAnimationData()
 	{
-
 		/* Determine which direction the actor would generally prefer to look in. */
 		Vector3 position_delta = GlobalTranslation - previous_position;
 		//GD.Print("COMPUTE ANIM!!! " + GlobalTranslation.x + " vs " + previous_position.x);

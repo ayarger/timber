@@ -14,6 +14,8 @@ public class GameplayCamera : Camera
     public static float GetDesiredZoom() { return instance.desired_zoom_factor; }
 
     public static GameplayCamera GetGameplayCamera() { return instance; }
+    
+    Subscription<EventPlayerDefeated> sub_EventPlayerDefeated;
 
     public override void _Ready()
     {
@@ -24,7 +26,7 @@ public class GameplayCamera : Camera
         ForceNewState(new IntroCutsceneCameraState());
     }
 
-    Subscription<EventPlayerDefeated> sub_EventPlayerDefeated;
+ 
     void OnEventPlayerDefeated(EventPlayerDefeated e)
     {
         ForceNewState(new PlayerDefeatedCutsceneCameraState(e.actor_ko));

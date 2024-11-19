@@ -28,6 +28,10 @@ public class SelectionSystem : Node
 
     HashSet<IsSelectable> current_active_selectables = new HashSet<IsSelectable>();
     public static HashSet<IsSelectable>  GetCurrentActiveSelectables() { return instance.current_active_selectables; }
+
+    private Subscription<EventTileCursorChangedLocation> event_tile_cursor_changed_location_sub;
+    private Subscription<TowerManager.EventToggleTowerPlacement> event_tower_tower_placement_sub;
+    private Subscription<TowerManager.EventCancelTowerPlacement> event_cancel_tower_placement_sub;
     public static bool IsSelected(IsSelectable selectable)
     {
         return instance.current_active_selectables.Contains(selectable);
@@ -39,9 +43,17 @@ public class SelectionSystem : Node
         active_cursor = GetNode<CSGMesh>("active_cursor");
         active_cursor.GetNode<CSGMesh>("active_cursor_tower").Visible = false;
 
-        EventBus.Subscribe<EventTileCursorChangedLocation> (OnEventTileCursorChangedLocation);
-        EventBus.Subscribe<TowerManager.EventToggleTowerPlacement> (OnEventToggleTowerPlacement);
-        EventBus.Subscribe<TowerManager.EventCancelTowerPlacement> (OnEventCancelTowerPlacement);
+        event_tile_cursor_changed_location_sub = EventBus.Subscribe<EventTileCursorChangedLocation> (OnEventTileCursorChangedLocation);
+        event_tower_tower_placement_sub = EventBus.Subscribe<TowerManager.EventToggleTowerPlacement> (OnEventToggleTowerPlacement);
+        event_cancel_tower_placement_sub = EventBus.Subscribe<TowerManager.EventCancelTowerPlacement> (OnEventCancelTowerPlacement);
+        
+    }
+
+    public override void _ExitTree()
+    {
+        EventBus.Unsubscribe(event_tile_cursor_changed_location_sub);
+        EventBus.Unsubscribe(event_tower_tower_placement_sub);
+        EventBus.Unsubscribe(event_cancel_tower_placement_sub);
         
     }
 

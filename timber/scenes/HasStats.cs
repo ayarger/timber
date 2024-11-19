@@ -187,9 +187,7 @@ public class HasStats : Node
 		if (display && Stats_With_Bar.Count < 3)
 		{
 			Stats_With_Bar.Add(name);
-			Stats_With_Bar.Add(name);
 			int index = Stats_With_Bar.Count - 1;
-
 			if (!Stats.ContainsKey(name))
 			{
 				//create stat

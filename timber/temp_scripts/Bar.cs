@@ -10,7 +10,9 @@ public class Bar : Control
 
 	int index;
 
-	TextureProgress tex_progress;
+	TextureProgress anim_progress; // for animation
+
+	private TextureProgress tex_progress; // value
 
 	Tween ui_tween;
 
@@ -19,7 +21,8 @@ public class Bar : Control
     public override void _Ready()
     {
         // get tex_progress
-        tex_progress = GetNode<TextureProgress>("FrontProgress");
+        anim_progress = GetNode<TextureProgress>("FrontProgress");
+        tex_progress = GetNode<TextureProgress>("FrontProgress2");
         // get target_tween
         ui_tween = GetNode<Tween>("UITween");
         statChangeEvent = EventBus.Subscribe<StatChangeEvent>(OnUIStatChange);
@@ -37,7 +40,7 @@ public class Bar : Control
     /// <param name="_color"></param>
     public void ChangeColor(Color _color)
     {
-        tex_progress.SelfModulate = _color;
+        anim_progress.SelfModulate = _color;
     }
 
 	public void toggleVisible(bool visible)
@@ -54,13 +57,14 @@ public class Bar : Control
 		if (e.stat_name == data_name)
 		{
 			float target_value = target_data.Stats[data_name].Ratio * 100;
+			tex_progress.Value = target_value;
 			// Stop any ongoing tween operation.
 			ui_tween.StopAll();
 			//GD.Print(tex_progress.Value);
 			ui_tween.InterpolateProperty(
-				tex_progress,
+				anim_progress,
 				"value",
-				tex_progress.Value,
+				anim_progress.Value,
 				target_value,
 				0.5f,
 				Tween.TransitionType.Linear,
@@ -83,7 +87,8 @@ public class Bar : Control
         ui_tween.InterpolateProperty(this,"rect_scale", RectScale,new Vector2(1, 1), 0.3f,Tween.TransitionType.Back, Tween.EaseType.Out);
         ui_tween.Start(); // Start the tween.
         tex_progress.Value = target_data.Stats[data_name].currVal;
-    }
+        anim_progress.Value = tex_progress.Value;
+	}
 
     public void OnCreate2()
     {
@@ -91,7 +96,8 @@ public class Bar : Control
         FadeIn(1);
         ui_tween.Start();
         tex_progress.Value = target_data.Stats[data_name].currVal;
-	}
+        anim_progress.Value = tex_progress.Value;
+    }
 
 	public void FadeIn(float duration)
 	{

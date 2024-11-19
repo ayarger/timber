@@ -75,8 +75,6 @@ public class BarContainer : Control
 
     public override void _Process(float delta)
     {
-
-
         if (IsInstanceValid(target_data))
         {
             //bool actorIsVisible = FogOfWar.IsVisible(target_actor.GlobalTranslation.x, target_actor.GlobalTranslation.z, true);
@@ -226,7 +224,7 @@ public class BarContainer : Control
 
     void OnCombatStateChange(CombatStateEnabledEvent e)
     {
-        if (e.actor != null)
+        if (e.actor != null && target_data != null)
         {
             if (e.actor.Name == target_data.GetParent().Name)
             {
@@ -236,36 +234,6 @@ public class BarContainer : Control
     }
 
     // Testing
-    public override void _Input(InputEvent @event)
-    {
-        if (@event is InputEventKey eventKey && eventKey.Pressed && !eventKey.Echo)
-        {
-            if (eventKey.Scancode == (int)KeyList.Key3)
-            {
-                RemovePrimary();
-            }
-
-            else if (eventKey.Scancode == (int)KeyList.Key4)
-            {
-                RemoveSecondary(0);
-            }
-
-            else if (eventKey.Scancode == (int)KeyList.Key5)
-            {
-                RemoveSecondary(1);
-            }
-
-            else if (eventKey.Scancode == (int)KeyList.Key8)
-            {
-                ToggleVisibilityOff();
-            }
-
-            else if (eventKey.Scancode == (int)KeyList.Key9)
-            {
-                ToggleVisibilityOn();
-            }
-        }
-    }
 
     public void ClearBars()
     {
