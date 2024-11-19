@@ -160,9 +160,9 @@ public class Actor : Spatial
 			this
 		);
 		if(config.team == "player"){
-			foreach(var config in config.stateConfigs){
-				GD.Print("CONFIG: " + config.name);
-			}
+			//foreach(var config in config.stateConfigs){
+			//	GD.Print("CONFIG: " + config.name);
+			//}
 		}
 
 		state_manager.Configure(config.stateConfigs);

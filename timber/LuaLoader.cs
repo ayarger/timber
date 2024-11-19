@@ -10,6 +10,7 @@ using Newtonsoft.Json.Linq;
 using System.Security.Permissions;
 using System.Collections;
 using System.Text.RegularExpressions;
+using System.Diagnostics;
 
 public class LuaLoader : Node
 {
@@ -21,18 +22,19 @@ public class LuaLoader : Node
 
 	static LuaLoader instance;
 
+    static Stopwatch timeline;
 
-	//TEMP fake json example
-	// StateConfig enemyMeleeCombatConfig = new StateConfig() { name = "MeleeCombatState", 
-	// 	stateStats = { 
-	// 		{ "attackRange", 1 }, 
-	// 		{ "attackDamage", 20 }, 
-	// 		{ "criticalHitRate", 0.5f }, 
-	// 		{ "attackWindup", 0.5f }, 
-	// 		{ "attackRecovery", 0.125f }, 
-	// 		{ "attackCooldown", 1 } } };
+    //TEMP fake json example
+    // StateConfig enemyMeleeCombatConfig = new StateConfig() { name = "MeleeCombatState", 
+    // 	stateStats = { 
+    // 		{ "attackRange", 1 }, 
+    // 		{ "attackDamage", 20 }, 
+    // 		{ "criticalHitRate", 0.5f }, 
+    // 		{ "attackWindup", 0.5f }, 
+    // 		{ "attackRecovery", 0.125f }, 
+    // 		{ "attackCooldown", 1 } } };
 
-	StatConfig enemyStatConfig = new StatConfig();
+    StatConfig enemyStatConfig = new StatConfig();
 	StatConfig playerStatConfig = new StatConfig();
 
 	
@@ -44,6 +46,8 @@ public class LuaLoader : Node
 
         ArborCoroutine.StartCoroutine(Load(), this);
 
+		timeline = new Stopwatch();
+		timeline.Start();
 	}
 
 	bool loading_scene = false;
@@ -66,10 +70,14 @@ public class LuaLoader : Node
 		yield return ArborResource.WaitFor("game.config");
 		GameConfig game_config = ArborResource.Get<GameConfig>("game.config");
 
-		GD.Print("Loading scene");
+        TimeSpan elapsedSnapshot = timeline.Elapsed;
+        GD.Print("Loading scene: " + elapsedSnapshot);
 
 		//yield return LoadActorConfigs();
         yield return LoadScene(game_config.initial_scene_file);
+
+        elapsedSnapshot = timeline.Elapsed;
+        GD.Print("Scene loaded at " + elapsedSnapshot);
 
         loading_scene = false;
     }
@@ -101,8 +109,6 @@ public class LuaLoader : Node
 			yield return ArborResource.WaitFor(actor_file);
 
             ActorConfig actor_info = ArborResource.Get<ActorConfig>(actor_file);
-			if(actor_info.stateConfigs.Count > 0)
-				GD.Print(actor_info.stateConfigs.Count);
 
 			//temporary
 			playerStatConfig.stats["health"] = 100;
@@ -187,7 +193,7 @@ public class LuaLoader : Node
 
         foreach (string actor_file in actor_files)
         {
-            GD.Print("Loading actor file: " + actor_file);
+            //GD.Print("Loading actor file: " + actor_file);
 
 			// JUSTIN: No need with previous yield return.
             //yield return ArborResource.WaitFor(actor_file);

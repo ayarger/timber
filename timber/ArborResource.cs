@@ -366,7 +366,7 @@ public class ArborResource : Node
             ArborResource.Load<T>(resource);
         }
 
-        PrintUsageCallbackCount();
+        //PrintUsageCallbackCount();
     }
 
     class CallbackResourcePair

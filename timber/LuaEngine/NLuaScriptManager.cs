@@ -287,9 +287,9 @@ public class NLuaScriptManager : Node
                 + "\r\nend\r\n";
 			codegen += func;
         }
-        GD.Print("Code Gen:");
-        GD.Print(codegen);
-		GD.Print("End Code Gen");
+  //      GD.Print("Code Gen:");
+  //      GD.Print(codegen);
+		//GD.Print("End Code Gen");
 
 
         GD.Print("Lua:" + ResourceLoader.Exists("res://LuaEngine/testmodules/protoc.lua"));
