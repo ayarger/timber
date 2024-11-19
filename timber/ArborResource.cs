@@ -21,11 +21,16 @@ public class ArborResource : Node
 
     static ArborResource instance;
 
+    static Stopwatch timeline;
+
     public override void _Ready()
     {
         base._Ready();
 
         instance = this;
+
+        timeline = Stopwatch.StartNew();
+        timeline.Start();
 
         if (OS.GetName() == "Web" || OS.GetName() == "HTML5")
         {
@@ -82,7 +87,11 @@ public class ArborResource : Node
             return;
         }
 
-        GD.Print("retrieved [" + key + "]");
+        //GD.Print("retrieved [" + key + "]");
+
+        TimeSpan elapsedSnapshot = timeline.Elapsed;
+        GD.Print("[Request Complete] " + key + ": at (" + elapsedSnapshot + ")");
+
 
         if (type == "Texture")
         {
@@ -284,7 +293,9 @@ public class ArborResource : Node
         };
 
         new_request.Request(web_url, headers);
-        GD.Print("web retrieving [" + resource + "]");
+
+        TimeSpan elapsedSnapshot = timeline.Elapsed;
+        GD.Print("web retrieving [" + resource + "] @ " + elapsedSnapshot);
     }
 
     public static T Get<T>(string asset_path_relative_to_external_resources_folder) where T : class
