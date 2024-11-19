@@ -95,7 +95,11 @@ public class MeleeCombatState : CombatState
     {
         attacking = true;
         attackable = false;
+		if(actor.actorName == "Spot")
+			actor.SetActorTexture("spot_attack.png");
         yield return ArborCoroutine.WaitForSeconds(attackWindup);
+		if(actor.actorName == "Spot")
+			actor.SetActorTexture("spot_idle.png");
 
 		attacking = false;
 		if (GD.Randf() < criticalHitRate)

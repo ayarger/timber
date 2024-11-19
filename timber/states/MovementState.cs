@@ -31,7 +31,7 @@ public class MovementState : ActorState
         inclusiveStates = new HashSet<string>();
         waypoints = new List<Vector3>();
         ArborCoroutine.StopCoroutinesOnNode(this);
-        actor.SetActorTexture("spot_step_right.png");
+        actor.SetActorTexture("walk_right");
     }
 
     public override void Config(StateConfig stateConfig)
@@ -108,15 +108,13 @@ public class MovementState : ActorState
         const float rot_amplitude = 0.075f;
         actor.view.Rotation = actor.initial_rotation + new Vector3(0, 0, rot_amplitude * Mathf.Sin(timer * rot_frequency));
         
-        if(actor.actorName == "Spot"){
-            if(animationTimer > Mathf.Pi/(rot_frequency) && animationTimer < 2*Mathf.Pi/(rot_frequency))
-            {
-                actor.SetActorTexture("spot_step_left.png");//HARDCODE TEST
-            }else if(animationTimer > 2*Mathf.Pi/(rot_frequency))
-            {
-                animationTimer = 0.0f;
-                actor.SetActorTexture("spot_step_right.png");//HARDCODE TEST
-            }
+        if(animationTimer > Mathf.Pi/(rot_frequency) && animationTimer < 2*Mathf.Pi/(rot_frequency))
+        {
+            actor.SetActorTexture("walk_left");//HARDCODE TEST
+        }else if(animationTimer > 2*Mathf.Pi/(rot_frequency))
+        {
+            animationTimer = 0.0f;
+            actor.SetActorTexture("walk_right");//HARDCODE TEST
         }
         
         
@@ -129,8 +127,19 @@ public class MovementState : ActorState
 
         /* Paper Turning */
         float current_scale_x = actor.view.Scale.x;
-        current_scale_x += (actor.GetDesiredScaleX() - current_scale_x) * 0.2f;
-        actor.view.Scale = new Vector3(current_scale_x, actor.view.Scale.y, actor.view.Scale.z);
+        if(current_scale_x != actor.GetDesiredScaleX()){
+            if (Mathf.Abs(current_scale_x - actor.GetDesiredScaleX()) < 0.01f)
+            {
+                current_scale_x = actor.GetDesiredScaleX();
+            }else{
+                current_scale_x += (actor.GetDesiredScaleX() - current_scale_x) * 0.2f;
+            }
+            
+            actor.view.Scale = new Vector3(current_scale_x, actor.view.Scale.y, actor.view.Scale.z);
+        }
+        
+
+        //GD.Print(actor.view.Scale);
     }
 
     IEnumerator MoveToNearestTile()
