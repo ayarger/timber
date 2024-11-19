@@ -350,14 +350,11 @@ public class Actor : Spatial
 
 	public void MeshRelativeToShadow(ActorDataLoadedEvent e)
 	{
-		GD.Print("Done loading actor resources");
 		if (IsInstanceValid(bar_container))
 		{
-			GD.Print("relative pos calc starts");
 			Vector3 shadow_position = bar_container.target_shadow.GlobalTranslation;
 			Vector3 mesh_position = character_view.GlobalTransform.Xform(new Vector3(0, character_view.Scale.y, character_view.Scale.z)); ;
 			bar_container.relativeToshadow = mesh_position - shadow_position;
-			GD.Print($"relativePos set to: {bar_container.relativeToshadow}");
 		}
 	}
 

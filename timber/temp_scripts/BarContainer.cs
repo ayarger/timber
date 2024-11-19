@@ -79,8 +79,8 @@ public class BarContainer : Control
 
         if (IsInstanceValid(target_data))
         {
-            bool actorIsVisible = FogOfWar.IsVisible(target_actor.GlobalTranslation.x, target_actor.GlobalTranslation.z, true);
-            displayOn = !target_selection.first_time_placement && actorIsVisible && (target_selection.am_i_selected || target_selection.AmIHovered() || statChanged || combatEnabled);
+            //bool actorIsVisible = FogOfWar.IsVisible(target_actor.GlobalTranslation.x, target_actor.GlobalTranslation.z, true);
+            displayOn = !target_selection.first_time_placement && (target_selection.am_i_selected || target_selection.AmIHovered() || statChanged || combatEnabled);
             Visible = displayOn;
             PursueTarget();
         }
