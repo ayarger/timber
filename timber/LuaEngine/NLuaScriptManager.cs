@@ -13,6 +13,7 @@ using MoonSharp.Interpreter.Loaders;
 using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json.Serialization;
+using System.Diagnostics;
 using YarnSpinnerGodot;
 
 public class NLuaScriptManager : Node
@@ -42,9 +43,10 @@ public class NLuaScriptManager : Node
 
 	public static List<LuaSingleton> luaWorkers;
 
+    static Stopwatch timeline;
 
-	//Must be ran before making any instances of a class. 
-	public void RegisterClass(File rootFile, string className)
+    //Must be ran before making any instances of a class. 
+    public void RegisterClass(File rootFile, string className)
 	{
 		if (registeredClasses.Contains(className))
 		{
@@ -319,11 +321,18 @@ public class NLuaScriptManager : Node
     {
 		GD.Print("Start Lua Initialization");
 
+		timeline = new Stopwatch();
+		timeline.Start();
+		GD.Print(timeline.Elapsed);
+
 		YarnManager.DialogueRunner = GetNode<DialogueRunner>(dialogueRunnerPath);
 
-		//C# attributes and code-gen
-		luaMethods = LuaCommand.FindAllFunctionsWithAttribute();
-		string codegen = "";
+        //C# attributes and code-gen
+        GD.Print("Find all functions with value start: " + timeline.Elapsed);
+        luaMethods = LuaCommand.FindAllFunctionsWithAttribute();
+        GD.Print("Find all functions with value done: " + timeline.Elapsed);
+
+        string codegen = "";
 
 		foreach (var luaMethod in luaMethods) {
 			string parametersString1 = "";
@@ -362,11 +371,13 @@ public class NLuaScriptManager : Node
                 + "\r\nend\r\n";
 			codegen += func;
         }
+
 		if (verbose)
         {
             GD.Print("Code Gen:");
             GD.Print(codegen);
             GD.Print("End Code Gen");
+			GD.Print("files system start " + timeline.Elapsed);
         }
 
         GD.Print("Lua:" + ResourceLoader.Exists("res://LuaEngine/testmodules/protoc.lua"));
@@ -405,6 +416,7 @@ public class NLuaScriptManager : Node
 		Godot.File x = new Godot.File();
 		x.Open($"LuaEngine/{testClassName}.lua", Godot.File.ModeFlags.Read);
 		RegisterClass(x, testClassName);
+
 
         Godot.File y = new Godot.File();
         y.Open($"LuaEngine/{testClassNameDialogue}.lua", Godot.File.ModeFlags.Read);
@@ -502,27 +514,54 @@ public class LuaCommand : System.Attribute
     }
     public static Dictionary<string, LuaMethodInfo> FindAllFunctionsWithAttribute()
     {
-        var typesWithMyAttribute =
-            from a in AppDomain.CurrentDomain.GetAssemblies()
-            from t in a.GetTypes()
-            from f in t.GetMethods()
-            let attributes = f.GetCustomAttributes(typeof(LuaCommand), true)
-            where attributes != null && attributes.Length > 0
-            select new { Method = f, Attribute = attributes.Cast<LuaCommand>().First() };
+        Stopwatch timeline = new Stopwatch();
+		timeline.Start();
 
-		Dictionary<string, LuaMethodInfo> ans = new Dictionary<string, LuaMethodInfo>();
+        //var assemblies = AppDomain.CurrentDomain.GetAssemblies()
+		//	.Where(a => !a.IsDynamic && a.FullName.Contains("TargetAssemblyName")); // Filter relevant assemblies
+
+		// Shoud cache results? Parrellize?
+
+
+		//var typesWithMyAttribute = (
+		//	from a in AppDomain.CurrentDomain.GetAssemblies()
+		//	from t in a.GetTypes()
+		//	from f in t.GetMethods()
+		//	let attributes = f.GetCustomAttributes(typeof(LuaCommand), true)
+		//	where attributes != null && attributes.Length > 0
+		//	select new { Method = f, Attribute = attributes.Cast<LuaCommand>().First() }
+		//).ToList();
+
+		// Parralelized with PlinQ
+        var typesWithMyAttribute = AppDomain.CurrentDomain.GetAssemblies()
+			.AsParallel() // Parallelize the assembly processing
+			.SelectMany(a => a.GetTypes())
+			.SelectMany(t => t.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static)
+				.Select(f => new { Method = f, Attributes = f.GetCustomAttributes(typeof(LuaCommand), true) }))
+			.Where(x => x.Attributes != null && x.Attributes.Length > 0)
+			.Select(x => new { Method = x.Method, Attribute = x.Attributes.Cast<LuaCommand>().First() })
+			.ToList();
+
+
+        GD.Print("typesWithAttributes all found in " + timeline.Elapsed);
+
+        Dictionary<string, LuaMethodInfo> ans = new Dictionary<string, LuaMethodInfo>();
 
 		foreach (var attribute in typesWithMyAttribute)
 		{
 			GD.Print(attribute.Attribute.Name);
 			ans[attribute.Attribute.Name] = new LuaMethodInfo(attribute.Method, attribute.Attribute.UsesNode);
-		}
-		GD.Print("Number of funcs with attribute:" + typesWithMyAttribute.Count());
-		return ans;
+            GD.Print("attribute: " + attribute.ToString() + " found at " + timeline.Elapsed);
+        }
 
+        //GD.Print("Number of funcs with attribute:" + typesWithMyAttribute.Count());
+
+        GD.Print("FindAllFunctionsFinished in " + timeline.Elapsed);
+
+        return ans;
     }
 
-	public static object RunMethod(MethodInfo methodInfo, Dictionary<string, object> cmd)
+    public static object RunMethod(MethodInfo methodInfo, Dictionary<string, object> cmd)
 	{
 		List<object> args = new List<object>();
 		foreach(var pi in methodInfo.GetParameters())

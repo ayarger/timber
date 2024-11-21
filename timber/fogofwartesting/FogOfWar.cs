@@ -77,8 +77,8 @@ public class FogOfWar : Viewport
         screenPosX = -25;
         screenPosZ = -25;
 
-        GD.Print($"Fog Of War Set Screen Width: {screenWidth}");
-        GD.Print($"Fog Of War Set Screen Height: {screenHeight}");
+        //GD.Print($"Fog Of War Set Screen Width: {screenWidth}");
+        //GD.Print($"Fog Of War Set Screen Height: {screenHeight}");
     }
 
     public override void _ExitTree()
