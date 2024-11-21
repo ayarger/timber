@@ -52,14 +52,14 @@ public class ChaseState : ActorState
                 Coord cur = Grid.ConvertToCoord(waypoints[waypoints.Count - 1]);
                 if (Grid.Get(cur).actor == null || Grid.Get(cur).actor == actor)
                 {
-                    actor.currentTile.actor = null;
+                    if (actor.currentTile != null) actor.currentTile.actor = null;
                     Grid.Get(cur).actor = actor;
                     actor.currentTile = Grid.Get(cur);
                 }
                 else
                 {
                     TileData newDest = FindNearestUnclaimedTile(cur.x, cur.z);
-                    actor.currentTile.actor = null;
+                    if (actor.currentTile != null) actor.currentTile.actor = null;
                     newDest.actor = actor;
                     actor.currentTile = newDest;
                     waypoints = TestMovement.PathFind(actor.GlobalTranslation, newDest.GlobalTranslation);
@@ -147,7 +147,7 @@ public class ChaseState : ActorState
         Coord cur = new Coord(x, z);
         if (Grid.Get(cur).actor==null || Grid.Get(cur).actor == actor)
         {
-            actor.currentTile.actor = null;
+            if(actor.currentTile!=null) actor.currentTile.actor = null;
             Grid.Get(cur).actor = actor;
             actor.currentTile = Grid.Get(cur);
         }
