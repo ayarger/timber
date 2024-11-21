@@ -506,6 +506,7 @@ margin_bottom = 40.0
 
 [node name="NLuaManager" type="Node" parent="."]
 script = ExtResource( 19 )
+dialogueRunnerPath = NodePath("../Dialogue/CanvasLayer/DialogueRunner")
 
 [node name="TestAttack" type="Node" parent="."]
 script = ExtResource( 30 )

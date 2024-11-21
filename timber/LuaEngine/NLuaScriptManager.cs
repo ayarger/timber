@@ -13,9 +13,15 @@ using MoonSharp.Interpreter.Loaders;
 using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json.Serialization;
+using YarnSpinnerGodot;
 
 public class NLuaScriptManager : Node
 {
+
+    public bool verbose = false;
+
+	[Export]
+    public NodePath dialogueRunnerPath;
 
 	public static int id = 0;
 	public static Script luaState;
@@ -28,8 +34,13 @@ public class NLuaScriptManager : Node
 	public static Dictionary<string,Spatial> luaActors; //This can have duplicate actors, if actors have more than one script.
 
 	public static string testClassName = "testluaobject";
+    public static string testClassNameDialogue = "testluadialogue";
 
-	public static Dictionary<string, LuaMethodInfo> luaMethods;
+    public static string emptyLuaFile = "lua_empty";
+
+    public static Dictionary<string, LuaMethodInfo> luaMethods;
+
+	public static List<LuaSingleton> luaWorkers;
 
 
 	//Must be ran before making any instances of a class. 
@@ -85,12 +96,33 @@ public class NLuaScriptManager : Node
 		}
 		GD.Print($"Created {className} Object: {objectName}");
 		return true;
-	}
+    }
+    public void KillActor(Spatial actor)
+    {
+		foreach(var e in luaActors)
+		{
+			if(e.Value == actor)
+			{
+				RemoveActor(e.Key,e.Value);
+                return;
+			}
+		}
+		GD.PushError("Could not find actor to delete!");
+    }
 
-	//Create objects of a class, that hosts an actor. Should be the only "front facing" function for users.
-	//Will probably replace Actor with ActorConfig.
-	//This can and should be called multiple times on the same actor to have multiple scripts per actor.
-	public void CreateActor(string className, string objectName, Spatial actor)
+	private void RemoveActor(string name, Spatial actor)
+    {
+        luaActors.Remove(name);
+        luaObjects.Remove(name);
+        luaState.DoString($"{name} = nil\n" +
+            $"global.game_objects[\"{name}\"] = nil");
+
+    }
+
+    //Create objects of a class, that hosts an actor. Should be the only "front facing" function for users.
+    //Will probably replace Actor with ActorConfig.
+    //This can and should be called multiple times on the same actor to have multiple scripts per actor.
+    public void CreateActor(string className, string objectName, Spatial actor)
 	{
 		if (!CreateObject(className, objectName))
 		{
@@ -106,6 +138,19 @@ public class NLuaScriptManager : Node
 		List<string> args = prms ?? new List<string>();
 		string data = "";
 
+		List<KeyValuePair<string, Spatial>> toDelete = new List<KeyValuePair<string, Spatial>>();
+		foreach(var p in luaActors)
+		{
+			if (!IsInstanceValid(p.Value))
+			{
+				toDelete.Add(p);
+			}
+		}
+		foreach(var p in toDelete)
+		{
+            RemoveActor(p.Key, p.Value);
+        }
+
 		//Run until we do not have any commands from Lua
 		while (res != "")
 		{
@@ -117,15 +162,26 @@ public class NLuaScriptManager : Node
 			}
 
 			//Print(data);
-			if (data != "") Print(data);
+			if (data != "" && verbose) Print(data);
 			//Run our coroutine with any required parameters (currently, just delta if we are running a tick update).
 			res = luaState.DoString($"local co, res = coroutine.resume(timber_runner,global {prm}, {{{data}}})\n" +
 				"return res").String;
 
 			if (res == "{}" || res == ""||res == null) break;
-			GD.Print("Got response: "+res);
+
+			if (verbose) GD.Print("Got response: "+res);
 			data = "";
-			Dictionary<string, object>[] cmds = JsonConvert.DeserializeObject<Dictionary<string,object>[]>(res);
+			Dictionary<string, object>[] cmds;
+
+            try
+			{
+				cmds = JsonConvert.DeserializeObject<Dictionary<string, object>[]>(res);
+			}
+			catch (Exception e)
+			{
+				GD.Print("Exception while parsing Lua response: " + res);
+				throw e;
+			}
 
 			//Run every command that was returned from Lua
 			foreach (Dictionary<string, object> cmd in cmds)
@@ -138,6 +194,10 @@ public class NLuaScriptManager : Node
 					if(result.GetType() == typeof(string))
 					{
 						result = $"\"{result}\"";
+                    }
+                    else if (result.GetType() == typeof(bool))
+                    {
+                        result = (bool) result ? "true" : "false";
                     }
                     else if (typeof(Spatial).IsAssignableFrom(result.GetType()))
                     {
@@ -227,7 +287,20 @@ public class NLuaScriptManager : Node
 
 	public static void Print(object a)
 	{
-		GD.Print(a);
+		if (typeof(MoonSharp.Interpreter.Table).IsAssignableFrom(a.GetType()))
+        {
+            GD.Print("{");
+            foreach (var x in (a as MoonSharp.Interpreter.Table).Pairs)
+			{
+				GD.Print(x.Key + "=" + x.Value);
+			}
+			GD.Print("}");
+		}
+		else
+		{
+
+            GD.Print(a);
+        }
 	}
 
 	[LuaCommand("TestName")]
@@ -244,7 +317,9 @@ public class NLuaScriptManager : Node
 
     public override void _Ready()
     {
-        GD.Print("Lua initialized");
+		GD.Print("Start Lua Initialization");
+
+		YarnManager.DialogueRunner = GetNode<DialogueRunner>(dialogueRunnerPath);
 
 		//C# attributes and code-gen
 		luaMethods = LuaCommand.FindAllFunctionsWithAttribute();
@@ -287,17 +362,20 @@ public class NLuaScriptManager : Node
                 + "\r\nend\r\n";
 			codegen += func;
         }
-        GD.Print("Code Gen:");
-        GD.Print(codegen);
-		GD.Print("End Code Gen");
-
+		if (verbose)
+        {
+            GD.Print("Code Gen:");
+            GD.Print(codegen);
+            GD.Print("End Code Gen");
+        }
 
         GD.Print("Lua:" + ResourceLoader.Exists("res://LuaEngine/testmodules/protoc.lua"));
         Instance = this;
         luaState = new Script();
+        //luaState.Globals["Mul"] = (System.Action<object>) Print;
 
-		//This may cause issues
-		string abspath = $"{System.IO.Directory.GetCurrentDirectory()}/LuaEngine/testmodules/".Replace("\\", "/");
+        //This may cause issues
+        string abspath = $"{System.IO.Directory.GetCurrentDirectory()}/LuaEngine/testmodules/".Replace("\\", "/");
 
 		luaState.Options.ScriptLoader = new FileSystemScriptLoader();
 		((ScriptLoaderBase)luaState.Options.ScriptLoader).ModulePaths = new string[] { abspath+"?", $"{abspath}?.lua", $"{abspath}/lunajson/?", $"{abspath}/lunajson/?.lua" };
@@ -314,7 +392,7 @@ public class NLuaScriptManager : Node
 		string testc = "local pb = require \"pb\"\r\nlocal protoc = require \"protoc\"\r\n\r\n-- load schema from text (just for demo, use protoc.new() in real world)\r\nassert(protoc:load [[\r\n   message Phone {\r\n\t  optional string name        = 1;\r\n\t  optional int64  phonenumber = 2;\r\n   }\r\n   message Person {\r\n\t  optional string name     = 1;\r\n\t  optional int32  age      = 2;\r\n\t  optional string address  = 3;\r\n\t  repeated Phone  contacts = 4;\r\n   } ]])\r\n\r\n-- lua table data\r\nlocal data = {\r\n   name = \"ilse\",\r\n   age  = 18,\r\n   contacts = {\r\n\t  { name = \"alice\", phonenumber = 12312341234 },\r\n\t  { name = \"bob\",   phonenumber = 45645674567 }\r\n   }\r\n}\r\n\r\n-- encode lua table data into binary format in lua string and return\r\nlocal bytes = assert(pb.encode(\"Person\", data))\r\nreturn pb.tohex(bytes)";
 
 		//GD.Print(luaState.DoString(testc));
-		luaState.Globals["print"] = (Action<object>)Print;
+		luaState.Globals["RawPrint"] = (Action<object>)Print;
 
 		//Initialize global Lua manager. Make global a "global object"?
 		//https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Overview/Variables/Global_Variables.htm
@@ -327,15 +405,36 @@ public class NLuaScriptManager : Node
 		Godot.File x = new Godot.File();
 		x.Open($"LuaEngine/{testClassName}.lua", Godot.File.ModeFlags.Read);
 		RegisterClass(x, testClassName);
-		string objectName = GenerateObjectName();
 
-		GD.Print("Lua initialized");
+        Godot.File y = new Godot.File();
+        y.Open($"LuaEngine/{testClassNameDialogue}.lua", Godot.File.ModeFlags.Read);
+        RegisterClass(y, testClassNameDialogue);
+
+        Godot.File z = new Godot.File();
+        z.Open($"LuaEngine/{emptyLuaFile}.lua", Godot.File.ModeFlags.Read);
+        RegisterClass(z, emptyLuaFile);
+
+        GD.Print("Lua initialized");
 
 
 
 		//ArborCoroutine.StartCoroutine(SimulateCoro(0));
 		x.Close();
-	}
+
+
+		//Instantiate workers
+		luaWorkers = new List<LuaSingleton>();
+
+		luaWorkers.Add(LuaInputManager.Instance);
+
+		foreach(var i in luaWorkers)
+		{
+			i.Start();
+		}
+
+        GD.Print("Lua workers initialized");
+
+    }
 
 	//IEnumerator SimulateCoro(int id)
 	//{
@@ -357,10 +456,14 @@ public class NLuaScriptManager : Node
 	// called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(float delta)
 	{
+
 		RunUntilCompletion("global.tick", new List<string> { $"{delta}" });
 
-		//Test code to run ready every 5 seconds
-		timer -= delta;
+        //Process
+        RunUntilCompletion("global.receive", new List<string> { "\"update\"" });
+
+        //Test code to run ready every 5 seconds
+        timer -= delta;
 		if (timer <= 0)
 		{
 			timer = 5f;
@@ -369,10 +472,15 @@ public class NLuaScriptManager : Node
 					RunUntilCompletion("global.receive", new List<string> { "\"testfunc\"" });
 				});
 
-				//int amt = int.Parse(res.Substring(1));
-				//luaActors[obj].GlobalTranslation = new Vector3(amt, 0, 0);
-		}
-	}
+            //int amt = int.Parse(res.Substring(1));
+            //luaActors[obj].GlobalTranslation = new Vector3(amt, 0, 0);
+        }
+        //Run workers
+        foreach (var i in luaWorkers)
+        {
+            i.Update();
+        }
+    }
 }
 
 public class LuaExceptionEvent
@@ -444,7 +552,7 @@ public class LuaCommand : System.Attribute
             }
             else if (pi.ParameterType == typeof(bool))
             {
-				throw new Exception("bools in lua api are not yet supported!");
+				o = (bool)cmd[pi.Name] ? true : false;
             }
 			else
             {

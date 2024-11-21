@@ -19,7 +19,7 @@ public class LuaLoader : Node
 
 	public static LoadSceneResult most_recent_load_scene_result = null;
 
-	static LuaLoader instance;
+	public static LuaLoader instance { get; private set; }
 
 
 	//TEMP fake json example
@@ -179,6 +179,7 @@ public class LuaLoader : Node
 		//Possibly load tile width
 		var tileData = new List<List<TileData>>();
 		tileData.Add(new List<TileData>());
+
 		for(int i = 0; i < layout_file_contents.Length; i++)
         {
 			char current_char = layout_file_contents[i];
@@ -228,10 +229,22 @@ public class LuaLoader : Node
 					player_actor_spawn_positions.Add(spawn_pos);
 
 				//Test Code:
-				if(current_char == 'm' || current_char == 'q')
+				if(current_char == 'm')
 				{
+					GD.Print(current_char);
                     NLuaScriptManager.Instance
 						.CreateActor(NLuaScriptManager.testClassName, NLuaScriptManager.GenerateObjectName(), new_actor);
+                }
+				else if(current_char == 'q')
+                {
+                    NLuaScriptManager.Instance
+                        .CreateActor(NLuaScriptManager.testClassNameDialogue, NLuaScriptManager.GenerateObjectName(), new_actor);
+					new_actor.team = "npc";
+                }
+				else
+                {
+                    NLuaScriptManager.Instance
+                        .CreateActor(NLuaScriptManager.emptyLuaFile, NLuaScriptManager.GenerateObjectName(), new_actor);
                 }
 			}
 

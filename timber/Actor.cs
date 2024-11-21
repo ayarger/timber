@@ -35,7 +35,7 @@ public class Actor : Spatial
 	// private int a = 2;
 	// private string b = "text"; 
 
-	protected ActorConfig config;
+	public ActorConfig config { get; protected set; }
 
 	public Spatial view { get; protected set; } // Good for scaling operations.
 	protected MeshInstance character_view;
@@ -44,6 +44,21 @@ public class Actor : Spatial
 	protected MeshInstance shadow_view;
 	protected StateManager state_manager;
    	protected RigidBody rb;
+
+	protected HasTeam has_team;
+	public string team
+	{
+		get
+		{
+			return has_team.team;
+		}
+		set
+		{
+			has_team.team = value;
+			//TODO: RESET VARIOUS THINGS
+		}
+	}
+   
 
 	protected IsSelectable selectable;
 
@@ -77,6 +92,7 @@ public class Actor : Spatial
 		shadow_view = (MeshInstance)GetNode("shadow");
 		selectable = GetNode<IsSelectable>("IsSelectable");
 		rb = GetNode<RigidBody>("RigidBody");
+		has_team = GetNode<HasTeam>("HasTeam");
 		time = GlobalTranslation.x + GlobalTranslation.z;
 		animation_offset = GD.Randf() * 100.0f;
 		sub = EventBus.Subscribe<TileDataLoadedEvent>((TileDataLoadedEvent e) =>
@@ -92,7 +108,7 @@ public class Actor : Spatial
 	public virtual void Configure(ActorConfig info)
 	{
 		config = info;
-		GetNode<HasTeam>("HasTeam").team = config.team;
+		has_team.team = config.team;
 		if (config.team == "player")
 		{
 			EventBus.Publish<SpawnLightSourceEvent>(new SpawnLightSourceEvent(this));
@@ -310,6 +326,9 @@ public class Actor : Spatial
         if (IsQueuedForDeletion()) return;
 		if(currentTile != null) currentTile.actor = null;
 		bool endGame = config.name == "Spot";
+
+		//Flag Lua Engine
+		NLuaScriptManager.Instance.KillActor(this);
 
         PackedScene scene = (PackedScene)ResourceLoader.Load("res://scenes/ActorKO.tscn");
         ActorKO new_ko = (ActorKO)scene.Instance();

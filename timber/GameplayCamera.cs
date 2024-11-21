@@ -7,7 +7,7 @@ public class GameplayCamera : Camera
     float desired_zoom_factor = 15;
     Vector3 desired_xz_position = new Vector3(0, 0, 0);
 
-    static GameplayCamera instance;
+    public static GameplayCamera instance;
     public static void SetDesiredXZPosition(Vector3 pos) { instance.desired_xz_position = pos; }
     public static Vector3 GetDesiredXZPosition() { return instance.desired_xz_position; }
     public static void SetDesiredZoom(float z) { instance.desired_zoom_factor = z; }
@@ -60,7 +60,7 @@ public class GameplayCamera : Camera
         }
     }
 
-    void ForceNewState(GameplayCameraState new_state)
+    public void ForceNewState(GameplayCameraState new_state)
     {
         current_state = new_state;
     }
@@ -139,6 +139,33 @@ public class PlayerControlledCameraState : GameplayCameraState
             GameplayCamera.SetDesiredZoom(25.0f);
         if (current_desired_zoom > 70.0f)
             GameplayCamera.SetDesiredZoom(70.0f);
+    }
+
+    public override bool IsFinished()
+    {
+        return false; // must be interrupted by force.
+    }
+
+    public override bool SelectionCursorAllowed()
+    {
+        return true;
+    }
+    public override bool ZoomControlsAllowed()
+    {
+        return true;
+    }
+}
+
+public class FixedCameraState : GameplayCameraState
+{
+    Spatial follow;
+    public FixedCameraState(Spatial _follow)
+    {
+        follow = _follow;
+    }
+    public override void OnUpdate(float delta)
+    {
+        GameplayCamera.SetDesiredXZPosition(follow.GlobalTranslation);
     }
 
     public override bool IsFinished()

@@ -21,7 +21,7 @@ function testluaobject:testfunc()
 	--Print("I am at x-position: "..self.x)
 	WaitForSeconds(2)
 	
-	--Print("Closest Actor"..GetFarthestActor(self).object_name)
+	--Print("Closest Actor "..GetFarthestActor(self).object_name)
 	
 	local test = GetFarthestActor(self)
 	--PrintNameOfActor(test)

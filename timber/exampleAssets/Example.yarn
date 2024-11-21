@@ -3,12 +3,15 @@ tags:
 colorID: 0
 position: 120,-245
 ---
-Companion: Hi there! What do you feel like doing today? #line:0c89d0f 
+Big Squirrel: Hi there! Do you mind if I follow you for a bit? #line:0c89d0f 
+<<SendSignal "custom_signal">>
 
--> Player: I want to go swimming. #line:0bb7541 
-    Companion: Okay, let's go swimming. #line:0be8611 
--> Player: I'd prefer to go hiking. #line:02c386a 
-    Companion: Cool, we'll go hiking then. #line:0f17d03 
+-> Player: Sure, OK! #line:0bb7541 
+    Big Squirrel: Thank you! #line:0be8611 
+    <<RunFunction "start_follow">>
+-> Player: No! Instead I will kill you! #line:02c386a 
+    Big Squirrel: Argh how could you!! But now my children will go after you! #line:0cf10e5 
+    <<RunFunction "betrayal">>
     
-Player: Sounds good! #line:0947824 
+
 ===
