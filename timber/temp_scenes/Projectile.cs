@@ -6,16 +6,16 @@ public class Projectile : Actor
 	public int damage;
 	public Actor owner;
 
-    public override void _Ready()
-    {
-        base._Ready();
+	public override void _Ready()
+	{
+		base._Ready();
 		state_manager.defaultState = "ProjectileState";
-    }
+	}
 
 	float rotationSpeed = 5, speed = 5f;
-    public override void _Process(float delta)//different projectile movements: projectile motion, 
-    {
-        base._Process(delta);
+	public override void _Process(float delta)//different projectile movements: projectile motion, 
+	{
+		base._Process(delta);
 	}
 	
 
@@ -61,14 +61,14 @@ public class Projectile : Actor
 	}
 
 	public void setTarget(Vector3 target)
-    {
+	{
 		ProjectileState projectileState = state_manager.states["ProjectileState"] as ProjectileState;
 		projectileState.setTarget(target);
 	}
 
 	public void setDamage(int d)
-    {
+	{
 		damage = d;
-    }
+	}
 
 }

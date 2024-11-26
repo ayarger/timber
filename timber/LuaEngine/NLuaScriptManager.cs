@@ -138,14 +138,14 @@ public class NLuaScriptManager : Node
 					if(result.GetType() == typeof(string))
 					{
 						result = $"\"{result}\"";
-                    }
-                    else if (typeof(Spatial).IsAssignableFrom(result.GetType()))
-                    {
+					}
+					else if (typeof(Spatial).IsAssignableFrom(result.GetType()))
+					{
 						//Return actor's name, which in lua context is the actual object.
-                        result = luaActors.Where((pair) => { return pair.Value == result; }).FirstOrDefault().Key;
-                    }
-                    //data is a manually created Lua table
-                    data += id + "=" + result; //Replace with serializing JSON?
+						result = luaActors.Where((pair) => { return pair.Value == result; }).FirstOrDefault().Key;
+					}
+					//data is a manually created Lua table
+					data += id + "=" + result; //Replace with serializing JSON?
 					data += ",";
 				}
 
@@ -234,17 +234,17 @@ public class NLuaScriptManager : Node
 	public static void Test()
 	{
 
-    }
-    [LuaCommand("TestName2")]
-    public static void Test2()
-    {
+	}
+	[LuaCommand("TestName2")]
+	public static void Test2()
+	{
 
-    }
+	}
 
 
-    public override void _Ready()
-    {
-        GD.Print("Lua initialized");
+	public override void _Ready()
+	{
+		GD.Print("Lua initialized");
 
 		//C# attributes and code-gen
 		luaMethods = LuaCommand.FindAllFunctionsWithAttribute();
@@ -252,20 +252,20 @@ public class NLuaScriptManager : Node
 
 		foreach (var luaMethod in luaMethods) {
 			string parametersString1 = "";
-            string parametersString2 = "";
-            foreach (var par in luaMethod.Value.MethodInfo.GetParameters())
+			string parametersString2 = "";
+			foreach (var par in luaMethod.Value.MethodInfo.GetParameters())
 			{
 				parametersString1 += ", _" + par.Name;
 				//If parameter is an actor, make sure to get the actor's name
 				if(typeof(Spatial).IsAssignableFrom(par.ParameterType))
-                {
-                    parametersString2 += ",\r\n\t\t" + par.Name + " = _" + par.Name + ".object_name";
-                }
+				{
+					parametersString2 += ",\r\n\t\t" + par.Name + " = _" + par.Name + ".object_name";
+				}
 				else
-                {
-                    parametersString2 += ",\r\n\t\t" + par.Name + " = _" + par.Name;
-                }
-            }
+				{
+					parametersString2 += ",\r\n\t\t" + par.Name + " = _" + par.Name;
+				}
+			}
 
 			//TODO:Fix later
 			string objectString = (luaMethod.Key == "GetValue" ? "obj" : "obj.object_name");
@@ -281,20 +281,20 @@ public class NLuaScriptManager : Node
 			}
 
 
-            bool hasReturnValue = luaMethod.Value.MethodInfo.ReturnType != typeof(void);
-            string func = "function " + luaMethod.Key + "(" + parametersString1 + ")\r\n\tlocal coroutine_data = {coroutine.yield(\r\n\t\t{obj = " + objectString + ",\r\n\t\ttype=\"" + luaMethod.Key + "\"" + parametersString2 + "}\r\n\t\t)}"
+			bool hasReturnValue = luaMethod.Value.MethodInfo.ReturnType != typeof(void);
+			string func = "function " + luaMethod.Key + "(" + parametersString1 + ")\r\n\tlocal coroutine_data = {coroutine.yield(\r\n\t\t{obj = " + objectString + ",\r\n\t\ttype=\"" + luaMethod.Key + "\"" + parametersString2 + "}\r\n\t\t)}"
 				+ (hasReturnValue ? "\r\n\treturn coroutine_data[#coroutine_data]" : "")
-                + "\r\nend\r\n";
+				+ "\r\nend\r\n";
 			codegen += func;
-        }
-        GD.Print("Code Gen:");
-        GD.Print(codegen);
+		}
+		GD.Print("Code Gen:");
+		GD.Print(codegen);
 		GD.Print("End Code Gen");
 
 
-        GD.Print("Lua:" + ResourceLoader.Exists("res://LuaEngine/testmodules/protoc.lua"));
-        Instance = this;
-        luaState = new Script();
+		GD.Print("Lua:" + ResourceLoader.Exists("res://LuaEngine/testmodules/protoc.lua"));
+		Instance = this;
+		luaState = new Script();
 
 		//This may cause issues
 		string abspath = $"{System.IO.Directory.GetCurrentDirectory()}/LuaEngine/testmodules/".Replace("\\", "/");
@@ -386,21 +386,21 @@ public class LuaExceptionEvent
 public class LuaCommand : System.Attribute
 {
 	public string Name { get; set; }
-    public bool UsesNode { get; set; }
-    public LuaCommand(string name, bool usesNode = true)
-    {
-        Name = name;
-        UsesNode = usesNode;
-    }
-    public static Dictionary<string, LuaMethodInfo> FindAllFunctionsWithAttribute()
-    {
-        var typesWithMyAttribute =
-            from a in AppDomain.CurrentDomain.GetAssemblies()
-            from t in a.GetTypes()
-            from f in t.GetMethods()
-            let attributes = f.GetCustomAttributes(typeof(LuaCommand), true)
-            where attributes != null && attributes.Length > 0
-            select new { Method = f, Attribute = attributes.Cast<LuaCommand>().First() };
+	public bool UsesNode { get; set; }
+	public LuaCommand(string name, bool usesNode = true)
+	{
+		Name = name;
+		UsesNode = usesNode;
+	}
+	public static Dictionary<string, LuaMethodInfo> FindAllFunctionsWithAttribute()
+	{
+		var typesWithMyAttribute =
+			from a in AppDomain.CurrentDomain.GetAssemblies()
+			from t in a.GetTypes()
+			from f in t.GetMethods()
+			let attributes = f.GetCustomAttributes(typeof(LuaCommand), true)
+			where attributes != null && attributes.Length > 0
+			select new { Method = f, Attribute = attributes.Cast<LuaCommand>().First() };
 
 		Dictionary<string, LuaMethodInfo> ans = new Dictionary<string, LuaMethodInfo>();
 
@@ -412,7 +412,7 @@ public class LuaCommand : System.Attribute
 		GD.Print("Number of funcs with attribute:" + typesWithMyAttribute.Count());
 		return ans;
 
-    }
+	}
 
 	public static object RunMethod(MethodInfo methodInfo, Dictionary<string, object> cmd)
 	{
@@ -426,31 +426,31 @@ public class LuaCommand : System.Attribute
 				o = Convert.ToString(cmd[pi.Name]);
 			}
 			else if(pi.ParameterType == typeof(int))
-            {
-                o = Convert.ToInt32(cmd[pi.Name]);
-            }
-            else if (pi.ParameterType == typeof(float))
-            {
-                o = (float) Convert.ToDouble(cmd[pi.Name]);
-            }
-            else if (pi.ParameterType == typeof(double))
-            {
-                o = Convert.ToDouble(cmd[pi.Name]);
-            }
-            else if (typeof(Spatial).IsAssignableFrom(pi.ParameterType))
-            {
+			{
+				o = Convert.ToInt32(cmd[pi.Name]);
+			}
+			else if (pi.ParameterType == typeof(float))
+			{
+				o = (float) Convert.ToDouble(cmd[pi.Name]);
+			}
+			else if (pi.ParameterType == typeof(double))
+			{
+				o = Convert.ToDouble(cmd[pi.Name]);
+			}
+			else if (typeof(Spatial).IsAssignableFrom(pi.ParameterType))
+			{
 				//THIS SHOULD ONLY BE GODOT OBJECTS LISTED IN luaActors
 				o = NLuaScriptManager.luaActors[Convert.ToString(cmd[pi.Name])];
-            }
-            else if (pi.ParameterType == typeof(bool))
-            {
+			}
+			else if (pi.ParameterType == typeof(bool))
+			{
 				throw new Exception("bools in lua api are not yet supported!");
-            }
+			}
 			else
-            {
-                throw new Exception("unsupported datatype in lua api!");
-            }
-            args.Add(o);
+			{
+				throw new Exception("unsupported datatype in lua api!");
+			}
+			args.Add(o);
 		}
 		return methodInfo.Invoke(null, args.ToArray());
 	}

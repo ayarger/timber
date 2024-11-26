@@ -7,10 +7,10 @@ public class Collectable : Spatial
 	private IconControl _iconControl;
 	private Coord _selfCoord;
 
-	private bool isFlyingToPlayer = false; 
-	private Actor targetActor = null;
-	private float flySpeed = 5.0f;
-	private int _selfValue = 10;
+	public bool isFlyingToPlayer = false; 
+	public Actor targetActor = null;
+	public float flySpeed = 5.0f;
+	public int _selfValue = 10;
 	
 	private enum FlyState
 	{
@@ -25,8 +25,8 @@ public class Collectable : Spatial
 
 	public override void _Ready()
 	{
-		Node area = FindNode("Area");
-		area.Connect("body_entered", this, "onBodyEntered");
+		// Node area = FindNode("Area");
+		// area.Connect("body_entered", this, "onBodyEntered");
 		_iconControl = GetNode<IconControl>("IconControl");
 	}
 
@@ -34,25 +34,8 @@ public class Collectable : Spatial
 	{
 		_selfCoord =  Grid.ConvertToCoord(position);
 		ResolveOverlap();
-		ToastManager.SendToast(this, "Coin transform origin: [" + Transform.origin.x + ", " + Transform.origin.y + ", " + Transform.origin.z + "]", ToastMessage.ToastType.Notice, 1f);
+		// ToastManager.SendToast(this, "Coin transform origin: [" + Transform.origin.x + ", " + Transform.origin.y + ", " + Transform.origin.z + "]", ToastMessage.ToastType.Notice, 1f);
 	}
-
-	// public override void _Process(float delta)
-	// {
-	// 	if (isFlyingToPlayer)
-	// 	{
-	// 		Vector3 direction = (targetActor.GlobalTransform.origin - GlobalTransform.origin).Normalized();
-	// 		float distance = (targetActor.GlobalTransform.origin - GlobalTransform.origin).Length();
-	//
-	// 		Vector3 newPosition = GlobalTransform.origin + direction * flySpeed * delta;
-	// 		GlobalTransform = new Transform(GlobalTransform.basis, newPosition);
-	//
-	// 		if (distance < 0.5f)
-	// 		{
-	// 			OnReachedPlayer();
-	// 		}
-	// 	}
-	// }
 	
 	public override void _Process(float delta)
 	{
@@ -86,7 +69,7 @@ public class Collectable : Spatial
 		}
 	}
 
-	private void StartFlyToPlayer()
+	public void StartFlyToPlayer()
 	{
 		Vector3 offset = new Vector3(
 			GD.Randf() * 2 - 1, 
@@ -100,24 +83,25 @@ public class Collectable : Spatial
 		isFlyingToPlayer = true;
 	}
 
-	private void onBodyEntered(Node body)
-	{
-		if (targetActor != null)
-		{
-			return;
-		}
-		if (body.GetParent() is Actor && body.GetParent().HasNode("HasTeam"))
-		{
-			HasTeam hasTeam = body.GetParent().GetNode<HasTeam>("HasTeam");
-			if (hasTeam.team == "player")
-			{
-				// ToastManager.SendToast(this, "Collided with a player", type: ToastMessage.ToastType.Notice);
-				CollectableManager.UpdateCurrencyManager(_selfCoord);
-				targetActor = body.GetParent() as Actor;
-				StartFlyToPlayer();
-			}
-		}
-	}
+	// private void onBodyEntered(Node body)
+	// {
+	// 	if (targetActor != null)
+	// 	{
+	// 		return;
+	// 	}
+	// 	if (body.GetParent() is Actor && body.GetParent().HasNode("HasTeam"))
+	// 	{
+	// 		HasTeam hasTeam = body.GetParent().GetNode<HasTeam>("HasTeam");
+	// 		if (hasTeam.team == "player")
+	// 		{
+	// 			// ToastManager.SendToast(this, "Collided with a player", type: ToastMessage.ToastType.Notice);
+	// 			GetNode<MeshInstance>("shadow").Visible = false;
+	// 			CollectableManager.UpdateCurrencyManager(_selfCoord);
+	// 			targetActor = body.GetParent() as Actor;
+	// 			StartFlyToPlayer();
+	// 		}
+	// 	}
+	// }
 
 	public int GetCollectableValue()
 	{
@@ -146,7 +130,10 @@ public class Collectable : Spatial
 	private void ResolveOverlap()
 	{
 		List<Collectable> collectablesOnGrid = CollectableManager.GetCollectableListOnGrid(_selfCoord);
-
+		if (collectablesOnGrid.Count > 0)
+		{
+			collectablesOnGrid[0].GetNode<MeshInstance>("shadow").Visible = true;
+		}
 		if (collectablesOnGrid.Count > 1)
 		{
 			collectablesOnGrid.Sort((a, b) => a.GetInstanceId().CompareTo(b.GetInstanceId()));
