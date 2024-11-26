@@ -1,0 +1,8 @@
+[gd_scene format=2]
+
+[node name="Node" type="Control"]
+
+[node name="TextureRect" type="TextureRect" parent="."]
+margin_right = 1920.0
+margin_bottom = 1080.0
+stretch_mode = 6
