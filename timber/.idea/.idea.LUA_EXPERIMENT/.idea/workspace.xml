@@ -8,13 +8,49 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="538a528e-ecd1-41c7-ae1d-5407c3f4da6b" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/ArborResources.tscn" beforeDir="false" afterPath="$PROJECT_DIR$/ArborResources.tscn" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GameplayCamera.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Main.tscn" beforeDir="false" afterPath="$PROJECT_DIR$/Main.tscn" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TestTower.tscn" beforeDir="false" afterPath="$PROJECT_DIR$/TestTower.tscn" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lua_experiment.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/lua_experiment.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scenes/MainMenu.tscn" beforeDir="false" afterPath="$PROJECT_DIR$/scenes/MainMenu.tscn" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_scenes/SelectThenSpawn.tscn" beforeDir="false" afterPath="$PROJECT_DIR$/temp_scenes/SelectThenSpawn.tscn" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.LUA_EXPERIMENT/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.LUA_EXPERIMENT/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scenes/CutsceneManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/scenes/CutsceneManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scenes/CutsceneManager.tscn" beforeDir="false" afterPath="$PROJECT_DIR$/scenes/CutsceneManager.tscn" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro/firefox_2020-02-21_15-25-10.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro/firefox_2020-02-21_15-25-10.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro/firefox_2020-02-21_15-25-53.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro/firefox_2020-02-21_15-25-53.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro/firefox_2020-02-21_15-26-05.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro/firefox_2020-02-21_15-26-05.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro/firefox_2020-02-21_15-26-19.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro/firefox_2020-02-21_15-26-19.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro/firefox_2020-02-21_15-26-31.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro/firefox_2020-02-21_15-26-31.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro/firefox_2020-02-21_15-26-46.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro/firefox_2020-02-21_15-26-46.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro/firefox_2020-02-21_15-27-00.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro/firefox_2020-02-21_15-27-00.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro/firefox_2020-02-21_15-27-11.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro/firefox_2020-02-21_15-27-11.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro/firefox_2020-02-21_15-27-22.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro/firefox_2020-02-21_15-27-22.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro/firefox_2020-02-21_15-27-35.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro/firefox_2020-02-21_15-27-35.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro/firefox_2020-02-21_15-27-47.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro/firefox_2020-02-21_15-27-47.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro/firefox_2020-02-21_15-27-59.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro/firefox_2020-02-21_15-27-59.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro/firefox_2020-02-21_15-28-15.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro/firefox_2020-02-21_15-28-15.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro/firefox_2020-02-21_15-28-25.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro/firefox_2020-02-21_15-28-25.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro/firefox_2020-02-21_15-28-45.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro/firefox_2020-02-21_15-28-45.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro/firefox_2020-02-21_15-28-54.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro/firefox_2020-02-21_15-28-54.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro/firefox_2020-02-21_15-29-27.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro/firefox_2020-02-21_15-29-27.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro/firefox_2020-02-21_15-29-37.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro/firefox_2020-02-21_15-29-37.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro/firefox_2020-02-21_15-32-38.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro/firefox_2020-02-21_15-32-38.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro/firefox_2020-02-23_20-38-51.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro/firefox_2020-02-23_20-38-51.png.import" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -137,6 +173,7 @@
       <workItem from="1732040207286" duration="3823000" />
       <workItem from="1732049132778" duration="8803000" />
       <workItem from="1732638412814" duration="3797000" />
+      <workItem from="1732642262602" duration="2486000" />
     </task>
     <servers />
   </component>

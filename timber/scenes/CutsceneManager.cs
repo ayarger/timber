@@ -28,8 +28,8 @@ public class CutsceneManager : Control
     private bool isPlaying = false;
 
     // List of cutscene images with their associated styles.
-    [Export]
-    private List<CutsceneImage> cutsceneImages = new List<CutsceneImage>();
+    [Export] 
+    public List<CutsceneImageResource> cutsceneImages = new List<CutsceneImageResource>();
 
     public override void _Ready()
     {
@@ -75,7 +75,7 @@ public class CutsceneManager : Control
         }
     }
 
-    public void StartCutscene(List<CutsceneImage> cutsceneImages)
+    public void StartCutscene(List<CutsceneImageResource> cutsceneImages)
     {
         if (cutsceneImages == null || cutsceneImages.Count == 0)
         {
@@ -107,7 +107,7 @@ public class CutsceneManager : Control
         TransitionToImage(nextCutsceneImage);
     }
 
-    private void TransitionToImage(CutsceneImage cutsceneImage)
+    private void TransitionToImage(CutsceneImageResource cutsceneImage)
     {
         switch (cutsceneImage.TransitionStyle)
         {
@@ -221,4 +221,7 @@ public class CutsceneManager : Control
         isPlaying = false;
         Hide();
     }
+
 }
+
+

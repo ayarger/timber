@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/firefox_2020-02-21_15-28-15.png-5e855df7459a1d72354b6dc58a621e52.stex"
+path="res://.import/firefox_2020-02-21_15-26-46.png-bf95e4b3c6fa842869db21ed26ba305c.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://temp_cutscenes/intro/firefox_2020-02-21_15-28-15.png"
-dest_files=[ "res://.import/firefox_2020-02-21_15-28-15.png-5e855df7459a1d72354b6dc58a621e52.stex" ]
+source_file="res://temp_cutscenes/intro_images/firefox_2020-02-21_15-26-46.png"
+dest_files=[ "res://.import/firefox_2020-02-21_15-26-46.png-bf95e4b3c6fa842869db21ed26ba305c.stex" ]
 
 [params]
 
