@@ -2,6 +2,14 @@ using System;
 using Godot;
 using System.Collections.Generic;
 
+public class CutsceneStartEvent
+{
+    public CutsceneStartEvent()
+    {
+        
+    }
+}
+
 /// <summary>
 /// A cutscene manager that manages and displays sequential cutscenes with a variety of transition and display styles.
 /// </summary>
@@ -31,6 +39,8 @@ public class CutsceneManager : Control
     [Export] 
     public List<CutsceneImageResource> cutsceneImages = new List<CutsceneImageResource>();
 
+    private Subscription<CutsceneStartEvent> cutsceneStatEvent_sub;
+
     public override void _Ready()
     {
         if (Instance == null)
@@ -47,6 +57,11 @@ public class CutsceneManager : Control
         transitionTween = new Tween();
         AddChild(transitionTween);
         Hide();
+        cutsceneStatEvent_sub = EventBus.Subscribe<CutsceneStartEvent>(StartCurrentCutscnene);
+    }
+
+    public void StartCurrentCutscnene(CutsceneStartEvent e)
+    {
         StartCutscene(cutsceneImages);
     }
 
@@ -100,6 +115,7 @@ public class CutsceneManager : Control
         {
             GD.Print("Cutscene Finished");
             EndCutscene();
+            TransitionSystem.RequestTransition(@"res://Main.tscn"); // TODO: dynamically load the next scene
             return;
         }
 
@@ -223,6 +239,11 @@ public class CutsceneManager : Control
         Hide();
     }
 
+    public override void _ExitTree()
+    {
+        EventBus.Unsubscribe(cutsceneStatEvent_sub);
+        base._ExitTree();
+    }
 }
 
 

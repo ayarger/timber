@@ -9,7 +9,8 @@ public class PlayButton : Button
 		if (await Utilities.IsConnectedToInternet(this))
 		{
 			GD.Print("Internet connection detected. Launching game...");
-			TransitionSystem.RequestTransition(@"res://Main.tscn");
+			//TransitionSystem.RequestTransition("res://scenes/CutsceneManager.tscn");
+			EventBus.Publish(new CutsceneStartEvent());
 		}
 		else
 		{

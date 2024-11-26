@@ -9,33 +9,9 @@
   <component name="ChangeListManager">
     <list default="true" id="538a528e-ecd1-41c7-ae1d-5407c3f4da6b" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.LUA_EXPERIMENT/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.LUA_EXPERIMENT/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LUA_EXPERIMENT.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/LUA_EXPERIMENT.sln.DotSettings.user" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/scenes/CutsceneManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/scenes/CutsceneManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scenes/CutsceneManager.tscn" beforeDir="false" afterPath="$PROJECT_DIR$/scenes/CutsceneManager.tscn" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scenes/MainMenu.tscn" beforeDir="false" afterPath="$PROJECT_DIR$/scenes/MainMenu.tscn" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/scenes/PlayButton.cs" beforeDir="false" afterPath="$PROJECT_DIR$/scenes/PlayButton.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/CutsceneImageResource.cs" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/CutsceneImageResource.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/new_resource.tres" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro_images/firefox_2020-02-21_15-25-10.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro_images/firefox_2020-02-21_15-25-10.png.import" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro_images/firefox_2020-02-21_15-25-53.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro_images/firefox_2020-02-21_15-26-05.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro_images/firefox_2020-02-21_15-26-19.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro_images/firefox_2020-02-21_15-26-31.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro_images/firefox_2020-02-21_15-26-46.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro_images/firefox_2020-02-21_15-27-00.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro_images/firefox_2020-02-21_15-27-11.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro_images/firefox_2020-02-21_15-27-22.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro_images/firefox_2020-02-21_15-27-35.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro_images/firefox_2020-02-21_15-27-47.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro_images/firefox_2020-02-21_15-27-59.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro_images/firefox_2020-02-21_15-28-15.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro_images/firefox_2020-02-21_15-28-25.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro_images/firefox_2020-02-21_15-28-45.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro_images/firefox_2020-02-21_15-28-54.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro_images/firefox_2020-02-21_15-29-27.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro_images/firefox_2020-02-21_15-29-37.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro_images/firefox_2020-02-21_15-32-38.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro_images/firefox_2020-02-23_20-38-51.png" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -163,6 +139,7 @@
       <workItem from="1732638412814" duration="3797000" />
       <workItem from="1732642262602" duration="2486000" />
       <workItem from="1732644880009" duration="3166000" />
+      <workItem from="1732648405413" duration="947000" />
     </task>
     <servers />
   </component>
