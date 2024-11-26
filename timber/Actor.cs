@@ -144,12 +144,12 @@ public class Actor : Spatial
 				shadow_view.SetSurfaceMaterial(0, shadow_mat);
 
 				sprite_textures["idle"] = tex;
+				GD.Print("IDLE TEXTURE SET FOR: " + config.name);
 			},
 			this
 		);
 		if(config.team == "player"){
 			foreach(var config in config.stateConfigs){
-				GD.Print("CONFIG: " + config.name);
 			}
 		}
 
@@ -327,6 +327,7 @@ public class Actor : Spatial
 		if(currentTile != null) currentTile.actor = null;
 		bool endGame = config.name == "Spot";
 
+		ArborCoroutine.StopCoroutinesOnNode(this);
         PackedScene scene = (PackedScene)ResourceLoader.Load("res://scenes/ActorKO.tscn");
         ActorKO new_ko = (ActorKO)scene.Instance();
         GetParent().AddChild(new_ko);
@@ -353,6 +354,8 @@ public class Actor : Spatial
 			character_material.SetShaderParam("texture_albedo", tex);
 			character_view.SetSurfaceMaterial(0, character_material);
 		}else{
+			if(!sprite_textures.ContainsKey("idle"))
+				return;
 			texture_name = "idle";
 			Texture tex = sprite_textures[texture_name];
 			character_material.SetShaderParam("texture_albedo", tex);

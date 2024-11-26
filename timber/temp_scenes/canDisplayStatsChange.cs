@@ -22,7 +22,7 @@ public class canDisplayStatsChange : TextureProgress
         tex_progress = this;
         // get target_tween
         ui_tween = GetNode<Tween>("Tween");
-        statChangeEvent = EventBus.Subscribe<StatChangeEvent>(OnUIStatChange);
+        //statChangeEvent = EventBus.Subscribe<StatChangeEvent>(OnUIStatChange);
     }
 
     public void ConfigurePlayerData(HasStats _playerData)

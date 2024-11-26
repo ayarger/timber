@@ -90,8 +90,6 @@ public class LuaLoader : Node
 			GD.Print("Loading actor file: " + actor_file);
 			yield return ArborResource.WaitFor(actor_file);
             ActorConfig actor_info = ArborResource.Get<ActorConfig>(actor_file);
-			if(actor_info.stateConfigs.Count > 0)
-				GD.Print(actor_info.stateConfigs.Count);
 
 			//temporary
 			playerStatConfig.stats["health"] = 100;

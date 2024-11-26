@@ -78,7 +78,7 @@ public class NLuaScriptManager : Node
 			EventBus.Publish(new LuaExceptionEvent());
 			return false;
 		}
-		GD.Print($"Created {className} Object: {objectName}");
+		//GD.Print($"Created {className} Object: {objectName}");
 		return true;
 	}
 
@@ -116,7 +116,7 @@ public class NLuaScriptManager : Node
 				"return res").String;
 
 			if (res == "{}" || res == ""||res == null) break;
-			GD.Print("Got response: "+res);
+			//GD.Print("Got response: "+res);
 			data = "";
 			Dictionary<string, object>[] cmds = JsonConvert.DeserializeObject<Dictionary<string,object>[]>(res);
 
