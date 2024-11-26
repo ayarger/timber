@@ -1,0 +1,10 @@
+[gd_resource type="Resource" load_steps=3 format=2]
+
+[ext_resource path="res://temp_cutscenes/CutsceneImageResource.cs" type="Script" id=1]
+[ext_resource path="res://temp_cutscenes/intro_images/10.png" type="Texture" id=2]
+
+[resource]
+script = ExtResource( 1 )
+Image = ExtResource( 2 )
+TransitionStyle = "fade_up"
+DisplayStyle = "standard"

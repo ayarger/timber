@@ -47,6 +47,7 @@ public class CutsceneManager : Control
         transitionTween = new Tween();
         AddChild(transitionTween);
         Hide();
+        StartCutscene(cutsceneImages);
     }
 
     public override void _Input(InputEvent @event)

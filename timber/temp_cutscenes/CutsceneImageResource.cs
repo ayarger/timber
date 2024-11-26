@@ -1,6 +1,7 @@
+using System;
 using Godot;
 
-[GlobalClass]
+[Tool]
 public partial class CutsceneImageResource : Resource
 {
     [Export] public Texture Image { get; set; }           // Image for the cutscene

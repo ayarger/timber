@@ -1,12 +1,36 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=22 format=2]
 
 [ext_resource path="res://scenes/CutsceneManager.cs" type="Script" id=1]
+[ext_resource path="res://temp_cutscenes/Intro_resources/2.tres" type="Resource" id=2]
+[ext_resource path="res://temp_cutscenes/Intro_resources/12.tres" type="Resource" id=3]
+[ext_resource path="res://temp_cutscenes/Intro_resources/13.tres" type="Resource" id=4]
+[ext_resource path="res://temp_cutscenes/Intro_resources/14.tres" type="Resource" id=5]
+[ext_resource path="res://temp_cutscenes/Intro_resources/15.tres" type="Resource" id=6]
+[ext_resource path="res://temp_cutscenes/Intro_resources/9.tres" type="Resource" id=7]
+[ext_resource path="res://temp_cutscenes/Intro_resources/7.tres" type="Resource" id=8]
+[ext_resource path="res://temp_cutscenes/Intro_resources/16.tres" type="Resource" id=9]
+[ext_resource path="res://temp_cutscenes/Intro_resources/19.tres" type="Resource" id=10]
+[ext_resource path="res://temp_cutscenes/Intro_resources/8.tres" type="Resource" id=11]
+[ext_resource path="res://temp_cutscenes/Intro_resources/17.tres" type="Resource" id=12]
+[ext_resource path="res://temp_cutscenes/Intro_resources/4.tres" type="Resource" id=13]
+[ext_resource path="res://temp_cutscenes/Intro_resources/5.tres" type="Resource" id=14]
+[ext_resource path="res://temp_cutscenes/Intro_resources/3.tres" type="Resource" id=15]
+[ext_resource path="res://temp_cutscenes/Intro_resources/6.tres" type="Resource" id=16]
+[ext_resource path="res://temp_cutscenes/Intro_resources/11.tres" type="Resource" id=17]
+[ext_resource path="res://temp_cutscenes/Intro_resources/10.tres" type="Resource" id=18]
+[ext_resource path="res://temp_cutscenes/Intro_resources/18.tres" type="Resource" id=19]
+[ext_resource path="res://temp_cutscenes/Intro_resources/20.tres" type="Resource" id=20]
+[ext_resource path="res://temp_cutscenes/Intro_resources/1.tres" type="Resource" id=21]
 
 [node name="Node" type="Control"]
 script = ExtResource( 1 )
-transitionDuration = 0.8
+cutsceneImages = [ ExtResource( 21 ), ExtResource( 2 ), ExtResource( 15 ), ExtResource( 13 ), ExtResource( 14 ), ExtResource( 16 ), ExtResource( 8 ), ExtResource( 11 ), ExtResource( 7 ), ExtResource( 18 ), ExtResource( 17 ), ExtResource( 3 ), ExtResource( 4 ), ExtResource( 5 ), ExtResource( 6 ), ExtResource( 9 ), ExtResource( 12 ), ExtResource( 19 ), ExtResource( 10 ), ExtResource( 20 ) ]
 
 [node name="TextureRect" type="TextureRect" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
 margin_right = 1920.0
 margin_bottom = 1080.0
 stretch_mode = 6
