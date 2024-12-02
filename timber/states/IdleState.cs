@@ -20,6 +20,7 @@ public class IdleState : ActorState
 
     public override void Start()
     {
+        actor.SetActorTexture("idle");
         animation_offset = GD.Randf() * 100.0f;
     }
 

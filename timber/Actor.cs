@@ -36,6 +36,7 @@ public class Actor : Spatial
 	// private string b = "text"; 
 
 	public ActorConfig config { get; protected set; }
+	public String actorName { get { return config.name; } }
 
 	public Spatial view { get; protected set; } // Good for scaling operations.
 	protected MeshInstance character_view;
@@ -128,15 +129,7 @@ public class Actor : Spatial
 		ArborResource.Load<Texture>("images/" + config.ko_sprite_filename);
 		actorKO = true;
 
-		foreach(var sprites in config.sprite_filenames){
-			ArborResource.Load<Texture>("images/" + sprites);
-			//store the texture in the dictionary
-			sprite_textures[sprites] = ArborResource.Get<Texture>("images/" + sprites);
-		}
-		// if(config.name == "Spot"){
-		// 	ArborResource.Load<Texture>("images/" + "spot_step_left.png");
-		// 	sprite_textures["spot_step_left.png"] = ArborResource.Get<Texture>("images/" + "spot_step_left.png");
-		// }
+		ArborCoroutine.StartCoroutine(loadTextures(), this);
 
 		ArborResource.UseResource<Texture>(
 			"images/" + config.idle_sprite_filename,
@@ -172,10 +165,15 @@ public class Actor : Spatial
 				character_view_shadow.SetSurfaceMaterial(0, char_mat_shadow);
 
 				shadow_view.SetSurfaceMaterial(0, shadow_mat);
+
+				sprite_textures["idle"] = tex;
+				GD.Print("IDLE TEXTURE SET FOR: " + config.name);
 			},
 			this
 		);
 		if(config.team == "player"){
+			foreach(var config in config.stateConfigs){
+			}
 			//foreach(var config in config.stateConfigs){
 			//	GD.Print("CONFIG: " + config.name);
 			//}
@@ -272,6 +270,34 @@ public class Actor : Spatial
 		shadow_mat.SetShaderParam("screenPosZ", FogOfWar.instance.screenPosZ);
 	}
 
+	IEnumerator loadTextures(){
+
+		foreach(var sprites in config.sprite_filenames){
+			string key = sprites.Key;
+			string filename = sprites.Value;
+			ArborResource.Load<Texture>("images/" + filename);
+			//store the texture in the dictionary		}
+		}
+		//HARDCODE
+		if(config.name == "Spot"){
+			ArborResource.Load<Texture>("images/" + "spot_step_left.png");
+			ArborResource.Load<Texture>("images/" + "spot_step_right.png");
+			ArborResource.Load<Texture>("images/" + "spot_attack.png");
+			yield return ArborResource.WaitFor("images/" + "spot_step_left.png");
+			sprite_textures["walk_left"] = ArborResource.Get<Texture>("images/" + "spot_step_left.png");
+			yield return ArborResource.WaitFor("images/" + "spot_step_right.png");
+			sprite_textures["walk_right"] = ArborResource.Get<Texture>("images/" + "spot_step_right.png");
+			yield return ArborResource.WaitFor("images/" + "spot_attack.png");
+			sprite_textures["attack"] = ArborResource.Get<Texture>("images/" + "spot_attack.png");
+		}
+
+		foreach(var sprites in config.sprite_filenames){
+			yield return ArborResource.WaitFor("images/" + sprites.Value);
+			Texture tex = ArborResource.Get<Texture>("images/" + sprites.Value);
+			sprite_textures[sprites.Key] = tex;
+		}
+	}
+
 	public virtual void Hurt(int damage, bool isCritical, Actor source)
 	{
 		int damage_to_deal = isCritical ? damage * 2 : damage;
@@ -329,7 +355,7 @@ public class Actor : Spatial
 
 		//Flag Lua Engine
 		NLuaScriptManager.Instance.KillActor(this);
-
+		ArborCoroutine.StopCoroutinesOnNode(this);
         PackedScene scene = (PackedScene)ResourceLoader.Load("res://scenes/ActorKO.tscn");
         ActorKO new_ko = (ActorKO)scene.Instance();
         GetParent().AddChild(new_ko);
@@ -350,9 +376,19 @@ public class Actor : Spatial
 	}
 
 	public void SetActorTexture(string texture_name){
-		Texture tex = sprite_textures[texture_name];
-		character_material.SetShaderParam("texture_albedo", tex);
-		character_view.SetSurfaceMaterial(0, character_material);
+		if(sprite_textures.ContainsKey(texture_name))
+		{
+			Texture tex = sprite_textures[texture_name];
+			character_material.SetShaderParam("texture_albedo", tex);
+			character_view.SetSurfaceMaterial(0, character_material);
+		}else{
+			if(!sprite_textures.ContainsKey("idle"))
+				return;
+			texture_name = "idle";
+			Texture tex = sprite_textures[texture_name];
+			character_material.SetShaderParam("texture_albedo", tex);
+			character_view.SetSurfaceMaterial(0, character_material);
+		}
 	}
 
    public void UpdateActorDict()
