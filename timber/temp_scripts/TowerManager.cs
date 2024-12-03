@@ -73,7 +73,7 @@ public class TowerManager : Node
 			ToastManager.SendToast(this, "Cannot throw a tower into the void.", ToastMessage.ToastType.Warning, 2f);
 			return;
 		}
-		ToastManager.SendToast(this, "Tower coord: [" + cur.x + "," + cur.z + "]", ToastMessage.ToastType.Notice, 1f);
+		// ToastManager.SendToast(this, "Tower coord: [" + cur.x + "," + cur.z + "]", ToastMessage.ToastType.Notice, 1f);
 		ActorConfig config = new ActorConfig();
 		config.name = "Test Tower";
 		config.map_code = 't';
@@ -190,7 +190,7 @@ public class TowerManager : Node
 			return;
 		}
 		status = TowerManagerStatus.isRemovingTower;
-		ToastManager.SendToast(this, "Tower removal triggered.", ToastMessage.ToastType.Notice, 1f);
+		// ToastManager.SendToast(this, "Tower removal triggered.", ToastMessage.ToastType.Notice, 1f);
 		EventBus.Publish(new EventCancelTowerPlacement());
 	}
 
