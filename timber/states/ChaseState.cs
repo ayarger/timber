@@ -31,6 +31,7 @@ public class ChaseState : ActorState
         inclusiveStates = new HashSet<string>();
         waypoints = new List<Vector3>();
         ArborCoroutine.StopCoroutinesOnNode(this);
+        actor.SetActorTexture("walk_right");
     }
 
     public override void Config(StateConfig stateConfig)
@@ -110,6 +111,7 @@ public class ChaseState : ActorState
     }
 
     float timer = 0.0f;
+    float animationTimer = 0.0f;
     public override void Animate(float delta)
     {
         timer += delta;
@@ -118,6 +120,15 @@ public class ChaseState : ActorState
         const float rot_frequency = 10f;
         const float rot_amplitude = 0.1f;
         actor.view.Rotation = actor.initial_rotation + new Vector3(0, 0, rot_amplitude * Mathf.Sin(timer * rot_frequency));
+
+        if(animationTimer > Mathf.Pi/(rot_frequency) && animationTimer < 2*Mathf.Pi/(rot_frequency))
+        {
+            actor.SetActorTexture("walk_left");//HARDCODE TEST
+        }else if(animationTimer > 2*Mathf.Pi/(rot_frequency))
+        {
+            animationTimer = 0.0f;
+            actor.SetActorTexture("walk_right");//HARDCODE TEST
+        }
 
         /* Position */
         const float pos_amplitude = 0.5f;

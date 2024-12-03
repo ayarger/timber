@@ -96,7 +96,7 @@ public class NLuaScriptManager : Node
 			EventBus.Publish(new LuaExceptionEvent());
 			return false;
 		}
-		GD.Print($"Created {className} Object: {objectName}");
+		//GD.Print($"Created {className} Object: {objectName}");
 		return true;
     }
     public void KillActor(Spatial actor)

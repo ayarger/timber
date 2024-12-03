@@ -31,7 +31,12 @@ public class MovementState : ActorState
         inclusiveStates = new HashSet<string>();
         waypoints = new List<Vector3>();
         ArborCoroutine.StopCoroutinesOnNode(this);
+        actor.SetActorTexture("walk_right");
+    }
 
+    public override void Config(StateConfig stateConfig)
+    {
+        
     }
 
     public override void Update(float delta)
@@ -93,16 +98,27 @@ public class MovementState : ActorState
     }
 
     float timer = 0.0f;
+    float animationTimer = 0.0f;
     public override void Animate(float delta)
     {
         timer += delta;
+        animationTimer += delta;
 
         /* Rotation */
         const float rot_frequency = 10f;
-        const float rot_amplitude = 0.1f;
+        const float rot_amplitude = 0.075f;
         actor.view.Rotation = actor.initial_rotation + new Vector3(0, 0, rot_amplitude * Mathf.Sin(timer * rot_frequency));
         
-
+        if(animationTimer > Mathf.Pi/(rot_frequency) && animationTimer < 2*Mathf.Pi/(rot_frequency))
+        {
+            actor.SetActorTexture("walk_left");//HARDCODE TEST
+        }else if(animationTimer > 2*Mathf.Pi/(rot_frequency))
+        {
+            animationTimer = 0.0f;
+            actor.SetActorTexture("walk_right");//HARDCODE TEST
+        }
+        
+        
         /* Position */
         const float pos_amplitude = 0.5f;
         const float posfrequency = 10f;
@@ -112,8 +128,19 @@ public class MovementState : ActorState
 
         /* Paper Turning */
         float current_scale_x = actor.view.Scale.x;
-        current_scale_x += (actor.GetDesiredScaleX() - current_scale_x) * 0.2f;
-        actor.view.Scale = new Vector3(current_scale_x, actor.view.Scale.y, actor.view.Scale.z);
+        if(current_scale_x != actor.GetDesiredScaleX()){
+            if (Mathf.Abs(current_scale_x - actor.GetDesiredScaleX()) < 0.01f)
+            {
+                current_scale_x = actor.GetDesiredScaleX();
+            }else{
+                current_scale_x += (actor.GetDesiredScaleX() - current_scale_x) * 0.2f;
+            }
+            
+            actor.view.Scale = new Vector3(current_scale_x, actor.view.Scale.y, actor.view.Scale.z);
+        }
+        
+
+        //GD.Print(actor.view.Scale);
     }
 
     IEnumerator MoveToNearestTile()

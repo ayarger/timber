@@ -444,7 +444,7 @@ public class ActorConfig
 	public string ko_sprite_filename = "";
 	public string type = "actor";
 
-	public List<string> sprite_filenames = new List<string>();
+	public Dictionary<string, string> sprite_filenames = new Dictionary<string, string>();
 
 	public List<string> scripts;
 
