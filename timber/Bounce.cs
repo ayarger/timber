@@ -12,6 +12,7 @@ public class Bounce : Sprite
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
+        PauseMode = PauseModeEnum.Process;
         initial_position = Position;
     }
 

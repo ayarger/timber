@@ -1,4 +1,4 @@
-[gd_scene load_steps=54 format=2]
+[gd_scene load_steps=57 format=2]
 
 [ext_resource path="res://scenes/GameManager.tscn" type="PackedScene" id=1]
 [ext_resource path="res://DebugSphere.cs" type="Script" id=2]
@@ -41,16 +41,14 @@
 [ext_resource path="res://picture-in-picture/blur_bg_mtd.png" type="Texture" id=39]
 [ext_resource path="res://Bounce.cs" type="Script" id=40]
 [ext_resource path="res://picture-in-picture/EditModeManager.cs" type="Script" id=41]
+[ext_resource path="res://picture-in-picture/pause.png" type="Texture" id=42]
+[ext_resource path="res://picture-in-picture/edit_mode_text.png" type="Texture" id=43]
+[ext_resource path="res://picture-in-picture/PauseManager.cs" type="Script" id=44]
 
 [sub_resource type="GDScript" id=2]
 
 [sub_resource type="ViewportTexture" id=32]
 viewport_path = NodePath("Viewport")
-
-[sub_resource type="SpatialMaterial" id=1]
-flags_unshaded = true
-
-[sub_resource type="QuadMesh" id=3]
 
 [sub_resource type="ViewportTexture" id=16]
 viewport_path = NodePath("FogOfWar/HighVisibility")
@@ -143,6 +141,11 @@ size = 55
 outline_size = 1
 font_data = ExtResource( 38 )
 
+[sub_resource type="SpatialMaterial" id=1]
+flags_unshaded = true
+
+[sub_resource type="QuadMesh" id=3]
+
 [sub_resource type="DynamicFont" id=30]
 size = 40
 font_data = ExtResource( 28 )
@@ -160,6 +163,15 @@ script = SubResource( 2 )
 
 [node name="Editor" type="Node2D" parent="."]
 
+[node name="PauseButton" type="TextureButton" parent="Editor"]
+margin_left = -236.0
+margin_top = -1036.0
+margin_right = 606.0
+margin_bottom = -441.0
+rect_scale = Vector2( 0.25, 0.25 )
+texture_normal = ExtResource( 42 )
+script = ExtResource( 44 )
+
 [node name="Camera2D" type="Camera2D" parent="Editor"]
 current = true
 script = ExtResource( 41 )
@@ -171,17 +183,118 @@ texture = ExtResource( 39 )
 centered = false
 
 [node name="computer_screen" type="Sprite" parent="Editor"]
-position = Vector2( -1179, -1012 )
+position = Vector2( -1185, -842 )
 scale = Vector2( 0.582407, 0.582407 )
 z_index = 1
 texture = SubResource( 32 )
 centered = false
 
 [node name="Editor_spot" type="Sprite" parent="Editor"]
-position = Vector2( -1639.12, -242.875 )
+position = Vector2( -1639.12, -232.875 )
 scale = Vector2( 1.93848, 1.93848 )
 texture = ExtResource( 13 )
 script = ExtResource( 40 )
+
+[node name="CanvasLayer2" type="CanvasLayer" parent="."]
+visible = false
+
+[node name="viewport_tex_rect" type="TextureRect" parent="CanvasLayer2"]
+visible = false
+margin_right = 1000.0
+margin_bottom = 1000.0
+rect_scale = Vector2( 0.5, 0.5 )
+texture = SubResource( 16 )
+stretch_mode = 1
+
+[node name="bottom_gradient" type="TextureRect" parent="CanvasLayer2"]
+visible = false
+modulate = Color( 0, 0, 0, 1 )
+anchor_top = 0.9
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_right = 40.0
+margin_bottom = 40.0
+texture = ExtResource( 11 )
+expand = true
+
+[node name="HudeFaceLeft_shadow" type="TextureRect" parent="CanvasLayer2"]
+visible = false
+self_modulate = Color( 0, 0, 0, 1 )
+material = SubResource( 11 )
+anchor_top = 1.0
+anchor_bottom = 1.0
+margin_left = 10.0
+margin_top = -246.0
+margin_right = 266.0
+margin_bottom = 10.0
+texture = ExtResource( 13 )
+stretch_mode = 7
+
+[node name="HudeFaceLeft" type="TextureRect" parent="CanvasLayer2"]
+visible = false
+material = SubResource( 11 )
+anchor_top = 1.0
+anchor_bottom = 1.0
+margin_top = -256.0
+margin_right = 256.0
+texture = ExtResource( 13 )
+expand = true
+stretch_mode = 6
+
+[node name="TextureRect2" type="TextureRect" parent="CanvasLayer2"]
+visible = false
+material = SubResource( 14 )
+margin_left = 347.0
+margin_top = 984.0
+margin_right = 437.0
+margin_bottom = 1104.0
+texture = ExtResource( 14 )
+expand = true
+stretch_mode = 5
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer2/TextureRect2"]
+margin_left = 12.0
+margin_top = 13.0
+margin_right = 140.0
+margin_bottom = 141.0
+rect_scale = Vector2( 0.5, 0.5 )
+texture = ExtResource( 12 )
+
+[node name="TempConsole" parent="CanvasLayer2" instance=ExtResource( 15 )]
+
+[node name="DamageTextManager" type="Control" parent="CanvasLayer2"]
+margin_right = 40.0
+margin_bottom = 40.0
+script = ExtResource( 31 )
+
+[node name="TowerPlacementButton" type="Button" parent="CanvasLayer2"]
+margin_left = 1573.0
+margin_top = 580.0
+margin_right = 1693.0
+margin_bottom = 640.0
+text = "Place Tower"
+script = ExtResource( 34 )
+
+[node name="Timer" type="Timer" parent="CanvasLayer2/TowerPlacementButton"]
+autostart = true
+
+[node name="TowerRemovalButton" type="Button" parent="CanvasLayer2"]
+margin_left = 1573.0
+margin_top = 480.0
+margin_right = 1693.0
+margin_bottom = 540.0
+text = "Remove Tower"
+script = ExtResource( 33 )
+
+[node name="CurrencyLabel" type="RichTextLabel" parent="CanvasLayer2"]
+margin_left = 1716.0
+margin_top = 474.0
+margin_right = 1896.0
+margin_bottom = 541.0
+custom_fonts/normal_font = SubResource( 31 )
+text = "$100"
+
+[node name="Timer" type="Timer" parent="CanvasLayer2/CurrencyLabel"]
 
 [node name="Viewport" type="Viewport" parent="."]
 size = Vector2( 1920, 1080 )
@@ -193,6 +306,8 @@ transform = Transform( 1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0
 current = true
 fov = 25.8
 script = ExtResource( 3 )
+
+[node name="HUD" parent="Viewport/GameplayCamera" instance=ExtResource( 18 )]
 
 [node name="GameManager" parent="." instance=ExtResource( 1 )]
 script = ExtResource( 8 )
@@ -241,6 +356,7 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.55476, 0 )
 script = ExtResource( 9 )
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
+visible = false
 
 [node name="viewport_tex_rect" type="TextureRect" parent="CanvasLayer"]
 visible = false
@@ -353,13 +469,16 @@ script = ExtResource( 10 )
 [node name="TestMovement" type="Node" parent="."]
 script = ExtResource( 17 )
 
-[node name="Dialogue" type="Control" parent="."]
+[node name="NLuaManager" type="Node" parent="."]
+script = ExtResource( 19 )
+
+[node name="Dialogue" type="Control" parent="NLuaManager"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 
-[node name="CanvasLayer" type="CanvasLayer" parent="Dialogue"]
+[node name="CanvasLayer" type="CanvasLayer" parent="NLuaManager/Dialogue"]
 
-[node name="DialogueRunner" type="Node" parent="Dialogue/CanvasLayer"]
+[node name="DialogueRunner" type="Node" parent="NLuaManager/Dialogue/CanvasLayer"]
 script = ExtResource( 22 )
 variableStoragePath = NodePath("../InMemoryVariableStorage")
 dialogueViewPaths = [ NodePath("../LineView"), NodePath("../LineView/OptionsListView") ]
@@ -367,11 +486,11 @@ startNode = "Start"
 startAutomatically = false
 lineProviderPath = NodePath("../TextLineProvider")
 
-[node name="VariableDebugText" type="RichTextLabel" parent="Dialogue/CanvasLayer"]
+[node name="VariableDebugText" type="RichTextLabel" parent="NLuaManager/Dialogue/CanvasLayer"]
 margin_right = 40.0
 margin_bottom = 40.0
 
-[node name="LineView" type="Control" parent="Dialogue/CanvasLayer"]
+[node name="LineView" type="Control" parent="NLuaManager/Dialogue/CanvasLayer"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_right = -539.0
@@ -384,7 +503,7 @@ characterNameTextPath = NodePath("ViewControl/CharacterNameText")
 typewriterEffectSpeed = 240.0
 continueButtonPath = NodePath("ViewControl/ContinueButton")
 
-[node name="ViewControl" type="Control" parent="Dialogue/CanvasLayer/LineView"]
+[node name="ViewControl" type="Control" parent="NLuaManager/Dialogue/CanvasLayer/LineView"]
 anchor_left = 0.348
 anchor_top = 0.31
 anchor_right = 0.977
@@ -393,7 +512,7 @@ margin_top = 30.0
 margin_right = 59.0
 margin_bottom = 40.0
 
-[node name="LineText" type="RichTextLabel" parent="Dialogue/CanvasLayer/LineView/ViewControl"]
+[node name="LineText" type="RichTextLabel" parent="NLuaManager/Dialogue/CanvasLayer/LineView/ViewControl"]
 anchor_top = 1.52
 anchor_right = 1.0
 anchor_bottom = 1.982
@@ -404,7 +523,7 @@ margin_bottom = -257.37
 custom_fonts/normal_font = SubResource( 30 )
 text = "Dialogue text goes here"
 
-[node name="ColorRect" type="ColorRect" parent="Dialogue/CanvasLayer/LineView/ViewControl/LineText"]
+[node name="ColorRect" type="ColorRect" parent="NLuaManager/Dialogue/CanvasLayer/LineView/ViewControl/LineText"]
 show_behind_parent = true
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -412,7 +531,7 @@ margin_right = 40.0
 margin_bottom = 40.0
 color = Color( 0.545098, 0.545098, 0.545098, 0.32549 )
 
-[node name="CharacterNameText" type="RichTextLabel" parent="Dialogue/CanvasLayer/LineView/ViewControl"]
+[node name="CharacterNameText" type="RichTextLabel" parent="NLuaManager/Dialogue/CanvasLayer/LineView/ViewControl"]
 anchor_top = 0.844
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -421,7 +540,7 @@ margin_right = 18.0
 custom_fonts/normal_font = SubResource( 28 )
 text = "Name"
 
-[node name="ColorRect" type="ColorRect" parent="Dialogue/CanvasLayer/LineView/ViewControl/CharacterNameText"]
+[node name="ColorRect" type="ColorRect" parent="NLuaManager/Dialogue/CanvasLayer/LineView/ViewControl/CharacterNameText"]
 show_behind_parent = true
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -429,7 +548,7 @@ margin_right = 40.0
 margin_bottom = 40.0
 color = Color( 0.545098, 0.545098, 0.545098, 0.694118 )
 
-[node name="ContinueButton" type="Button" parent="Dialogue/CanvasLayer/LineView/ViewControl"]
+[node name="ContinueButton" type="Button" parent="NLuaManager/Dialogue/CanvasLayer/LineView/ViewControl"]
 anchor_left = 0.712
 anchor_top = 1.104
 anchor_right = 1.0
@@ -444,11 +563,12 @@ __meta__ = {
 "_editor_description_": ""
 }
 
-[node name="OptionsListView" type="Control" parent="Dialogue/CanvasLayer/LineView"]
+[node name="OptionsListView" type="Control" parent="NLuaManager/Dialogue/CanvasLayer/LineView"]
 anchor_right = 0.963
 anchor_bottom = 0.925
 margin_right = 40.0
 margin_bottom = 40.0
+rect_pivot_offset = Vector2( 58, 315 )
 mouse_filter = 2
 script = ExtResource( 21 )
 optionViewPrefab = ExtResource( 37 )
@@ -456,7 +576,7 @@ lastLineTextPath = NodePath("LastLineText")
 viewControlPath = NodePath("VBoxContainer")
 boxContainerPath = NodePath("VBoxContainer")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Dialogue/CanvasLayer/LineView/OptionsListView"]
+[node name="VBoxContainer" type="VBoxContainer" parent="NLuaManager/Dialogue/CanvasLayer/LineView/OptionsListView"]
 anchor_left = 0.33
 anchor_top = 0.262
 anchor_right = 0.623
@@ -464,20 +584,20 @@ anchor_bottom = 0.76
 margin_right = 40.0
 margin_bottom = 40.0
 
-[node name="LastLineText" type="RichTextLabel" parent="Dialogue/CanvasLayer/LineView/OptionsListView"]
+[node name="LastLineText" type="RichTextLabel" parent="NLuaManager/Dialogue/CanvasLayer/LineView/OptionsListView"]
 margin_right = 40.0
 
-[node name="ColorRect" type="ColorRect" parent="Dialogue/CanvasLayer/LineView/OptionsListView/LastLineText"]
+[node name="ColorRect" type="ColorRect" parent="NLuaManager/Dialogue/CanvasLayer/LineView/OptionsListView/LastLineText"]
 margin_right = 40.0
 margin_bottom = 40.0
 
-[node name="InMemoryVariableStorage" type="Node" parent="Dialogue/CanvasLayer"]
+[node name="InMemoryVariableStorage" type="Node" parent="NLuaManager/Dialogue/CanvasLayer"]
 script = ExtResource( 20 )
 
-[node name="TextLineProvider" type="Node2D" parent="Dialogue/CanvasLayer"]
+[node name="TextLineProvider" type="Node2D" parent="NLuaManager/Dialogue/CanvasLayer"]
 script = ExtResource( 29 )
 
-[node name="Button" type="Button" parent="Dialogue/CanvasLayer"]
+[node name="Button" type="Button" parent="NLuaManager/Dialogue/CanvasLayer"]
 anchor_left = 0.683
 anchor_top = 0.218
 anchor_right = 0.683
@@ -491,7 +611,7 @@ text = "Start Dialogue"
 script = ExtResource( 27 )
 dialogueRunner = NodePath("../DialogueRunner")
 
-[node name="Upload yarn project" type="Button" parent="Dialogue/CanvasLayer"]
+[node name="Upload yarn project" type="Button" parent="NLuaManager/Dialogue/CanvasLayer"]
 anchor_left = 0.884
 anchor_top = 0.896
 anchor_right = 0.992
@@ -502,7 +622,7 @@ text = "Upload"
 script = ExtResource( 25 )
 fileDialogPath = NodePath("FileDialog")
 
-[node name="FileDialog" type="FileDialog" parent="Dialogue/CanvasLayer/Upload yarn project"]
+[node name="FileDialog" type="FileDialog" parent="NLuaManager/Dialogue/CanvasLayer/Upload yarn project"]
 margin_left = -1202.28
 margin_top = -744.68
 margin_right = -786.28
@@ -514,7 +634,7 @@ mode = 0
 access = 2
 show_hidden_files = true
 
-[node name="Select yarn project" type="Button" parent="Dialogue/CanvasLayer"]
+[node name="Select yarn project" type="Button" parent="NLuaManager/Dialogue/CanvasLayer"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = 1694.0
@@ -525,7 +645,7 @@ text = "Select"
 script = ExtResource( 24 )
 popupPath = NodePath("PopupMenu")
 
-[node name="PopupMenu" type="PopupMenu" parent="Dialogue/CanvasLayer/Select yarn project"]
+[node name="PopupMenu" type="PopupMenu" parent="NLuaManager/Dialogue/CanvasLayer/Select yarn project"]
 anchor_left = -7.546
 anchor_top = -7.304
 anchor_right = 1.0
@@ -536,12 +656,9 @@ margin_right = -989.0
 margin_bottom = -603.592
 rect_scale = Vector2( 2, 2 )
 
-[node name="TextureRect" type="TextureRect" parent="Dialogue/CanvasLayer"]
+[node name="TextureRect" type="TextureRect" parent="NLuaManager/Dialogue/CanvasLayer"]
 margin_right = 40.0
 margin_bottom = 40.0
-
-[node name="NLuaManager" type="Node" parent="."]
-script = ExtResource( 19 )
 
 [node name="TestAttack" type="Node" parent="."]
 script = ExtResource( 30 )
@@ -549,11 +666,16 @@ script = ExtResource( 30 )
 [node name="ProjectileManager" type="Node" parent="."]
 script = ExtResource( 36 )
 
+[node name="EditModeText" type="Sprite" parent="."]
+position = Vector2( -1588, -974 )
+scale = Vector2( 0.691589, 0.691589 )
+texture = ExtResource( 43 )
+
 [connection signal="item_rect_changed" from="Editor/Camera2D" to="Editor/Camera2D" method="_on_Camera2D_item_rect_changed"]
-[connection signal="pressed" from="Dialogue/CanvasLayer/Button" to="Dialogue/CanvasLayer/Button" method="_on_Button_pressed"]
-[connection signal="pressed" from="Dialogue/CanvasLayer/Upload yarn project" to="Dialogue/CanvasLayer/Upload yarn project" method="_on_Button_pressed"]
-[connection signal="file_selected" from="Dialogue/CanvasLayer/Upload yarn project/FileDialog" to="Dialogue/CanvasLayer/Upload yarn project" method="_on_FileDialog_file_selected"]
-[connection signal="pressed" from="Dialogue/CanvasLayer/Select yarn project" to="Dialogue/CanvasLayer/Select yarn project" method="ShowPopupMenu"]
-[connection signal="id_pressed" from="Dialogue/CanvasLayer/Select yarn project/PopupMenu" to="Dialogue/CanvasLayer/Select yarn project" method="OnProjectSelected"]
+[connection signal="pressed" from="NLuaManager/Dialogue/CanvasLayer/Button" to="NLuaManager/Dialogue/CanvasLayer/Button" method="_on_Button_pressed"]
+[connection signal="pressed" from="NLuaManager/Dialogue/CanvasLayer/Upload yarn project" to="NLuaManager/Dialogue/CanvasLayer/Upload yarn project" method="_on_Button_pressed"]
+[connection signal="file_selected" from="NLuaManager/Dialogue/CanvasLayer/Upload yarn project/FileDialog" to="NLuaManager/Dialogue/CanvasLayer/Upload yarn project" method="_on_FileDialog_file_selected"]
+[connection signal="pressed" from="NLuaManager/Dialogue/CanvasLayer/Select yarn project" to="NLuaManager/Dialogue/CanvasLayer/Select yarn project" method="ShowPopupMenu"]
+[connection signal="id_pressed" from="NLuaManager/Dialogue/CanvasLayer/Select yarn project/PopupMenu" to="NLuaManager/Dialogue/CanvasLayer/Select yarn project" method="OnProjectSelected"]
 
 [editable path="FogOfWar"]

@@ -34,10 +34,10 @@ public class EditModeManager : Camera2D
         if (Input.IsActionJustPressed("toggle_edit_mode"))
         {
             edit_mode = !edit_mode;
-            UpdateScaleAndPosition(); // Recalculate positions and zoom levels when toggling
+            UpdateScaleAndPosition();
         }
 
-        // Smoothly interpolate zoom and position
+        // interpolate zoom and position
         current_zoom_level += (desired_zoom_level - current_zoom_level) * 0.1f;
         Zoom = Vector2.One * current_zoom_level;
 
@@ -46,43 +46,97 @@ public class EditModeManager : Camera2D
 
     private void UpdateScaleAndPosition()
     {
-        Vector2 viewportSize = GetViewportRect().Size; // Use viewport size
+        Vector2 viewportSize = GetViewportRect().Size; // Use viewport size instead of window size
 
-        if (!edit_mode) // Game mode: focus on computer_screen
+        if (!edit_mode)
         {
-            // Use computer_screen size for game mode zoom level and position
             Vector2 comp_tex_size = computer_screen.Texture.GetSize();
             Vector2 comp_scaled_size = new Vector2(comp_tex_size.x * computer_screen.Scale.x, comp_tex_size.y * computer_screen.Scale.y);
 
-            // Calculate the zoom level to fit computer_screen in the viewport
             float zoomX = viewportSize.x / comp_scaled_size.x;
             float zoomY = viewportSize.y / comp_scaled_size.y;
             game_mode_zoom_level = Mathf.Min(zoomX, zoomY);
 
-            // Calculate the center position for computer_screen
             game_mode_position = computer_screen.Position + (comp_tex_size * computer_screen.Scale * 0.5f);
-            desired_zoom_level = game_mode_zoom_level * 0.33f;
+            desired_zoom_level = game_mode_zoom_level * 0.33f; // fix zoom
         }
-        else // Edit mode: zoom out to show the entire bg_screen
+        else // Edit mode
         {
-            // Use bg_screen size to calculate zoom and position
             Vector2 bg_tex_size = bg_screen.Texture.GetSize();
             Vector2 bg_scaled_size = new Vector2(bg_tex_size.x * bg_screen.Scale.x, bg_tex_size.y * bg_screen.Scale.y);
 
-            // Calculate the zoom level to fit the entire bg_screen in the viewport
             float zoomX = viewportSize.x / bg_scaled_size.x;
             float zoomY = viewportSize.y / bg_scaled_size.y;
             edit_mode_zoom_level = Mathf.Min(zoomX, zoomY);
 
-            // Calculate the center position for bg_screen
+
             edit_mode_position = bg_screen.Position + bg_tex_size * bg_screen.Scale * 0.5f;
             desired_zoom_level = edit_mode_zoom_level;
         }
     }
 
-    // This method is called whenever the window size changes
     private void OnWindowSizeChanged()
     {
         UpdateScaleAndPosition();
     }
+
+    private void UpdateCursorPosition(Vector2 rawCursorPosition, Sprite cursor)
+    {
+        Vector2 viewportSize = GetViewportRect().Size;
+
+        if (!edit_mode)
+        {
+            // Calculate cursor pos relative to computer_screen
+            Vector2 comp_tex_size = computer_screen.Texture.GetSize();
+            Vector2 comp_scaled_size = comp_tex_size * computer_screen.Scale;
+
+            Vector2 comp_top_left = computer_screen.GlobalPosition - (comp_scaled_size * 0.5f);
+            Vector2 normalizedCursorPos = (rawCursorPosition - comp_top_left) / comp_scaled_size;
+
+            cursor.Position = normalizedCursorPos * comp_scaled_size;
+        }
+        else
+        {
+            // Calculate  cursor pos relative to bg_screen
+            Vector2 bg_tex_size = bg_screen.Texture.GetSize();
+            Vector2 bg_scaled_size = bg_tex_size * bg_screen.Scale;
+
+            Vector2 bg_top_left = bg_screen.GlobalPosition - (bg_scaled_size * 0.5f);
+            Vector2 normalizedCursorPos = (rawCursorPosition - bg_top_left) / bg_scaled_size;
+
+            cursor.Position = normalizedCursorPos * bg_scaled_size;
+        }
+    }
+
+    public Vector2 GetCursorGridPosition(Vector2 rawCursorPosition)
+    {
+        Vector2 viewportSize = GetViewportRect().Size;
+
+        if (!edit_mode)
+        {
+            // Compute position relative to computer_screen
+            Vector2 comp_tex_size = computer_screen.Texture.GetSize();
+            Vector2 comp_scaled_size = comp_tex_size * computer_screen.Scale;
+
+            Vector2 comp_top_left = computer_screen.GlobalPosition - (comp_scaled_size * 0.5f);
+            Vector2 normalizedCursorPos = (rawCursorPosition - comp_top_left) / comp_scaled_size;
+
+            // Convert to grid-aligned position
+            return normalizedCursorPos * comp_scaled_size;
+        }
+        else
+        {
+            // Compute position relative to bg_screen
+            Vector2 bg_tex_size = bg_screen.Texture.GetSize();
+            Vector2 bg_scaled_size = bg_tex_size * bg_screen.Scale;
+
+            Vector2 bg_top_left = bg_screen.GlobalPosition - (bg_scaled_size * 0.5f);
+            Vector2 normalizedCursorPos = (rawCursorPosition - bg_top_left) / bg_scaled_size;
+
+            // Convert to grid-aligned position
+            return normalizedCursorPos * bg_scaled_size;
+        }
+    }
+
+
 }

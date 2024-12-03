@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 public class SelectionSystem : Node
 {
     static SelectionSystem instance;
+    EditModeManager editModeManager;
+
     public static Vector3 GetTilePosition()
     {
         return instance.active_cursor.GlobalTranslation;
@@ -38,6 +40,8 @@ public class SelectionSystem : Node
         instance = this;
         active_cursor = GetNode<CSGMesh>("active_cursor");
         active_cursor.GetNode<CSGMesh>("active_cursor_tower").Visible = false;
+
+        editModeManager = GetParent().GetNode<EditModeManager>("EditModeManager");
 
         EventBus.Subscribe<EventTileCursorChangedLocation> (OnEventTileCursorChangedLocation);
         EventBus.Subscribe<TowerManager.EventToggleTowerPlacement> (OnEventToggleTowerPlacement);
