@@ -158,11 +158,13 @@ public class CutsceneManager : Control
 
     private void BounceTransition(Texture newImage)
     {
-        imageDisplay.RectScale = new Vector2(0.5f, 0.5f); // Start small
+        imageDisplay.RectScale = new Vector2(0.8f, 0.8f); // Start small
         imageDisplay.Texture = newImage;
 
+        imageDisplay.RectPivotOffset = imageDisplay.RectSize / 2;
+
         transitionTween.InterpolateProperty(
-            imageDisplay, "rect_scale", new Vector2(0.5f, 0.5f), new Vector2(1, 1), transitionDuration,
+            imageDisplay, "rect_scale", new Vector2(0.8f, 0.8f), new Vector2(1, 1), transitionDuration,
             Tween.TransitionType.Bounce, Tween.EaseType.Out);
         transitionTween.Start();
     }

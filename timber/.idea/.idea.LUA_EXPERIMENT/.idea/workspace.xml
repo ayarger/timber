@@ -9,8 +9,7 @@
   <component name="ChangeListManager">
     <list default="true" id="538a528e-ecd1-41c7-ae1d-5407c3f4da6b" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.LUA_EXPERIMENT/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.LUA_EXPERIMENT/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scenes/CutsceneManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/scenes/CutsceneManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scenes/MainMenu.tscn" beforeDir="false" afterPath="$PROJECT_DIR$/scenes/MainMenu.tscn" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scenes/CutsceneManager.tscn" beforeDir="false" afterPath="$PROJECT_DIR$/scenes/CutsceneManager.tscn" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/scenes/PlayButton.cs" beforeDir="false" afterPath="$PROJECT_DIR$/scenes/PlayButton.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
