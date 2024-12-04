@@ -1,6 +1,7 @@
 using System;
 using Godot;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 public class CutsceneStartEvent
 {
@@ -13,7 +14,7 @@ public class CutsceneStartEvent
 /// <summary>
 /// A cutscene manager that manages and displays sequential cutscenes with a variety of transition and display styles.
 /// </summary>
-public class CutsceneManager : Control
+public class CutsceneManager : CanvasLayer
 {
     // Define a data structure for each image and its associated styles.
     private class CutsceneImage
@@ -56,7 +57,7 @@ public class CutsceneManager : Control
         imageDisplay = GetNode<TextureRect>("TextureRect");
         transitionTween = new Tween();
         AddChild(transitionTween);
-        Hide();
+        StartCutscene(cutsceneImages);
         cutsceneStatEvent_sub = EventBus.Subscribe<CutsceneStartEvent>(StartCurrentCutscnene);
     }
 
@@ -115,7 +116,6 @@ public class CutsceneManager : Control
         {
             GD.Print("Cutscene Finished");
             EndCutscene();
-            TransitionSystem.RequestTransition(@"res://Main.tscn"); // TODO: dynamically load the next scene
             return;
         }
 
@@ -217,7 +217,7 @@ public class CutsceneManager : Control
     private void ApplySinVerticalEffect(float delta)
     {
         oscillationTimer += delta;
-        float oscillation = Mathf.Sin(oscillationTimer * 5) * 20; // Oscillate vertically by ±20 pixels
+        float oscillation = Mathf.Sin(oscillationTimer * 5) * 20; 
         imageDisplay.RectPosition = new Vector2(imageDisplay.RectPosition.x, oscillation);
     }
 
@@ -228,8 +228,8 @@ public class CutsceneManager : Control
         {
             vibrateTimer = 0;
             imageDisplay.RectPosition = originalPosition + new Vector2(
-                GD.Randf() * 10 - 5, // Random jitter between -5 and +5 horizontally
-                GD.Randf() * 10 - 5  // Random jitter between -5 and +5 vertically
+                GD.Randf() * 10 - 5, 
+                GD.Randf() * 10 - 5 
             );
         }
     }
@@ -239,6 +239,7 @@ public class CutsceneManager : Control
         GD.Print("Cutscene Finished");
         isPlaying = false;
         Hide();
+        TransitionSystem.RequestTransition(@"res://Main.tscn"); // TODO: dynamically load the next scene
     }
 
     public override void _ExitTree()

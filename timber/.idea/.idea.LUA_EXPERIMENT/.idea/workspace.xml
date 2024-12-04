@@ -9,8 +9,12 @@
   <component name="ChangeListManager">
     <list default="true" id="538a528e-ecd1-41c7-ae1d-5407c3f4da6b" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.LUA_EXPERIMENT/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.LUA_EXPERIMENT/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LUA_EXPERIMENT.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/LUA_EXPERIMENT.sln.DotSettings.user" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scenes/CutsceneManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/scenes/CutsceneManager.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/scenes/CutsceneManager.tscn" beforeDir="false" afterPath="$PROJECT_DIR$/scenes/CutsceneManager.tscn" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scenes/MainMenu.tscn" beforeDir="false" afterPath="$PROJECT_DIR$/scenes/MainMenu.tscn" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/scenes/PlayButton.cs" beforeDir="false" afterPath="$PROJECT_DIR$/scenes/PlayButton.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scenes/TransitionSystem.cs" beforeDir="false" afterPath="$PROJECT_DIR$/scenes/TransitionSystem.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -33,12 +37,17 @@
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4a26704d10e145e2890fa38a6cc0df67531820/2b/be4e225c/Object.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/54b49a39d6c94f36adb89bde3c275b44108e00/5c/2dcc0050/Enumerable.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/b9aa46ca7e704286b432955093e83a1046c600/08/fac63a56/AsyncMethodBuilderCore.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/b9aa46ca7e704286b432955093e83a1046c600/5a/95f9bb5b/Dictionary`2.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/b9aa46ca7e704286b432955093e83a1046c600/7a/6a58c918/ThrowHelper.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/b9aa46ca7e704286b432955093e83a1046c600/b6/c61fc334/Exception.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/b9aa46ca7e704286b432955093e83a1046c600/e6/8b8027a1/AwaitTaskContinuation.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/b9aa46ca7e704286b432955093e83a1046c600/eb/cd3ab089/AsyncTaskMethodBuilder`1.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/efbf1361bba342e0a2c7a839ddd1f9ef294c00/09/78decb03/Resource.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/efbf1361bba342e0a2c7a839ddd1f9ef294c00/12/083ac99e/NodePath.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/efbf1361bba342e0a2c7a839ddd1f9ef294c00/90/7fee1b39/Object.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
@@ -50,23 +59,23 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Godot 3 Start and Debug.Player.executor&quot;: &quot;Debug&quot;,
-    &quot;Mono Remote.Attach to Player.executor&quot;: &quot;Debug&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;XThreadsFramesViewSplitterKey&quot;: &quot;0.49707603&quot;,
-    &quot;gdscript.promo.shown&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;cutscene&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.sourceCode.C#&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Godot 3 Start and Debug.Player.executor": "Debug",
+    "Mono Remote.Attach to Player.executor": "Debug",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "XThreadsFramesViewSplitterKey": "0.49707603",
+    "gdscript.promo.shown": "true",
+    "git-widget-placeholder": "cutscene",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.sourceCode.C#",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RunManager" selected="Godot 3 Start and Debug.Player">
     <configuration name="Attach to Player" type="ConnectRemote" factoryName="Mono Remote" show_console_on_std_err="false" show_console_on_std_out="false" port="23685" address="localhost">
       <option name="allowRunningInParallel" value="false" />
@@ -189,6 +198,7 @@
         <watch expression="currVal" />
         <watch expression="container" />
         <watch expression="container" />
+        <watch expression="instance" language="C#" />
       </configuration>
     </watches-manager>
   </component>
