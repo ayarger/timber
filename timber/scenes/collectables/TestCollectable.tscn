@@ -1,0 +1,181 @@
+[gd_scene load_steps=15 format=2]
+
+[ext_resource path="res://temp_scripts/TempTowerSprite.png" type="Texture" id=1]
+[ext_resource path="res://circle_256.png" type="Texture" id=2]
+[ext_resource path="res://fogofwartesting/HasTeam.cs" type="Script" id=3]
+[ext_resource path="res://temp_scripts/Collectable.cs" type="Script" id=4]
+[ext_resource path="res://temp_scripts/IconControl.cs" type="Script" id=5]
+[ext_resource path="res://scenes/collectables/coin.tres" type="Material" id=6]
+
+[sub_resource type="BoxShape" id=20]
+extents = Vector3( 0.2, 0.2, 0.2 )
+
+[sub_resource type="QuadMesh" id=19]
+
+[sub_resource type="QuadMesh" id=15]
+
+[sub_resource type="Shader" id=13]
+code = "shader_type spatial;
+render_mode blend_mix; // Enable blending for transparency
+
+uniform sampler2D fowTexture;
+
+uniform vec3 world_position;
+
+uniform float screenPosX = 0.0f;
+uniform float screenPosZ = 0.0f;
+
+uniform float screenHeight = 5.0f;
+uniform float screenWidth = 5.0f;
+
+uniform sampler2D texture_albedo : hint_albedo;
+uniform float alpha_cutout_threshold : hint_range(0, 1) = 0.5;
+uniform float static_amount = 0.0; // Amount of static pattern (0 to 1)
+
+uniform float alpha : hint_range(0.0, 1.0) = 1.0; 
+
+float hash(vec2 p) {
+    p = fract(p * vec2(123.4, 789.6));
+    p += dot(p, p + 45.32);
+    return fract(p.x * p.y);
+}
+
+void fragment() {
+    float visibility_value = texture(fowTexture, vec2((world_position.x - screenPosX) / screenWidth, (world_position.z - screenPosZ) / screenHeight)).r;
+    vec4 tex_color = texture(texture_albedo, UV);
+    ALBEDO = vec3(tex_color.r, tex_color.g, tex_color.b) * visibility_value;
+    ALPHA_SCISSOR = alpha_cutout_threshold;
+    if (tex_color.a < alpha_cutout_threshold) {
+        discard;
+    }
+    if (UV.x > visibility_value || UV.y > visibility_value) {
+        discard;
+    }
+    ALPHA = tex_color.a * visibility_value * alpha;
+    
+    /*
+    // Generate noise based on UV and time
+    float noise = hash(UV * 30.0 + vec2(0, TIME * 5.0));
+    vec3 static_color = mix(tex_color.rgb, tex_color.rgb + noise * static_amount, static_amount);
+    ALBEDO = static_color;
+    */
+}
+"
+
+[sub_resource type="ShaderMaterial" id=16]
+shader = SubResource( 13 )
+shader_param/world_position = null
+shader_param/screenPosX = 0.0
+shader_param/screenPosZ = 0.0
+shader_param/screenHeight = 5.0
+shader_param/screenWidth = 5.0
+shader_param/alpha_cutout_threshold = 0.5
+shader_param/static_amount = 0.0
+shader_param/alpha = 0.5
+shader_param/texture_albedo = ExtResource( 1 )
+
+[sub_resource type="QuadMesh" id=17]
+
+[sub_resource type="Shader" id=14]
+code = "shader_type spatial;
+
+uniform sampler2D fowTexture;
+
+uniform vec3 world_position;
+
+uniform float screenPosX = 0.0f;
+uniform float screenPosZ = 0.0f;
+
+uniform float screenHeight = 5.0f;
+uniform float screenWidth = 5.0f;
+
+uniform sampler2D texture_albedo : hint_albedo;
+uniform float alpha_cutout_threshold : hint_range(0, 1) = 0.5;
+uniform float static_amount = 0.0; // Amount of static pattern (0 to 1)
+
+uniform float alpha = 0.4f;
+uniform vec3 color = vec3(0.0f, 0.0f, 0.0f);
+
+// Hash function for procedural noise
+float hash(vec2 p) {
+    p = fract(p * vec2(123.4, 789.6));
+    p += dot(p, p + 45.32);
+    return fract(p.x * p.y);
+}
+
+void fragment() {
+	float visibility_value = texture(fowTexture,vec2((world_position.x-screenPosX)/screenWidth,((world_position.z-screenPosZ)/screenHeight))).r;
+    vec4 tex_color = texture(texture_albedo, UV);
+	ALBEDO = color * visibility_value;
+	ALPHA = alpha;
+	if(visibility_value < 0.001f)
+		discard;
+	
+    // Perform alpha cutout
+    //ALPHA_SCISSOR = alpha_cutout_threshold;
+    if(tex_color.a < 0.5f)
+        discard;
+}
+"
+
+[sub_resource type="ShaderMaterial" id=18]
+shader = SubResource( 14 )
+shader_param/world_position = null
+shader_param/screenPosX = 0.0
+shader_param/screenPosZ = 0.0
+shader_param/screenHeight = 5.0
+shader_param/screenWidth = 5.0
+shader_param/alpha_cutout_threshold = 0.5
+shader_param/static_amount = 0.0
+shader_param/alpha = 0.4
+shader_param/color = Vector3( 0, 0, 0 )
+shader_param/texture_albedo = ExtResource( 2 )
+
+[node name="testCollectable" type="Spatial"]
+script = ExtResource( 4 )
+
+[node name="Area" type="Area" parent="."]
+
+[node name="CollisionShape" type="CollisionShape" parent="Area"]
+transform = Transform( 6, 0, 0, 0, 2, 0, 0, 0, 6, 0, 0.5, -0.5 )
+shape = SubResource( 20 )
+
+[node name="iconMesh" type="MeshInstance" parent="."]
+transform = Transform( 0.6, 0, 0, 0, 0.424264, 0.707107, 0, -0.424264, 0.707107, 0, 0.442548, -0.433128 )
+mesh = SubResource( 19 )
+skeleton = NodePath("../view")
+material/0 = ExtResource( 6 )
+
+[node name="IconControl" type="Node" parent="."]
+script = ExtResource( 5 )
+
+[node name="view" type="Spatial" parent="."]
+transform = Transform( 1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 0.00941655, 0 )
+visible = false
+
+[node name="mesh" type="MeshInstance" parent="view"]
+transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0.5, 0 )
+mesh = SubResource( 15 )
+material/0 = SubResource( 16 )
+
+[node name="shadowMesh" type="MeshInstance" parent="view"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.504038, -0.00558106 )
+cast_shadow = 3
+mesh = SubResource( 15 )
+material/0 = SubResource( 16 )
+
+[node name="shadow" type="MeshInstance" parent="."]
+transform = Transform( 1.37523, 0, 0, 0, -4.37114e-08, 1, 0, -0.620762, -2.71344e-08, 0, 0.0083809, 0 )
+visible = false
+sorting_offset = -1.0
+sorting_use_aabb_center = false
+cast_shadow = 0
+mesh = SubResource( 17 )
+material/0 = SubResource( 18 )
+
+[node name="HasTeam" type="Node" parent="."]
+script = ExtResource( 3 )
+
+[node name="Timer" type="Timer" parent="."]
+
+[node name="Tween" type="Tween" parent="."]
