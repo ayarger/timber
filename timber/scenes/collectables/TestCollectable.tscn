@@ -1,23 +1,20 @@
-[gd_scene load_steps=18 format=2]
+[gd_scene load_steps=15 format=2]
 
-[ext_resource path="res://Components/IsSelectable.tscn" type="PackedScene" id=1]
-[ext_resource path="res://temp_scripts/Tower.cs" type="Script" id=2]
-[ext_resource path="res://circle_256.png" type="Texture" id=3]
-[ext_resource path="res://scenes/HasStats.tscn" type="PackedScene" id=4]
-[ext_resource path="res://fogofwartesting/StateManager.cs" type="Script" id=5]
-[ext_resource path="res://temp_scripts/hammer.png" type="Texture" id=6]
-[ext_resource path="res://fogofwartesting/HasTeam.cs" type="Script" id=7]
-[ext_resource path="res://temp_scripts/IconControl.cs" type="Script" id=8]
-[ext_resource path="res://temp_scenes/StatManager.tscn" type="PackedScene" id=9]
-[ext_resource path="res://temp_scripts/TempTowerSprite.png" type="Texture" id=11]
+[ext_resource path="res://temp_scripts/TempTowerSprite.png" type="Texture" id=1]
+[ext_resource path="res://circle_256.png" type="Texture" id=2]
+[ext_resource path="res://fogofwartesting/HasTeam.cs" type="Script" id=3]
+[ext_resource path="res://temp_scripts/Collectable.cs" type="Script" id=4]
+[ext_resource path="res://temp_scripts/IconControl.cs" type="Script" id=5]
+[ext_resource path="res://scenes/collectables/coin.tres" type="Material" id=6]
 
-[sub_resource type="QuadMesh" id=8]
+[sub_resource type="BoxShape" id=20]
+extents = Vector3( 0.2, 0.2, 0.2 )
 
-[sub_resource type="SpatialMaterial" id=15]
-flags_transparent = true
-albedo_texture = ExtResource( 6 )
+[sub_resource type="QuadMesh" id=19]
 
-[sub_resource type="Shader" id=16]
+[sub_resource type="QuadMesh" id=15]
+
+[sub_resource type="Shader" id=13]
 code = "shader_type spatial;
 render_mode blend_mix; // Enable blending for transparency
 
@@ -65,8 +62,8 @@ void fragment() {
 }
 "
 
-[sub_resource type="ShaderMaterial" id=10]
-shader = SubResource( 16 )
+[sub_resource type="ShaderMaterial" id=16]
+shader = SubResource( 13 )
 shader_param/world_position = null
 shader_param/screenPosX = 0.0
 shader_param/screenPosZ = 0.0
@@ -75,11 +72,11 @@ shader_param/screenWidth = 5.0
 shader_param/alpha_cutout_threshold = 0.5
 shader_param/static_amount = 0.0
 shader_param/alpha = 0.5
-shader_param/texture_albedo = ExtResource( 11 )
+shader_param/texture_albedo = ExtResource( 1 )
 
-[sub_resource type="QuadMesh" id=11]
+[sub_resource type="QuadMesh" id=17]
 
-[sub_resource type="Shader" id=17]
+[sub_resource type="Shader" id=14]
 code = "shader_type spatial;
 
 uniform sampler2D fowTexture;
@@ -121,8 +118,8 @@ void fragment() {
 }
 "
 
-[sub_resource type="ShaderMaterial" id=12]
-shader = SubResource( 17 )
+[sub_resource type="ShaderMaterial" id=18]
+shader = SubResource( 14 )
 shader_param/world_position = null
 shader_param/screenPosX = 0.0
 shader_param/screenPosZ = 0.0
@@ -132,53 +129,52 @@ shader_param/alpha_cutout_threshold = 0.5
 shader_param/static_amount = 0.0
 shader_param/alpha = 0.4
 shader_param/color = Vector3( 0, 0, 0 )
-shader_param/texture_albedo = ExtResource( 3 )
+shader_param/texture_albedo = ExtResource( 2 )
 
-[node name="tower" type="Spatial" groups=["actors"]]
-script = ExtResource( 2 )
+[node name="testCollectable" type="Spatial"]
+script = ExtResource( 4 )
+
+[node name="Area" type="Area" parent="."]
+
+[node name="CollisionShape" type="CollisionShape" parent="Area"]
+transform = Transform( 6, 0, 0, 0, 2, 0, 0, 0, 6, 0, 0.5, -0.5 )
+shape = SubResource( 20 )
 
 [node name="iconMesh" type="MeshInstance" parent="."]
-transform = Transform( 1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 2.24546, -2.23604 )
-mesh = SubResource( 8 )
+transform = Transform( 0.6, 0, 0, 0, 0.424264, 0.707107, 0, -0.424264, 0.707107, 0, 0.442548, -0.433128 )
+mesh = SubResource( 19 )
 skeleton = NodePath("../view")
-material/0 = SubResource( 15 )
+material/0 = ExtResource( 6 )
 
 [node name="IconControl" type="Node" parent="."]
-script = ExtResource( 8 )
+script = ExtResource( 5 )
 
 [node name="view" type="Spatial" parent="."]
 transform = Transform( 1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 0.00941655, 0 )
+visible = false
 
 [node name="mesh" type="MeshInstance" parent="view"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0 )
-mesh = SubResource( 8 )
-material/0 = SubResource( 10 )
+transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0.5, 0 )
+mesh = SubResource( 15 )
+material/0 = SubResource( 16 )
 
 [node name="shadowMesh" type="MeshInstance" parent="view"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.504038, -0.00558106 )
 cast_shadow = 3
-mesh = SubResource( 8 )
-material/0 = SubResource( 10 )
+mesh = SubResource( 15 )
+material/0 = SubResource( 16 )
 
 [node name="shadow" type="MeshInstance" parent="."]
 transform = Transform( 1.37523, 0, 0, 0, -4.37114e-08, 1, 0, -0.620762, -2.71344e-08, 0, 0.0083809, 0 )
+visible = false
 sorting_offset = -1.0
 sorting_use_aabb_center = false
 cast_shadow = 0
-mesh = SubResource( 11 )
-material/0 = SubResource( 12 )
-
-[node name="IsSelectable" parent="." instance=ExtResource( 1 )]
-
-[node name="HasStats" parent="." instance=ExtResource( 4 )]
-
-[node name="StateManager" type="Node" parent="."]
-script = ExtResource( 5 )
+mesh = SubResource( 17 )
+material/0 = SubResource( 18 )
 
 [node name="HasTeam" type="Node" parent="."]
-script = ExtResource( 7 )
-
-[node name="StatManager" parent="." instance=ExtResource( 9 )]
+script = ExtResource( 3 )
 
 [node name="Timer" type="Timer" parent="."]
 

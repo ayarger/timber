@@ -109,13 +109,11 @@ public class TestMovement : Node
 			Coord current = queue.Dequeue();
 			dist = current - cur;
 
-			// Check if current tile is within range and unoccupied
 			if (Math.Abs(dist.x) + Math.Abs(dist.z) <= attackRange && Grid.Get(current).actor == null)
 			{
 				return current;
 			}
 
-			// Enqueue neighboring tiles in all directions
 			List<Coord> neighbors = new List<Coord>
 			{
 				new Coord(current.x + 1, current.z),
@@ -123,6 +121,7 @@ public class TestMovement : Node
 				new Coord(current.x, current.z + 1),
 				new Coord(current.x, current.z - 1)
 			};
+			neighbors.Sort(new CoordDistanceComparer(actorPos));
 
 			foreach (Coord neighbor in neighbors)
 			{
@@ -349,5 +348,28 @@ class ThetaNode : FastPriorityQueueNode
 	}
 }
 
+
+public class CoordDistanceComparer : IComparer<Coord>
+{
+	private Coord actorPos;
+
+	public CoordDistanceComparer(Coord actorPos)
+	{
+		this.actorPos = actorPos;
+	}
+
+	public int Compare(Coord a, Coord b)
+	{
+		double distanceA = GetDistance(a, actorPos);
+		double distanceB = GetDistance(b, actorPos);
+
+		return distanceA.CompareTo(distanceB);
+	}
+
+	private double GetDistance(Coord a, Coord b)
+	{
+		return Math.Sqrt(Math.Pow(a.x - b.x, 2) + Math.Pow(a.z - b.z, 2));
+	}
+}
 
 
