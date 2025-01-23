@@ -26,57 +26,26 @@ public class NLuaScriptManager : Node
 
 	public static int id = 0;
 	public static Script luaState;
-	public static HashSet<string> registeredClasses;
 	public static string globalClass = "global";
 	public static NLuaScriptManager Instance;
 
-	//Global references to all objects. 
-	public static HashSet<string> luaObjects;
-	public static Dictionary<string,Spatial> luaActors; //This can have duplicate actors, if actors have more than one script.
 
 	public static string testClassName = "testluaobject";
     public static string testClassNameDialogue = "testluadialogue";
-
     public static string emptyLuaFile = "lua_empty";
 
     public static Dictionary<string, LuaMethodInfo> luaMethods;
 
-	public static List<LuaSingleton> luaWorkers;
+
+    public static List<LuaSingleton> luaWorkers;
 
     static Stopwatch timeline;
 
-    //Must be ran before making any instances of a class. 
-    public void RegisterClass(File rootFile, string className)
-	{
-		if (registeredClasses.Contains(className))
-		{
-			GD.PushWarning($"Class {className} is already registered!");
-			return;
-		}
-		if (className == globalClass)
-		{
-			GD.PushError($"Cannot name a class identically to the global class \"{globalClass}\"!");
-			return;
-		}
-		try
-		{
-			luaState.DoString(rootFile.GetAsText());
-		}
-		catch (InterpreterException e)
-		{
-			GD.PushError($"Exception caught in {className}\n{e.Message}");
-			//Case of exception
-			EventBus.Publish(new LuaExceptionEvent());
-			return;
-		}
-		registeredClasses.Add(className);
-		GD.Print($"Registered Lua Class: {className}");
-	}
 
 	//Create objects of a class. These objects will have their events ran.
 	public bool CreateObject(string className, string objectName)
 	{
-		if (luaObjects.Contains(objectName))
+		if (LuaRegistry.ContainsActor(objectName))
 		{
 			GD.PushWarning($"Object {objectName} of class {className} already exists!");
 			return false;
@@ -87,7 +56,6 @@ public class NLuaScriptManager : Node
 			luaState.DoString($"{objectName} = {{}}\n" +
 				$"setmetatable({objectName}, {{__index = function(self, key) \r\n  if global.keywords[key]  then\r\n\treturn GetValue(rawget(self,\"object_name\"),key)\r\n  else\r\n\treturn rawget({className}, key)\r\n  end\r\nend}})\n" +
 				$"global:register_object({objectName}, \"{objectName}\")");
-			luaObjects.Add(objectName);
 		}
 		catch (InterpreterException e)
 		{
@@ -101,7 +69,7 @@ public class NLuaScriptManager : Node
     }
     public void KillActor(Spatial actor)
     {
-		foreach(var e in luaActors)
+		foreach(var e in LuaRegistry.luaActors)
 		{
 			if(e.Value == actor)
 			{
@@ -114,23 +82,20 @@ public class NLuaScriptManager : Node
 
 	private void RemoveActor(string name, Spatial actor)
     {
-        luaActors.Remove(name);
-        luaObjects.Remove(name);
-        luaState.DoString($"{name} = nil\n" +
-            $"global.game_objects[\"{name}\"] = nil");
+        LuaRegistry.DeregisterActor(name);
 
     }
 
     //Create objects of a class, that hosts an actor. Should be the only "front facing" function for users.
     //Will probably replace Actor with ActorConfig.
-    //This can and should be called multiple times on the same actor to have multiple scripts per actor.
+	//Should support multiple scripts per actor, but for now that is not supported.
     public void CreateActor(string className, string objectName, Spatial actor)
 	{
 		if (!CreateObject(className, objectName))
 		{
 			return;
 		}
-		luaActors[objectName] = actor;
+		LuaRegistry.RegisterActor(new LuaObjectData( objectName, className, actor));
 	}
 
 	public void RunUntilCompletion(string function, List<string> prms = null)
@@ -141,7 +106,7 @@ public class NLuaScriptManager : Node
 		string data = "";
 
 		List<KeyValuePair<string, Spatial>> toDelete = new List<KeyValuePair<string, Spatial>>();
-		foreach(var p in luaActors)
+		foreach(var p in LuaRegistry.luaActors)
 		{
 			if (!IsInstanceValid(p.Value))
 			{
@@ -204,7 +169,7 @@ public class NLuaScriptManager : Node
                     else if (typeof(Spatial).IsAssignableFrom(result.GetType()))
                     {
 						//Return actor's name, which in lua context is the actual object.
-                        result = luaActors.Where((pair) => { return pair.Value == result; }).FirstOrDefault().Key;
+                        result = LuaRegistry.luaActors.Where((pair) => { return pair.Value == result; }).FirstOrDefault().Key;
                     }
                     //data is a manually created Lua table
                     data += id + "=" + result; //Replace with serializing JSON?
@@ -221,7 +186,7 @@ public class NLuaScriptManager : Node
 	{
 		string name = Convert.ToString(cmd["obj"]);
 		string command = Convert.ToString(cmd["type"]);
-		Actor actor = luaActors.ContainsKey(name) ? luaActors[name] as Actor : null;
+		Actor actor = LuaRegistry.GetActor(name) as Actor;
 
 		LuaAPI.currentActor = actor;
 
@@ -397,9 +362,7 @@ public class NLuaScriptManager : Node
 		//luaState.DoString($"package.path = '{abspath}?.lua;' .. package.path");
 		//luaState.DoString("package.path = 'LuaEngine/testmodules/?.lua;' .. package.path");
 		//luaState.AddModuleDir("res://LuaEngine/testmodules");
-		registeredClasses = new HashSet<string>();
-		luaObjects = new HashSet<string>();
-		luaActors = new Dictionary<string, Spatial>();
+		LuaRegistry.Reset();
 		string testc = "local pb = require \"pb\"\r\nlocal protoc = require \"protoc\"\r\n\r\n-- load schema from text (just for demo, use protoc.new() in real world)\r\nassert(protoc:load [[\r\n   message Phone {\r\n\t  optional string name        = 1;\r\n\t  optional int64  phonenumber = 2;\r\n   }\r\n   message Person {\r\n\t  optional string name     = 1;\r\n\t  optional int32  age      = 2;\r\n\t  optional string address  = 3;\r\n\t  repeated Phone  contacts = 4;\r\n   } ]])\r\n\r\n-- lua table data\r\nlocal data = {\r\n   name = \"ilse\",\r\n   age  = 18,\r\n   contacts = {\r\n\t  { name = \"alice\", phonenumber = 12312341234 },\r\n\t  { name = \"bob\",   phonenumber = 45645674567 }\r\n   }\r\n}\r\n\r\n-- encode lua table data into binary format in lua string and return\r\nlocal bytes = assert(pb.encode(\"Person\", data))\r\nreturn pb.tohex(bytes)";
 
 		//GD.Print(luaState.DoString(testc));
@@ -415,16 +378,16 @@ public class NLuaScriptManager : Node
 		//FOR TESTING
 		Godot.File x = new Godot.File();
 		x.Open($"LuaEngine/{testClassName}.lua", Godot.File.ModeFlags.Read);
-		RegisterClass(x, testClassName);
+		LuaRegistry.RegisterClass(x, testClassName);
 
 
         Godot.File y = new Godot.File();
         y.Open($"LuaEngine/{testClassNameDialogue}.lua", Godot.File.ModeFlags.Read);
-        RegisterClass(y, testClassNameDialogue);
+        LuaRegistry.RegisterClass(y, testClassNameDialogue);
 
         Godot.File z = new Godot.File();
         z.Open($"LuaEngine/{emptyLuaFile}.lua", Godot.File.ModeFlags.Read);
-        RegisterClass(z, emptyLuaFile);
+        LuaRegistry.RegisterClass(z, emptyLuaFile);
 
         GD.Print("Lua initialized");
 
@@ -470,6 +433,10 @@ public class NLuaScriptManager : Node
 	{
 
 		RunUntilCompletion("global.tick", new List<string> { $"{delta}" });
+
+		//Ready for any object that hasn't started yet
+        RunUntilCompletion("global.receive_specified", new List<string> { LuaUtils.ConstructArray(LuaRegistry.needToRunReady) , "\"ready\""});
+		LuaRegistry.ClearReady();
 
         //Process
         RunUntilCompletion("global.receive", new List<string> { "\"update\"" });
@@ -587,7 +554,7 @@ public class LuaCommand : System.Attribute
             else if (typeof(Spatial).IsAssignableFrom(pi.ParameterType))
             {
 				//THIS SHOULD ONLY BE GODOT OBJECTS LISTED IN luaActors
-				o = NLuaScriptManager.luaActors[Convert.ToString(cmd[pi.Name])];
+				o = LuaRegistry.GetActor(Convert.ToString(cmd[pi.Name]));
             }
             else if (pi.ParameterType == typeof(bool))
             {
