@@ -15,9 +15,13 @@ public class LuaAPI
 
 
     [LuaCommand("SetDestination")]
-    public static void Move(int x, int z) {
-
-        TestMovement.SetDestination(currentActor, new Vector3(Grid.tileWidth * x, currentActor.GlobalTranslation.y, Grid.tileWidth * z));
+    public static void Move(int x, int z, bool ignoreCombat = false)
+    {
+        if (ignoreCombat || !(currentActor.IsStateActive("CombatState") || currentActor.IsStateActive("ChaseState")))
+        {
+            TestMovement.SetDestination(currentActor, new Vector3(Grid.tileWidth * x, currentActor.GlobalTranslation.y, Grid.tileWidth * z));
+        }
+        
     }
 
     [LuaCommand("Print", false)]
@@ -90,6 +94,19 @@ public class LuaAPI
 
         return !Input.IsKeyPressed(OS.FindScancodeFromString(key)) && LuaInputManager.previousKeys[key] ? true : false;
     }
+
+    [LuaCommand("InCombat")]
+    public static bool InCombat()
+    {
+        return currentActor.IsStateActive("CombatState") || currentActor.IsStateActive("ChaseState");
+    }
+
+    [LuaCommand("TakeDamage")]
+    public static void TakeDamage(int damage)
+    {
+        currentActor.Hurt(damage, false);
+    }
+
 
 
     [LuaCommand("PrintNameOfActor", false)]

@@ -131,7 +131,12 @@ function global:advance_coroutines(coroutine_list)
 				local return_data = data[coro[3]]==nil and 0 or data[coro[3]]
 				-- Run the coroutine
 				local code, res = coroutine.resume(coro[2],coro[1], return_data)
-				if res then
+				
+				if not code then
+					amount = amount + 1
+					commands[amount]={obj=coro[1].object_name, type="ERROR", ERROR=true, msg=res}
+					coroutine_list[coro] = false
+				elseif res then
 					if res=="N" then
 						global.awaiting_coroutines[coro] = true
 						coroutine_list[coro] = false

@@ -80,6 +80,10 @@ public class ChaseState : ActorState
         }
         else
         {
+            if (!IsInstanceValid(TargetActor))
+            {
+                manager.DisableState(name);
+            }
             Coord dest = Grid.ConvertToCoord(TargetActor.GlobalTranslation);
             if(TestMovement.WithinRange(dest, actor, attackRange))
             {

@@ -54,6 +54,7 @@ public class LuaRegistry
         catch (InterpreterException e)
         {
             GD.PushError($"Exception caught in {className}\n{e.Message}");
+            NLuaScriptManager.ShowException(className, e.Message);
             //Case of exception
             EventBus.Publish(new LuaExceptionEvent());
             return;
@@ -63,6 +64,10 @@ public class LuaRegistry
     }
     public static void RegisterActor(LuaObjectData obj)
     {
+        if (!classToLuaObject.ContainsKey(obj.ClassName))
+        {
+            return;
+        }
         luaObjects.Add(obj);
         nameToActor[obj.Name] = obj.Actor;
         needToRunReady.Add(obj.Name);
@@ -70,22 +75,33 @@ public class LuaRegistry
         GD.Print(obj.Name);
     }
 
+    public static bool ContainsClass(string className)
+    {
+        return classToLuaObject.ContainsKey(className);
+    }
+
     public static void DeregisterActor(string name)
     {
-        LuaObjectData toRemove = null;
-        foreach(var i in luaObjects)
-        {
-            if(i.Name == name)
-            {
-                toRemove = i;
-                break;
-            }
-        }
+        LuaObjectData toRemove = FindActorData(name);
         luaObjects.Remove(toRemove);
         nameToActor.Remove(name);
         classToLuaObject[toRemove.ClassName].Remove(toRemove);
         NLuaScriptManager.luaState.DoString($"{name} = nil\n" +
             $"global.game_objects[\"{name}\"] = nil");
+    }
+
+    public static LuaObjectData FindActorData(string name)
+    {
+        LuaObjectData answer = null;
+        foreach (var i in luaObjects)
+        {
+            if (i.Name == name)
+            {
+                answer = i;
+                break;
+            }
+        }
+        return answer;
     }
 
     //FIX THIS LATER
@@ -133,8 +149,10 @@ public class LuaRegistry
         catch (InterpreterException e)
         {
             GD.PushError($"Exception caught in {name}\n{e.Message}");
+            NLuaScriptManager.ShowException(name, e.Message);
             //Case of exception
             EventBus.Publish(new LuaExceptionEvent());
+            classToLuaObject.Remove(name);
             return;
         }
         classToLuaObject[name] = new HashSet<LuaObjectData>();

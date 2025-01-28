@@ -51,6 +51,11 @@ public class NLuaScriptManager : Node
 			return false;
 		}
 
+		if (!LuaRegistry.ContainsClass(className))
+		{
+			return false;
+		}
+
 		try
 		{
 			luaState.DoString($"{objectName} = {{}}\n" +
@@ -180,24 +185,51 @@ public class NLuaScriptManager : Node
 		}
 	}
 
+
+	public static void ShowException(string msg, string className = null)
+	{
+		if(className == null)
+        {
+            GD.Print($"Exception encountered: " + msg);
+        }
+		else
+		{
+            GD.Print($"Exception while running lua script \"{className}\": " + msg);
+        }
+	}
 	//Handles commands. The contents of cmd is determined by the appropriate command in Lua, and needs to be manually converted.
 	//Every command should have a name (the object name), and a command type. Everything else is determined by the appropriate API.
 	public static object HandleCommand(Dictionary<string, object> cmd)
 	{
+		
+
 		string name = Convert.ToString(cmd["obj"]);
 		string command = Convert.ToString(cmd["type"]);
 		Actor actor = LuaRegistry.GetActor(name) as Actor;
 
-		LuaAPI.currentActor = actor;
+        if (cmd.ContainsKey("ERROR"))
+        {
+			string className = LuaRegistry.FindActorData(name).ClassName;
+			string message = cmd["msg"] as string;
+			if (message.StartsWith("attempt to index"))
+			{
+				message += ". Make sure you have \"self\" as the first parameter when calling functions.";
+			}
+			ShowException(message, className);
+			return null;
+        }
+
+        LuaAPI.currentActor = actor;
 
 		try
 		{
 			return LuaCommand.RunMethod(luaMethods[command].MethodInfo, cmd);
 		}
-		catch (Exception e)
-		{
-			GD.Print(e.ToString());
-		}
+		catch (LuaException e)
+        {
+            string className = LuaRegistry.FindActorData(name).ClassName;
+            ShowException(e.Message, className);
+        }
 
 		////Parse commands. Will need to refactor to a better system.
 		//if (command == "M")
@@ -254,6 +286,11 @@ public class NLuaScriptManager : Node
 
 	public static void Print(object a)
 	{
+		if(a == null)
+		{
+			GD.Print("null");
+			return;
+		}
 		if (typeof(MoonSharp.Interpreter.Table).IsAssignableFrom(a.GetType()))
         {
             GD.Print("{");
@@ -303,8 +340,25 @@ public class NLuaScriptManager : Node
 			string parametersString1 = "";
             string parametersString2 = "";
             foreach (var par in luaMethod.Value.MethodInfo.GetParameters())
-			{
-				parametersString1 += ", _" + par.Name;
+            {
+                parametersString1 += ", _" + par.Name;
+                if (par.HasDefaultValue)
+				{
+					if (typeof(bool).IsAssignableFrom(par.ParameterType))
+					{
+                        string temp = ",\r\n\t\t" + par.Name + " = (_" + par.Name + " or " + par.DefaultValue.ToString().ToLower() + ")";
+                        GD.Print(temp);
+                        parametersString2 += temp;
+                    }
+					else
+					{
+                        string temp = ",\r\n\t\t" + par.Name + " = (_" + par.Name + " or " + par.DefaultValue.ToString() + ")";
+                        GD.Print(temp);
+                        parametersString2 += temp;
+                    }
+					
+					continue;
+                }
 				//If parameter is an actor, make sure to get the actor's name
 				if(typeof(Spatial).IsAssignableFrom(par.ParameterType))
                 {
@@ -331,7 +385,7 @@ public class NLuaScriptManager : Node
 
 
             bool hasReturnValue = luaMethod.Value.MethodInfo.ReturnType != typeof(void);
-            string func = "function " + luaMethod.Key + "(" + parametersString1 + ")\r\n\tlocal coroutine_data = {coroutine.yield(\r\n\t\t{obj = " + objectString + ",\r\n\t\ttype=\"" + luaMethod.Key + "\"" + parametersString2 + "}\r\n\t\t)}"
+            string func = "function " + luaMethod.Value.Name + "(" + parametersString1 + ")\r\n\tlocal coroutine_data = {coroutine.yield(\r\n\t\t{obj = " + objectString + ",\r\n\t\ttype=\"" + luaMethod.Key + "\"" + parametersString2 + "}\r\n\t\t)}"
 				+ (hasReturnValue ? "\r\n\treturn coroutine_data[#coroutine_data]" : "")
                 + "\r\nend\r\n";
 			codegen += func;
@@ -516,9 +570,17 @@ public class LuaCommand : System.Attribute
 
 		foreach (var attribute in typesWithMyAttribute)
 		{
-			GD.Print(attribute.Attribute.Name);
-			ans[attribute.Attribute.Name] = new LuaMethodInfo(attribute.Method, attribute.Attribute.UsesNode);
-            GD.Print("attribute: " + attribute.ToString() + " found at " + timeline.Elapsed);
+			//GD.Print(attribute.Attribute.Name);
+
+			//Deprecated overloading logic, left here just in case
+			string internalName = attribute.Attribute.Name;
+			while (ans.ContainsKey(internalName))
+            {
+				internalName = internalName + "1";
+
+            }
+			ans[internalName] = new LuaMethodInfo(attribute.Attribute.Name, attribute.Method, attribute.Attribute.UsesNode);
+            //GD.Print("attribute: " + attribute.ToString() + " found at " + timeline.Elapsed);
         }
 
         //GD.Print("Number of funcs with attribute:" + typesWithMyAttribute.Count());
@@ -531,54 +593,70 @@ public class LuaCommand : System.Attribute
     public static object RunMethod(MethodInfo methodInfo, Dictionary<string, object> cmd)
 	{
 		List<object> args = new List<object>();
-		foreach(var pi in methodInfo.GetParameters())
+		string currentParameter = "";
+		try
 		{
-			object o;
+            foreach (var pi in methodInfo.GetParameters())
+            {
+                object o;
+				currentParameter = pi.Name;
+                if (pi.ParameterType == typeof(string))
+                {
+                    o = Convert.ToString(cmd[pi.Name]);
+                }
+                else if (pi.ParameterType == typeof(int))
+                {
+                    o = Convert.ToInt32(cmd[pi.Name]);
+                }
+                else if (pi.ParameterType == typeof(float))
+                {
+                    o = (float)Convert.ToDouble(cmd[pi.Name]);
+                }
+                else if (pi.ParameterType == typeof(double))
+                {
+                    o = Convert.ToDouble(cmd[pi.Name]);
+                }
+                else if (typeof(Spatial).IsAssignableFrom(pi.ParameterType))
+                {
+                    //THIS SHOULD ONLY BE GODOT OBJECTS LISTED IN luaActors
+                    o = LuaRegistry.GetActor(Convert.ToString(cmd[pi.Name]));
+                }
+                else if (pi.ParameterType == typeof(bool))
+                {
+                    o = (bool)cmd[pi.Name] ? true : false;
+                }
+                else
+                {
+                    throw new Exception("unsupported datatype in lua api!");
+                }
+                args.Add(o);
+            }
 
-			if(pi.ParameterType == typeof(string))
-			{
-				o = Convert.ToString(cmd[pi.Name]);
-			}
-			else if(pi.ParameterType == typeof(int))
-            {
-                o = Convert.ToInt32(cmd[pi.Name]);
-            }
-            else if (pi.ParameterType == typeof(float))
-            {
-                o = (float) Convert.ToDouble(cmd[pi.Name]);
-            }
-            else if (pi.ParameterType == typeof(double))
-            {
-                o = Convert.ToDouble(cmd[pi.Name]);
-            }
-            else if (typeof(Spatial).IsAssignableFrom(pi.ParameterType))
-            {
-				//THIS SHOULD ONLY BE GODOT OBJECTS LISTED IN luaActors
-				o = LuaRegistry.GetActor(Convert.ToString(cmd[pi.Name]));
-            }
-            else if (pi.ParameterType == typeof(bool))
-            {
-				o = (bool)cmd[pi.Name] ? true : false;
-            }
-			else
-            {
-                throw new Exception("unsupported datatype in lua api!");
-            }
-            args.Add(o);
-		}
-		return methodInfo.Invoke(null, args.ToArray());
+        }
+		catch (System.InvalidCastException)
+		{
+			throw new LuaException($"Invalid Cast Exception when calling function {methodInfo.Name}, are you sure you used the right parameters?");
+        }
+        catch (System.Collections.Generic.KeyNotFoundException)
+        {
+            throw new LuaException($"Could not find parameter {currentParameter} while running {methodInfo.Name}, are you sure you used the right parameters?");
+        }
+
+        return methodInfo.Invoke(null, args.ToArray());
 	}
 
 }
 
 public class LuaMethodInfo
 {
+	public string Name { get; set; }
 	public MethodInfo MethodInfo { get; private set; }
 
 	public bool UsesNode { get; private set; }
 
-	public LuaMethodInfo(MethodInfo methodInfo, bool usesNode)
+	public LuaMethodInfo(string name, MethodInfo methodInfo, bool usesNode)
 	{
+		Name = name;
 		MethodInfo = methodInfo;
 		UsesNode = usesNode;
 	}
