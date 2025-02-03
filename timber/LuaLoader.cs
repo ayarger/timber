@@ -1,13 +1,6 @@
 using Godot;
 using System;
-using System.IO;
-using System.Runtime.Serialization;
-using System.Text;
 using System.Collections.Generic;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Linq;
-using System.Security.Permissions;
 using System.Collections;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
@@ -298,25 +291,6 @@ public class LuaLoader : Node
 
 				if (config.team.ToLower().Trim() == "player")
 					player_actor_spawn_positions.Add(spawn_pos);
-
-				//Test Code:
-				if(current_char == 'm')
-				{
-					GD.Print(current_char);
-                    NLuaScriptManager.Instance
-						.CreateActor(NLuaScriptManager.testClassName, NLuaScriptManager.GenerateObjectName(), new_actor);
-                }
-				else if(current_char == 'q')
-                {
-                    NLuaScriptManager.Instance
-                        .CreateActor(NLuaScriptManager.testClassNameDialogue, NLuaScriptManager.GenerateObjectName(), new_actor);
-					new_actor.team = "npc";
-                }
-				else
-                {
-                    NLuaScriptManager.Instance
-                        .CreateActor(NLuaScriptManager.emptyLuaFile, NLuaScriptManager.GenerateObjectName(), new_actor);
-                }
 			}
 
 			x++;
@@ -405,28 +379,20 @@ public class LuaLoader : Node
         /* customize actor aesthetics */
 
         /* Load scripts of an actor */
-        foreach (string script_name in config.scripts)
+        foreach (ScriptConfig script in config.scripts)
         {
-			string source_path = System.IO.Directory.GetCurrentDirectory() + @"\resources\scripts\" + script_name + ".gd";
-			LoadScriptAtLocation(source_path, new_actor);
+			LoadScriptAtLocation(script, new_actor);
 		}
 		return actor_script;
 	}
 
-	void LoadScriptAtLocation(string location, Node owning_actor)
-	{
-		return;
-		GD.Print("Attempting to load external file [" + location + "]");
-		Script loaded_gdscript = (Script)GD.Load(location);
-
-		Node new_script_node = new Node();
-		new_script_node.SetScript(loaded_gdscript);
-
-        //new_script_node.Call("_Ready");
-		owning_actor.AddChild(new_script_node);
-		new_script_node._Ready();
-		new_script_node.SetProcess(true);
-		GD.Print("Done attaching external script [" + location + "] to actor [" + owning_actor.Name + "]");
+	void LoadScriptAtLocation(ScriptConfig scriptConfig, Spatial owning_actor)
+    {
+        string source_path = System.IO.Directory.GetCurrentDirectory() + @"\resources\scripts\" + scriptConfig.name;
+        NLuaScriptManager.Instance
+                .CreateActor(scriptConfig.name, NLuaScriptManager.GenerateObjectName(), owning_actor);
+       
+        return;
 	}
 }
 
@@ -446,7 +412,7 @@ public class ActorConfig
 
 	public Dictionary<string, string> sprite_filenames = new Dictionary<string, string>();
 
-	public List<string> scripts;
+	public List<ScriptConfig> scripts; //For now, contains at most one script.
 
 	public List<StateConfig> stateConfigs = new List<StateConfig>();
 	public StatConfig statConfig;
@@ -543,5 +509,13 @@ public class CombatConfig : StateConfig
 public class StatConfig
 {
 	public Dictionary<string, float> stats = new Dictionary<string, float>();
+}
+
+
+[Serializable]
+public class ScriptConfig
+{
+	public string name;
+	public Dictionary<string, object> variables;
 }
 
