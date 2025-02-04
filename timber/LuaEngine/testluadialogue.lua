@@ -10,6 +10,10 @@ testluadialogue.startFollow = false
 
 -- UNSEEN CODE --
 
+function testluadialogue:ready()
+	Print("I am ready!")
+end
+
 -- For testing purposes, this is getting run every 5 seconds
 function testluadialogue:update()
 	if self.startFollow then
@@ -38,7 +42,7 @@ end
 
 function testluadialogue:betrayal()
 	Print("Betrayal in progress")
-	for i=1,5 do
+	for i=1,2 do
 		local temp = Spawn(self,self)
 		SetScale(temp, .5)
 		SetTeam(temp, "enemy")

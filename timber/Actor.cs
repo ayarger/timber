@@ -298,7 +298,7 @@ public class Actor : Spatial
 		}
 	}
 
-	public virtual void Hurt(int damage, bool isCritical, Actor source)
+	public virtual void Hurt(int damage, bool isCritical, Actor source = null)
 	{
 		int damage_to_deal = isCritical ? damage * 2 : damage;
 
@@ -421,5 +421,10 @@ public class Actor : Spatial
 	public ActorConfig GetActorConfig()
 	{
 		return config;
+	}
+
+	public bool IsStateActive(string state)
+	{
+		return state_manager.IsStateActive(state);
 	}
 }

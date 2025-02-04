@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections;
 
 //LuaLoader, but just actor configs.
+//NOT USED ANYWHERE just for lua testing.
 public class ConfigLoader : Node
 {
     // Declare member variables here. Examples:
@@ -99,10 +100,10 @@ public class ConfigLoader : Node
         /* customize actor aesthetics */
 
         /* Load scripts of an actor */
-        foreach (string script_name in config.scripts)
+        foreach (ScriptConfig script_name in config.scripts)
         {
-            string source_path = System.IO.Directory.GetCurrentDirectory() + @"\resources\scripts\" + script_name + ".gd";
-            LoadScriptAtLocation(source_path, new_actor);
+            //string source_path = System.IO.Directory.GetCurrentDirectory() + @"\resources\scripts\" + script_name + ".gd";
+            //LoadScriptAtLocation(source_path, new_actor);
         }
         return actor_script;
 

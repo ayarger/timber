@@ -1,11 +1,10 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://QuitButton.cs" type="Script" id=1]
 [ext_resource path="res://scenes/PlayButton.cs" type="Script" id=2]
 [ext_resource path="res://scenes/WebBuildUploader.tscn" type="PackedScene" id=3]
 [ext_resource path="res://gradient256.png" type="Texture" id=4]
 [ext_resource path="res://scenes/HookesButton.tscn" type="PackedScene" id=5]
-[ext_resource path="res://LuaEngine/NLuaScriptManager.cs" type="Script" id=6]
 [ext_resource path="res://scenes/MainMenu.cs" type="Script" id=7]
 [ext_resource path="res://protobuftesting/ProtobufParser.cs" type="Script" id=8]
 
@@ -122,7 +121,6 @@ align = 1
 valign = 1
 
 [node name="Node" type="Node" parent="."]
-script = ExtResource( 6 )
 
 [node name="Protobuf" type="Node" parent="."]
 script = ExtResource( 8 )

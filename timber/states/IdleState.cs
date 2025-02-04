@@ -91,7 +91,7 @@ public class IdleState : ActorState
                 }
             }
         }
-        else if (actor.GetNode<HasTeam>("HasTeam").team == "player")
+        else if (team != null && team.team == "player")
         {
             // For construction units to actively search for constructions
             if (manager.states.ContainsKey("ConstructionState"))

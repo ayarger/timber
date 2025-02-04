@@ -15,9 +15,13 @@ public class LuaAPI
 
 
     [LuaCommand("SetDestination")]
-    public static void Move(int x, int z) {
-
-        TestMovement.SetDestination(currentActor, new Vector3(Grid.tileWidth * x, currentActor.GlobalTranslation.y, Grid.tileWidth * z));
+    public static void Move(int x, int z, bool ignoreCombat = false)
+    {
+        if (ignoreCombat || !(currentActor.IsStateActive("CombatState") || currentActor.IsStateActive("ChaseState")))
+        {
+            TestMovement.SetDestination(currentActor, new Vector3(Grid.tileWidth * x, currentActor.GlobalTranslation.y, Grid.tileWidth * z));
+        }
+        
     }
 
     [LuaCommand("Print", false)]
@@ -44,7 +48,7 @@ public class LuaAPI
     {
         float max = -1;
         Spatial closest = null;
-        foreach(Spatial i in NLuaScriptManager.luaActors.Values)
+        foreach(Spatial i in LuaRegistry.luaActors.Values)
         {
             float dist = i.GlobalTranslation.DistanceSquaredTo(currentActor.GlobalTranslation);
             if(dist > max)
@@ -91,6 +95,19 @@ public class LuaAPI
         return !Input.IsKeyPressed(OS.FindScancodeFromString(key)) && LuaInputManager.previousKeys[key] ? true : false;
     }
 
+    [LuaCommand("InCombat")]
+    public static bool InCombat()
+    {
+        return currentActor.IsStateActive("CombatState") || currentActor.IsStateActive("ChaseState");
+    }
+
+    [LuaCommand("TakeDamage")]
+    public static void TakeDamage(int damage)
+    {
+        currentActor.Hurt(damage, false);
+    }
+
+
 
     [LuaCommand("PrintNameOfActor", false)]
     public static void PrintNameOfActor(Spatial actor)
@@ -121,7 +138,7 @@ public class LuaAPI
     {
         Spatial ans = null;
         float dist = -1f;
-        foreach(Spatial actor in NLuaScriptManager.luaActors.Values)
+        foreach(Spatial actor in LuaRegistry.luaActors.Values)
         {
             if (typeof(Spatial).IsAssignableFrom(actor.GetType()))
             {
@@ -234,7 +251,7 @@ public class LuaAPI
     public static void RunFunction(string signal)
     {
         string name = "";
-        foreach(var i in NLuaScriptManager.luaActors)
+        foreach(var i in LuaRegistry.luaActors)
         {
             if(i.Value == dialogueActor)
             {

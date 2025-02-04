@@ -55,7 +55,6 @@ function global:tick(delta)
 end
 
 
-
 -- For anything relating to process
 function global:single_receive(actor, message)
 	local new_coroutines = {}
@@ -66,6 +65,24 @@ function global:single_receive(actor, message)
 			coroutine.create(actor[message]), 
 			GetUniqueId()}
 		new_coroutines[new_coro] = true
+	end
+	global:advance_coroutines(new_coroutines)
+end
+function global:receive_specified(actors, message)
+	local new_coroutines = {}
+	for _, obj in pairs(actors) do
+		if global.game_objects[obj.object_name] then
+			-- For every game object, find all functions that have the same name as the message
+			-- and run them as coroutines.
+			-- EG: if message is "Ready", run all ready functions.
+			if type(obj[message])=="function" then
+				-- FORMAT: Game object, new coroutine, unique coroutine ID identifier
+				local new_coro = {obj,
+					coroutine.create(obj[message]), 
+					GetUniqueId()}
+				new_coroutines[new_coro] = true
+			end
+		end
 	end
 	global:advance_coroutines(new_coroutines)
 end
@@ -114,7 +131,12 @@ function global:advance_coroutines(coroutine_list)
 				local return_data = data[coro[3]]==nil and 0 or data[coro[3]]
 				-- Run the coroutine
 				local code, res = coroutine.resume(coro[2],coro[1], return_data)
-				if res then
+				
+				if not code then
+					amount = amount + 1
+					commands[amount]={obj=coro[1].object_name, type="ERROR", ERROR=true, msg=res}
+					coroutine_list[coro] = false
+				elseif res then
 					if res=="N" then
 						global.awaiting_coroutines[coro] = true
 						coroutine_list[coro] = false

@@ -27,7 +27,6 @@ public class LuaInputManager : LuaSingleton
 
     public override void Start()
     {
-        GD.Print("staryting dsfjlkdsjf");
         foreach (var key in usableKeys)
         {
             previousKeys.Add(key, false);

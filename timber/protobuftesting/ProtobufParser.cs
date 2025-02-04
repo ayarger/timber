@@ -42,15 +42,15 @@ public class ProtobufParser : Node
             var protobufData = Google.Protobuf.Message.SimpleString.Parser.ParseFrom(body);
             output = (T)(object)protobufData.ToString();
         }
-        else if (type == "ActorConfig")
+        else if (type == "ActorConfig") //Does not currently support scripts
         {
             var protoActor = Google.Protobuf.Message.GameActor.Parser.ParseFrom(body);
 
                 List<string> attachedScripts = new List<string>();
-                foreach (string item in protoActor.Scripts)
-                {
-                    attachedScripts.Add(item);
-                }
+                //foreach (string item in protoActor.Scripts)
+                //{
+                //    attachedScripts.Add(item);
+                //}
 
                 ActorConfig localActor = new ActorConfig
                 {
@@ -60,8 +60,7 @@ public class ProtobufParser : Node
                     map_code = protoActor.MapCode[0],
                     aesthetic_scale_factor = protoActor.AestheticScaleFactor,
                     idle_sprite_filename = protoActor.IdleSpriteFilename,
-                    lives_sprite_filename = protoActor.LivesIconFilename,
-                    scripts = attachedScripts
+                    lives_sprite_filename = protoActor.LivesIconFilename
                 };
                 output = (T)(object)localActor;
         }
@@ -216,6 +215,7 @@ public class ProtobufParser : Node
 
 
     // Creating Binaries given Protobuf Class
+    // TODO: Does not currently support scripts
 
     public static void CreateActorBinary(ActorConfig gameObject, string name)
     {
@@ -232,10 +232,10 @@ public class ProtobufParser : Node
             LivesIconFilename = gameObject.lives_sprite_filename
         };
 
-        foreach(string script in gameObject.scripts)
-        {
-            localActor.Scripts.Add(script);
-        }
+        //foreach(string script in gameObject.scripts)
+        //{
+        //    localActor.Scripts.Add(script);
+        //}
 
         BinaryToFile(localActor.ToByteArray(), name);
     }
