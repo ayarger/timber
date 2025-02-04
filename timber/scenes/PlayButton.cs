@@ -9,7 +9,8 @@ public class PlayButton : Button
 		if (await Utilities.IsConnectedToInternet(this))
 		{
 			GD.Print("Internet connection detected. Launching game...");
-			//EventBus.Publish(new CutsceneStartEvent());
+			EventBus.Publish(new CutsceneStartEvent());
+			// TODO: transitionsystem debug
 			//TransitionSystem.RequestTransition(@"res://scenes/CutsceneManager.tscn");
 			string scene_path = "res://scenes/CutsceneManager.tscn";
 			PackedScene new_scene = ResourceLoader.Load<PackedScene>(scene_path);
@@ -27,5 +28,6 @@ public class PlayButton : Button
 		{
 			GD.Print("No internet connection detected.");
 		}
+		
 	}
 }

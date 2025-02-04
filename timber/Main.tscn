@@ -41,7 +41,6 @@
 [ext_resource path="res://temp_scripts/CollectableManager.cs" type="Script" id=39]
 [ext_resource path="res://scenes/collectables/collectionSound.wav" type="AudioStream" id=40]
 
-
 [sub_resource type="GDScript" id=2]
 
 [sub_resource type="SpatialMaterial" id=1]

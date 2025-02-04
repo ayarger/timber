@@ -59,6 +59,7 @@ public class CutsceneManager : CanvasLayer
         AddChild(transitionTween);
         StartCutscene(cutsceneImages);
         cutsceneStatEvent_sub = EventBus.Subscribe<CutsceneStartEvent>(StartCurrentCutscnene);
+
     }
 
     public void StartCurrentCutscnene(CutsceneStartEvent e)
@@ -94,6 +95,7 @@ public class CutsceneManager : CanvasLayer
 
     public void StartCutscene(List<CutsceneImageResource> cutsceneImages)
     {
+        LoadCutSceneImage("images/victory_bg.png");
         if (cutsceneImages == null || cutsceneImages.Count == 0)
         {
             GD.PrintErr("CutsceneManager: No images provided for the cutscene.");
@@ -114,7 +116,6 @@ public class CutsceneManager : CanvasLayer
     {
         if (currentImageIndex + 1 >= cutsceneImages.Count)
         {
-            GD.Print("Cutscene Finished");
             EndCutscene();
             return;
         }
@@ -233,6 +234,30 @@ public class CutsceneManager : CanvasLayer
             );
         }
     }
+
+    public void LoadCutSceneImage(string imagePath)
+    {
+        ArborResource.UseResource<Texture>(imagePath, OnImageLoaded, this);
+    }
+
+    public void OnImageLoaded(Texture loadedtexture)
+    {
+        if (loadedtexture == null)
+        {
+            GD.PrintErr("Image is null");
+            return;
+        }
+
+        CutsceneImageResource cutsceneImage = new CutsceneImageResource
+        {
+            Image = loadedtexture,
+            TransitionStyle = "instant",
+            DisplayStyle = "standard"
+        };
+        
+        cutsceneImages.Add(cutsceneImage);
+    }
+    
 
     private void EndCutscene()
     {
