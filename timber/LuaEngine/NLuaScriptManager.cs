@@ -429,26 +429,26 @@ public class NLuaScriptManager : Node
 		global.Open($"LuaEngine/{globalClass}.lua", Godot.File.ModeFlags.Read);
 		luaState.DoString(codegen + "\n" + global.GetAsText());
 
-		//FOR TESTING
-		Godot.File x = new Godot.File();
-		x.Open($"LuaEngine/{testClassName}.lua", Godot.File.ModeFlags.Read);
-		LuaRegistry.RegisterClass(x, testClassName);
+		////FOR TESTING
+		//Godot.File x = new Godot.File();
+		//x.Open($"LuaEngine/{testClassName}.lua", Godot.File.ModeFlags.Read);
+		//LuaRegistry.RegisterClass(x.GetAsText(), testClassName);
 
 
-        Godot.File y = new Godot.File();
-        y.Open($"LuaEngine/{testClassNameDialogue}.lua", Godot.File.ModeFlags.Read);
-        LuaRegistry.RegisterClass(y, testClassNameDialogue);
+  //      Godot.File y = new Godot.File();
+  //      y.Open($"LuaEngine/{testClassNameDialogue}.lua", Godot.File.ModeFlags.Read);
+  //      LuaRegistry.RegisterClass(y.GetAsText(), testClassNameDialogue);
 
         Godot.File z = new Godot.File();
         z.Open($"LuaEngine/{emptyLuaFile}.lua", Godot.File.ModeFlags.Read);
-        LuaRegistry.RegisterClass(z, emptyLuaFile);
+        LuaRegistry.RegisterClass(z.GetAsText(), emptyLuaFile);
 
         GD.Print("Lua initialized");
 
 
 
 		//ArborCoroutine.StartCoroutine(SimulateCoro(0));
-		x.Close();
+		//x.Close();
 
 
 		//Instantiate workers
