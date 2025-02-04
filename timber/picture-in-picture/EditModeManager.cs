@@ -80,33 +80,99 @@ public class EditModeManager : Camera2D
         UpdateScaleAndPosition();
     }
 
-    private void UpdateCursorPosition(Vector2 rawCursorPosition, Sprite cursor)
-    {
-        Vector2 viewportSize = GetViewportRect().Size;
+    // public Vector2 UpdateCursorPosition(Vector2 rawCursorPosition)
+    // {
+    //     Vector2 viewportSize = GetViewportRect().Size;
+    //     Vector2 cursorPos;
+    //     GD.Print("Edit Mode Active: " + edit_mode);
+    //     // if (!edit_mode)
+    //     // {
+    //     //     // Calculate cursor pos relative to computer_screen
+    //     //     Vector2 comp_tex_size = computer_screen.Texture.GetSize();
+    //     //     Vector2 comp_scaled_size = comp_tex_size * computer_screen.Scale;
 
+    //     //     Vector2 comp_top_left = computer_screen.GlobalPosition - (comp_scaled_size * 0.5f);
+    //     //     Vector2 normalizedCursorPos = (rawCursorPosition - comp_top_left) / comp_scaled_size;
+
+    //     //     cursorPos = normalizedCursorPos * comp_scaled_size;
+    //     // }
+    //     // else
+    //     // {
+    //     //     // Calculate  cursor pos relative to bg_screen
+    //     //     Vector2 bg_tex_size = bg_screen.Texture.GetSize();
+    //     //     Vector2 bg_scaled_size = bg_tex_size * bg_screen.Scale;
+
+    //     //     Vector2 bg_top_left = bg_screen.GlobalPosition - (bg_scaled_size * 0.5f);
+    //     //     Vector2 normalizedCursorPos = (rawCursorPosition - bg_top_left) / bg_scaled_size;
+
+    //     //     cursorPos = normalizedCursorPos * bg_scaled_size;
+    //     // }
+    //     Vector2 comp_tex_size = computer_screen.Texture.GetSize();
+    //     Vector2 comp_scaled_size = comp_tex_size * computer_screen.Scale;
+
+    //     // Calculate the top-left corner of the computer_screen in global space
+    //     Vector2 comp_top_left = computer_screen.GlobalPosition - (comp_scaled_size * 0.5f);
+
+    //     // Normalize the cursor position relative to the computer screen
+    //     Vector2 normalizedCursorPos = (rawCursorPosition - comp_top_left) / comp_scaled_size;
+
+    //     // Final cursor position relative to computer_screen
+    //     Vector2 intendedPos = normalizedCursorPos * comp_tex_size;
+
+    //     Vector2 adjustedScale = intendedPos / rawCursorPosition;
+
+    //     if (!edit_mode)
+    //     {
+    //         // Calculate cursor position relative to computer_screen
+            
+    //         cursorPos = intendedPos / adjustedScale;
+            
+    //     }
+    //     else
+    //     {
+    //         // Calculate cursor position relative to bg_screen
+    //         Vector2 bg_tex_size = bg_screen.Texture.GetSize();
+    //         Vector2 bg_scaled_size = bg_tex_size * bg_screen.Scale;
+
+    //         // Calculate the top-left corner of the bg_screen in global space
+    //         Vector2 bg_top_left = bg_screen.GlobalPosition - (bg_scaled_size * 0.5f);
+
+    //         // Normalize the cursor position relative to the background screen
+    //         normalizedCursorPos = (rawCursorPosition - bg_top_left) / bg_scaled_size;
+
+    //         // Final cursor position relative to bg_screen
+    //         cursorPos = normalizedCursorPos * bg_tex_size;
+    //         cursorPos /= adjustedScale;
+    //     }
+
+    //     return cursorPos;
+    // }
+
+    public Vector2 UpdateCursorPosition(Vector2 rawCursorPosition)
+    {
+        // If not in edit mode, return the cursor position as-is
         if (!edit_mode)
         {
-            // Calculate cursor pos relative to computer_screen
-            Vector2 comp_tex_size = computer_screen.Texture.GetSize();
-            Vector2 comp_scaled_size = comp_tex_size * computer_screen.Scale;
-
-            Vector2 comp_top_left = computer_screen.GlobalPosition - (comp_scaled_size * 0.5f);
-            Vector2 normalizedCursorPos = (rawCursorPosition - comp_top_left) / comp_scaled_size;
-
-            cursor.Position = normalizedCursorPos * comp_scaled_size;
+            return rawCursorPosition;
         }
-        else
-        {
-            // Calculate  cursor pos relative to bg_screen
-            Vector2 bg_tex_size = bg_screen.Texture.GetSize();
-            Vector2 bg_scaled_size = bg_tex_size * bg_screen.Scale;
 
-            Vector2 bg_top_left = bg_screen.GlobalPosition - (bg_scaled_size * 0.5f);
-            Vector2 normalizedCursorPos = (rawCursorPosition - bg_top_left) / bg_scaled_size;
+        // Calculate cursor position relative to bg_screen
+        Vector2 bg_tex_size = bg_screen.Texture.GetSize();
+        Vector2 bg_scaled_size = bg_tex_size * bg_screen.Scale;
 
-            cursor.Position = normalizedCursorPos * bg_scaled_size;
-        }
+        // Top-left corner of the bg_screen in global space
+        Vector2 bg_top_left = bg_screen.GlobalPosition - (bg_scaled_size * 0.5f);
+
+        // Map the raw cursor position to the screen's local coordinate space
+        Vector2 normalizedCursorPos = (rawCursorPosition - bg_top_left) / bg_scaled_size;
+
+        // Convert back to the background screen's coordinate space
+        Vector2 transformedCursorPos = normalizedCursorPos * bg_tex_size;
+
+        return transformedCursorPos;
     }
+
+
 
     public Vector2 GetCursorGridPosition(Vector2 rawCursorPosition)
     {

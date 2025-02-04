@@ -41,7 +41,13 @@ public class SelectionSystem : Node
         active_cursor = GetNode<CSGMesh>("active_cursor");
         active_cursor.GetNode<CSGMesh>("active_cursor_tower").Visible = false;
 
-        editModeManager = GetParent().GetNode<EditModeManager>("EditModeManager");
+         // Find EditModeManager anywhere in the scene tree
+        editModeManager = GetTree().Root.FindNode("Camera2D", true, false) as EditModeManager;
+
+        if (editModeManager == null)
+        {
+            GD.PrintErr("EditModeManager not found!");
+        }
 
         EventBus.Subscribe<EventTileCursorChangedLocation> (OnEventTileCursorChangedLocation);
         EventBus.Subscribe<TowerManager.EventToggleTowerPlacement> (OnEventToggleTowerPlacement);
@@ -130,6 +136,16 @@ public class SelectionSystem : Node
     bool dragging = false;
     void DetermineLocation()
     {
+        // Clamp current_mouse_screen_position to the viewport area
+        Rect2 viewportRect = GetViewport().GetVisibleRect();
+        current_mouse_screen_position = editModeManager.UpdateCursorPosition(current_mouse_screen_position);
+        GD.Print("Edit Mode Cursor Pos: " + editModeManager.UpdateCursorPosition(current_mouse_screen_position));
+        GD.Print("Current Cursor Pos: " + current_mouse_screen_position);
+
+        
+        current_mouse_screen_position.x = Mathf.Clamp(current_mouse_screen_position.x, viewportRect.Position.x, viewportRect.Position.x + viewportRect.Size.x);
+        current_mouse_screen_position.y = Mathf.Clamp(current_mouse_screen_position.y, viewportRect.Position.y, viewportRect.Position.y + viewportRect.Size.y);
+
         var from = GameplayCamera.GetGameplayCamera().ProjectRayOrigin(current_mouse_screen_position);
         var dir = GameplayCamera.GetGameplayCamera().ProjectRayNormal(current_mouse_screen_position);
 
