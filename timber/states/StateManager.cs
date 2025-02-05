@@ -56,7 +56,7 @@ public class StateManager : Node
 			
 			actorState.Config(config);
 			string stateType = actorState.stateType;
-			GD.Print(stateType);
+			//GD.Print(stateType);
 			states[stateType] = actorState;
 			actorState.actor = GetParent<Actor>();
 			actorState.manager = this;
@@ -134,9 +134,14 @@ public class StateManager : Node
 		{
 			actor.view.Rotation = .8f * actor.view.Rotation + .2f * actor.initial_rotation;
 		}
-		if (oldScale == actor.view.Scale)
+		if (oldScale.Abs() == actor.view.Scale.Abs())
 		{
-			actor.view.Scale = .8f * actor.view.Scale + .2f * actor.initial_view_scale;
+			//actor.view.Scale = .8f * actor.view.Scale + .2f * actor.initial_view_scale;
+			Vector3 newScale;
+			newScale.x = .8f * actor.view.Scale.x + (.2f * actor.initial_view_scale.Abs().x) * Mathf.Sign(actor.view.Scale.x);
+			newScale.y = actor.view.Scale.y;
+			newScale.z = .8f * actor.view.Scale.z + (.2f * actor.initial_view_scale.Abs().z) * Mathf.Sign(actor.view.Scale.z);
+			actor.view.Scale = newScale;
 		}
 
 		oldRotation = actor.view.Rotation;

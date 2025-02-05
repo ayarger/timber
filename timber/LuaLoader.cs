@@ -1,15 +1,9 @@
 using Godot;
 using System;
-using System.IO;
-using System.Runtime.Serialization;
-using System.Text;
 using System.Collections.Generic;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Linq;
-using System.Security.Permissions;
 using System.Collections;
 using System.Text.RegularExpressions;
+using System.Diagnostics;
 
 public class LuaLoader : Node
 {
@@ -19,20 +13,21 @@ public class LuaLoader : Node
 
 	public static LoadSceneResult most_recent_load_scene_result = null;
 
-	static LuaLoader instance;
+	public static LuaLoader instance { get; private set; }
 
+    static Stopwatch timeline;
 
-	//TEMP fake json example
-	// StateConfig enemyMeleeCombatConfig = new StateConfig() { name = "MeleeCombatState", 
-	// 	stateStats = { 
-	// 		{ "attackRange", 1 }, 
-	// 		{ "attackDamage", 20 }, 
-	// 		{ "criticalHitRate", 0.5f }, 
-	// 		{ "attackWindup", 0.5f }, 
-	// 		{ "attackRecovery", 0.125f }, 
-	// 		{ "attackCooldown", 1 } } };
+    //TEMP fake json example
+    // StateConfig enemyMeleeCombatConfig = new StateConfig() { name = "MeleeCombatState", 
+    // 	stateStats = { 
+    // 		{ "attackRange", 1 }, 
+    // 		{ "attackDamage", 20 }, 
+    // 		{ "criticalHitRate", 0.5f }, 
+    // 		{ "attackWindup", 0.5f }, 
+    // 		{ "attackRecovery", 0.125f }, 
+    // 		{ "attackCooldown", 1 } } };
 
-	StatConfig enemyStatConfig = new StatConfig();
+    StatConfig enemyStatConfig = new StatConfig();
 	StatConfig playerStatConfig = new StatConfig();
 
 	
@@ -44,6 +39,8 @@ public class LuaLoader : Node
 
         ArborCoroutine.StartCoroutine(Load(), this);
 
+		timeline = new Stopwatch();
+		timeline.Start();
 	}
 
 	bool loading_scene = false;
@@ -56,20 +53,24 @@ public class LuaLoader : Node
 	{
 		loading_scene = true;
 
-		// JUSTIN: Test to work with binries
-		ArborResource.Load<GameConfig>("game.config.bin");
-		yield return ArborResource.WaitFor("game.config.bin");
-		GameConfig game_config = ArborResource.Get<GameConfig>("game.config.bin");
+        // JUSTIN: Test to work with binries
+        //ArborResource.Load<GameConfig>("game.config.bin");
+        //yield return ArborResource.WaitFor("game.config.bin");
+        //GameConfig game_config = ArborResource.Get<GameConfig>("game.config.bin");
 
-		/* Load game config */
-		//ArborResource.Load<GameConfig>("game.config");
-		//yield return ArborResource.WaitFor("game.config");
-		//GameConfig game_config = ArborResource.Get<GameConfig>("game.config");
+        /* Load game config */
+        TimeSpan elapsedSnapshot = timeline.Elapsed;
+        GD.Print("Loading scene: " + elapsedSnapshot);
 
-		GD.Print("Loading scene");
+        ArborResource.Load<GameConfig>("game.config");
+		yield return ArborResource.WaitFor("game.config");
+		GameConfig game_config = ArborResource.Get<GameConfig>("game.config");
 
-		yield return LoadActorConfigs();
+		//yield return LoadActorConfigs();
         yield return LoadScene(game_config.initial_scene_file);
+
+        elapsedSnapshot = timeline.Elapsed;
+        GD.Print("Scene loaded at " + elapsedSnapshot);
 
         loading_scene = false;
     }
@@ -78,13 +79,13 @@ public class LuaLoader : Node
     IEnumerator LoadActorConfigs()
     {
 		// JUSTIN: Test to work with binaries
-		// ArborResource.Load<ModFileManifest>("binary_mod_file_manifest.bin");
-		// yield return ArborResource.WaitFor("binary_mod_file_manifest.bin");
-		// ModFileManifest manifest = ArborResource.Get<ModFileManifest>("binary_mod_file_manifest.bin");
+		ArborResource.Load<ModFileManifest>("binary_mod_file_manifest.bin");
+		yield return ArborResource.WaitFor("binary_mod_file_manifest.bin");
+		ModFileManifest manifest = ArborResource.Get<ModFileManifest>("binary_mod_file_manifest.bin");
 
-		ArborResource.Load<ModFileManifest>("mod_file_manifest.json");
-		yield return ArborResource.WaitFor("mod_file_manifest.json");
-		ModFileManifest manifest = ArborResource.Get<ModFileManifest>("mod_file_manifest.json");
+		//ArborResource.Load<ModFileManifest>("mod_file_manifest.json");
+		//yield return ArborResource.WaitFor("mod_file_manifest.json");
+		//ModFileManifest manifest = ArborResource.Get<ModFileManifest>("mod_file_manifest.json");
 
 		List<string> actor_files = manifest.Search("actor_definitions/*");
 
@@ -101,8 +102,6 @@ public class LuaLoader : Node
 			yield return ArborResource.WaitFor(actor_file);
 
             ActorConfig actor_info = ArborResource.Get<ActorConfig>(actor_file);
-			if(actor_info.stateConfigs.Count > 0)
-				GD.Print(actor_info.stateConfigs.Count);
 
 			//temporary
 			playerStatConfig.stats["health"] = 100;
@@ -135,7 +134,23 @@ public class LuaLoader : Node
 
     IEnumerator LoadScene (string scene_filename)
 	{
-		ViewportTexture fog_of_war_visibility_texture = new ViewportTexture();
+        TimeSpan elapsedSnapshot = timeline.Elapsed;
+        GD.Print("! Load Scene: " + scene_filename + " at " + elapsedSnapshot);
+
+        ArborResource.Load<ModFileManifest>("mod_file_manifest.json");
+        yield return ArborResource.WaitFor("mod_file_manifest.json");
+        ModFileManifest manifest = ArborResource.Get<ModFileManifest>("mod_file_manifest.json");
+
+        List<string> actor_files = manifest.Search("actor_definitions/*");
+
+        StateProcessor.Initialize();
+
+        foreach (string actor_file in actor_files)
+        {
+            ArborResource.Load<ActorConfig>(actor_file);
+        }
+
+        ViewportTexture fog_of_war_visibility_texture = new ViewportTexture();
 
         string image_filename = "images/" + scene_filename + ".png";
 		ArborResource.Load<Texture>(image_filename);
@@ -157,11 +172,60 @@ public class LuaLoader : Node
 		);
 
 		ArborResource.Load<AudioStream>("sounds/bgm_btd_defeat.ogg");
-		yield return ArborResource.WaitFor("sounds/bgm_btd_defeat.ogg");
 
+        //yield return ArborResource.WaitFor("sounds/bgm_btd_defeat.ogg");
+
+        //yield return ArborResource.WaitFor(image_filename);
+        //yield return ArborResource.WaitFor(layout_filename);
+        //yield return ArborResource.WaitFor(config_filename);
+
+
+        // JUSTIN: Image is the largest file, should limit time by largest constraining download. 
+        // JUSTIN: A little unsafe. Works fine under testing.
         yield return ArborResource.WaitFor(image_filename);
-        yield return ArborResource.WaitFor(layout_filename);
-        yield return ArborResource.WaitFor(config_filename);
+
+        foreach (string actor_file in actor_files)
+        {
+            //GD.Print("Loading actor file: " + actor_file);
+
+			// JUSTIN: No need with previous yield return.
+            //yield return ArborResource.WaitFor(actor_file);
+
+            ActorConfig actor_info = ArborResource.Get<ActorConfig>(actor_file);
+            //if (actor_info.stateConfigs.Count > 0)
+            //    GD.Print(actor_info.stateConfigs.Count);
+
+            //temporary
+            playerStatConfig.stats["health"] = 100;
+
+            enemyStatConfig.stats["health"] = 50;
+
+            if (actor_info.team == "player")
+            {
+                //actor_info.stateConfigs.Add(playerCombatConfig);
+                actor_info.statConfig = playerStatConfig;
+            }
+            else if (actor_info.team == "construction")
+            {
+                actor_info.statConfig = playerStatConfig;
+            }
+            else if (actor_info.name == "Chunk")
+            {
+                actor_info.statConfig = enemyStatConfig;
+
+            }
+            else
+            {
+                actor_info.statConfig = enemyStatConfig;
+                ArborResource.Load<Texture>("images/cheese.png");
+            }
+
+            map_code_to_actor_config[actor_info.map_code] = actor_info;
+        }
+
+        elapsedSnapshot = timeline.Elapsed;
+        GD.Print("Actors loaded at " + elapsedSnapshot);
+
 
         Texture scene_tile_texture = ArborResource.Get<Texture>(image_filename);
         string layout_file_contents = ArborResource.Get<string>(layout_filename);
@@ -179,6 +243,7 @@ public class LuaLoader : Node
 		//Possibly load tile width
 		var tileData = new List<List<TileData>>();
 		tileData.Add(new List<TileData>());
+
 		for(int i = 0; i < layout_file_contents.Length; i++)
         {
 			char current_char = layout_file_contents[i];
@@ -226,13 +291,6 @@ public class LuaLoader : Node
 
 				if (config.team.ToLower().Trim() == "player")
 					player_actor_spawn_positions.Add(spawn_pos);
-
-				//Test Code:
-				if(current_char == 'm' || current_char == 'q')
-				{
-                    NLuaScriptManager.Instance
-						.CreateActor(NLuaScriptManager.testClassName, NLuaScriptManager.GenerateObjectName(), new_actor);
-                }
 			}
 
 			x++;
@@ -245,8 +303,11 @@ public class LuaLoader : Node
 		EventBus.Publish(new TileDataLoadedEvent());
 		height = z;
 
-		/* Configure fog of war */
-		Viewport viewport = GetParent().GetNode<Viewport>("FogOfWar/HighVisibility");
+        elapsedSnapshot = timeline.Elapsed;
+		GD.Print("Map loaded at " + elapsedSnapshot);
+
+        /* Configure fog of war */
+        Viewport viewport = GetParent().GetNode<Viewport>("FogOfWar/HighVisibility");
 		
 
 		//viewport.RenderTargetClearMode = Godot.Viewport.ClearMode.Never;
@@ -260,16 +321,16 @@ public class LuaLoader : Node
         float new_marker_x = viewport.Size.x * (player_node.GlobalTranslation.x * 0.5f / width);
 		float new_marker_y = viewport.Size.y * (player_node.GlobalTranslation.z * 0.5f / height);
 
-		yield return null;
-		yield return null;
+		//yield return null;
+		//yield return null;
 
 		//Deprecated
 		//fog_of_war_visibility_texture = new ViewportTexture();
 
 		//fog_of_war_visibility_texture.ViewportPath = viewport.GetPath();
 
-        yield return null;
-        yield return null;
+        //yield return null;
+        //yield return null;
 
 
         Vector2 new_marker_pos = new Vector2(new_marker_x, new_marker_y);
@@ -281,8 +342,8 @@ public class LuaLoader : Node
         Sprite visibility_marker = GetParent().GetNode<Sprite>("FogOfWar/HighVisibility/Sprite");
 		visibility_marker.Position = new_marker_pos;
 
-		yield return null;
-		yield return null;
+		//yield return null;
+		//yield return null;
 		//I think you need to set the param every frame? Done in FogOfWar.cs
 		//foreach(ShaderMaterial mat in tile_mats)
 		//{
@@ -295,7 +356,10 @@ public class LuaLoader : Node
 			avg_pos += pos;
 		avg_pos /= player_actor_spawn_positions.Count;
         most_recent_load_scene_result = new LoadSceneResult() { average_position_of_player_actors = avg_pos };
-	}
+
+        elapsedSnapshot = timeline.Elapsed;
+		GD.Print("Fog of war loaded at " + elapsedSnapshot);
+    }
 
 
 	public Actor SpawnActorOfType(ActorConfig config, Vector3 position)
@@ -315,28 +379,20 @@ public class LuaLoader : Node
         /* customize actor aesthetics */
 
         /* Load scripts of an actor */
-        foreach (string script_name in config.scripts)
+        foreach (ScriptConfig script in config.scripts)
         {
-			string source_path = System.IO.Directory.GetCurrentDirectory() + @"\resources\scripts\" + script_name + ".gd";
-			LoadScriptAtLocation(source_path, new_actor);
+			LoadScriptAtLocation(script, new_actor);
 		}
 		return actor_script;
 	}
 
-	void LoadScriptAtLocation(string location, Node owning_actor)
-	{
-		return;
-		GD.Print("Attempting to load external file [" + location + "]");
-		Script loaded_gdscript = (Script)GD.Load(location);
-
-		Node new_script_node = new Node();
-		new_script_node.SetScript(loaded_gdscript);
-
-        //new_script_node.Call("_Ready");
-		owning_actor.AddChild(new_script_node);
-		new_script_node._Ready();
-		new_script_node.SetProcess(true);
-		GD.Print("Done attaching external script [" + location + "] to actor [" + owning_actor.Name + "]");
+	void LoadScriptAtLocation(ScriptConfig scriptConfig, Spatial owning_actor)
+    {
+        string source_path = System.IO.Directory.GetCurrentDirectory() + @"\resources\scripts\" + scriptConfig.name;
+        NLuaScriptManager.Instance
+                .CreateActor(scriptConfig.name, NLuaScriptManager.GenerateObjectName(), owning_actor);
+       
+        return;
 	}
 }
 
@@ -354,9 +410,9 @@ public class ActorConfig
 	public string ko_sprite_filename = "";
 	public string type = "actor";
 
-	public List<string> sprite_filenames = new List<string>();
+	public Dictionary<string, string> sprite_filenames = new Dictionary<string, string>();
 
-	public List<string> scripts;
+	public List<ScriptConfig> scripts; //For now, contains at most one script.
 
 	public List<StateConfig> stateConfigs = new List<StateConfig>();
 	public StatConfig statConfig;
@@ -453,5 +509,13 @@ public class CombatConfig : StateConfig
 public class StatConfig
 {
 	public Dictionary<string, float> stats = new Dictionary<string, float>();
+}
+
+
+[Serializable]
+public class ScriptConfig
+{
+	public string name;
+	public Dictionary<string, object> variables;
 }
 

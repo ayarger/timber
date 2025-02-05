@@ -1,8 +1,8 @@
 [gd_scene load_steps=15 format=2]
 
-[ext_resource path="res://fogofwartesting/StateManager.cs" type="Script" id=1]
+[ext_resource path="res://states/StateManager.cs" type="Script" id=1]
 [ext_resource path="res://scenes/Actor.tres" type="Material" id=2]
-[ext_resource path="res://fogofwartesting/HasTeam.cs" type="Script" id=3]
+[ext_resource path="res://scripts/HasTeam.cs" type="Script" id=3]
 [ext_resource path="res://temp_scripts/TempTowerSprite.png" type="Texture" id=5]
 [ext_resource path="res://circle_256.png" type="Texture" id=6]
 [ext_resource path="res://temp_scenes/Projectile.cs" type="Script" id=8]

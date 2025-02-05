@@ -1,4 +1,5 @@
 ﻿using Godot;
+using LibTessDotNet;
 using System;
 using System.Collections.Generic;
 
@@ -12,9 +13,20 @@ public class ProjectileManager : Node
 
 	public static ProjectileManager instance;
 
+	public Dictionary<string, ActorConfig> projectileConfigs = new Dictionary<string, ActorConfig>();
+
 	public override void _Ready()
 	{
 		instance = this;
+	}
+
+	public void Config(List<ActorConfig> configs)
+	{
+		foreach (ActorConfig config in configs)
+		{
+			projectileConfigs.Add(config.name, config);
+		}
+
 	}
 
 	//Position to spawn at; Offset from bottom of actor; target position; actor who created projectile; damage

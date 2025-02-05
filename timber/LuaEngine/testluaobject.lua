@@ -14,21 +14,21 @@ end
 function testluaobject:testfunc()
 	--local parent = self:get_node("../../CustomScriptManager")
 	--for i=1,10 do 
+	
 	myvariable = false
 	WaitForSeconds(1)
-	SetDestination(self,self.x-3, self.z)
-	--Hurt(self, 10)
-	--Print("I am at x-position: "..self.x)
+	if not InCombat(self) then
+		SetDestination(self,self.x-3, self.z)
+		--Hurt(self, 10)
+		--Print("I am at x-position: "..self.x)
+	end
 	WaitForSeconds(2)
+		
 	
-	--Print("Closest Actor"..GetFarthestActor(self).object_name)
-	
-	local test = GetFarthestActor(self)
-	--PrintNameOfActor(test)
-	
-	SetDestination(self,self.x+3, self.z)
+	SetDestination(self.x+3, self.z, true)
 	--Hurt(self, 10)
 	--parent.testData = ""..i;
 	--Print("Completed Ready")
 	--end
 end
+

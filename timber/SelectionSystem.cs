@@ -39,6 +39,7 @@ public class SelectionSystem : Node
     {
         instance = this;
         active_cursor = GetNode<CSGMesh>("active_cursor");
+
         active_cursor.GetNode<CSGMesh>("active_cursor_tower").Visible = false;
 
          // Find EditModeManager anywhere in the scene tree
@@ -220,10 +221,10 @@ public class SelectionSystem : Node
                 for (float z = top_left_point.z; z <= bottom_right_point.z; z += Grid.tileWidth)
                 {
                     CSGMesh new_tile = (CSGMesh)selection_square_scene.Instance();
-                    AddChild(new_tile);
+                    instance.AddChild(new_tile);
                     new_tile.GlobalTranslation = new Vector3(x, 0.1f, z);
 
-                    selection_visualization_tiles.Add(new_tile);
+                    instance.selection_visualization_tiles.Add(new_tile);
                 }
             }
         }

@@ -8,6 +8,7 @@ using YarnSpinnerGodot.Editor;
 static class YarnManager
 {
     public static Dictionary<string, YarnProject> projects = new Dictionary<string, YarnProject>();
+    public static DialogueRunner DialogueRunner;
 }
 
 public class YarnUpload : Button
@@ -89,11 +90,11 @@ public class YarnUpload : Button
 
         //TODO: THIS DOES NOT WORK ON THE WEB RIGHT NOW
 
-        YarnProjectEditorUtility.CompileAllScripts(newYarnProject);
-        YarnProjectEditorUtility.AddLineTagsToFilesInYarnProject(newYarnProject);
+        YarnEditorUtilityDecoupled.CompileAllScripts(newYarnProject);
+        YarnEditorUtilityDecoupled.AddLineTagsToFilesInYarnProject(newYarnProject);
 
         //TODO: This function assumes running on OS, not a priority
-        YarnProjectEditorUtility.UpdateLocalizationCSVs(newYarnProject);
+        YarnEditorUtilityDecoupled.UpdateLocalizationCSVs(newYarnProject);
         
         YarnManager.projects[fileName] = newYarnProject;
         //YarnSpinnerGodot.DialogueRunner dialogueRunner = GetTree().CurrentScene.FindNode("DialogueRunner", recursive: true) as YarnSpinnerGodot.DialogueRunner;

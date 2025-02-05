@@ -56,6 +56,10 @@ message SimpleString {
     string message = 1;
 }
 
+message StateConfig {
+    string name = 1;
+}
+
 message GameActorCombatConfig {
     int32 attackRange = 1;
     int32 attackDamage = 2;

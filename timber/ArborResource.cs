@@ -21,11 +21,16 @@ public class ArborResource : Node
 
     static ArborResource instance;
 
+    static Stopwatch timeline;
+
     public override void _Ready()
     {
         base._Ready();
 
         instance = this;
+
+        timeline = Stopwatch.StartNew();
+        timeline.Start();
 
         if (OS.GetName() == "Web" || OS.GetName() == "HTML5")
         {
@@ -82,7 +87,11 @@ public class ArborResource : Node
             return;
         }
 
-        GD.Print("retrieved [" + key + "]");
+        //GD.Print("retrieved [" + key + "]");
+
+        TimeSpan elapsedSnapshot = timeline.Elapsed;
+        GD.Print("[Request Complete] " + key + ": at (" + elapsedSnapshot + ")");
+
 
         if (type == "Texture")
         {
@@ -194,62 +203,31 @@ public class ArborResource : Node
             string[] parts = resource.Split('.');
             string extension = (parts.Length > 1) ? "." + parts[parts.Length - 1] : string.Empty;
 
-            Stopwatch stopwatch1 = new Stopwatch();
-            Stopwatch stopwatch2 = new Stopwatch();
-            stopwatch1.Start();
-            stopwatch2.Start();
-            string binaryOrNot = "";
+            // Set Resouce = Negligable for Protobuf.
 
             if (extension == ".bin")
             {
-                binaryOrNot = "binary";
                 if(type == "ActorConfig") { 
                     var parsedData = ProtobufParser.ParseBinary<ActorConfig>(body, type);
-                    stopwatch1.Stop();
                     SetResource(key, parsedData);
-                    stopwatch2.Stop();
                 }
                 else if(type == "GameConfig")
                 {
                     var parsedData = ProtobufParser.ParseBinary<GameConfig>(body, type);
-                    stopwatch1.Stop();
                     SetResource(key, parsedData);
-                    stopwatch2.Stop();
                 }
                 else if(type == "ModFileManifest")
                 {
                     var parsedData = ProtobufParser.ParseBinary<ModFileManifest>(body, type);
-                    stopwatch1.Stop();
                     SetResource(key, parsedData);
-                    stopwatch2.Stop();
                 }
-
-                TimeSpan elapsedTime = stopwatch1.Elapsed;
-                TimeSpan elapsedTime2 = stopwatch2.Elapsed;
-                GD.Print("TIME TAKEN For " + binaryOrNot + " " + type + ": -----------------------");
-                GD.Print($"Elapsed Time: {elapsedTime.TotalMilliseconds} ms");
-                GD.Print($"Elapsed Time Function: {elapsedTime2.TotalMilliseconds} ms");
-                GD.Print("--------------------------------------------");
             }
             else
             {
-                binaryOrNot = "string";
                 string s = Encoding.UTF8.GetString(body);
                 JsonSerializerSettings settings = new JsonSerializerSettings();
 
-                stopwatch1.Stop();
-
                 SetResource(key, JsonConvert.DeserializeObject(s, Type.GetType(type), settings));
-
-                stopwatch2.Stop();
-
-                TimeSpan elapsedTime1 = stopwatch1.Elapsed;
-                TimeSpan elapsedTime2 = stopwatch2.Elapsed;
-                GD.Print("TIME TAKEN For " + binaryOrNot + " " + type + ": -----------------------");
-                GD.Print($"Elapsed Time Parsing: {elapsedTime1.TotalMilliseconds} ms");
-                GD.Print($"Elapsed Time Function: {elapsedTime2.TotalMilliseconds} ms");
-                GD.Print("--------------------------------------------");
-
             }
         }
 
@@ -315,7 +293,9 @@ public class ArborResource : Node
         };
 
         new_request.Request(web_url, headers);
-        GD.Print("web retrieving [" + resource + "]");
+
+        TimeSpan elapsedSnapshot = timeline.Elapsed;
+        GD.Print("web retrieving [" + resource + "] @ " + elapsedSnapshot);
     }
 
     public static T Get<T>(string asset_path_relative_to_external_resources_folder) where T : class
@@ -386,7 +366,7 @@ public class ArborResource : Node
             ArborResource.Load<T>(resource);
         }
 
-        PrintUsageCallbackCount();
+        //PrintUsageCallbackCount();
     }
 
     class CallbackResourcePair

@@ -4,22 +4,18 @@ using System.Collections.Generic;
 using Amazon.CloudFront.Model;
 
 
-// TODO: 4.11 - 4.18
-//		fix button press issue ?
-//		ranged projectile
-//		ko animation sprite
-//		currency - done temp currency system
-//		make different kind of tower - by disable/enable components. 
-//		fix the issue that the tower is off the grid - fixed
 public class TempCurrencyManager : Node
 {
 	private static int currency = 100;
 	private static RichTextLabel currencyLabel;
+	private static bool isUpdating = false;
+	private static Tween tweenNode;
 	
 	public override void _Ready()
 	{
 		currencyLabel = GetParent().GetNode<RichTextLabel>("CanvasLayer/CurrencyLabel");
 		currencyLabel.Text = $"${currency}";
+		tweenNode = GetNodeOrNull<Tween>("Tween");
 	}
 
 	public static void IncreaseMoney(int amount)
@@ -59,24 +55,27 @@ public class TempCurrencyManager : Node
 
 	private static void UpdateLabel(Color color)
 	{
-		if (currencyLabel != null)
+		if (currencyLabel != null && tweenNode != null && !isUpdating)
 		{
+			isUpdating = true;
+
 			currencyLabel.Text = $"${currency}";
 
-			// Update the text
-			currencyLabel.Text = $"${currency}";
-
-			// Create a size bounce effect by animating the scale
 			var originalScale = currencyLabel.RectScale;
-			currencyLabel.RectScale = new Vector2(1.2f, 1.2f); 
 			var originalColor = currencyLabel.Modulate;
-			currencyLabel.Modulate = color; 
 
-			currencyLabel.CreateTween().TweenProperty(currencyLabel, "rect_scale", originalScale, 0.5f)
-				.SetTrans(Tween.TransitionType.Bounce)
-				.SetEase(Tween.EaseType.Out);
-
-			currencyLabel.CreateTween().TweenProperty(currencyLabel, "modulate", originalColor, 0.5f);
+			currencyLabel.RectScale = new Vector2(1.2f, 1.2f);
+			currencyLabel.Modulate = color;
+			tweenNode.InterpolateProperty(currencyLabel, "rect_scale", currencyLabel.RectScale, originalScale, 0.5f, Tween.TransitionType.Bounce, Tween.EaseType.Out);
+			tweenNode.InterpolateProperty(currencyLabel, "modulate", currencyLabel.Modulate, originalColor, 0.5f, Tween.TransitionType.Linear, Tween.EaseType.InOut);
+			tweenNode.Start();
 		}
 	}
+
+	private void _on_Tween_tween_all_completed()
+	{
+		isUpdating = false;
+	}
+
 }
+
