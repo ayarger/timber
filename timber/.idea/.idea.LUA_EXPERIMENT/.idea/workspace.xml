@@ -9,33 +9,8 @@
   <component name="ChangeListManager">
     <list default="true" id="538a528e-ecd1-41c7-ae1d-5407c3f4da6b" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.LUA_EXPERIMENT/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.LUA_EXPERIMENT/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LUA_EXPERIMENT.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/LUA_EXPERIMENT.sln.DotSettings.user" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Main.tscn" beforeDir="false" afterPath="$PROJECT_DIR$/Main.tscn" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/scenes/CutsceneManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/scenes/CutsceneManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scenes/CutsceneManager.tscn" beforeDir="false" afterPath="$PROJECT_DIR$/scenes/CutsceneManager.tscn" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scenes/MainMenu.tscn" beforeDir="false" afterPath="$PROJECT_DIR$/scenes/MainMenu.tscn" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scenes/PlayButton.cs" beforeDir="false" afterPath="$PROJECT_DIR$/scenes/PlayButton.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/1.tres" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/1.tres" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/10.tres" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/10.tres" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/11.tres" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/11.tres" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/12.tres" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/12.tres" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/13.tres" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/13.tres" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/14.tres" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/14.tres" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/15.tres" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/15.tres" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/16.tres" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/16.tres" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/17.tres" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/17.tres" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/18.tres" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/18.tres" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/19.tres" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/19.tres" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/2.tres" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/2.tres" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/20.tres" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/20.tres" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/3.tres" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/3.tres" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/4.tres" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/4.tres" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/5.tres" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/5.tres" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/6.tres" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/6.tres" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/7.tres" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/7.tres" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/8.tres" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/8.tres" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/9.tres" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/9.tres" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_texture/mask_shadermaterial.tres" beforeDir="false" afterPath="$PROJECT_DIR$/temp_texture/mask_shadermaterial.tres" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp_cutscenes/CutsceneImageResource.cs" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/CutsceneImageResource.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -119,7 +94,7 @@
       <method v="2" />
     </configuration>
     <configuration name="Editor" type="GODOT_DEBUG_RUN_CONFIGURATION" factoryName="Start and Debug">
-      <option name="EXE_PATH" value="$USER_HOME$/Downloads/GodotWindows/GodotWindows/GodotForTimber.exe" />
+      <option name="EXE_PATH" value="$USER_HOME$/GodotWindows/GodotWindows/GodotForTimber.exe" />
       <option name="PROGRAM_PARAMETERS" value="--path &quot;./&quot; --editor" />
       <option name="WORKING_DIRECTORY" value="C:\Users\anhua\timber_win\timber" />
       <option name="PASS_PARENT_ENVS" value="1" />
@@ -129,7 +104,7 @@
       </method>
     </configuration>
     <configuration name="Player" type="GODOT_DEBUG_RUN_CONFIGURATION" factoryName="Start and Debug">
-      <option name="EXE_PATH" value="$USER_HOME$/Downloads/GodotWindows/GodotWindows/GodotForTimber.exe" />
+      <option name="EXE_PATH" value="$USER_HOME$/GodotWindows/GodotWindows/GodotForTimber.exe" />
       <option name="PROGRAM_PARAMETERS" value="--path &quot;./&quot;" />
       <option name="WORKING_DIRECTORY" value="C:\Users\anhua\timber_win\timber" />
       <option name="PASS_PARENT_ENVS" value="1" />
@@ -170,6 +145,7 @@
       <workItem from="1732642262602" duration="2486000" />
       <workItem from="1732644880009" duration="3166000" />
       <workItem from="1732648405413" duration="947000" />
+      <workItem from="1739291408622" duration="3338000" />
     </task>
     <servers />
   </component>
@@ -189,10 +165,10 @@
           <line>53</line>
           <properties documentPath="C:\Users\anhua\timber_win\timber\temp_scenes\canDisplayStatsChange.cs" containingFunctionPresentation="Method 'OnUIStatChange'">
             <startOffsets>
-              <option value="1295" />
+              <option value="1297" />
             </startOffsets>
             <endOffsets>
-              <option value="1357" />
+              <option value="1359" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="4" />
@@ -202,26 +178,13 @@
           <line>29</line>
           <properties documentPath="C:\Users\anhua\timber_win\timber\temp_scenes\canDisplayStatsChange.cs" containingFunctionPresentation="Method 'ConfigurePlayerData'">
             <startOffsets>
-              <option value="689" />
+              <option value="691" />
             </startOffsets>
             <endOffsets>
-              <option value="715" />
+              <option value="717" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="5" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/scenes/CutsceneManager.cs</url>
-          <line>266</line>
-          <properties documentPath="C:\Users\anhua\timber_win\timber\scenes\CutsceneManager.cs" containingFunctionPresentation="Method 'EndCutscene'">
-            <startOffsets>
-              <option value="7800" />
-            </startOffsets>
-            <endOffsets>
-              <option value="7855" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="8" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

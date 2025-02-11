@@ -26,7 +26,6 @@ public class CutsceneManager : CanvasLayer
 
     [Export] private float transitionDuration = 1.0f;
     private int currentImageIndex = 0;
-
     private TextureRect imageDisplay;
     private Tween transitionTween;
     private float oscillationTimer = 0; // For sin_vertical
@@ -107,7 +106,10 @@ public class CutsceneManager : CanvasLayer
         isPlaying = true;
 
         var currentCutsceneImage = cutsceneImages[0];
-        imageDisplay.Texture = currentCutsceneImage.Image;
+        // TODO: Load from path
+        Texture loadedImage = ResourceLoader.Load<Texture>(currentCutsceneImage.LoadPath);
+        imageDisplay.Texture = loadedImage;
+        //imageDisplay.Texture = currentCutsceneImage.Image;
         TransitionToImage(currentCutsceneImage);
         Show();
     }
@@ -143,7 +145,6 @@ public class CutsceneManager : CanvasLayer
                 InstantTransition(cutsceneImage.Image);
                 break;
         }
-
         ApplyDisplayStyle(cutsceneImage.DisplayStyle);
     }
 
@@ -161,7 +162,7 @@ public class CutsceneManager : CanvasLayer
     {
         imageDisplay.RectScale = new Vector2(0.8f, 0.8f); // Start small
         imageDisplay.Texture = newImage;
-
+  
         imageDisplay.RectPivotOffset = imageDisplay.RectSize / 2;
 
         transitionTween.InterpolateProperty(
@@ -237,6 +238,7 @@ public class CutsceneManager : CanvasLayer
 
     public void LoadCutSceneImage(string imagePath)
     {
+        ArborResource.Load<Texture>(imagePath);
         ArborResource.UseResource<Texture>(imagePath, OnImageLoaded, this);
     }
 
