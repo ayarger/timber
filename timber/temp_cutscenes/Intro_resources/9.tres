@@ -6,5 +6,7 @@
 [resource]
 script = ExtResource( 2 )
 Image = ExtResource( 1 )
+ImagePath = "res://temp_cutscenes/intro_images/9.png"
 TransitionStyle = "bounce"
 DisplayStyle = "vibrate"
+Index = 0

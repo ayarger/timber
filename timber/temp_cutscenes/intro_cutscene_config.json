@@ -1,0 +1,113 @@
+[
+  {
+    "ImagePath": "cutscenes/1.png",
+    "TransitionStyle": "fade_up",
+    "DisplayStyle": "standard"
+  },
+  {
+    "ImagePath": "cutscenes/2.png",
+    "TransitionStyle": "fade_up",
+    "DisplayStyle": "standard"
+  },
+  {
+    "ImagePath": "cutscenes/3.png",
+    "TransitionStyle": "fade_up",
+    "DisplayStyle": "standard"
+  },
+  {
+    "ImagePath": "cutscenes/4.png",
+    "TransitionStyle": "bounce",
+    "DisplayStyle": "standard"
+  },
+  {
+    "ImagePath": "cutscenes/5.png",
+    "TransitionStyle": "instant",
+    "DisplayStyle": "standard"
+  },
+  {
+    "ImagePath": "cutscenes/6.png",
+    "TransitionStyle": "instant",
+    "DisplayStyle": "standard"
+  },
+  {
+    "ImagePath": "cutscenes/7.png",
+    "TransitionStyle": "instant",
+    "DisplayStyle": "standard"
+  },
+  {
+    "ImagePath": "cutscenes/8.png",
+    "TransitionStyle": "instant",
+    "DisplayStyle": "standard"
+  },
+  {
+    "ImagePath": "cutscenes/9.png",
+    "TransitionStyle": "bounce",
+    "DisplayStyle": "vibrate"
+  },
+  {
+    "ImagePath": "cutscenes/10.png",
+    "TransitionStyle": "fade_up",
+    "DisplayStyle": "standard"
+  },
+  {
+    "ImagePath": "cutscenes/11.png",
+    "TransitionStyle": "fade_up",
+    "DisplayStyle": "standard"
+  },
+  {
+    "ImagePath": "cutscenes/12.png",
+    "TransitionStyle": "bounce",
+    "DisplayStyle": "standard"
+  },
+  {
+    "ImagePath": "cutscenes/13.png",
+    "TransitionStyle": "fade_up",
+    "DisplayStyle": "standard"
+  },
+  {
+    "ImagePath": "cutscenes/14.png",
+    "TransitionStyle": "instant",
+    "DisplayStyle": "standard"
+  },
+  {
+    "ImagePath": "cutscenes/15.png",
+    "TransitionStyle": "instant",
+    "DisplayStyle": "standard"
+  },
+  {
+    "ImagePath": "cutscenes/16.png",
+    "TransitionStyle": "bounce",
+    "DisplayStyle": "standard"
+  },
+  {
+    "ImagePath": "cutscenes/17.png",
+    "TransitionStyle": "instant",
+    "DisplayStyle": "standard"
+  },
+  {
+    "ImagePath": "cutscenes/18.png",
+    "TransitionStyle": "bounce",
+    "DisplayStyle": "standard"
+  },
+  {
+    "ImagePath": "cutscenes/19.png",
+    "TransitionStyle": "instant",
+    "DisplayStyle": "standard"
+  },
+  {
+    "ImagePath": "cutscenes/20.png",
+    "TransitionStyle": "instant",
+    "DisplayStyle": "vibrate"
+  }
+  ,
+  {
+    "ImagePath": "images/victory_bg.png",
+    "TransitionStyle": "bounce",
+    "DisplayStyle": "standard"
+  },
+  {
+    "ImagePath": "images/lose_bg.png",
+    "TransitionStyle": "bounce",
+    "DisplayStyle": "vibrate"
+  }
+]

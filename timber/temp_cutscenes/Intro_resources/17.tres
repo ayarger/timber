@@ -6,5 +6,7 @@
 [resource]
 script = ExtResource( 1 )
 Image = ExtResource( 2 )
+ImagePath = "res://temp_cutscenes/intro_images/17.png"
 TransitionStyle = "instant"
 DisplayStyle = "standard"
+Index = 0
