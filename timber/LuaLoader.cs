@@ -378,22 +378,9 @@ public class LuaLoader : Node
 
         /* customize actor aesthetics */
 
-        /* Load scripts of an actor */
-        foreach (ScriptConfig script in config.scripts)
-        {
-			LoadScriptAtLocation(script, new_actor);
-		}
 		return actor_script;
 	}
 
-	void LoadScriptAtLocation(ScriptConfig scriptConfig, Spatial owning_actor)
-    {
-        string source_path = System.IO.Directory.GetCurrentDirectory() + @"\resources\scripts\" + scriptConfig.name;
-        NLuaScriptManager.Instance
-                .CreateActor(scriptConfig.name, NLuaScriptManager.GenerateObjectName(), owning_actor);
-       
-        return;
-	}
 }
 
 [Serializable]
