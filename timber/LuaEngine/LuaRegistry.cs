@@ -35,7 +35,7 @@ public class LuaRegistry
 
 
     //Must be ran before making any instances of a class. 
-    public static void RegisterClass(string classContents, string className)
+    public static void RegisterClass(File rootFile, string className)
     {
         if (classToLuaObject.ContainsKey(className))
         {
@@ -49,7 +49,7 @@ public class LuaRegistry
         }
         try
         {
-            NLuaScriptManager.luaState.DoString(classContents);
+            NLuaScriptManager.luaState.DoString(rootFile.GetAsText());
         }
         catch (InterpreterException e)
         {
