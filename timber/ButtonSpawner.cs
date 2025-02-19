@@ -6,6 +6,7 @@ using System.Drawing;
 public class ButtonSpawner : Control
 {
     private GridContainer _gridContainer;
+    private List<string> _imageFiles = new List<string>();
     private Timer _timer;
     private int _buttonCount = 1;
 
@@ -30,7 +31,7 @@ public class ButtonSpawner : Control
         GD.Print("GridContainer found, setting up Timer...");
 
         _timer = new Timer();
-        _timer.WaitTime = 2.0f; // 2 seconds
+        _timer.WaitTime = 1.0f; // 2 seconds
         _timer.Autostart = true;
         _timer.OneShot = false;
         _timer.Connect("timeout", this, nameof(OnTimerTimeout));
@@ -45,10 +46,14 @@ public class ButtonSpawner : Control
     {
         GD.Print($"Loading icon from path: {ImageFilePath}");
 
-        // ArborResource.Load<ModFileManifest>("mod_file_manifest.json");
-        // yield return ArborResource.WaitFor("mod_file_manifest.json");
-        // ModFileManifest manifest = ArborResource.Get<ModFileManifest>("mod_file_manifest.json");
+        ArborResource.Load<ModFileManifest>("mod_file_manifest.json");
+        yield return ArborResource.WaitFor("mod_file_manifest.json");
+        ModFileManifest manifest = ArborResource.Get<ModFileManifest>("mod_file_manifest.json");
 
+        _imageFiles = manifest.Search("images/.*\\.png")
+            .FindAll(file => !file.EndsWith(".import"));
+
+        
         //   // try to find all png files in images folder
 
         // List<string> spriteFiles = manifest.Search("resources/images/.*\\.png");
@@ -90,10 +95,39 @@ public class ButtonSpawner : Control
         newButton.Text = $"Button {_buttonCount}";
         newButton.RectMinSize = new Vector2(100, 100);
 
-        // try set icon
+        Theme buttonTheme = (Theme)ResourceLoader.Load("res://new_theme.tres");
+        if (buttonTheme != null)
+        {
+            newButton.Theme = buttonTheme;
+        }
+        // set icon
         if (_buttonIconTexture != null)
         {
-            newButton.Icon = _buttonIconTexture;
+            ArborResource.UseResource(
+			_imageFiles[_buttonCount],
+			(Texture texture) => {
+				// Icon title_logo_node = GetNode<Icon>("Button");
+				// _buttonIconTexture = texture;
+
+                TextureRect iconTextureRect = new TextureRect();
+                iconTextureRect.Texture = texture;
+                iconTextureRect.Expand = true;
+                iconTextureRect.StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered;
+                iconTextureRect.RectMinSize = new Vector2(300, 300);
+
+                
+
+                // Set as child of button
+                newButton.AddChild(iconTextureRect);
+                newButton.RectMinSize = new Vector2(300, 300);
+			},
+			this
+		);
+            //newButton.Icon = _buttonIconTexture;
+
+            // set text
+            string imageName = _imageFiles[_buttonCount];
+            newButton.Text = $"{imageName}";
         }
 
         newButton.Connect("pressed", this, nameof(OnButtonPressed), new Godot.Collections.Array { _buttonCount });
