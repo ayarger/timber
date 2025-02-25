@@ -15,10 +15,10 @@ public abstract class Asset : Control
         _defaultPreviewTexture = (Texture)ResourceLoader.Load(defaultPreviewPath);
     }
 
-    // Abstract method for loading the asset
     public abstract IEnumerator LoadAsset();
 
-    // Creates a UI button with a preview and text
+    public abstract void OnButtonPressed();
+
     public Button CreatePreviewButton()
     {
         Button button = new Button
@@ -39,7 +39,8 @@ public abstract class Asset : Control
         // image preview
         TextureRect textureRect = new TextureRect
         {
-            Texture = _thumbnail ?? _defaultPreviewTexture, // Use asset preview or fallback to default
+            // use preview from asset or default if none
+            Texture = _thumbnail ?? _defaultPreviewTexture, 
             Expand = true,
             StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered,
             RectMinSize = new Vector2(150, 150)
@@ -53,11 +54,13 @@ public abstract class Asset : Control
             Text = FileName,
             Align = Label.AlignEnum.Center,
             RectMinSize = new Vector2(150, 30),
-            ClipText = true // truncate text if too long
+            ClipText = true // truncates if too long
         };
 
         container.AddChild(nameLabel);
         button.AddChild(container);
+
+        button.Connect("pressed", this, nameof(OnButtonPressed));
 
         return button;
     }
