@@ -23,11 +23,11 @@ public class ActorAsset : Asset
             yield break;
         }
 
-        // Load actor model (scene)
-        string actorScenePath = $"actors/{_actorConfig.name}.tscn";
-        ArborResource.Load<PackedScene>(actorScenePath);
-        yield return ArborResource.WaitFor(actorScenePath);
-        _actorScene = ArborResource.Get<PackedScene>(actorScenePath);
+        // // Load actor model (scene)
+        // string actorScenePath = $"actors/{_actorConfig.name}.tscn";
+        // ArborResource.Load<PackedScene>(actorScenePath);
+        // yield return ArborResource.WaitFor(actorScenePath);
+        // _actorScene = ArborResource.Get<PackedScene>(actorScenePath);
 
         // Load actor preview image
         string imagePath = $"images/{_actorConfig.name}.png";
@@ -44,9 +44,9 @@ public class ActorAsset : Asset
             return;
         }
 
-        GD.Print($"🎭 Spawning actor: {_actorConfig.name}");
+        GD.Print($"Spawning actor: {_actorConfig.name}");
 
-        Node actorInstance = _actorScene.Instance();
-        GetTree().Root.AddChild(actorInstance);
+        // Node actorInstance = _actorScene.Instance();
+        // GetTree().Root.AddChild(actorInstance);
     }
 }

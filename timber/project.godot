@@ -125,6 +125,7 @@ displ=false
 clear=false
 auto=false
 window=false
+embed=false
 
 [gui]
 

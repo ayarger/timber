@@ -1,9 +1,10 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://FlatUI/kenneyUI-green.tres" type="Theme" id=1]
 [ext_resource path="res://temp_scripts/hammer.png" type="Texture" id=2]
 [ext_resource path="res://AssetManagement/AssetSpawner.cs" type="Script" id=3]
 [ext_resource path="res://new_theme.tres" type="Theme" id=4]
+[ext_resource path="res://Dialogue/Beaver.png" type="Texture" id=5]
 
 [sub_resource type="Theme" id=1]
 
@@ -51,6 +52,20 @@ margin_right = 524.0
 margin_bottom = 520.0
 theme = ExtResource( 4 )
 icon = ExtResource( 2 )
+
+[node name="ImagePreview" type="TextureRect" parent="TabContainer/Sprites"]
+visible = false
+margin_left = 709.0
+margin_top = -63.0
+margin_right = 1709.0
+margin_bottom = 937.0
+rect_min_size = Vector2( 1000, 1000 )
+rect_clip_content = true
+size_flags_horizontal = 3
+size_flags_vertical = 3
+texture = ExtResource( 5 )
+expand = true
+stretch_mode = 1
 
 [node name="Actors" type="Tabs" parent="TabContainer"]
 visible = false

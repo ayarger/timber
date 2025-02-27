@@ -5,10 +5,9 @@ using System.Collections;
 public abstract class Asset : Control
 {
     public string FilePath { get; private set; }
-    public string FileName => FilePath.GetFile(); // Extracts just the file name
+    public string FileName => FilePath.GetFile();
     protected Texture _thumbnail;
-    protected Texture _defaultPreviewTexture; // Default icon if no preview is available
-
+    protected Texture _defaultPreviewTexture;
     protected Asset(string filePath, string defaultPreviewPath)
     {
         FilePath = filePath;
