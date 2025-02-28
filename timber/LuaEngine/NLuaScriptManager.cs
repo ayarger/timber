@@ -82,7 +82,11 @@ public class NLuaScriptManager : Node
                 return;
 			}
 		}
-		GD.PushError("Could not find actor to delete!");
+
+		if (verbose)
+		{
+			GD.PushError("Could not find actor to delete! This may be a projectile.");
+		}
     }
 
 	private void RemoveActor(string name, Spatial actor)

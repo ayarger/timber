@@ -39,7 +39,7 @@ public class LuaRegistry
     {
         if (classToLuaObject.ContainsKey(className))
         {
-            GD.PushWarning($"Class {className} is already registered!");
+            GD.PushWarning($"Class {className} is already registered! This can happen if multiple actors with the same script are loaded simultaneously.");
             return;
         }
         if (className == NLuaScriptManager.globalClass)
