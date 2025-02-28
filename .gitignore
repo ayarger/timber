@@ -17,4 +17,4 @@
 */windows_build/*
 */web_build/*
 */.vs/*
-timber/TempSecrets.cs
+*/TempSecrets.cs
