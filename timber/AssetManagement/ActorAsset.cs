@@ -4,7 +4,6 @@ using Godot;
 public class ActorAsset : Asset
 {
     private ActorConfig _actorConfig;
-    private PackedScene _actorScene;
 
     public ActorAsset(string filePath) 
         : base(filePath, "res://icons/actor_icon.png") { } // Default placeholder icon
@@ -13,6 +12,7 @@ public class ActorAsset : Asset
     {
         GD.Print($"Loading actor config from AWS S3: {FilePath}");
 
+        // Load the .actor file
         ArborResource.Load<ActorConfig>(FilePath);
         yield return ArborResource.WaitFor(FilePath);
 
@@ -23,30 +23,26 @@ public class ActorAsset : Asset
             yield break;
         }
 
-        // // Load actor model (scene)
-        // string actorScenePath = $"actors/{_actorConfig.name}.tscn";
-        // ArborResource.Load<PackedScene>(actorScenePath);
-        // yield return ArborResource.WaitFor(actorScenePath);
-        // _actorScene = ArborResource.Get<PackedScene>(actorScenePath);
+        GD.Print($"Loaded actor: {_actorConfig.name}");
 
-        // Load actor preview image
-        string imagePath = $"images/{_actorConfig.name}.png";
+        // Load actor preview image (Idle sprite)
+        string imagePath = $"images/{_actorConfig.idle_sprite_filename}";
         ArborResource.Load<Texture>(imagePath);
         yield return ArborResource.WaitFor(imagePath);
+
         _thumbnail = ArborResource.Get<Texture>(imagePath) ?? _defaultPreviewTexture;
     }
 
     public override void OnButtonPressed()
     {
-        if (_actorScene == null)
+        if (_thumbnail == null)
         {
-            GD.PrintErr($"Cannot load actor, missing file: {FilePath}");
+            GD.PrintErr($"Cannot preview actor, missing preview image: {FilePath}");
             return;
         }
 
-        GD.Print($"Spawning actor: {_actorConfig.name}");
+        GD.Print($"Showing actor preview: {_actorConfig.name}");
 
-        // Node actorInstance = _actorScene.Instance();
-        // GetTree().Root.AddChild(actorInstance);
+        PopupManager.ShowImage(_thumbnail);
     }
 }

@@ -39,7 +39,7 @@ public class AssetSpawner : Control
         }
 
         // Load assets, will add more file types after testing
-        _assetFiles = manifest.Search(".*\\.(png|wav)")
+        _assetFiles = manifest.Search(".*\\.(png|wav|actor)")
             .FindAll(file => !file.EndsWith(".import") && !file.EndsWith("images/gameover_background.png"));
 
         GD.Print($"Found {_assetFiles.Count} assets.");
