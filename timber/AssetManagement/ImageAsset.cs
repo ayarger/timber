@@ -21,30 +21,20 @@ public class ImageAsset : Asset
             GD.PrintErr($"Failed to load image: {FilePath}, using default image.");
             _thumbnail = _defaultPreviewTexture;
         }
+
+        //GetTree().Root.PrintTree();
+
     }
-public override void OnButtonPressed()
-{
-    if (_thumbnail == null)
+    public override void OnButtonPressed()
     {
-        GD.PrintErr($"Cannot preview image, missing asset: {FilePath}");
-        return;
+        if (_thumbnail == null)
+        {
+            GD.PrintErr($"Cannot preview image, missing asset: {FilePath}");
+            return;
+        }
+
+        GD.Print($"Showing image preview: {FilePath}");
+        PopupManager.ShowImage(_thumbnail);
     }
-
-    GD.Print($"Updating ImagePreview texture: {FilePath}");
-
-    TextureRect previewNode = GetNode<TextureRect>("EditorTabSystem/TabContainer/Sprites/ImagePreview");
-
-    if (previewNode != null)
-    {
-        previewNode.Texture = _thumbnail;
-        previewNode.Visible = true;
-    }
-    else
-    {
-        GD.PrintErr("ImagePreview node not found in the scene.");
-    }
-}
-
-
 
 }

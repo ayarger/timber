@@ -22,6 +22,8 @@ public class AssetSpawner : Control
         ArborCoroutine.StartCoroutine(LoadAssetManifest(), this);
     }
 
+
+
     private IEnumerator LoadAssetManifest()
     {
         GD.Print("Fetching asset manifest...");
@@ -59,5 +61,8 @@ public class AssetSpawner : Control
             Control previewButton = asset.CreatePreviewButton();
             _gridContainer.AddChild(previewButton);
         }
+
+        GetTree().Root.PrintTree();
+
     }
 }

@@ -22,7 +22,7 @@ public abstract class Asset : Control
     {
         Button button = new Button
         {
-            RectMinSize = new Vector2(150, 200),
+            RectMinSize = new Vector2(300, 200),
             ExpandIcon = true
         };
 
@@ -42,7 +42,7 @@ public abstract class Asset : Control
             Texture = _thumbnail ?? _defaultPreviewTexture, 
             Expand = true,
             StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered,
-            RectMinSize = new Vector2(150, 150)
+            RectMinSize = new Vector2(300, 150)
         };
 
         container.AddChild(textureRect);
@@ -52,7 +52,7 @@ public abstract class Asset : Control
         {
             Text = FileName,
             Align = Label.AlignEnum.Center,
-            RectMinSize = new Vector2(150, 30),
+            RectMinSize = new Vector2(300, 30),
             ClipText = true // truncates if too long
         };
 

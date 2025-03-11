@@ -35,33 +35,6 @@ public class SoundAsset : Asset
 
         ArborAudioManager.PreviewSFX(_audioStream);
 
-        // ArborResource.UseResource(
-		// 	"sounds/vocal_gameover.wav", 
-		// 	(AudioStream audio) => {
-		// 		GD.Print("playing title music.");
-		// 		ArborAudioManager.RequestSFX(_audioStream);
-		// 	},
-		// 	this
-			
-		// );
-
-        // // add audio player if none
-        // if (_player == null)
-        // {
-        //     GD.Print("Adding new audio player.");
-        //     _player = new AudioStreamPlayer();
-        //     GetTree().Root.AddChild(_player);
-        // }
-
-        // _player.Stream = _audioStream;
-
-        // // stop current audio before restarting
-        // if (_player.Playing)
-        // {
-        //     _player.Stop();
-        // }
-
-        // _player.Play();
     }
 
 }
