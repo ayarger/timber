@@ -13,11 +13,20 @@ public class CutsceneStartEvent
     }
 }
 
+public class CutsceneLoadedEvent
+{
+    public CutsceneLoadedEvent()
+    {
+        
+    }
+}
+
 public class CutsceneImageData
 {
     public string ImagePath { get; set; } 
     public string TransitionStyle { get; set; }
     public string DisplayStyle { get; set; }
+    public int Order { get; set; }
 }
 
 /// <summary>
@@ -61,12 +70,13 @@ public class CutsceneManager : CanvasLayer
         
         string filePath = "res://temp_cutscenes/intro_cutscene_config.json";
         filePath = ProjectSettings.GlobalizePath(filePath);
+        // shoud have all image resources loaded correctly
         LoadCutsceneFromJsonS3(filePath);
         
         imageDisplay = GetNode<TextureRect>("TextureRect");
         transitionTween = new Tween();
         AddChild(transitionTween);
-        StartCutscene();
+        //StartCutscene();
         cutsceneStatEvent_sub = EventBus.Subscribe<CutsceneStartEvent>(StartCurrentCutscnene);
     }
 
@@ -115,13 +125,15 @@ public class CutsceneManager : CanvasLayer
         isPlaying = true;
 
         var currentCutsceneImage = cutsceneImages[0];
-        //Texture loadedImage = ResourceLoader.Load<Texture>(currentCutsceneImage.ImagePath);
-        // TODO load from s3
-        Texture loadedImage = LoadCutSceneImage(currentCutsceneImage.ImagePath);
-        imageDisplay.Texture = loadedImage;
-        //imageDisplay.Texture = currentCutsceneImage.Image;
+        
+        LoadCutSceneImage(currentCutsceneImage.ImagePath, texture =>
+        {
+            imageDisplay.Texture = texture;
+            TransitionToImage(currentCutsceneImage);
+            Show();
+        });
         //TransitionToImage(currentCutsceneImage);
-        Show();
+        GD.Print("Starting cutscene");
     }
 
     private void GoToNextImage()
@@ -140,8 +152,8 @@ public class CutsceneManager : CanvasLayer
     private void TransitionToImage(CutsceneImageResource cutsceneImage)
     {
         //Texture currCutsceneImage = ResourceLoader.Load<Texture>(cutsceneImage.ImagePath);
-        Texture currCutsceneImage = LoadCutSceneImage(cutsceneImage.ImagePath);
-        //Texture currCutsceneImage = cutsceneImage.Image;
+        //Texture currCutsceneImage = LoadCutSceneImage(cutsceneImage.ImagePath);
+        Texture currCutsceneImage = cutsceneImage.Image;
  
         switch (cutsceneImage.TransitionStyle)
         {
@@ -250,12 +262,19 @@ public class CutsceneManager : CanvasLayer
         }
     }
 
-    public Texture LoadCutSceneImage(string imagePath)
+    public void LoadCutSceneImage(string imagePath, Action<Texture> onLoaded)
     {
-        Texture loadedTex = null;
-        ArborResource.Load<Texture>(imagePath);
-        loadedTex = ArborResource.Get<Texture>(imagePath);
-        return loadedTex;
+        ArborResource.UseResource<Texture>(imagePath, texture =>
+        {
+            if (texture != null)
+            {
+                onLoaded(texture);
+            }
+            else
+            {
+                GD.PrintErr($"Failed to load texture: {imagePath}");
+            }
+        }, this);
     }
     
 
@@ -277,7 +296,8 @@ public class CutsceneManager : CanvasLayer
             {
                 ImagePath = imageResource.ImagePath, // Save only the file path
                 TransitionStyle = imageResource.TransitionStyle,
-                DisplayStyle = imageResource.DisplayStyle
+                DisplayStyle = imageResource.DisplayStyle,
+                Order = imageResource.Index
             });
         }
 
@@ -302,11 +322,17 @@ public class CutsceneManager : CanvasLayer
         {
             CutsceneImageResource cutsceneImage = new CutsceneImageResource
             {
-                Image = LoadCutSceneImage(data.ImagePath), //TODO clean up the code -> use path instead of texture
+                //TODO clean up the code -> use path instead of texture
                 ImagePath = data.ImagePath,
                 TransitionStyle = data.TransitionStyle,
-                DisplayStyle = data.DisplayStyle
+                DisplayStyle = data.DisplayStyle,
+                Index = data.Order
             };
+            //load textures
+            LoadCutSceneImage(data.ImagePath, texture =>
+            {
+                cutsceneImage.Image = texture;
+            });
             cutsceneImages.Add(cutsceneImage);
         }
         GD.Print("cutscene info loaded from: " + filePath);
@@ -329,15 +355,22 @@ public class CutsceneManager : CanvasLayer
         {
             CutsceneImageResource cutsceneImage = new CutsceneImageResource
             {
-                //Image = ResourceLoader.Load<Texture>(data.ImagePath), //TODO clean up the code -> use path instead of texture
-                Image = LoadCutSceneImage(data.ImagePath),
+                
                 ImagePath = data.ImagePath,
                 TransitionStyle = data.TransitionStyle,
-                DisplayStyle = data.DisplayStyle
+                DisplayStyle = data.DisplayStyle,
+                Index = data.Order
             };
+            LoadCutSceneImage(data.ImagePath, texture =>
+            {
+                cutsceneImage.Image = texture;
+            });
             cutsceneImages.Add(cutsceneImage);
         }
         GD.Print("cutscene info loaded from: " + filePath);
+        //EventBus.Publish(new CutsceneLoadedEvent());
+        //EventBus.Publish(new CutsceneStartEvent());
+        StartCutscene();
     }
 
     public override void _ExitTree()
