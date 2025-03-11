@@ -6,6 +6,9 @@ public class AssetSpawner : Control
 {
     private GridContainer _gridContainer;
     private List<string> _assetFiles = new List<string>();
+    private Timer _initialTimer;
+    private Timer _loadTimer;
+    private int _currentAssetIndex = 0;
 
     public override void _Ready()
     {
@@ -17,12 +20,28 @@ public class AssetSpawner : Control
             GD.PrintErr("ERROR: GridContainer not found!");
             return;
         }
+        
+        // add delay before starting to load assets
+        _initialTimer = new Timer();
+        _initialTimer.WaitTime = 1.0f;
+        _initialTimer.OneShot = true;
+        _initialTimer.Connect("timeout", this, nameof(StartLoadingAssets));
+        AddChild(_initialTimer);
+        _initialTimer.Start();
 
-        // Load asset file list from AWS S3
-        ArborCoroutine.StartCoroutine(LoadAssetManifest(), this);
+        // asset loading timer
+        _loadTimer = new Timer();
+        _loadTimer.WaitTime = 0.01f; // load 1 asset every 0.01s
+        _loadTimer.OneShot = false;
+        _loadTimer.Connect("timeout", this, nameof(OnLoadNextAsset));
+        AddChild(_loadTimer);
     }
 
-
+    private void StartLoadingAssets()
+    {
+        GD.Print("Initial delay finished, starting asset loading...");
+        ArborCoroutine.StartCoroutine(LoadAssetManifest(), this);
+    }
 
     private IEnumerator LoadAssetManifest()
     {
@@ -38,29 +57,46 @@ public class AssetSpawner : Control
             yield break;
         }
 
-        // Load assets, will add more file types after testing
         _assetFiles = manifest.Search(".*\\.(png|wav|actor)")
             .FindAll(file => !file.EndsWith(".import") && !file.EndsWith("images/gameover_background.png"));
 
         GD.Print($"Found {_assetFiles.Count} assets.");
-        ArborCoroutine.StartCoroutine(SpawnAssets(), this);
+
+        _currentAssetIndex = 0;
+        _loadTimer.Start();
     }
 
-    private IEnumerator SpawnAssets()
+    private void OnLoadNextAsset()
     {
-        GD.Print($"Assets found:");
-        foreach (string filePath in _assetFiles)
+        if (_currentAssetIndex >= _assetFiles.Count)
         {
-            GD.Print($"- {filePath}");
-        }
-        foreach (string filePath in _assetFiles)
-        {
-            GD.Print($"Creating {filePath} asset...");
-            Asset asset = AssetFactory.CreateAsset(filePath);
-            yield return asset.LoadAsset();
-            Control previewButton = asset.CreatePreviewButton();
-            _gridContainer.AddChild(previewButton);
+            GD.Print("All assets loaded!");
+            _loadTimer.Stop();
+            return;
         }
 
+        string filePath = _assetFiles[_currentAssetIndex];
+        GD.Print($"Loading asset: {filePath}");
+
+        Asset asset = AssetFactory.CreateAsset(filePath);
+        if (asset == null)
+        {
+            GD.PrintErr($"Failed to create asset for {filePath}");
+            _currentAssetIndex++;
+            return;
+        }
+
+        ArborCoroutine.StartCoroutine(LoadAndDisplayAsset(asset), this);
+        _currentAssetIndex++;
+    }
+
+    private IEnumerator LoadAndDisplayAsset(Asset asset)
+    {
+        yield return asset.LoadAsset();
+
+        Control previewButton = asset.CreatePreviewButton();
+        _gridContainer.AddChild(previewButton);
+
+        GD.Print($"Added {asset.FilePath} to UI.");
     }
 }
