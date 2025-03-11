@@ -64,7 +64,7 @@ public class ProtobufParser : Node
                 };
                 output = (T)(object)localActor;
         }
-        else if (type == "ModFileManifest")
+        else if (type == "ModFileManifest") //TODO: fix this
         {
             var protoModFiles = Google.Protobuf.Message.ModFiles.Parser.ParseFrom(body);
 
@@ -76,7 +76,7 @@ public class ProtobufParser : Node
 
             ModFileManifest localModFileManifest = new ModFileManifest()
             {
-                mod_files = stored_mod_files
+                //mod_files = stored_mod_files
             };
             output = (T)(object)localModFileManifest;
         }
@@ -241,13 +241,14 @@ public class ProtobufParser : Node
     }
 
 
+    //TODO: fix this also
     public static void CreateModFileBinary(ModFileManifest gameObject, string name)
     {
         ModFiles localMods = new ModFiles();
 
-        foreach (string mod in gameObject.mod_files)
+        foreach (ModFile mod in gameObject.mod_files)
         {
-            localMods.Files.Add(mod);
+            localMods.Files.Add(mod.name);
         }
 
         BinaryToFile(localMods.ToByteArray(), name);

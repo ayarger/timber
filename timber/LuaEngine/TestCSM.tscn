@@ -3,7 +3,6 @@
 [ext_resource path="res://fogofwartesting/CustomScriptManager.cs" type="Script" id=1]
 [ext_resource path="res://LuaEngine/testluaobject.lua" type="Script" id=2]
 
-
 [node name="CustomScriptManager" type="Node"]
 script = ExtResource( 1 )
 

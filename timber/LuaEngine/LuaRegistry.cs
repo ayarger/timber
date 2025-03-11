@@ -35,11 +35,11 @@ public class LuaRegistry
 
 
     //Must be ran before making any instances of a class. 
-    public static void RegisterClass(File rootFile, string className)
+    public static void RegisterClass(string classContents, string className)
     {
         if (classToLuaObject.ContainsKey(className))
         {
-            GD.PushWarning($"Class {className} is already registered!");
+            GD.PushWarning($"Class {className} is already registered! This can happen if multiple actors with the same script are loaded simultaneously.");
             return;
         }
         if (className == NLuaScriptManager.globalClass)
@@ -49,7 +49,7 @@ public class LuaRegistry
         }
         try
         {
-            NLuaScriptManager.luaState.DoString(rootFile.GetAsText());
+            NLuaScriptManager.luaState.DoString(classContents);
         }
         catch (InterpreterException e)
         {
