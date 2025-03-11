@@ -43,6 +43,6 @@ public class ActorAsset : Asset
 
         GD.Print($"Showing actor preview: {_actorConfig.name}");
 
-        PopupManager.ShowImage(_thumbnail);
+        PopupManager.ShowActor(_thumbnail, _actorConfig);
     }
 }

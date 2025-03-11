@@ -62,7 +62,5 @@ public class AssetSpawner : Control
             _gridContainer.AddChild(previewButton);
         }
 
-        GetTree().Root.PrintTree();
-
     }
 }
