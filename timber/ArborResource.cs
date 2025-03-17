@@ -295,6 +295,13 @@ public class ArborResource : Node
 
         new_request.Request(web_url, headers,true, HTTPClient.Method.Post, data);
 
+
+        //NOT TESTED FULLY YET
+        byte[] bytes = typeof(T).Name == "String" || typeof(T).Name == "string" ? (asset as string).ToUTF8() :
+            asset as byte[];
+
+        instance.OnRequestCompleted(200, 200, null, bytes, resource, typeof(T).Name, null, force_key_for_asset: resource);
+
     }
     //Supports strings, byte array
     public static void DeleteObject(string resource)

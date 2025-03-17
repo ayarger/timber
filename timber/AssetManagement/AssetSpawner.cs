@@ -5,7 +5,7 @@ using Godot;
 public class AssetSpawner : Control
 {
     private GridContainer _gridContainer;
-    private List<string> _assetFiles = new List<string>();
+    private List<ModFile> _assetFiles = new List<ModFile>();
 
     public override void _Ready()
     {
@@ -47,14 +47,14 @@ public class AssetSpawner : Control
     private IEnumerator SpawnAssets()
     {
         GD.Print($"Assets found:");
-        foreach (string filePath in _assetFiles)
+        foreach (ModFile filePath in _assetFiles)
         {
-            GD.Print($"- {filePath}");
+            GD.Print($"- {filePath.name}");
         }
-        foreach (string filePath in _assetFiles)
+        foreach (ModFile filePath in _assetFiles)
         {
-            GD.Print($"Creating {filePath} asset...");
-            Asset asset = AssetFactory.CreateAsset(filePath);
+            GD.Print($"Creating {filePath.name} asset...");
+            Asset asset = AssetFactory.CreateAsset(filePath.name);
             yield return asset.LoadAsset();
             Control previewButton = asset.CreatePreviewButton();
             _gridContainer.AddChild(previewButton);

@@ -478,6 +478,11 @@ public class ModFile
 		last_modified = time.ToString("yyyy-MM-dd HH:mm:ss",
 								   System.Globalization.CultureInfo.InvariantCulture);
 	}
+
+	public bool EndsWith(string text)
+	{
+		return name.EndsWith(text);
+	}
 }
 
 [Serializable]
