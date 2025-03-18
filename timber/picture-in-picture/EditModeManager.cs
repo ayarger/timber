@@ -150,6 +150,9 @@ public class EditModeManager : Camera2D
 
     public Vector2 UpdateCursorPosition(Vector2 rawCursorPosition)
     {
+        // temp
+        return rawCursorPosition;
+
         // If not in edit mode, return the cursor position as-is
         if (!edit_mode)
         {

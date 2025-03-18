@@ -150,7 +150,6 @@ stretch_mode = 6
 
 [node name="ActorDetails" type="RichTextLabel" parent="ActorPreviewWindow/HBoxContainer"]
 margin_left = 300.0
-margin_top = 10.0
 margin_right = 600.0
 margin_bottom = 400.0
 rect_min_size = Vector2( 300, 300 )

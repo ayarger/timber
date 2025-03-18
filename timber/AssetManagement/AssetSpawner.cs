@@ -57,6 +57,9 @@ public class AssetSpawner : Control
             yield break;
         }
 
+        // _assetFiles = manifest.Search(".*\\.(wav)")
+        //     .FindAll(file => !file.EndsWith(".import") && !file.EndsWith("images/gameover_background.png"));
+
         _assetFiles = manifest.Search(".*\\.(png|wav|actor)")
             .FindAll(file => !file.EndsWith(".import") && !file.EndsWith("images/gameover_background.png"));
 
@@ -86,7 +89,11 @@ public class AssetSpawner : Control
             return;
         }
 
-        ArborCoroutine.StartCoroutine(LoadAndDisplayAsset(asset), this);
+        if(filePath.EndsWith(".wav"))
+            ArborCoroutine.StartCoroutine(LoadAndDisplaySound(asset), this);
+        else
+            ArborCoroutine.StartCoroutine(LoadAndDisplayAsset(asset), this);
+
         _currentAssetIndex++;
     }
 
@@ -96,6 +103,15 @@ public class AssetSpawner : Control
 
         Control previewButton = asset.CreatePreviewButton();
         _gridContainer.AddChild(previewButton);
+
+        GD.Print($"Added {asset.FilePath} to UI.");
+    }
+    private IEnumerator LoadAndDisplaySound(Asset asset)
+    {
+        Control previewButton = asset.CreatePreviewButton();
+        _gridContainer.AddChild(previewButton);
+
+        yield return asset.LoadAsset();
 
         GD.Print($"Added {asset.FilePath} to UI.");
     }
