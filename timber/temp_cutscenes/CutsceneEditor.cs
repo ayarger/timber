@@ -12,12 +12,13 @@ public partial class CutsceneEditor : Control
     private bool isVisible = false;
 
     [Export]private ItemList sceneList;
-    [Export] private VBoxContainer vBox;
+    [Export]private VBoxContainer vBox;
+    [Export]private GridContainer grid;
     [Export]private TextureRect previewImage;
     [Export]private LineEdit imagePathInput;
     [Export]private SpinBox indexInput;
     [Export]private OptionButton transitionDropdown, displayDropdown;
-    [Export] private PackedScene slidePreviewScene;
+    [Export]private PackedScene slidePreviewScene;
     
     public override void _Ready()
     { 
@@ -25,6 +26,7 @@ public partial class CutsceneEditor : Control
         GD.Print("Cutscene Manager is found:" + (cutsceneManager != null).ToString());
         sceneList = GetNode<ItemList>("ItemList");
         vBox = GetNode<VBoxContainer>("ScrollContainer/VBoxContainer");
+        grid = GetNode<GridContainer>("ScrollContainer/GridContainer");
         //string filePath = "res://temp_cutscenes/intro_cutscene_config.json";
         //filePath = ProjectSettings.GlobalizePath(filePath);
         //cutsceneManager.LoadCutsceneFromJsonS3(filePath);
@@ -82,7 +84,8 @@ public partial class CutsceneEditor : Control
             SlidePreview slidePreview = (SlidePreview)slidePreviewScene.Instance();
             GD.Print(slidePreview + "added"); 
             //sceneList.AddChild(slidePreview);
-            vBox.AddChild(slidePreview);
+            //vBox.AddChild(slidePreview);
+            grid.AddChild(slidePreview);
             slidePreview.SetPreview(image);
         }
     }
