@@ -91,7 +91,7 @@ public class Actor : Spatial
 		character_view_shadow = (MeshInstance)GetNode("view/shadowMesh");
 		character_material = (ShaderMaterial)character_view.GetSurfaceMaterial(0).Duplicate();
 		shadow_view = (MeshInstance)GetNode("shadow");
-		selectable = GetNode<IsSelectable>("IsSelectable");
+        selectable = GetNodeOrNull<IsSelectable>("IsSelectable");
 		rb = GetNode<RigidBody>("RigidBody");
 		has_team = GetNode<HasTeam>("HasTeam");
 		time = GlobalTranslation.x + GlobalTranslation.z;

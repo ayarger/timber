@@ -22,10 +22,22 @@ public partial class SlidePreview : Control
     public void SetPreview(CutsceneImageResource sceneData)
     {
         imagePathInput.Text = sceneData.ImagePath;
-        orderInput.Value = sceneData.Index;
-        previewImage.Texture = sceneData.Image;
+        orderInput.Value = sceneData.Index + 1; // index + 1 
         transitionDropdown.Text =  sceneData.TransitionStyle;
         displayDropdown.Text =sceneData.DisplayStyle;
+        //use resource
+        ArborResource.UseResource <Texture>(sceneData.ImagePath, texture =>
+            {
+                if (texture != null)
+                {
+                    previewImage.Texture = texture;
+                }
+                else
+                {
+                    GD.PrintErr("Failed to load texture.");
+                }
+            }, this); 
+     
     }
 
     private int GetOptionIndex(OptionButton optionButton, string value)

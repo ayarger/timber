@@ -17,3 +17,4 @@
 */windows_build/*
 */web_build/*
 */.vs/*
+*/TempSecrets.cs

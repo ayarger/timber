@@ -24,7 +24,7 @@ public partial class CutsceneEditor : Control
         cutsceneManager = GetParent<CutsceneManager>();
         GD.Print("Cutscene Manager is found:" + (cutsceneManager != null).ToString());
         sceneList = GetNode<ItemList>("ItemList");
-        vBox = GetNode<VBoxContainer>("VBoxContainer");
+        vBox = GetNode<VBoxContainer>("ScrollContainer/VBoxContainer");
         //string filePath = "res://temp_cutscenes/intro_cutscene_config.json";
         //filePath = ProjectSettings.GlobalizePath(filePath);
         //cutsceneManager.LoadCutsceneFromJsonS3(filePath);
@@ -144,7 +144,7 @@ public partial class CutsceneEditor : Control
     {
         isVisible = !isVisible;
         Visible = isVisible;
-        //GetTree().Paused = isVisible;
+        GetTree().Paused = isVisible;
         GD.Print(isVisible ? "Cutscene Editor Opened" : "Cutscene Editor Closed");
         
     }

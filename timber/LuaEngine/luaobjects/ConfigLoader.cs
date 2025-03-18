@@ -2,6 +2,7 @@ using Godot;
 using System.Collections.Generic;
 using System.Collections;
 using System.Collections;
+using System.Linq;
 
 //LuaLoader, but just actor configs.
 //NOT USED ANYWHERE just for lua testing.
@@ -39,14 +40,6 @@ public class ConfigLoader : Node
         yield return LoadActorConfigs();
         loading_scene = false;
 
-        //Test code:
-        NLuaScriptManager nlsm = NLuaScriptManager.Instance;
-        Spatial a = InstantiateActor('q', 0, 0);
-        nlsm.CreateActor(NLuaScriptManager.testClassName, NLuaScriptManager.GenerateObjectName(), a);
-        a = InstantiateActor('m', 1, 0);
-        nlsm.CreateActor(NLuaScriptManager.testClassName, NLuaScriptManager.GenerateObjectName(), a);
-        a = InstantiateActor('c', -1, 0);
-        nlsm.CreateActor(NLuaScriptManager.testClassName, NLuaScriptManager.GenerateObjectName(), a);
     }
 
     Dictionary<char, ActorConfig> map_code_to_actor_config = new Dictionary<char, ActorConfig>();
@@ -56,7 +49,10 @@ public class ConfigLoader : Node
         yield return ArborResource.WaitFor("mod_file_manifest.json");
         ModFileManifest manifest = ArborResource.Get<ModFileManifest>("mod_file_manifest.json");
 
-        List<string> actor_files = manifest.Search("actor_definitions/*");
+        List<string> actor_files = manifest.Search("actor_definitions/*").Select((file) =>
+        {
+            return file.name;
+        }).ToList();
 
         foreach (string actor_file in actor_files)
         {

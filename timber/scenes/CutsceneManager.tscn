@@ -39,6 +39,9 @@ margin_bottom = 1080.0
 stretch_mode = 6
 
 [node name="Control" type="Control" parent="."]
+pause_mode = 2
+visible = false
+show_behind_parent = true
 margin_right = 40.0
 margin_bottom = 40.0
 script = ExtResource( 22 )
@@ -48,10 +51,35 @@ visible = false
 self_modulate = Color( 0.266667, 0.109804, 0.65098, 0.752941 )
 margin_right = 1920.0
 margin_bottom = 1080.0
+custom_constants/hseparation = 0
 max_text_lines = 50
 auto_height = true
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Control"]
-margin_right = 1920.0
-margin_bottom = 1080.0
+[node name="ScrollContainer" type="ScrollContainer" parent="Control"]
+margin_left = 371.0
+margin_top = 89.0
+margin_right = 1589.0
+margin_bottom = 954.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/ScrollContainer"]
+pause_mode = 2
 custom_constants/separation = 200
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Control"]
+margin_left = 918.0
+margin_top = 962.0
+margin_right = 1040.0
+margin_bottom = 982.0
+rect_scale = Vector2( 1.2, 1.2 )
+custom_constants/separation = 20
+
+[node name="Cancel" type="Button" parent="Control/HBoxContainer"]
+margin_right = 54.0
+margin_bottom = 20.0
+text = "Cancel"
+
+[node name="Apply" type="Button" parent="Control/HBoxContainer"]
+margin_left = 74.0
+margin_right = 122.0
+margin_bottom = 20.0
+text = "Apply"
