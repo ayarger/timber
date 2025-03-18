@@ -46,9 +46,7 @@ public class PopupManager : Node
         }
     }
 
-    /// <summary>
     /// Displays a simple image preview (for ImageAsset)
-    /// </summary>
     public static void ShowImage(Texture texture)
     {
         if (_instance == null)
@@ -69,93 +67,99 @@ public class PopupManager : Node
         _instance._imagePopup.PopupCentered();
     }
 
-/// <summary>
-/// Displays an actor preview with editable fields (for ActorAsset)
-/// </summary>
-public static void ShowActor(Texture texture, ActorConfig actorConfig)
-{
-    if (_instance == null)
+    /// Displays an actor preview with editable fields (for ActorAsset)
+    public static void ShowActor(Texture texture, ActorConfig actorConfig)
     {
-        GD.PrintErr("PopupManager has not been initialized.");
-        return;
-    }
-
-    if (_instance._actorPopup == null || _instance._actorImage == null)
-    {
-        GD.PrintErr("PopupManager: Cannot display actor. Missing nodes.");
-        return;
-    }
-
-    GD.Print($"Displaying actor preview: {actorConfig.name}");
-
-    _instance._actorImage.Texture = texture;
-
-    // Get the container that will hold the editable fields
-    VBoxContainer actorDetailsContainer = _instance._actorPopup.GetNode<VBoxContainer>("HBoxContainer/ActorDetails");
-
-    // Clear previous content
-    foreach (Node child in actorDetailsContainer.GetChildren())
-    {
-        child.QueueFree();
-    }
-
-    // Add editable fields for basic actor info
-    AddEditableField(actorDetailsContainer, "Name", actorConfig.name);
-    AddEditableField(actorDetailsContainer, "Team", actorConfig.team);
-    AddEditableField(actorDetailsContainer, "Map Code", actorConfig.map_code.ToString());
-    AddEditableField(actorDetailsContainer, "Scale Factor", actorConfig.aesthetic_scale_factor.ToString());
-
-    // Add a label for "States"
-    Label statesLabel = new Label { Text = "States:" };
-    actorDetailsContainer.AddChild(statesLabel);
-
-    // Create editable fields for each state and its stats
-    foreach (var state in actorConfig.stateConfigs)
-    {
-        Label stateLabel = new Label { Text = $"- {state.name}" };
-        actorDetailsContainer.AddChild(stateLabel);
-
-        if (state.stateStats != null)
+        if (_instance == null)
         {
-            foreach (var stat in state.stateStats)
+            GD.PrintErr("PopupManager has not been initialized.");
+            return;
+        }
+
+        if (_instance._actorPopup == null || _instance._actorImage == null)
+        {
+            GD.PrintErr("PopupManager: Cannot display actor. Missing nodes.");
+            return;
+        }
+
+        GD.Print($"Displaying actor preview: {actorConfig.name}");
+
+        _instance._actorImage.Texture = texture;
+
+        // Find containers
+        ScrollContainer scrollContainer = _instance._actorPopup.GetNodeOrNull<ScrollContainer>("HBoxContainer/ActorDetailsScroll");
+        VBoxContainer actorDetailsContainer = scrollContainer?.GetNodeOrNull<VBoxContainer>("ActorDetails");
+
+        if (scrollContainer == null || actorDetailsContainer == null)
+        {
+            GD.PrintErr("PopupManager: 'ActorDetailsScroll' or 'ActorDetails' node not found.");
+            return;
+        }
+
+        // Clear old content
+        foreach (Node child in actorDetailsContainer.GetChildren())
+        {
+            child.QueueFree();
+        }
+
+        AddEditableField(actorDetailsContainer, "Name", actorConfig.name);
+        AddEditableField(actorDetailsContainer, "Team", actorConfig.team);
+        AddEditableField(actorDetailsContainer, "Map Code", actorConfig.map_code.ToString());
+        AddEditableField(actorDetailsContainer, "Scale Factor", actorConfig.aesthetic_scale_factor.ToString());
+
+        // States
+        Label statesLabel = new Label { Text = "States:" };
+        actorDetailsContainer.AddChild(statesLabel);
+
+        // Create editable fields
+        foreach (var state in actorConfig.stateConfigs)
+        {
+            Label stateLabel = new Label { Text = $"- {state.name}" };
+            actorDetailsContainer.AddChild(stateLabel);
+
+            if (state.stateStats != null)
             {
-                AddEditableField(actorDetailsContainer, $"  {stat.Key}", stat.Value.ToString(), isNumeric: true);
+                foreach (var stat in state.stateStats)
+                {
+                    AddEditableField(actorDetailsContainer, $"      {stat.Key}", stat.Value.ToString(), isNumeric: true);
+                }
             }
         }
+
+        // Ensure the ScrollContainer updates its size correctly
+        scrollContainer.RectMinSize = new Vector2(200, 400); // Adjust height as needed
+
+        // Show the popup
+        _instance._actorPopup.PopupCentered();
     }
 
-    // Show the popup
-    _instance._actorPopup.PopupCentered();
-}
 
-/// <summary>
-/// Helper method to add an editable field (LineEdit for text, SpinBox for numbers)
-/// </summary>
-private static void AddEditableField(VBoxContainer container, string label, string value, bool isNumeric = false)
-{
-    HBoxContainer fieldContainer = new HBoxContainer();
-
-    Label fieldLabel = new Label { Text = label, SizeFlagsHorizontal = (int)Control.SizeFlags.Expand };
-    fieldContainer.AddChild(fieldLabel);
-
-    if (isNumeric)
+    /// Helper method to add an editable field (LineEdit for text, SpinBox for numbers)
+    private static void AddEditableField(VBoxContainer container, string label, string value, bool isNumeric = false)
     {
-        SpinBox numericInput = new SpinBox
+        HBoxContainer fieldContainer = new HBoxContainer();
+
+        Label fieldLabel = new Label { Text = label, SizeFlagsHorizontal = (int)Control.SizeFlags.Expand };
+        fieldContainer.AddChild(fieldLabel);
+
+        if (isNumeric)
         {
-            Value = float.TryParse(value, out float result) ? result : 0,
-            MinValue = 0,
-            MaxValue = 100, // Adjust range as needed
-            Step = 0.1f
-        };
-        fieldContainer.AddChild(numericInput);
-    }
-    else
-    {
-        LineEdit textInput = new LineEdit { Text = value };
-        fieldContainer.AddChild(textInput);
-    }
+            SpinBox numericInput = new SpinBox
+            {
+                Value = float.TryParse(value, out float result) ? result : 0,
+                MinValue = 0,
+                MaxValue = 100, // Can adjust range as needed
+                Step = 0.1f
+            };
+            fieldContainer.AddChild(numericInput);
+        }
+        else
+        {
+            LineEdit textInput = new LineEdit { Text = value };
+            fieldContainer.AddChild(textInput);
+        }
 
-    container.AddChild(fieldContainer);
-}
+        container.AddChild(fieldContainer);
+    }
 
 }
