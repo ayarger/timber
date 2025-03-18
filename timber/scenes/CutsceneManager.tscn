@@ -21,7 +21,7 @@
 [ext_resource path="res://temp_cutscenes/Intro_resources/18.tres" type="Resource" id=19]
 [ext_resource path="res://temp_cutscenes/Intro_resources/20.tres" type="Resource" id=20]
 [ext_resource path="res://temp_cutscenes/Intro_resources/1.tres" type="Resource" id=21]
-[ext_resource path="res://temp_cutscenes/CutsceneEditor.cs" type="Script" id=22]
+[ext_resource path="res://scenes/CutsceneEditor.tscn" type="PackedScene" id=22]
 
 [node name="CutsceneManager" type="CanvasLayer"]
 layer = 128
@@ -38,48 +38,4 @@ margin_right = 1920.0
 margin_bottom = 1080.0
 stretch_mode = 6
 
-[node name="CutsceneEditor" type="Control" parent="."]
-pause_mode = 2
-visible = false
-show_behind_parent = true
-margin_right = 40.0
-margin_bottom = 40.0
-script = ExtResource( 22 )
-
-[node name="ItemList" type="ItemList" parent="CutsceneEditor"]
-visible = false
-self_modulate = Color( 0.266667, 0.109804, 0.65098, 0.752941 )
-margin_right = 1920.0
-margin_bottom = 1080.0
-custom_constants/hseparation = 0
-max_text_lines = 50
-auto_height = true
-
-[node name="ScrollContainer" type="ScrollContainer" parent="CutsceneEditor"]
-margin_left = 371.0
-margin_top = 89.0
-margin_right = 1589.0
-margin_bottom = 954.0
-
-[node name="VBoxContainer" type="VBoxContainer" parent="CutsceneEditor/ScrollContainer"]
-pause_mode = 2
-custom_constants/separation = 200
-
-[node name="HBoxContainer" type="HBoxContainer" parent="CutsceneEditor"]
-margin_left = 918.0
-margin_top = 962.0
-margin_right = 1040.0
-margin_bottom = 982.0
-rect_scale = Vector2( 1.2, 1.2 )
-custom_constants/separation = 20
-
-[node name="Cancel" type="Button" parent="CutsceneEditor/HBoxContainer"]
-margin_right = 54.0
-margin_bottom = 20.0
-text = "Cancel"
-
-[node name="Apply" type="Button" parent="CutsceneEditor/HBoxContainer"]
-margin_left = 74.0
-margin_right = 122.0
-margin_bottom = 20.0
-text = "Apply"
+[node name="CutsceneEditor" parent="." instance=ExtResource( 22 )]

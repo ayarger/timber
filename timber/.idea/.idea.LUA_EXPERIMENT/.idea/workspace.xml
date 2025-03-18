@@ -9,13 +9,11 @@
   <component name="ChangeListManager">
     <list default="true" id="538a528e-ecd1-41c7-ae1d-5407c3f4da6b" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.LUA_EXPERIMENT/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.LUA_EXPERIMENT/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/UI/ImageEditor.tscn" beforeDir="false" afterPath="$PROJECT_DIR$/UI/ImageEditor.tscn" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scenes/CutsceneEditor.cs" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/scenes/CutsceneEditor.tscn" beforeDir="false" afterPath="$PROJECT_DIR$/scenes/CutsceneEditor.tscn" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scenes/CutsceneManager.cs" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/scenes/CutsceneManager.tscn" beforeDir="false" afterPath="$PROJECT_DIR$/scenes/CutsceneManager.tscn" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_scenes/SlidePreview.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_scenes/SlidePreview.tscn" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scenes/SlidePreview.tscn" beforeDir="false" afterPath="$PROJECT_DIR$/scenes/SlidePreview.tscn" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp_cutscenes/CutsceneEditor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/CutsceneEditor.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp_cutscenes/SlidePreview.cs" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/SlidePreview.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -153,7 +151,7 @@
       <workItem from="1739291408622" duration="15942000" />
       <workItem from="1740509679767" duration="6271000" />
       <workItem from="1741722455644" duration="12905000" />
-      <workItem from="1742281897186" duration="1178000" />
+      <workItem from="1742281897186" duration="3465000" />
     </task>
     <servers />
   </component>

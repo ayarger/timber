@@ -8,6 +8,7 @@ public partial class SlidePreview : Control
     private SpinBox orderInput;
     private OptionButton transitionDropdown;
     private OptionButton displayDropdown;
+    private RichTextLabel orderLabel;
 
     public override void _Ready()
     {
@@ -15,6 +16,7 @@ public partial class SlidePreview : Control
         previewImage = GetNode<TextureRect>("TextureRect");
         imagePathInput = GetNode<LineEdit>("ImagePath");
         orderInput = GetNode<SpinBox>("Order");
+        orderLabel = GetNode<RichTextLabel>("OrderLabel");
         transitionDropdown = GetNode<OptionButton>("TransitionDropdown");
         displayDropdown = GetNode<OptionButton>("DisplayDropdown");
     }
@@ -23,6 +25,7 @@ public partial class SlidePreview : Control
     {
         imagePathInput.Text = sceneData.ImagePath;
         orderInput.Value = sceneData.Index + 1; // index + 1 
+        orderLabel.Text = (sceneData.Index + 1).ToString();
         transitionDropdown.Text =  sceneData.TransitionStyle;
         displayDropdown.Text =sceneData.DisplayStyle;
         //use resource

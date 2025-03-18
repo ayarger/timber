@@ -8,7 +8,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource( 2 )
 
-[node name="Order2" type="RichTextLabel" parent="."]
+[node name="OrderLabel" type="RichTextLabel" parent="."]
 margin_left = 77.0
 margin_top = 129.0
 margin_right = 117.0
@@ -20,6 +20,8 @@ margin_right = 543.0
 margin_bottom = 395.0
 rect_scale = Vector2( 0.3, 0.3 )
 texture = ExtResource( 1 )
+expand = true
+stretch_mode = 6
 
 [node name="ImagePath" type="LineEdit" parent="."]
 visible = false

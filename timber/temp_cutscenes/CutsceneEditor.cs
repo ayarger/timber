@@ -31,10 +31,11 @@ public partial class CutsceneEditor : Control
         //filePath = ProjectSettings.GlobalizePath(filePath);
         //cutsceneManager.LoadCutsceneFromJsonS3(filePath);
         CutsceneImages = cutsceneManager.cutsceneImages;
-        slidePreviewScene = (PackedScene)ResourceLoader.Load("res://temp_scenes/SlidePreview.tscn");
+        slidePreviewScene = (PackedScene)ResourceLoader.Load("res://scenes/SlidePreview.tscn");
         GD.Print(("packedscene slide preview loaded" + (slidePreviewScene != null)));
         //SetupUI();
         PopulateList();
+        this.Hide();
     }
 
     public  override void _Process(float delta)
