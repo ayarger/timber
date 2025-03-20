@@ -19,7 +19,7 @@ public partial class CutsceneEditor : Control
     [Export]private SpinBox indexInput;
     [Export]private OptionButton transitionDropdown, displayDropdown;
     [Export]private PackedScene slidePreviewScene;
-    
+
     public override void _Ready()
     { 
         cutsceneManager = GetParent<CutsceneManager>();
@@ -87,6 +87,7 @@ public partial class CutsceneEditor : Control
             //sceneList.AddChild(slidePreview);
             //vBox.AddChild(slidePreview);
             grid.AddChild(slidePreview);
+            slidePreview.cutsceneImageResource = image;
             slidePreview.SetPreview(image);
         }
     }
@@ -142,7 +143,6 @@ public partial class CutsceneEditor : Control
         }
         return 0; 
     }
-
     
     private void ToggleEditor()
     {

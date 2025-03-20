@@ -7,6 +7,7 @@
 
 [node name="CutsceneEditor" type="Control"]
 pause_mode = 2
+visible = false
 show_behind_parent = true
 script = ExtResource( 1 )
 
