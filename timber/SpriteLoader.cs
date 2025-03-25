@@ -25,25 +25,25 @@ public class SpriteLoader : Control
 
         // try to find all png files in images folder
 
-        List<string> spriteFiles = manifest.Search("resources/images/.*\\.png");
+        List<ModFile> spriteFiles = manifest.Search("resources/images/.*\\.png");
 
         GD.Print($"Found {spriteFiles.Count} sprite images in S3 bucket");
         AddTextButton($"Found {spriteFiles.Count} sprite images in S3 bucket");
 
-        foreach (string spriteFile in spriteFiles)
+        foreach (ModFile spriteFile in spriteFiles)
         {
-            ArborResource.Load<Texture>(spriteFile);
+            ArborResource.Load<Texture>(spriteFile.name);
         }
 
-        foreach (string spriteFile in spriteFiles)
+        foreach (ModFile spriteFile in spriteFiles)
         {
-            yield return ArborResource.WaitFor(spriteFile);
+            yield return ArborResource.WaitFor(spriteFile.name);
 
-            Texture texture = ArborResource.Get<Texture>(spriteFile);
+            Texture texture = ArborResource.Get<Texture>(spriteFile.name);
             if (texture != null)
-                AddSpriteButton(spriteFile, texture);
+                AddSpriteButton(spriteFile.name, texture);
             else
-                GD.PrintErr($"Failed to load texture: {spriteFile}");
+                GD.PrintErr($"Failed to load texture: {spriteFile.name}");
         }
     }
 

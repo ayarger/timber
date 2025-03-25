@@ -14,9 +14,15 @@ using System.Reflection;
 using Amazon.Runtime.Internal.Transform;
 using System.Runtime.CompilerServices;
 using Amazon.Auth.AccessControlPolicy;
+using Google.Protobuf;
 
 public class ArborResource : Node
 {
+    public const string S3_WRITE_LAMBDA_WEBURL = "https://qsfdaoaoj8.execute-api.us-east-1.amazonaws.com/default/timber-write";
+    public const string S3_DELETE_LAMBDA_WEBURL = "https://dy8brlo577.execute-api.us-east-1.amazonaws.com/default/timber-delete";
+    public const string S3_MANIFEST_LAMBDA_WEBURL = "https://2z1wmv8pbk.execute-api.us-east-1.amazonaws.com/default/timber-generate-manifest";
+
+
     static Dictionary<string, string> web_query_parameters = new Dictionary<string, string>();
 
     static ArborResource instance;
@@ -208,8 +214,8 @@ public class ArborResource : Node
             if (extension == ".bin")
             {
                 if(type == "ActorConfig") { 
-                    var parsedData = ProtobufParser.ParseBinary<ActorConfig>(body, type);
-                    SetResource(key, parsedData);
+                    //var parsedData = ProtobufParser.ParseBinary<ActorConfig>(body, type);
+                    //SetResource(key, parsedData);
                 }
                 else if(type == "GameConfig")
                 {
@@ -262,6 +268,127 @@ public class ArborResource : Node
         }
     }
 
+    //Supports strings, byte array
+    public static void WriteObject<T>(string resource, T asset)
+    {
+        HTTPRequest new_request = new HTTPRequest();
+        instance.AddChild(new_request);
+        string web_url = S3_WRITE_LAMBDA_WEBURL;
+        var headers = new string[]
+        {
+           $"Resource: squirrel_rts/mods/{GetCurrentModID()}/resources/{resource}",
+           $"TempPassword: {TempSecrets.TEMPPASSWORD}",
+           $"DoubleDecode: {((typeof(T)==typeof(byte[])) ? "true" : "false")}"
+        };
+
+        Godot.Collections.Array extra_params = new Godot.Collections.Array
+        {
+            resource,
+            typeof(T).Name == "String" || typeof(T).Name == "string" ? asset.ToString().Length :
+            (asset as byte[]).LongLength,
+            DateTime.UtcNow.ToString()
+        };
+
+        new_request.Connect("request_completed", instance, nameof(OnWriteCompleted), extra_params);
+        string data = typeof(T).Name == "String" || typeof(T).Name == "string" ? asset.ToString() :
+            Convert.ToBase64String(asset as byte[]);
+
+        new_request.Request(web_url, headers,true, HTTPClient.Method.Post, data);
+
+
+        //NOT TESTED FULLY YET
+        byte[] bytes = typeof(T).Name == "String" || typeof(T).Name == "string" ? (asset as string).ToUTF8() :
+            asset as byte[];
+
+        instance.OnRequestCompleted(200, 200, null, bytes, resource, typeof(T).Name, null, force_key_for_asset: resource);
+
+    }
+    //Supports strings, byte array
+    public static void DeleteObject(string resource)
+    {
+        HTTPRequest new_request = new HTTPRequest();
+        instance.AddChild(new_request);
+        string web_url = S3_DELETE_LAMBDA_WEBURL;
+        var headers = new string[]
+        {
+           $"Resource: squirrel_rts/mods/{GetCurrentModID()}/resources/{resource}",
+           $"TempPassword: {TempSecrets.TEMPPASSWORD}",
+        };
+
+
+        Godot.Collections.Array extra_params = new Godot.Collections.Array
+        {
+            resource
+        };
+
+
+        new_request.Connect("request_completed", instance, nameof(OnDeleteCompleted), extra_params);
+
+        new_request.Request(web_url, headers, true, HTTPClient.Method.Post);
+
+    }
+
+    public void OnWriteCompleted(long result, long responseCode, string[] headers, byte[] body, string name, long bytes, string uploadTime)
+    {
+        GD.PushWarning(System.Text.Encoding.Default.GetString(body));
+
+        ArborCoroutine.StartCoroutine(_OnWriteCompleted(name, bytes, DateTime.Parse(uploadTime)));
+    }
+    public IEnumerator _OnWriteCompleted(string name, long bytes, DateTime uploadTime)
+    {
+        //Update Manifest
+        ArborResource.Load<ModFileManifest>("mod_file_manifest.json");
+        yield return ArborResource.WaitFor("mod_file_manifest.json");
+        ModFileManifest manifest = ArborResource.Get<ModFileManifest>("mod_file_manifest.json");
+
+        ModFile newModFile = new ModFile();
+        newModFile.name = name;
+        newModFile.size = bytes;
+        newModFile.WriteLastModifiedTime(uploadTime);
+
+        string[] nameTokens = name.Split("/");
+        if(nameTokens.Length < 2)
+        {
+            newModFile.data_type = "unknown";
+        }
+        else
+        {
+            string folder = nameTokens[nameTokens.Length - 2];
+
+            if (folder == "resources") newModFile.data_type = "unknown";
+            else if (folder == "actor_definitions") newModFile.data_type = "actor";
+            else if (folder == "dialogue") newModFile.data_type = "dialogue";
+            else if (folder == "images") newModFile.data_type = "image";
+            else if (folder == "scenes") newModFile.data_type = "scene";
+            else if (folder == "scripts") newModFile.data_type = "script";
+            else if (folder == "sounds") newModFile.data_type = "sound";
+            else newModFile.data_type = "unknown";
+        }
+
+        manifest.mod_files.Add(newModFile);
+    }
+
+
+    public void OnDeleteCompleted(long result, long responseCode, string[] headers, byte[] body, string name)
+    {
+        GD.PushWarning(System.Text.Encoding.Default.GetString(body));
+
+
+        ArborCoroutine.StartCoroutine(_OnDeleteCompleted(name));
+    }
+
+    private IEnumerator _OnDeleteCompleted(string name)
+    {
+        //Update Manifest
+        ArborResource.Load<ModFileManifest>("mod_file_manifest.json");
+        yield return ArborResource.WaitFor("mod_file_manifest.json");
+        ModFileManifest manifest = ArborResource.Get<ModFileManifest>("mod_file_manifest.json");
+        GD.PushWarning(JsonConvert.SerializeObject(manifest));
+        manifest.mod_files.RemoveAll(f => f.name == name);
+
+    }
+
+
     public static void Load<T>(string resource)
     {
         if (instance.loaded_assets.ContainsKey(resource))
@@ -269,6 +396,8 @@ public class ArborResource : Node
             GD.PrintErr("We already have [" + resource + "] in cache.");
             return;
         }
+
+        bool isManifest = typeof(T) == typeof(ModFileManifest);
 
         HTTPRequest new_request = new HTTPRequest();
         instance.AddChild(new_request);
@@ -281,18 +410,34 @@ public class ArborResource : Node
         };
 
         new_request.Connect("request_completed", instance, nameof(OnRequestCompleted), extra_params);
-        string web_url = @"https://arborinteractive.com/squirrel_rts/mods/" + GetCurrentModID() + @"/resources/" + resource;
 
         if (instance.assets_currently_loading.Contains(resource))
             return;
         instance.assets_currently_loading.Add(resource);
 
-        var headers = new string[]
+        //Use Lambda if we are pulling the manifest file.
+        if (isManifest)
         {
-            "Cache-Control: max-age=999999", // Cache data for 1 hour (3600 seconds)
-        };
+            string web_url = S3_MANIFEST_LAMBDA_WEBURL;
+            var headers = new string[]
+            {
+               $"Resource: squirrel_rts/mods/{GetCurrentModID()}/resources/",
+               $"TempPassword: {TempSecrets.TEMPPASSWORD}"
+            };
 
-        new_request.Request(web_url, headers);
+            new_request.Request(web_url, headers, true, HTTPClient.Method.Get);
+        }
+        else
+        {
+            //If public, pull from the public bucket.
+            string web_url = @"https://arborinteractive.com/squirrel_rts/mods/" + (resource.StartsWith("public") ? "public" : GetCurrentModID()) + @"/resources/" + (resource.StartsWith("public") ? resource.Substring(7) : resource);
+            var headers = new string[]
+            {
+            "Cache-Control: max-age=999999", // Cache data for 1 hour (3600 seconds)
+            };
+
+            new_request.Request(web_url, headers);
+        }
 
         TimeSpan elapsedSnapshot = timeline.Elapsed;
         GD.Print("web retrieving [" + resource + "] @ " + elapsedSnapshot);

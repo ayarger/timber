@@ -5,10 +5,10 @@ using Godot;
 public class AssetSpawner : Control
 {
     private GridContainer _gridContainer;
-    private List<string> _assetFiles = new List<string>();
     private Timer _initialTimer;
     private Timer _loadTimer;
     private int _currentAssetIndex = 0;
+    private List<ModFile> _assetFiles = new List<ModFile>();
 
     public override void _Ready()
     {
@@ -78,7 +78,7 @@ public class AssetSpawner : Control
             return;
         }
 
-        string filePath = _assetFiles[_currentAssetIndex];
+        string filePath = _assetFiles[_currentAssetIndex].name;
         GD.Print($"Loading asset: {filePath}");
 
         Asset asset = AssetFactory.CreateAsset(filePath);

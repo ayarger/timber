@@ -2,7 +2,7 @@
 */.godot/
 
 # Godot-specific ignores
-*/.import/
+*/*.import/
 */export.cfg
 */export_presets.cfg
 
@@ -17,3 +17,4 @@
 */windows_build/*
 */web_build/*
 */.vs/*
+*/TempSecrets.cs

@@ -6,7 +6,7 @@ using System.Drawing;
 public class ButtonSpawner : Control
 {
     private GridContainer _gridContainer;
-    private List<string> _imageFiles = new List<string>();
+    private List<ModFile> _imageFiles = new List<ModFile>();
     private Timer _timer;
     private int _buttonCount = 1;
 
@@ -104,7 +104,7 @@ public class ButtonSpawner : Control
         if (_buttonIconTexture != null)
         {
             ArborResource.UseResource(
-			_imageFiles[_buttonCount],
+			_imageFiles[_buttonCount].name,
 			(Texture texture) => {
 				// Icon title_logo_node = GetNode<Icon>("Button");
 				// _buttonIconTexture = texture;
@@ -126,7 +126,7 @@ public class ButtonSpawner : Control
             //newButton.Icon = _buttonIconTexture;
 
             // set text
-            string imageName = _imageFiles[_buttonCount];
+            string imageName = _imageFiles[_buttonCount].name;
             newButton.Text = $"{imageName}";
         }
 

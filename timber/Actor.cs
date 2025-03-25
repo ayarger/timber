@@ -91,7 +91,7 @@ public class Actor : Spatial
 		character_view_shadow = (MeshInstance)GetNode("view/shadowMesh");
 		character_material = (ShaderMaterial)character_view.GetSurfaceMaterial(0).Duplicate();
 		shadow_view = (MeshInstance)GetNode("shadow");
-		selectable = GetNode<IsSelectable>("IsSelectable");
+        selectable = GetNodeOrNull<IsSelectable>("IsSelectable");
 		rb = GetNode<RigidBody>("RigidBody");
 		has_team = GetNode<HasTeam>("HasTeam");
 		time = GlobalTranslation.x + GlobalTranslation.z;
@@ -130,6 +130,7 @@ public class Actor : Spatial
 		actorKO = true;
 
 		ArborCoroutine.StartCoroutine(loadTextures(), this);
+		ArborCoroutine.StartCoroutine(LoadLuaScript(config), this);
 
 		ArborResource.UseResource<Texture>(
 			"images/" + config.idle_sprite_filename,
@@ -270,7 +271,44 @@ public class Actor : Spatial
 		shadow_mat.SetShaderParam("screenPosZ", FogOfWar.instance.screenPosZ);
 	}
 
-	IEnumerator loadTextures(){
+	IEnumerator LoadLuaScript(ActorConfig config)
+	{
+        /* Load scripts of an actor */
+        foreach (ScriptConfig script in config.scripts)
+        {
+            if (!LuaRegistry.ContainsClass(script.name))
+            {
+				GD.Print(script.name);
+				if (script.name.Contains(".lua"))
+				{
+					script.name = script.name.Substring(0, script.name.Length - 4);
+				}
+                ArborResource.Load<string>("scripts/" + script.name + ".lua");
+                yield return ArborResource.WaitFor("scripts/" + script.name + ".lua");
+				LuaRegistry.RegisterClass(ArborResource.Get<string>("scripts/" + script.name + ".lua"), script.name);
+
+			}
+            LoadScriptAtLocation(script, this);
+        }
+
+        if (config.scripts.Count == 0)
+        {
+            ScriptConfig scriptConfig = new ScriptConfig();
+            scriptConfig.name = NLuaScriptManager.emptyLuaFile;
+            LoadScriptAtLocation(scriptConfig, this);
+        }
+    }
+
+    void LoadScriptAtLocation(ScriptConfig scriptConfig, Spatial owning_actor)
+    {
+        string source_path = System.IO.Directory.GetCurrentDirectory() + @"\resources\scripts\" + scriptConfig.name;
+        NLuaScriptManager.Instance
+                .CreateActor(scriptConfig.name, NLuaScriptManager.GenerateObjectName(), owning_actor);
+
+        return;
+    }
+
+    IEnumerator loadTextures(){
 
 		foreach(var sprites in config.sprite_filenames){
 			string key = sprites.Key;

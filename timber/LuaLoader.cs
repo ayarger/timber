@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using System.Collections;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
+using System.Linq;
+using Newtonsoft.Json;
+using Amazon.Auth.AccessControlPolicy;
 
 public class LuaLoader : Node
 {
@@ -87,9 +90,12 @@ public class LuaLoader : Node
 		//yield return ArborResource.WaitFor("mod_file_manifest.json");
 		//ModFileManifest manifest = ArborResource.Get<ModFileManifest>("mod_file_manifest.json");
 
-		List<string> actor_files = manifest.Search("actor_definitions/*");
+		List<string> actor_files = manifest.Search("actor_definitions/*").Select((file) =>
+        {
+            return file.name;
+        }).ToList();
 
-		StateProcessor.Initialize();
+        StateProcessor.Initialize();
 
 		foreach (string actor_file in actor_files)
         {
@@ -141,7 +147,10 @@ public class LuaLoader : Node
         yield return ArborResource.WaitFor("mod_file_manifest.json");
         ModFileManifest manifest = ArborResource.Get<ModFileManifest>("mod_file_manifest.json");
 
-        List<string> actor_files = manifest.Search("actor_definitions/*");
+        List<string> actor_files = manifest.Search("actor_definitions/*").Select((file) =>
+        {
+            return file.name;
+        }).ToList();
 
         StateProcessor.Initialize();
 
@@ -188,8 +197,17 @@ public class LuaLoader : Node
         {
             //GD.Print("Loading actor file: " + actor_file);
 
+            //TODO: Remove this when actor protobufs are updated
+
+            string[] parts = actor_file.Split('.');
+            string extension = (parts.Length > 1) ? "." + parts[parts.Length - 1] : string.Empty;
+            if (extension == ".bin")
+			{
+				continue;
+			}
+
 			// JUSTIN: No need with previous yield return.
-            //yield return ArborResource.WaitFor(actor_file);
+            yield return ArborResource.WaitFor(actor_file);
 
             ActorConfig actor_info = ArborResource.Get<ActorConfig>(actor_file);
             //if (actor_info.stateConfigs.Count > 0)
@@ -378,22 +396,9 @@ public class LuaLoader : Node
 
         /* customize actor aesthetics */
 
-        /* Load scripts of an actor */
-        foreach (ScriptConfig script in config.scripts)
-        {
-			LoadScriptAtLocation(script, new_actor);
-		}
 		return actor_script;
 	}
 
-	void LoadScriptAtLocation(ScriptConfig scriptConfig, Spatial owning_actor)
-    {
-        string source_path = System.IO.Directory.GetCurrentDirectory() + @"\resources\scripts\" + scriptConfig.name;
-        NLuaScriptManager.Instance
-                .CreateActor(scriptConfig.name, NLuaScriptManager.GenerateObjectName(), owning_actor);
-       
-        return;
-	}
 }
 
 [Serializable]
@@ -454,24 +459,52 @@ public class GameConfig
 }
 
 [Serializable]
+public class ModFile
+{
+	public string name;
+	public long size;
+    [JsonProperty] private string last_modified;
+	public string data_type; //actor, dialogue, image, scene, script, sound
+
+	//All times are UTC
+	public DateTime GetLastModifiedTime() 
+	{
+        return DateTime.ParseExact(last_modified, "yyyy-MM-dd HH:mm:ss",
+                                   System.Globalization.CultureInfo.InvariantCulture);
+    }
+
+	public void WriteLastModifiedTime(DateTime time)
+	{
+		last_modified = time.ToString("yyyy-MM-dd HH:mm:ss",
+								   System.Globalization.CultureInfo.InvariantCulture);
+	}
+
+	public bool EndsWith(string text)
+	{
+		return name.EndsWith(text);
+	}
+}
+
+[Serializable]
 public class ModFileManifest
 {
-	public List<string> mod_files = new List<string>();
+	public List<ModFile> mod_files = new List<ModFile>();
 
-    public List<string> Search (string pattern)
+    public List<ModFile> Search (string pattern)
     {
-        List<string> matchingStrings = new List<string>();
+
+        List<ModFile> matchingFiles = new List<ModFile>();
         Regex regex = new Regex(pattern);
 
-        foreach (string str in mod_files)
+        foreach (ModFile mf in mod_files)
         {
-            if (regex.IsMatch(str))
+            if (regex.IsMatch(mf.name))
             {
-                matchingStrings.Add(str);
+                matchingFiles.Add(mf);
             }
         }
 
-        return matchingStrings;
+        return matchingFiles;
     }
 }
 
