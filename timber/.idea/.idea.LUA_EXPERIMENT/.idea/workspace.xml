@@ -9,11 +9,14 @@
   <component name="ChangeListManager">
     <list default="true" id="538a528e-ecd1-41c7-ae1d-5407c3f4da6b" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.LUA_EXPERIMENT/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.LUA_EXPERIMENT/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scenes/CutsceneEditor.tscn" beforeDir="false" afterPath="$PROJECT_DIR$/scenes/CutsceneEditor.tscn" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scenes/CutsceneManager.tscn" beforeDir="false" afterPath="$PROJECT_DIR$/scenes/CutsceneManager.tscn" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LUA_EXPERIMENT.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/LUA_EXPERIMENT.sln.DotSettings.user" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scenes/PreviewRect.cs" beforeDir="false" afterPath="$PROJECT_DIR$/scenes/PreviewRect.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/scenes/SlidePreview.tscn" beforeDir="false" afterPath="$PROJECT_DIR$/scenes/SlidePreview.tscn" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/temp_cutscenes/CutsceneEditor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/CutsceneEditor.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp_cutscenes/CutsceneManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/CutsceneManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp_cutscenes/CutscenePlayer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/CutscenePlayer.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/temp_cutscenes/SlidePreview.cs" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/SlidePreview.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro_cutscene_config_test.json" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/intro_cutscene_config_test.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,12 +39,26 @@
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4a26704d10e145e2890fa38a6cc0df67531820/2b/be4e225c/Object.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/54b49a39d6c94f36adb89bde3c275b44108e00/5c/2dcc0050/Enumerable.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/b9aa46ca7e704286b432955093e83a1046c600/08/fac63a56/AsyncMethodBuilderCore.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/b9aa46ca7e704286b432955093e83a1046c600/5a/95f9bb5b/Dictionary`2.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/b9aa46ca7e704286b432955093e83a1046c600/7a/6a58c918/ThrowHelper.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/b9aa46ca7e704286b432955093e83a1046c600/b6/c61fc334/Exception.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/b9aa46ca7e704286b432955093e83a1046c600/b7/2d1ded9b/List`1.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/b9aa46ca7e704286b432955093e83a1046c600/e6/8b8027a1/AwaitTaskContinuation.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/b9aa46ca7e704286b432955093e83a1046c600/eb/cd3ab089/AsyncTaskMethodBuilder`1.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/efbf1361bba342e0a2c7a839ddd1f9ef294c00/09/78decb03/Resource.cs" root0="FORCE_HIGHLIGHTING" />
@@ -51,6 +68,9 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/efbf1361bba342e0a2c7a839ddd1f9ef294c00/b9/42a7168d/CanvasLayer.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 6
 }</component>
@@ -152,6 +172,10 @@
       <workItem from="1740509679767" duration="6271000" />
       <workItem from="1741722455644" duration="12905000" />
       <workItem from="1742281897186" duration="3465000" />
+      <workItem from="1743025790501" duration="5323000" />
+      <workItem from="1743051978313" duration="541000" />
+      <workItem from="1743052951023" duration="5672000" />
+      <workItem from="1743141911288" duration="18022000" />
     </task>
     <servers />
   </component>
@@ -166,7 +190,7 @@
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+        <line-breakpoint type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/temp_scenes/canDisplayStatsChange.cs</url>
           <line>53</line>
           <properties documentPath="C:\Users\anhua\timber_win\timber\temp_scenes\canDisplayStatsChange.cs" containingFunctionPresentation="Method 'OnUIStatChange'">
@@ -179,7 +203,7 @@
           </properties>
           <option name="timeStamp" value="4" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+        <line-breakpoint type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/temp_scenes/canDisplayStatsChange.cs</url>
           <line>29</line>
           <properties documentPath="C:\Users\anhua\timber_win\timber\temp_scenes\canDisplayStatsChange.cs" containingFunctionPresentation="Method 'ConfigurePlayerData'">
@@ -192,8 +216,39 @@
           </properties>
           <option name="timeStamp" value="5" />
         </line-breakpoint>
+        <line-breakpoint type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/temp_cutscenes/CutsceneManager.cs</url>
+          <line>303</line>
+          <properties documentPath="C:\Users\anhua\timber_win\timber\temp_cutscenes\CutsceneManager.cs" containingFunctionPresentation="Method 'ConvertCutsceneToJson'">
+            <startOffsets>
+              <option value="9213" />
+            </startOffsets>
+            <endOffsets>
+              <option value="9286" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="8" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/temp_cutscenes/DeleteButton.cs</url>
+          <line>64</line>
+          <properties documentPath="C:\Users\anhua\timber_win\timber\temp_cutscenes\DeleteButton.cs" containingFunctionPresentation="Method 'OnDeletePressed'">
+            <startOffsets>
+              <option value="1709" />
+            </startOffsets>
+            <endOffsets>
+              <option value="1801" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="12" />
+        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
+    <pin-to-top-manager>
+      <pinned-members>
+        <PinnedItemInfo parentTag="Frame#DeleteButton.OnDeletePressed" memberName="index" />
+      </pinned-members>
+    </pin-to-top-manager>
     <watches-manager>
       <configuration name="GODOT_DEBUG_RUN_CONFIGURATION">
         <watch expression="config.statConfig" />
@@ -203,6 +258,14 @@
         <watch expression="container" />
         <watch expression="container" />
         <watch expression="instance" language="C#" />
+      </configuration>
+      <configuration name="ConnectRemote">
+        <watch expression="cutsceneList" />
+        <watch expression="cutsceneImages" language="C#" />
+        <watch expression="jsonData" />
+        <watch expression="currSlide" />
+        <watch expression="sceneData" />
+        <watch expression="CutsceneManager.Instance.cutsceneImages" language="C#" />
       </configuration>
     </watches-manager>
   </component>

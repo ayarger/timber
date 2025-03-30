@@ -1,13 +1,15 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using Newtonsoft.Json;
 
 public partial class CutsceneEditor : Control
 {
-    [Export]private List<CutsceneImageResource> CutsceneImages = new List<CutsceneImageResource>();
+    public static CutsceneEditor Instance { get; private set; } 
     private const string ConfigPath = "res://config/intro_cutscene_config.json";
+    [Export] public List<CutsceneImageResource> CutsceneImages = new List<CutsceneImageResource>();
     [Export] private CutsceneManager cutsceneManager;
     private bool isVisible = false;
 
@@ -22,8 +24,18 @@ public partial class CutsceneEditor : Control
 
     public override void _Ready()
     { 
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            QueueFree();
+            return;
+        }
+        
         cutsceneManager = GetParent<CutsceneManager>();
-        GD.Print("Cutscene Manager is found:" + (cutsceneManager != null).ToString());
+        //GD.Print("Cutscene Manager is found:" + (cutsceneManager != null).ToString());
         sceneList = GetNode<ItemList>("ItemList");
         vBox = GetNode<VBoxContainer>("ScrollContainer/VBoxContainer");
         grid = GetNode<GridContainer>("ScrollContainer/GridContainer");
@@ -44,6 +56,7 @@ public partial class CutsceneEditor : Control
         {
             ToggleEditor();
         }
+        CutsceneImages = cutsceneManager.cutsceneImages;
     }
 
     private void LoadCutscenes()
@@ -67,9 +80,27 @@ public partial class CutsceneEditor : Control
     private void RefreshSceneList()
     {
         sceneList.Clear();
-        foreach (var slide in CutsceneImages)
+       
+        foreach (var slide in CutsceneManager.Instance.cutsceneImages)
         {
             sceneList.AddItem($"Scene {slide.Index}: {slide.ImagePath}");
+        }
+    }
+
+    public void UpdateList()
+    { 
+        //TODO
+        int index = 0;
+        grid = GetNode<GridContainer>("ScrollContainer/GridContainer");
+        GD.Print("cutsceneImages count:" + CutsceneManager.Instance.cutsceneImages.Count);
+        GD.Print( "grid childcount: " + grid.GetChildCount());
+        foreach (SlidePreview currSlide in grid.GetChildren())
+        {
+            if (currSlide.IsVisibleInTree())
+            {
+                currSlide.UpdatePreview(CutsceneManager.Instance.cutsceneImages[index]);
+                index++;
+            }
         }
     }
 
@@ -78,9 +109,8 @@ public partial class CutsceneEditor : Control
         string filePath = "res://temp_cutscenes/intro_cutscene_config.json";
         filePath = ProjectSettings.GlobalizePath(filePath);
         cutsceneManager.LoadCutsceneFromJsonS3(filePath);
-        CutsceneImages = cutsceneManager.cutsceneImages;
         GD.Print("Populating Cutscene List");
-        foreach (var image in CutsceneImages)
+        foreach (var image in cutsceneManager.cutsceneImages)
         {
             SlidePreview slidePreview = (SlidePreview)slidePreviewScene.Instance();
             GD.Print(slidePreview + "added"); 
@@ -94,7 +124,7 @@ public partial class CutsceneEditor : Control
 
     private void OnSceneSelected(int index)
     {
-        var selectedScene = CutsceneImages[index];
+        var selectedScene = cutsceneManager.cutsceneImages[index];
         imagePathInput.Text = selectedScene.ImagePath;
         indexInput.Value = selectedScene.Index;
         transitionDropdown.Text = selectedScene.TransitionStyle;
@@ -111,7 +141,7 @@ public partial class CutsceneEditor : Control
         GD.Print("Cutscene config saved!");
     }
 
-    private void AddCutscene()
+    public void AddCutscene()
     {
         var newSlide = new CutsceneImageResource()
         {
@@ -122,16 +152,17 @@ public partial class CutsceneEditor : Control
         };
         
        CutsceneImages.Add(newSlide);
-        RefreshSceneList();
+       RefreshSceneList();
     }
 
-    private void RemoveCutscene()
+    public void RemoveCutscene(SlidePreview currSlide)
     {
-        if (sceneList.GetSelectedItems().Length == 0) return;
-
-        int selectedIndex = sceneList.GetSelectedItems()[0];
-        CutsceneImages.RemoveAt(selectedIndex);
-        RefreshSceneList();
+        if (currSlide != null)
+        {
+            grid.RemoveChild(currSlide);
+        }
+        UpdateList();
+        //RefreshSceneList();
     }
     
     private int GetOptionButtonIndex(OptionButton optionButton, string value)

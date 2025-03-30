@@ -13,14 +13,15 @@ public partial class SlidePreview : Control
     [Export] public RichTextLabel popupOrderLbel;
     [Export] public CutsceneImageResource cutsceneImageResource;
     [Export] public Button saveButton;
-    [Export] public Button cancelButton;    
+    [Export] public Button cancelButton;
+  
     private Tween tween;
     
     private string[] transitionStyles = { "fade_up", "bounce", "instant" };
     private string[] displayStyles = { "standard", "shake_small", "shake_large", "sin_vertical", "vibrate" };
     
-    private CutsceneImageResource originalSceneData; // Stores the original scene data
-    private CutsceneImageResource tempSceneData; // Stores temporary changes
+    public CutsceneImageResource originalSceneData; // Stores the original scene data
+    public CutsceneImageResource tempSceneData; // Stores temporary changes
 
 
     public override void _Ready()
@@ -55,8 +56,6 @@ public partial class SlidePreview : Control
         // Connect signals for when user selects a new option
         transitionDropdown.Connect("item_selected", this, nameof(OnTransitionSelected));
         displayDropdown.Connect("item_selected", this, nameof(OnDisplaySelected));
-        
-      
     }
     
     private void PopulateDropdown(OptionButton optionButton, string[] options)
@@ -72,6 +71,7 @@ public partial class SlidePreview : Control
     {
         //imagePathInput.Text = sceneData.ImagePath;
         //orderInput.Value = sceneData.Index + 1; // index + 1 
+        cutsceneImageResource = sceneData;
         tempSceneData = GenerateTempCutsceneImageResource(sceneData); 
         originalSceneData = sceneData; // Store the original scene data
         
@@ -93,6 +93,16 @@ public partial class SlidePreview : Control
                 }
             }, this); 
      
+    }
+
+    public void UpdatePreview(CutsceneImageResource sceneData)
+    {
+        orderLabel.Text = (sceneData.Index + 1).ToString();
+        popupOrderLbel.Text = (sceneData.Index + 1).ToString();
+        transitionDropdown.Text =  sceneData.TransitionStyle;
+        displayDropdown.Text =sceneData.DisplayStyle;
+        previewImage.Texture = sceneData.Image;
+        popupPreview.Texture = sceneData.Image;
     }
     
     private CutsceneImageResource GenerateTempCutsceneImageResource(CutsceneImageResource source)
@@ -143,20 +153,17 @@ public partial class SlidePreview : Control
             return;
         }
         cutsceneImageResource = tempSceneData;
-        originalSceneData = tempSceneData;
-        
         var cutsceneList = CutsceneManager.Instance.cutsceneImages;
-        for (int i = 0; i < cutsceneList.Count; i++)
+        cutsceneList[tempSceneData.Index] = tempSceneData;
+        originalSceneData = tempSceneData;
+        /*for (int i = 0; i < cutsceneList.Count; i++)
         {
-            if (cutsceneList[i].Index == originalSceneData.Index)
+            if (cutsceneList[i].Index == tempSceneData.Index)
             {
                 cutsceneList[i] = originalSceneData;
                 break;
             }
-        }
-        
-        GD.Print("tempTransitionStyle:" + tempSceneData.TransitionStyle);
-        GD.Print ("tempDisplayStyle: " + tempSceneData.DisplayStyle);
+        }*/
        
         string filePath = "res://temp_cutscenes/intro_cutscene_config_test.json";
         filePath = ProjectSettings.GlobalizePath(filePath);
@@ -176,6 +183,19 @@ public partial class SlidePreview : Control
         SetPreview(originalSceneData);
 
         GD.Print("Changes reverted!");
+    }
+
+    public void RemoveCurrSlide(int index)
+    {
+        var cutsceneList = CutsceneManager.Instance.cutsceneImages;
+        for (int i = 0; i < cutsceneList.Count; i++)
+        {
+            if (cutsceneList[i].Index == originalSceneData.Index)
+            {
+                cutsceneList[i] = originalSceneData;
+                break;
+            }
+        }
     }
 
     

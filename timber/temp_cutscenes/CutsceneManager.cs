@@ -377,6 +377,8 @@ public class CutsceneManager : CanvasLayer
     {
         EventBus.Unsubscribe(cutsceneStatEvent_sub);
         base._ExitTree();
+        if (Instance == this)
+            Instance = null;
     }
 }
 

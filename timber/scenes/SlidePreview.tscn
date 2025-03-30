@@ -1,8 +1,10 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://temp_cutscenes/intro_images/1.png" type="Texture" id=1]
 [ext_resource path="res://temp_cutscenes/SlidePreview.cs" type="Script" id=2]
 [ext_resource path="res://scenes/PreviewRect.cs" type="Script" id=3]
+[ext_resource path="res://temp_cutscenes/DeleteButton.cs" type="Script" id=4]
+[ext_resource path="res://temp_cutscenes/delete .png" type="Texture" id=6]
 
 [node name="SlidePreview" type="Control"]
 anchor_right = 1.0
@@ -24,9 +26,23 @@ texture = ExtResource( 1 )
 expand = true
 stretch_mode = 6
 script = ExtResource( 3 )
+DefaultColor = Color( 1, 1, 1, 1 )
+HoverColor = Color( 0.501961, 0.501961, 0.501961, 1 )
+PressedColor = Color( 0.901961, 0.901961, 0.901961, 1 )
+
+[node name="DeleteButton" type="TextureButton" parent="TextureRect"]
+self_modulate = Color( 1, 0.262745, 0.262745, 1 )
+margin_left = 436.667
+margin_top = 20.0
+margin_right = 448.667
+margin_bottom = 32.0
+rect_scale = Vector2( 7.26664, 7.26664 )
+texture_normal = ExtResource( 6 )
+expand = true
+stretch_mode = 4
+script = ExtResource( 4 )
 
 [node name="WindowDialog" type="WindowDialog" parent="."]
-visible = true
 margin_left = 432.0
 margin_top = 216.0
 margin_right = 1016.0
@@ -95,7 +111,7 @@ text = "Transition Style"
 
 [node name="TransitionDropdown" type="OptionButton" parent="WindowDialog/TransitionVBox"]
 margin_top = 24.0
-margin_right = 100.0
+margin_right = 127.0
 margin_bottom = 44.0
 text = "instant"
 
@@ -116,7 +132,7 @@ text = "Display Style"
 
 [node name="DisplayDropdown" type="OptionButton" parent="WindowDialog/DisplayVBox"]
 margin_top = 24.0
-margin_right = 100.0
+margin_right = 120.0
 margin_bottom = 44.0
 text = "standard"
 

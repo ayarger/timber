@@ -8,6 +8,10 @@ public class CutscenePlayer : CanvasLayer
     private TextureRect imageDisplay;
     private Tween transitionTween;
     private bool isPlaying = false;
+    private float oscillationTimer = 0; // For sin_vertical
+    private float vibrateTimer = 0; // For vibrate
+    private Vector2 originalPosition;
+
 
     private List<CutsceneImageResource> cutsceneImages;
 
@@ -103,6 +107,59 @@ public class CutscenePlayer : CanvasLayer
     private void InstantTransition()
     {
         // No animation, just show the new image
+    }
+    
+    private void ApplyDisplayStyle(string displayStyle)
+    {
+        switch (displayStyle)
+        {
+            case "standard":
+                imageDisplay.RectPosition = Vector2.Zero;
+                break;
+            case "shake_small":
+                ShakeEffect(5);
+                break;
+            case "shake_large":
+                ShakeEffect(20);
+                break;
+            case "sin_vertical":
+                oscillationTimer = 0;
+                break;
+            case "vibrate":
+                vibrateTimer = 0;
+                originalPosition = imageDisplay.RectPosition;
+                break;
+            default:
+                GD.PrintErr($"Unknown display style: {displayStyle}");
+                break;
+        }
+    }
+    
+    private async void ShakeEffect(int intensity)
+    {
+        Vector2 originalPosition = imageDisplay.RectPosition;
+        for (int i = 0; i < 10; i++)
+        {
+            imageDisplay.RectPosition = originalPosition + new Vector2(
+                GD.Randf() * intensity - intensity / 2,
+                GD.Randf() * intensity - intensity / 2
+            );
+            await ToSignal(GetTree().CreateTimer(0.05f), "timeout");
+        }
+        imageDisplay.RectPosition = originalPosition;
+    }
+    
+    private void ApplyVibrateEffect(float delta)
+    {
+        vibrateTimer += delta;
+        if (vibrateTimer >= 0.02f) 
+        {
+            vibrateTimer = 0;
+            imageDisplay.RectPosition = originalPosition + new Vector2(
+                GD.Randf() * 10 - 5, 
+                GD.Randf() * 10 - 5 
+            );
+        }
     }
 
     private void EndCutscene()
