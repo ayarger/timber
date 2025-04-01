@@ -351,8 +351,7 @@ public partial class CutsceneEditor : Control
         {
             list[i].Index = i;
         }
-
-        // Move AddSlideButton to the end
+        UpdateList();
         grid.MoveChild(addSlideButton, grid.GetChildCount() - 1);
 
         // Save changes
@@ -360,7 +359,7 @@ public partial class CutsceneEditor : Control
         filePath = ProjectSettings.GlobalizePath(filePath);
         CutsceneManager.Instance.ConvertCutsceneToJson(filePath);
 
-        UpdateList();
+   
         GD.Print("Slide reordered and saved.");
     }
 

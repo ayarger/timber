@@ -93,7 +93,7 @@ public class PreviewRect : TextureRect
         }*/
     }
     
-    //drag and drop to reorder
+    //drag and drop
     public override bool CanDropData(Vector2 position, object data)
     {
         return data is SlidePreview;

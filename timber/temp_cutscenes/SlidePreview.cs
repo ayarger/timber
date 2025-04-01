@@ -124,8 +124,7 @@ public partial class SlidePreview : Control
             Image = source.Image
         };
     }
-
-
+    
     private int GetOptionIndex(OptionButton optionButton, string value)
     {
         for (int i = 0; i < optionButton.GetItemCount(); i++)
@@ -164,15 +163,6 @@ public partial class SlidePreview : Control
         var cutsceneList = CutsceneManager.Instance.cutsceneImages;
         cutsceneList[tempSceneData.Index] = tempSceneData;
         originalSceneData = tempSceneData;
-        /*for (int i = 0; i < cutsceneList.Count; i++)
-        {
-            if (cutsceneList[i].Index == tempSceneData.Index)
-            {
-                cutsceneList[i] = originalSceneData;
-                break;
-            }
-        }*/
-       
         string filePath = "res://temp_cutscenes/intro_cutscene_config_test.json";
         filePath = ProjectSettings.GlobalizePath(filePath);
         CutsceneManager.Instance.ConvertCutsceneToJson(filePath);
