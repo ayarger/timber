@@ -79,7 +79,7 @@ public class PreviewRect : TextureRect
     
     public override void _GuiInput(InputEvent @event)
     {
-        if (@event is InputEventMouseButton mouseEvent && mouseEvent.Pressed && mouseEvent.ButtonIndex == (int)ButtonList.Left)
+       /* if (@event is InputEventMouseButton mouseEvent && mouseEvent.Pressed && mouseEvent.ButtonIndex == (int)ButtonList.Left)
         {
             tween.InterpolateProperty(this, "self_modulate", HoverColor, PressedColor, 0.2f, Tween.TransitionType.Linear, Tween.EaseType.InOut);
             if (popup != null)
@@ -90,6 +90,27 @@ public class PreviewRect : TextureRect
             {
                 GD.PrintErr("PopupEditor not found! Make sure it's added as a child.");
             }
+        }*/
+    }
+    
+    //drag and drop to reorder
+    public override bool CanDropData(Vector2 position, object data)
+    {
+        return data is SlidePreview;
+    }
+
+    public override object GetDragData(Vector2 position)
+    {
+        var dragPreview = currSlide.Duplicate() as Control;
+        SetDragPreview(dragPreview);
+        return currSlide;
+    }
+
+    public override void DropData(Vector2 position, object data)
+    {
+        if (data is SlidePreview draggedSlide && draggedSlide != currSlide)
+        {
+            CutsceneEditor.Instance.OnSlideDropped(draggedSlide, currSlide);
         }
     }
 }

@@ -294,6 +294,8 @@ public partial class SlidePreview : Control
         tween.Start();
     }
 
-    
-    
+    public override bool CanDropData(Vector2 position, object data)
+    {
+        return data is SlidePreview;
+    }
 }

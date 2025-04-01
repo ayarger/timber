@@ -330,6 +330,41 @@ public partial class CutsceneEditor : Control
         return 0; 
     }
     
+    public void OnSlideDropped(SlidePreview fromSlide, SlidePreview toSlide)
+    {
+        if (fromSlide == toSlide) return;
+
+        int fromIndex = grid.GetChildren().IndexOf(fromSlide);
+        int toIndex = grid.GetChildren().IndexOf(toSlide);
+
+        grid.RemoveChild(fromSlide);
+        grid.AddChild(fromSlide);
+        grid.MoveChild(fromSlide, toIndex);
+
+        // Reorder in the cutscene list
+        var list = CutsceneManager.Instance.cutsceneImages;
+        list.Remove(fromSlide.cutsceneImageResource);
+        list.Insert(toIndex, fromSlide.cutsceneImageResource);
+
+        // Update indices
+        for (int i = 0; i < list.Count; i++)
+        {
+            list[i].Index = i;
+        }
+
+        // Move AddSlideButton to the end
+        grid.MoveChild(addSlideButton, grid.GetChildCount() - 1);
+
+        // Save changes
+        string filePath = "res://temp_cutscenes/intro_cutscene_config_test.json";
+        filePath = ProjectSettings.GlobalizePath(filePath);
+        CutsceneManager.Instance.ConvertCutsceneToJson(filePath);
+
+        UpdateList();
+        GD.Print("Slide reordered and saved.");
+    }
+
+    
     private void ToggleEditor()
     {
         isVisible = !isVisible;
