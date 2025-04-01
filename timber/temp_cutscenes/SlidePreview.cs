@@ -5,7 +5,6 @@ public partial class SlidePreview : Control
 {
     [Export] public TextureRect previewImage;
     [Export] public LineEdit imagePathInput;
-    [Export] public SpinBox orderInput;
     [Export] public OptionButton transitionDropdown;
     [Export] public OptionButton displayDropdown;
     [Export] public RichTextLabel orderLabel;
@@ -69,8 +68,17 @@ public partial class SlidePreview : Control
 
     public void SetPreview(CutsceneImageResource sceneData)
     {
+        if (sceneData == null)
+        {
+            GD.PrintErr("SetPreview: sceneData is null!");
+            return;
+        }
+        if (previewImage == null)
+        {
+            GD.PrintErr("SetPreview: previewImage is null!");
+            return;
+        }
         //imagePathInput.Text = sceneData.ImagePath;
-        //orderInput.Value = sceneData.Index + 1; // index + 1 
         cutsceneImageResource = sceneData;
         tempSceneData = GenerateTempCutsceneImageResource(sceneData); 
         originalSceneData = sceneData; // Store the original scene data

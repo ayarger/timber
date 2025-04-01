@@ -12,6 +12,10 @@ public class PreviewRect : TextureRect
     [Export]public Color DefaultColor = new Color(0.5f, 0.5f, 0.5f, 1);
     [Export]public Color HoverColor = new Color(1, 1, 1, 1);
     [Export]public Color PressedColor = new Color(1, 1, 1, 1);
+    
+    private Timer hoverDelayTimer;
+    private bool isHovered = false;
+
   
     
 
@@ -25,13 +29,18 @@ public class PreviewRect : TextureRect
         GD.Print("deleteButton: " + deleteButton);
         popup = GetParent().GetNode<WindowDialog>("WindowDialog");
         AddChild(tween);
-        
-        // Delete button signals
-        deleteButton.Connect("pressed", this, nameof(OnDeletePressed));
 
         // Connect hover signals
         Connect("mouse_entered", this, nameof(OnMouseEnter));
         Connect("mouse_exited", this, nameof(OnMouseExit));
+        
+        // Set hover delay timer
+        hoverDelayTimer = new Timer();
+        hoverDelayTimer.WaitTime = 0.05f;
+        hoverDelayTimer.OneShot = true;
+        hoverDelayTimer.Connect("timeout", this, nameof(EvaluateHoverEnd));
+        AddChild(hoverDelayTimer);
+
         
         Modulate = DefaultColor;
         deleteButton.Visible = false;
@@ -39,16 +48,33 @@ public class PreviewRect : TextureRect
 
     private void OnMouseEnter()
     {
-        tween.InterpolateProperty(this, "self_modulate", DefaultColor, HoverColor, 0.2f, Tween.TransitionType.Linear, Tween.EaseType.InOut);
-        tween.Start();
-        deleteButton.Visible = true;
+        isHovered = true;
+        ApplyHover(true);
+        hoverDelayTimer.Stop();
     }
 
     private void OnMouseExit()
     {
-        tween.InterpolateProperty(this, "self_modulate", HoverColor, DefaultColor, 0.2f, Tween.TransitionType.Linear, Tween.EaseType.InOut);
+        isHovered = false;
+        hoverDelayTimer.Start(); // delay to avoid premature unhover
+    }
+    
+    private void EvaluateHoverEnd()
+    {
+        if (!isHovered && !deleteButton.IsHovered())
+        {
+            ApplyHover(false);
+        }
+    }
+    
+    private void ApplyHover(bool hover)
+    {
+        Color from = hover ? DefaultColor : HoverColor;
+        Color to = hover ? HoverColor : DefaultColor;
+        tween.InterpolateProperty(this, "self_modulate", from, to, 0.2f, Tween.TransitionType.Linear, Tween.EaseType.InOut);
         tween.Start();
-        deleteButton.Visible = false;
+
+        deleteButton.Visible = hover;
     }
     
     public override void _GuiInput(InputEvent @event)
@@ -66,30 +92,4 @@ public class PreviewRect : TextureRect
             }
         }
     }
-    
-    private void OnDeletePressed()
-    {
-        if (currSlide.originalSceneData == null)
-        {
-            GD.PrintErr("Cannot delete: originalSceneData is null.");
-            return;
-        }
-
-        var cutsceneList = CutsceneManager.Instance.cutsceneImages;
-
-        // Remove from the list
-        cutsceneList.Remove(currSlide.tempSceneData);
-
-        // Optionally, reindex the remaining slides
-        for (int i = 0; i < cutsceneList.Count; i++)
-        {
-            cutsceneList[i].Index = i;
-        }
-        // Remove from UI
-        QueueFree();
-
-        GD.Print("Slide removed and JSON updated.");
-    }
-
-
 }

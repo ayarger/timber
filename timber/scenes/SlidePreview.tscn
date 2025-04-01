@@ -2,7 +2,7 @@
 
 [ext_resource path="res://temp_cutscenes/intro_images/1.png" type="Texture" id=1]
 [ext_resource path="res://temp_cutscenes/SlidePreview.cs" type="Script" id=2]
-[ext_resource path="res://scenes/PreviewRect.cs" type="Script" id=3]
+[ext_resource path="res://temp_cutscenes/PreviewRect.cs" type="Script" id=3]
 [ext_resource path="res://temp_cutscenes/DeleteButton.cs" type="Script" id=4]
 [ext_resource path="res://temp_cutscenes/delete .png" type="Texture" id=6]
 
@@ -32,10 +32,10 @@ PressedColor = Color( 0.901961, 0.901961, 0.901961, 1 )
 
 [node name="DeleteButton" type="TextureButton" parent="TextureRect"]
 self_modulate = Color( 1, 0.262745, 0.262745, 1 )
-margin_left = 436.667
-margin_top = 20.0
-margin_right = 448.667
-margin_bottom = 32.0
+margin_left = 410.0
+margin_top = 30.0
+margin_right = 425.0
+margin_bottom = 45.0
 rect_scale = Vector2( 7.26664, 7.26664 )
 texture_normal = ExtResource( 6 )
 expand = true
