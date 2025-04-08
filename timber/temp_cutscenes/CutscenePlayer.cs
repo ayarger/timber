@@ -1,9 +1,14 @@
 using Godot;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 public class CutscenePlayer : CanvasLayer
 {
+    public static CutscenePlayer Instance { get; private set; }
     [Export] private float transitionDuration = 1.0f;
+    [Export] public bool playAutomatically = false;
+    private float autoPlayTimer = 0f;
+    [Export] private float autoAdvanceDelay = 1f; // seconds per slide
     private int currentImageIndex = 0;
     private TextureRect imageDisplay;
     private Tween transitionTween;
@@ -13,17 +18,76 @@ public class CutscenePlayer : CanvasLayer
     private Vector2 originalPosition;
 
 
-    private List<CutsceneImageResource> cutsceneImages;
+    [Export]private List<CutsceneImageResource> cutsceneImages;
 
     public override void _Ready()
     {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            QueueFree(); // Prevent multiple instances
+            return;
+        }
         imageDisplay = GetNode<TextureRect>("TextureRect");
         transitionTween = new Tween();
         AddChild(transitionTween);
 
-        if (NewCutsceneManager.Instance != null)
+        if (CutsceneManager.Instance != null)
         {
-            cutsceneImages = NewCutsceneManager.Instance.CutsceneImages;
+            cutsceneImages = CutsceneManager.Instance.cutsceneImages;
+        }
+        // Connecting with Editor for Cutscene Preview
+       ConnectToEditor();
+      this.Hide();
+    }
+
+    private void ConnectToEditor()
+    {
+        var editor = GetParent<CutsceneEditor>();
+        if (editor != null && !editor.IsConnected("CutsceneUpdated", this, nameof(OnCutsceneUpdated)))
+        {
+            GD.Print("Connecting to CutsceneEditor...");
+            editor.Connect("CutsceneUpdated", this, nameof(OnCutsceneUpdated));
+        }
+        else if (editor == null)
+        {
+            GD.PrintErr("CutsceneEditor.Instance is still null.");
+        }
+    }
+
+
+    
+    public override void _Process(float delta)
+    {
+        this.Visible = CutsceneEditor.Instance.Visible;
+        if (!isPlaying) return;
+
+        if (playAutomatically)
+        {
+            autoPlayTimer += delta;
+
+            if (autoPlayTimer >= autoAdvanceDelay)
+            {
+                autoPlayTimer = 0f;
+                GoToNextImage();
+            }
+        }
+        if (isPlaying && currentImageIndex < cutsceneImages.Count)
+        {
+            var displayStyle = cutsceneImages[currentImageIndex].DisplayStyle;
+
+            // Apply styles that require per-frame updates
+            if (displayStyle == "sin_vertical")
+            {
+                ApplySinVerticalEffect(delta);
+            }
+            else if (displayStyle == "vibrate")
+            {
+                ApplyVibrateEffect(delta);
+            }
         }
     }
 
@@ -34,6 +98,7 @@ public class CutscenePlayer : CanvasLayer
             GD.PrintErr("CutscenePlayer: No images to play.");
             return;
         }
+        GD.Print("starting cutscene...");
 
         currentImageIndex = 0;
         isPlaying = true;
@@ -43,7 +108,7 @@ public class CutscenePlayer : CanvasLayer
 
     public override void _Input(InputEvent @event)
     {
-        if (isPlaying && @event is InputEventMouseButton mouseEvent && mouseEvent.Pressed)
+        if (!playAutomatically && isPlaying && @event is InputEventMouseButton mouseEvent && mouseEvent.Pressed)
         {
             GoToNextImage();
         }
@@ -64,10 +129,10 @@ public class CutscenePlayer : CanvasLayer
     private void LoadImage(CutsceneImageResource cutsceneImage)
     {
         imageDisplay.Texture = cutsceneImage.Image;
-        ApplyTransition(cutsceneImage.TransitionStyle);
+        ApplyTransition(cutsceneImage.TransitionStyle,cutsceneImage.DisplayStyle);
     }
 
-    private void ApplyTransition(string transitionStyle)
+    private void ApplyTransition(string transitionStyle,string displayStyle)
     {
         switch (transitionStyle)
         {
@@ -85,6 +150,7 @@ public class CutscenePlayer : CanvasLayer
                 InstantTransition();
                 break;
         }
+        ApplyDisplayStyle(displayStyle);
     }
 
     private void FadeUpTransition()
@@ -97,9 +163,9 @@ public class CutscenePlayer : CanvasLayer
 
     private void BounceTransition()
     {
-        imageDisplay.RectScale = new Vector2(0.8f, 0.8f);
+        imageDisplay.RectScale = new Vector2(0.8f*0.3f, 0.8f *0.3f);
         transitionTween.InterpolateProperty(
-            imageDisplay, "rect_scale", new Vector2(0.8f, 0.8f), new Vector2(1, 1), transitionDuration,
+            imageDisplay, "rect_scale", new Vector2(0.8f * 0.3f, 0.8f * 0.3f), new Vector2(1*0.3f, 1*0.3f), transitionDuration,
             Tween.TransitionType.Bounce, Tween.EaseType.Out);
         transitionTween.Start();
     }
@@ -114,7 +180,7 @@ public class CutscenePlayer : CanvasLayer
         switch (displayStyle)
         {
             case "standard":
-                imageDisplay.RectPosition = Vector2.Zero;
+                //imageDisplay.RectPosition = Vector2.Zero;
                 break;
             case "shake_small":
                 ShakeEffect(5);
@@ -161,11 +227,50 @@ public class CutscenePlayer : CanvasLayer
             );
         }
     }
+    private void ApplySinVerticalEffect(float delta)
+    {
+        oscillationTimer += delta;
+        float oscillation = Mathf.Sin(oscillationTimer * 5) * 20; 
+        imageDisplay.RectPosition = new Vector2(imageDisplay.RectPosition.x, oscillation);
+    }
+    
+    private void OnCutsceneUpdated()
+    {
+        GD.Print("Cutscene updated — refreshing preview.");
+        playAutomatically = true;
+        this.Show();
+        if (CutsceneManager.Instance != null)
+        {
+            /*string filePath = "res://temp_cutscenes/intro_cutscene_config_test.json";
+            filePath = ProjectSettings.GlobalizePath(filePath);
+            CutsceneManager.Instance.LoadCutseneFromJson(filePath);*/
+            cutsceneImages = CutsceneManager.Instance.cutsceneImages;
+            StartCutscene(); // replays from the start
+        }
+    }
+
+    public void UpdateCutscenePreview()
+    {
+        playAutomatically = true;
+        this.Show();
+        if (CutsceneManager.Instance != null)
+        {
+            cutsceneImages = CutsceneManager.Instance.cutsceneImages;
+            StartCutscene(); // replays from the start
+        }
+    }
 
     private void EndCutscene()
     {
         GD.Print("Cutscene Finished");
         isPlaying = false;
         TransitionSystem.RequestTransition("res://Main.tscn");
+    }
+    public override void _ExitTree()
+    {
+        if (Instance == this)
+        {
+            Instance = null;
+        }
     }
 }

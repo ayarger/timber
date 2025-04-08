@@ -15,7 +15,8 @@ public class PreviewRect : TextureRect
     
     private Timer hoverDelayTimer;
     private bool isHovered = false;
-
+    private Vector2 _mouseDownPosition;
+    private float _clickThreshold = 10f; // pixels
   
     
 
@@ -24,9 +25,9 @@ public class PreviewRect : TextureRect
         // Get the Tween node (Make sure it's a child of this node)
         tween = new Tween();
         currSlide = (SlidePreview)GetParent();
-        GD.Print("currSlide: " + currSlide);
+        //GD.Print("currSlide: " + currSlide);
         deleteButton = GetNode<TextureButton>("DeleteButton");
-        GD.Print("deleteButton: " + deleteButton);
+        //GD.Print("deleteButton: " + deleteButton);
         popup = GetParent().GetNode<WindowDialog>("WindowDialog");
         AddChild(tween);
 
@@ -77,9 +78,9 @@ public class PreviewRect : TextureRect
         deleteButton.Visible = hover;
     }
     
-    public override void _GuiInput(InputEvent @event)
+    /*public override void _GuiInput(InputEvent @event)
     {
-       /* if (@event is InputEventMouseButton mouseEvent && mouseEvent.Pressed && mouseEvent.ButtonIndex == (int)ButtonList.Left)
+        if (@event is InputEventMouseButton mouseEvent && mouseEvent.Pressed && mouseEvent.ButtonIndex == (int)ButtonList.Left)
         {
             tween.InterpolateProperty(this, "self_modulate", HoverColor, PressedColor, 0.2f, Tween.TransitionType.Linear, Tween.EaseType.InOut);
             if (popup != null)
@@ -90,7 +91,39 @@ public class PreviewRect : TextureRect
             {
                 GD.PrintErr("PopupEditor not found! Make sure it's added as a child.");
             }
-        }*/
+        }
+    }*/
+    
+    public override void _GuiInput(InputEvent @event)
+    {
+        if (@event is InputEventMouseButton mouseEvent)
+        {
+            if (mouseEvent.ButtonIndex == (int)ButtonList.Left)
+            {
+                if (mouseEvent.Pressed)
+                {
+                    _mouseDownPosition = mouseEvent.Position;
+                }
+                else // released
+                {
+                    float dist = _mouseDownPosition.DistanceTo(mouseEvent.Position);
+                    if (dist < _clickThreshold)
+                    {
+                        // Detected as a click
+                        tween.InterpolateProperty(this, "self_modulate", HoverColor, PressedColor, 0.2f, Tween.TransitionType.Linear, Tween.EaseType.InOut);
+
+                        if (popup != null)
+                        {
+                            popup.PopupCentered();
+                        }
+                        else
+                        {
+                            GD.PrintErr("PopupEditor not found! Make sure it's added as a child.");
+                        }
+                    }
+                }
+            }
+        }
     }
     
     //drag and drop

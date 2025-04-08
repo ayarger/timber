@@ -1,25 +1,25 @@
 [
   {
     "ImagePath": "cutscenes/1.png",
-    "TransitionStyle": "fade_up",
-    "DisplayStyle": "standard",
+    "TransitionStyle": "bounce",
+    "DisplayStyle": "shake_small",
     "Order": 0
   },
   {
-    "ImagePath": "cutscenes/2.png",
+    "ImagePath": "cutscenes/13.png",
     "TransitionStyle": "fade_up",
     "DisplayStyle": "standard",
     "Order": 1
   },
   {
-    "ImagePath": "cutscenes/5.png",
-    "TransitionStyle": "instant",
+    "ImagePath": "cutscenes/3.png",
+    "TransitionStyle": "fade_up",
     "DisplayStyle": "standard",
     "Order": 2
   },
   {
-    "ImagePath": "cutscenes/5.png",
-    "TransitionStyle": "instant",
+    "ImagePath": "cutscenes/4.png",
+    "TransitionStyle": "bounce",
     "DisplayStyle": "standard",
     "Order": 3
   },
@@ -60,33 +60,51 @@
     "Order": 9
   },
   {
-    "ImagePath": "cutscenes/2.png",
-    "TransitionStyle": "fade_up",
+    "ImagePath": "cutscenes/12.png",
+    "TransitionStyle": "bounce",
     "DisplayStyle": "standard",
     "Order": 10
   },
   {
-    "ImagePath": "cutscenes/1.png",
+    "ImagePath": "cutscenes/2.png",
     "TransitionStyle": "fade_up",
     "DisplayStyle": "standard",
     "Order": 11
   },
   {
-    "ImagePath": "cutscenes/12.png",
-    "TransitionStyle": "bounce",
+    "ImagePath": "cutscenes/15.png",
+    "TransitionStyle": "instant",
     "DisplayStyle": "standard",
     "Order": 12
   },
   {
-    "ImagePath": "cutscenes/13.png",
-    "TransitionStyle": "fade_up",
+    "ImagePath": "cutscenes/5.png",
+    "TransitionStyle": "instant",
     "DisplayStyle": "standard",
     "Order": 13
+  },
+  {
+    "ImagePath": "cutscenes/16.png",
+    "TransitionStyle": "bounce",
+    "DisplayStyle": "standard",
+    "Order": 14
   },
   {
     "ImagePath": "cutscenes/17.png",
     "TransitionStyle": "instant",
     "DisplayStyle": "standard",
-    "Order": 14
+    "Order": 15
+  },
+  {
+    "ImagePath": "cutscenes/18.png",
+    "TransitionStyle": "bounce",
+    "DisplayStyle": "standard",
+    "Order": 16
+  },
+  {
+    "ImagePath": "cutscenes/19.png",
+    "TransitionStyle": "instant",
+    "DisplayStyle": "standard",
+    "Order": 17
   }
 ]

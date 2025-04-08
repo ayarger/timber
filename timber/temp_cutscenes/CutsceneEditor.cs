@@ -8,6 +8,7 @@ public partial class CutsceneEditor : Control
     private const string ConfigPath = "res://config/intro_cutscene_config.json";
     [Export] public List<CutsceneImageResource> CutsceneImages = new List<CutsceneImageResource>();
     [Export] private CutsceneManager cutsceneManager;
+    [Signal] public delegate void CutsceneUpdated();
     private bool isVisible;
 
     [Export]private ItemList sceneList;
@@ -77,7 +78,7 @@ public partial class CutsceneEditor : Control
     private void LoadCutscenes()
     {
         //TODO read from config
-        RefreshSceneList();
+       RefreshList();
     }
 
     private void SetupUI()
@@ -92,18 +93,31 @@ public partial class CutsceneEditor : Control
         sceneList.Connect("item_selected", this, nameof(OnSceneSelected));*/
     }
 
-    private void RefreshSceneList()
+    private void RefreshList()
     {
-        sceneList.Clear();
-       
-        foreach (var slide in CutsceneManager.Instance.cutsceneImages)
+        EmitSignal(nameof(CutsceneUpdated));
+        foreach (Node child in grid.GetChildren())
         {
-            sceneList.AddItem($"Scene {slide.Index}: {slide.ImagePath}");
+            if (child is SlidePreview) // or use `is SlidePreview`
+            {
+                child.QueueFree();
+            }
         }
+
+        foreach (var image in CutsceneManager.Instance.cutsceneImages)
+        {
+            SlidePreview slidePreview = (SlidePreview)slidePreviewScene.Instance();
+            GD.Print(slidePreview + "added"); 
+            grid.AddChild(slidePreview);
+            slidePreview.cutsceneImageResource = image;
+            slidePreview.CallDeferred(nameof(SlidePreview.SetPreview), image);
+        }
+        grid.MoveChild(addSlideButton.GetParent(), grid.GetChildCount()-1);
     }
 
     public void UpdateList()
     { 
+        EmitSignal(nameof(CutsceneUpdated));
         //TODO
         int index = 0;
         grid = GetNode<GridContainer>("ScrollContainer/GridContainer");
@@ -113,7 +127,7 @@ public partial class CutsceneEditor : Control
 
         for (int i = 0; i < children.Count - 1; i++)
         {
-            if (children[i] is SlidePreview preview && preview.IsVisibleInTree())
+            if (children[i] is SlidePreview preview)
             {
                 preview.UpdatePreview(CutsceneManager.Instance.cutsceneImages[index]);
                 index++;
@@ -121,8 +135,9 @@ public partial class CutsceneEditor : Control
             }
         }
         grid.MoveChild(addSlideButton.GetParent(), grid.GetChildCount()-1);
+      
     }
-
+    
     private void PopulateList()
     {
         string filePath = "res://temp_cutscenes/intro_cutscene_config.json";
@@ -163,6 +178,7 @@ public partial class CutsceneEditor : Control
     
     public void AddSlideFromPath(string imagePath)
     {
+        EmitSignal(nameof(CutsceneUpdated));
         var newSlide = new CutsceneImageResource
         {
             Index = CutsceneManager.Instance.cutsceneImages.Count,
@@ -184,76 +200,12 @@ public partial class CutsceneEditor : Control
         filePath = ProjectSettings.GlobalizePath(filePath);
         CutsceneManager.Instance.ConvertCutsceneToJson(filePath);
     }
-
-
-    public void AddSlide()
-    {
-        //TODO: cutsceneImage string
-        var newSlide = new CutsceneImageResource
-        {
-            Index = CutsceneManager.Instance.cutsceneImages.Count,
-            ImagePath = "cutscenes/new.png",
-            TransitionStyle = "instant",
-            DisplayStyle = "standard"
-        };
-
-        CutsceneManager.Instance.cutsceneImages.Add(newSlide);
-
-        SlidePreview slidePreview = (SlidePreview)slidePreviewScene.Instance();
-        slidePreview.cutsceneImageResource = newSlide;
-        slidePreview.SetPreview(newSlide);
-        grid.AddChild(slidePreview);
-
-        UpdateList();
-
-        // Save to JSON
-        string filePath = "res://temp_cutscenes/intro_cutscene_config_test.json";
-        filePath = ProjectSettings.GlobalizePath(filePath);
-        CutsceneManager.Instance.ConvertCutsceneToJson(filePath);
-
-        GD.Print("New slide added.");
-    }
     
     private void OnAddSlidePressed()
     {
         chooseImageButton.Show();
         uploadImageButton.Show();
     }
-
-    private void OnImageSelected(string path)
-    {
-        GD.Print("Image selected: " + path);
-
-        var newSlide = new CutsceneImageResource
-        {
-            Index = CutsceneManager.Instance.cutsceneImages.Count,
-            ImagePath = ProjectSettings.LocalizePath(path),
-            TransitionStyle = "fade_up",
-            DisplayStyle = "standard"
-        };
-
-        CutsceneManager.Instance.cutsceneImages.Add(newSlide);
-
-        SlidePreview slidePreview = (SlidePreview)slidePreviewScene.Instance();
-        slidePreview.cutsceneImageResource = newSlide;
-        slidePreview.SetPreview(newSlide);
-
-        grid = GetNode<GridContainer>("ScrollContainer/GridContainer");
-
-        // Insert before the "Add Slide" button
-        grid.AddChild(slidePreview);
-        grid.MoveChild(addSlideButton, grid.GetChildCount() - 1);
-
-        UpdateList();
-
-        // Save to JSON
-        string filePath = "res://temp_cutscenes/intro_cutscene_config_test.json";
-        filePath = ProjectSettings.GlobalizePath(filePath);
-        CutsceneManager.Instance.ConvertCutsceneToJson(filePath);
-
-        GD.Print("New slide added with selected image.");
-    }
-    
     private void OnDeleteConfirmed()
     {
         deleteConfirmed = true;
@@ -336,14 +288,29 @@ public partial class CutsceneEditor : Control
 
         int fromIndex = grid.GetChildren().IndexOf(fromSlide);
         int toIndex = grid.GetChildren().IndexOf(toSlide);
+        if (fromSlide != null)
+        {
+            grid.RemoveChild(fromSlide);
+            grid.AddChild(fromSlide);
+            grid.MoveChild(fromSlide, toIndex);
+        }
+        else
+        {
+            GD.PrintErr("CutsceneEditor: No valid slide selected.");
+        }
 
-        grid.RemoveChild(fromSlide);
-        grid.AddChild(fromSlide);
-        grid.MoveChild(fromSlide, toIndex);
+        GD.Print("curr grid count after drag and drop: " + grid.GetChildren().Count);
 
         // Reorder in the cutscene list
         var list = CutsceneManager.Instance.cutsceneImages;
-        list.Remove(fromSlide.cutsceneImageResource);
+        // Removing by comparing image path
+        int removedCount = list.RemoveAll(c => c.ImagePath == fromSlide.cutsceneImageResource.ImagePath);
+        if (removedCount == 0)
+        {
+            GD.PrintErr("CutsceneEditor: No matching resource removed.");
+            return;
+        }
+        //RemoveSlidePreview(fromSlide);
         list.Insert(toIndex, fromSlide.cutsceneImageResource);
 
         // Update indices
@@ -351,8 +318,8 @@ public partial class CutsceneEditor : Control
         {
             list[i].Index = i;
         }
+        RefreshList();
         UpdateList();
-        grid.MoveChild(addSlideButton, grid.GetChildCount() - 1);
 
         // Save changes
         string filePath = "res://temp_cutscenes/intro_cutscene_config_test.json";

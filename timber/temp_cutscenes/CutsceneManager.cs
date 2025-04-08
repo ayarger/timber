@@ -315,6 +315,7 @@ public class CutsceneManager : CanvasLayer
         }
         string json = System.IO.File.ReadAllText(filePath);
         List<CutsceneImageData> jsonData = JsonConvert.DeserializeObject<List<CutsceneImageData>>(json);
+        cutsceneImages.Clear();
         cutsceneImages = new List<CutsceneImageResource>();
         
         GD.Print("start loading");
@@ -322,13 +323,12 @@ public class CutsceneManager : CanvasLayer
         {
             CutsceneImageResource cutsceneImage = new CutsceneImageResource
             {
-                //TODO clean up the code -> use path instead of texture
+                
                 ImagePath = data.ImagePath,
                 TransitionStyle = data.TransitionStyle,
                 DisplayStyle = data.DisplayStyle,
                 Index = data.Order
             };
-            //load textures
             LoadCutSceneImage(data.ImagePath, texture =>
             {
                 cutsceneImage.Image = texture;

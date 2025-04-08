@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://temp_cutscenes/CutsceneEditor.cs" type="Script" id=1]
 [ext_resource path="res://temp_cutscenes/add_circle.png" type="Texture" id=2]
@@ -6,10 +6,10 @@
 [ext_resource path="res://temp_cutscenes/disabled_by_default.png" type="Texture" id=4]
 [ext_resource path="res://temp_cutscenes/add_slide .png" type="Texture" id=5]
 [ext_resource path="res://temp_cutscenes/ImagePicker.cs" type="Script" id=6]
+[ext_resource path="res://temp_cutscenes/CutscenePlayer.tscn" type="PackedScene" id=7]
 
 [node name="CutsceneEditor" type="Control"]
 pause_mode = 2
-visible = false
 show_behind_parent = true
 script = ExtResource( 1 )
 
@@ -167,3 +167,7 @@ margin_right = 1105.0
 margin_bottom = 476.0
 resizable = true
 dialog_text = "Are you sure you want to delete this slide?"
+
+[node name="CutscenePlayer" parent="." instance=ExtResource( 7 )]
+layer = 128
+cutsceneImages = [  ]

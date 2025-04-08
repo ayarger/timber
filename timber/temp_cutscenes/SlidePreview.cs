@@ -11,8 +11,10 @@ public partial class SlidePreview : Control
     [Export] public TextureRect popupPreview;
     [Export] public RichTextLabel popupOrderLbel;
     [Export] public CutsceneImageResource cutsceneImageResource;
+    [Export] public WindowDialog PopupDialog;
     [Export] public Button saveButton;
     [Export] public Button cancelButton;
+    [Signal] public delegate void CutsceneUpdated();
   
     private Tween tween;
     
@@ -30,6 +32,7 @@ public partial class SlidePreview : Control
         //imagePathInput = GetNode<LineEdit>("ImagePath");
         //orderInput = GetNode<SpinBox>("Order");
         orderLabel = GetNode<RichTextLabel>("OrderLabel");
+        PopupDialog = GetNode<WindowDialog>("WindowDialog");
         
         transitionDropdown = GetNode<OptionButton>("WindowDialog/TransitionVBox/TransitionDropdown");
         displayDropdown = GetNode<OptionButton>("WindowDialog/DisplayVBox/DisplayDropdown");
@@ -153,7 +156,6 @@ public partial class SlidePreview : Control
     
     public void SaveChanges()
     {
-        
         if (originalSceneData == null)
         {
             GD.PrintErr("No original scene data found!");
@@ -167,12 +169,15 @@ public partial class SlidePreview : Control
         filePath = ProjectSettings.GlobalizePath(filePath);
         CutsceneManager.Instance.ConvertCutsceneToJson(filePath);
         GD.Print("Changes saved!");
+        PopupDialog.Hide();
+        CutscenePlayer.Instance.UpdateCutscenePreview();
     }
     
     public void CancelChanges()
     {
         if (originalSceneData == null)
         {
+         
             GD.PrintErr("No original scene data found!");
             return;
         }
@@ -181,6 +186,8 @@ public partial class SlidePreview : Control
         SetPreview(originalSceneData);
 
         GD.Print("Changes reverted!");
+        PopupDialog.Hide();
+        CutscenePlayer.Instance.UpdateCutscenePreview();
     }
 
     public void RemoveCurrSlide(int index)

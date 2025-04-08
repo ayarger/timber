@@ -65,6 +65,12 @@ public class ArborResource : Node
         /* A node has been destroyed, so let's go and unregister all of its callbacks */
         Node node = (Node)destroyed_node;
         GD.Print("node destroyed : [" + node.Name + "]");
+        
+        if (!node_to_associated_callbacks.ContainsKey(node))
+        {
+            GD.Print("⚠️ No associated callbacks found for node: " + node.Name);
+            return;
+        }
 
         foreach(CallbackResourcePair callback_pair in node_to_associated_callbacks[node])
         {
