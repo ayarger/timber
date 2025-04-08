@@ -12,11 +12,12 @@ script = ExtResource( 2 )
 visible = true
 margin_left = 100.0
 margin_top = 100.0
-margin_right = 450.0
-margin_bottom = 400.0
+margin_right = 710.0
+margin_bottom = 500.0
 rect_min_size = Vector2( 100, 100 )
 size_flags_horizontal = 3
 size_flags_vertical = 3
+window_title = "Asset Picker"
 resizable = true
 script = ExtResource( 1 )
 
@@ -26,19 +27,19 @@ anchor_bottom = 1.0
 size_flags_horizontal = 3
 
 [node name="FilterDropdown" type="OptionButton" parent="AssetPickerPopup/VBoxContainer"]
-margin_right = 350.0
+margin_right = 610.0
 margin_bottom = 20.0
 text = "Filter Asset Type"
 
 [node name="ScrollContainer" type="ScrollContainer" parent="AssetPickerPopup/VBoxContainer"]
 margin_top = 24.0
-margin_right = 350.0
-margin_bottom = 300.0
+margin_right = 610.0
+margin_bottom = 400.0
 size_flags_vertical = 3
 
 [node name="AssetListContainer" type="GridContainer" parent="AssetPickerPopup/VBoxContainer/ScrollContainer"]
-margin_right = 350.0
-margin_bottom = 276.0
+margin_right = 610.0
+margin_bottom = 376.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme = SubResource( 1 )

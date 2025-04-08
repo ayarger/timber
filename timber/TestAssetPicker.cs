@@ -12,7 +12,7 @@ public class TestAssetPicker : Node2D
         _pickerPopup = GetNode<AssetPickerPopup>("AssetPickerPopup");
 
         _pickButton.Connect("pressed", this, nameof(OnPickAssetPressed));
-        _pickerPopup.Connect("AssetSelected", this, nameof(OnAssetSelected));
+        //_pickerPopup.Connect("AssetSelected", this, nameof(OnAssetSelected));
     }
 
     private void OnPickAssetPressed()

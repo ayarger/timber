@@ -69,10 +69,23 @@ public class AssetPickerPopup : WindowDialog
         {
             if (!IsMatch(modFile.name, _currentFilter)) continue;
 
-            Button btn = new Button { Text = modFile.name };
-            btn.Connect("gui_input", this, nameof(OnAssetGuiInput), new Godot.Collections.Array { modFile.name });
-            _assetListContainer.AddChild(btn);
+            AddAssetButton(modFile.name);
         }
+    }
+
+    private void AddAssetButton(string filePath)
+    {
+        Asset asset = AssetFactory.CreateAsset(filePath);
+        if (asset == null)
+        {
+            GD.PrintErr($"Failed to create asset for {filePath}");
+            return;
+        }
+
+        if(filePath.EndsWith(".wav"))
+            ArborCoroutine.StartCoroutine(LoadAndDisplaySound(asset), this);
+        else
+            ArborCoroutine.StartCoroutine(LoadAndDisplayAsset(asset), this);
     }
 
     private bool IsMatch(string filePath, string filter)
@@ -101,5 +114,29 @@ public class AssetPickerPopup : WindowDialog
         _onAssetSelectedCallback = onAssetSelected;
         PopupCentered();
         _loadDelayTimer.Start();
+    }
+
+    private IEnumerator LoadAndDisplayAsset(Asset asset)
+    {
+        yield return asset.LoadAsset();
+
+        Control previewButton = asset.CreatePreviewButton();
+        previewButton.Disconnect("pressed", asset, nameof(asset.OnButtonPressed));
+        previewButton.Connect("gui_input", this, nameof(OnAssetGuiInput), new Godot.Collections.Array { asset.FilePath });
+        _assetListContainer.AddChild(previewButton);
+
+        GD.Print($"Added {asset.FilePath} to UI.");
+    }
+
+    private IEnumerator LoadAndDisplaySound(Asset asset)
+    {
+        Control previewButton = asset.CreatePreviewButton();
+        previewButton.Disconnect("pressed", asset, nameof(asset.OnButtonPressed));
+        previewButton.Connect("gui_input", this, nameof(OnAssetGuiInput), new Godot.Collections.Array { asset.FilePath });
+        _assetListContainer.AddChild(previewButton);
+
+        yield return asset.LoadAsset();
+
+        GD.Print($"Added {asset.FilePath} to UI.");
     }
 }
