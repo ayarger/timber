@@ -5,6 +5,9 @@ public class ActorAsset : Asset
 {
     private ActorConfig _actorConfig;
 
+    // Parameterless constructor required by Godot's Mono bridge
+    public ActorAsset() : base("", "res://icons/actor_icon.png") { }
+
     public ActorAsset(string filePath) 
         : base(filePath, "res://icons/actor_icon.png") { } // Default placeholder icon
 
@@ -23,6 +26,7 @@ public class ActorAsset : Asset
             yield break;
         }
 
+        _actorConfig.__filePath = FilePath;
         GD.Print($"Loaded actor: {_actorConfig.name}");
 
         // Load actor preview image (Idle sprite)
@@ -31,6 +35,26 @@ public class ActorAsset : Asset
         yield return ArborResource.WaitFor(imagePath);
 
         _thumbnail = ArborResource.Get<Texture>(imagePath) ?? _defaultPreviewTexture;
+    }
+
+    public override Button CreatePreviewButton()
+    {
+        Button button = base.CreatePreviewButton();
+
+        TextureRect badge = new TextureRect
+        {
+            Texture = (Texture)GD.Load("res://icons/actor_badge_icon.png"),
+            StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered,
+            RectMinSize = new Vector2(16, 16),
+            RectScale = new Vector2(0.5f, 0.5f)
+        };
+
+        badge.SetAnchorsAndMarginsPreset(Control.LayoutPreset.TopLeft);
+        badge.MarginRight = 4;
+        badge.MarginTop = 4;
+        button.AddChild(badge);
+
+        return button;
     }
 
     public override void OnButtonPressed()

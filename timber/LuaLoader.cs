@@ -421,6 +421,9 @@ public class ActorConfig
 
 	public List<StateConfig> stateConfigs = new List<StateConfig>();
 	public StatConfig statConfig;
+
+	[System.NonSerialized]
+    public string __filePath; // Used for autosaving
 }
 
 [Serializable]

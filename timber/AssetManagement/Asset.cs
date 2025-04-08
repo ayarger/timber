@@ -18,7 +18,7 @@ public abstract class Asset : Control
 
     public abstract void OnButtonPressed();
 
-    public Button CreatePreviewButton()
+    public virtual Button CreatePreviewButton()
     {
         Button button = new Button
         {

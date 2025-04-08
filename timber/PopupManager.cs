@@ -13,7 +13,7 @@ public class PopupManager : Node
     // Actor Preview Elements
     private WindowDialog _actorPopup;
     private TextureRect _actorImage;
-    private RichTextLabel _actorTextBox;
+    private ActorConfig _currentActorConfig;
 
     public override void _Ready()
     {
@@ -26,7 +26,6 @@ public class PopupManager : Node
         _instance = this;
         GD.Print("PopupManager initialized.");
 
-        // Find the image preview window and elements
         _imagePopup = GetTree().Root.GetNodeOrNull<WindowDialog>("EditorTabSystem/PreviewWindow");
         _imagePreview = GetTree().Root.GetNodeOrNull<TextureRect>("EditorTabSystem/PreviewWindow/PreviewImage");
 
@@ -35,58 +34,41 @@ public class PopupManager : Node
             GD.PrintErr("PopupManager: Missing Image PreviewWindow elements.");
         }
 
-        // Find the actor preview window and elements
         _actorPopup = GetTree().Root.GetNodeOrNull<WindowDialog>("EditorTabSystem/ActorPreviewWindow");
         _actorImage = GetTree().Root.GetNodeOrNull<TextureRect>("EditorTabSystem/ActorPreviewWindow/HBoxContainer/ActorImage/PreviewImage");
-        _actorTextBox = GetTree().Root.GetNodeOrNull<RichTextLabel>("EditorTabSystem/ActorPreviewWindow/HBoxContainer/ActorDetails");
 
-        if (_actorPopup == null || _actorImage == null || _actorTextBox == null)
+        if (_actorPopup == null || _actorImage == null)
         {
             GD.PrintErr("PopupManager: Missing ActorPreviewWindow elements.");
         }
     }
 
-    /// Displays a simple image preview (for ImageAsset)
     public static void ShowImage(Texture texture)
     {
-        if (_instance == null)
+        if (_instance == null || _instance._imagePopup == null || _instance._imagePreview == null)
         {
-            GD.PrintErr("PopupManager has not been initialized.");
-            return;
-        }
-
-        if (_instance._imagePopup == null || _instance._imagePreview == null)
-        {
-            GD.PrintErr("PopupManager: Cannot display image. Missing nodes.");
+            GD.PrintErr("PopupManager: Cannot display image.");
             return;
         }
 
         GD.Print("Displaying image preview.");
-
         _instance._imagePreview.Texture = texture;
         _instance._imagePopup.PopupCentered();
     }
 
-    /// Displays an actor preview with editable fields (for ActorAsset)
     public static void ShowActor(Texture texture, ActorConfig actorConfig)
     {
-        if (_instance == null)
+        if (_instance == null || _instance._actorPopup == null || _instance._actorImage == null)
         {
-            GD.PrintErr("PopupManager has not been initialized.");
-            return;
-        }
-
-        if (_instance._actorPopup == null || _instance._actorImage == null)
-        {
-            GD.PrintErr("PopupManager: Cannot display actor. Missing nodes.");
+            GD.PrintErr("PopupManager: Cannot display actor.");
             return;
         }
 
         GD.Print($"Displaying actor preview: {actorConfig.name}");
 
         _instance._actorImage.Texture = texture;
+        _instance._currentActorConfig = actorConfig;
 
-        // Find containers
         ScrollContainer scrollContainer = _instance._actorPopup.GetNodeOrNull<ScrollContainer>("HBoxContainer/ActorDetailsScroll");
         VBoxContainer actorDetailsContainer = scrollContainer?.GetNodeOrNull<VBoxContainer>("ActorDetails");
 
@@ -96,22 +78,22 @@ public class PopupManager : Node
             return;
         }
 
-        // Clear old content
         foreach (Node child in actorDetailsContainer.GetChildren())
         {
             child.QueueFree();
         }
 
-        AddEditableField(actorDetailsContainer, "Name", actorConfig.name);
-        AddEditableField(actorDetailsContainer, "Team", actorConfig.team);
-        AddEditableField(actorDetailsContainer, "Map Code", actorConfig.map_code.ToString());
-        AddEditableField(actorDetailsContainer, "Scale Factor", actorConfig.aesthetic_scale_factor.ToString());
+        AddEditableField(actorDetailsContainer, "Name", actorConfig.name, value => { actorConfig.name = value; SaveActor(actorConfig); });
+        AddEditableField(actorDetailsContainer, "Team", actorConfig.team, value => { actorConfig.team = value; SaveActor(actorConfig); });
+        AddEditableField(actorDetailsContainer, "Map Code", actorConfig.map_code.ToString(), value => { actorConfig.map_code = value[0]; SaveActor(actorConfig); });
+        AddEditableField(actorDetailsContainer, "Scale Factor", actorConfig.aesthetic_scale_factor.ToString(), value => {
+            if (float.TryParse(value, out float result)) actorConfig.aesthetic_scale_factor = result;
+            SaveActor(actorConfig);
+        }, true); // should autosave
 
-        // States
         Label statesLabel = new Label { Text = "States:" };
         actorDetailsContainer.AddChild(statesLabel);
 
-        // Create editable fields
         foreach (var state in actorConfig.stateConfigs)
         {
             Label stateLabel = new Label { Text = $"- {state.name}" };
@@ -121,21 +103,20 @@ public class PopupManager : Node
             {
                 foreach (var stat in state.stateStats)
                 {
-                    AddEditableField(actorDetailsContainer, $"      {stat.Key}", stat.Value.ToString(), isNumeric: true);
+                    AddEditableField(actorDetailsContainer, $"      {stat.Key}", stat.Value.ToString(), value => {
+                        if (float.TryParse(value, out float result))
+                            state.stateStats[stat.Key] = result;
+                        SaveActor(actorConfig);
+                    }, true);
                 }
             }
         }
 
-        // Ensure the ScrollContainer updates its size correctly
-        scrollContainer.RectMinSize = new Vector2(200, 400); // Adjust height as needed
-
-        // Show the popup
+        scrollContainer.RectMinSize = new Vector2(200, 400);
         _instance._actorPopup.PopupCentered();
     }
 
-
-    /// Helper method to add an editable field (LineEdit for text, SpinBox for numbers)
-    private static void AddEditableField(VBoxContainer container, string label, string value, bool isNumeric = false)
+    private static void AddEditableField(VBoxContainer container, string label, string value, Action<string> onValueChanged = null, bool isNumeric = false)
     {
         HBoxContainer fieldContainer = new HBoxContainer();
 
@@ -148,18 +129,55 @@ public class PopupManager : Node
             {
                 Value = float.TryParse(value, out float result) ? result : 0,
                 MinValue = 0,
-                MaxValue = 100, // Can adjust range as needed
+                MaxValue = 100,
                 Step = 0.1f
             };
+            if (onValueChanged != null)
+                numericInput.Connect("value_changed", _instance, nameof(OnNumericFieldChanged));
+            numericInput.Connect("value_changed", _instance, nameof(OnNumericFieldChanged));
+            numericInput.SetMeta("callback", onValueChanged);
             fieldContainer.AddChild(numericInput);
         }
         else
         {
             LineEdit textInput = new LineEdit { Text = value };
+            if (onValueChanged != null)
+                textInput.Connect("text_changed", _instance, nameof(OnTextFieldChanged));
+            textInput.SetMeta("callback", onValueChanged);
             fieldContainer.AddChild(textInput);
         }
 
         container.AddChild(fieldContainer);
     }
 
+    private static void OnTextFieldChanged(string newValue, Node control)
+    {
+        if (control.HasMeta("callback"))
+        {
+            var callback = control.GetMeta("callback") as Action<string>;
+            callback?.Invoke(newValue);
+        }
+    }
+
+    // function not found? maybe something with the callback
+    private static void OnNumericFieldChanged(float newValue, Node control)
+    {
+        if (control.HasMeta("callback"))
+        {
+            var callback = control.GetMeta("callback") as Action<string>;
+            callback?.Invoke(newValue.ToString());
+        }
+    }
+
+    private static void SaveActor(ActorConfig actorConfig)
+    {
+        if (string.IsNullOrEmpty(actorConfig.__filePath))
+        {
+            GD.PrintErr("PopupManager: ActorConfig missing __filePath for saving.");
+            return;
+        }
+
+        ArborResource.WriteObject<ActorConfig>(actorConfig.__filePath, actorConfig);
+        GD.Print("Auto-saved: " + actorConfig.__filePath);
+    }
 }
