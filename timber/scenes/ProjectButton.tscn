@@ -1,0 +1,16 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://scenes/ProjectButton.cs" type="Script" id=1]
+
+[node name="ProjectButton" type="MarginContainer"]
+margin_right = 300.0
+margin_bottom = 20.0
+script = ExtResource( 1 )
+
+[node name="Button" type="Button" parent="."]
+margin_right = 300.0
+margin_bottom = 20.0
+text = "Test"
+expand_icon = true
+
+[connection signal="pressed" from="Button" to="." method="OnPressed"]

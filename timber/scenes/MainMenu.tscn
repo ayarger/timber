@@ -1,12 +1,16 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://QuitButton.cs" type="Script" id=1]
 [ext_resource path="res://scenes/PlayButton.cs" type="Script" id=2]
 [ext_resource path="res://scenes/WebBuildUploader.tscn" type="PackedScene" id=3]
 [ext_resource path="res://gradient256.png" type="Texture" id=4]
 [ext_resource path="res://scenes/HookesButton.tscn" type="PackedScene" id=5]
+[ext_resource path="res://scenes/LoginPopup.cs" type="Script" id=6]
 [ext_resource path="res://scenes/MainMenu.cs" type="Script" id=7]
 [ext_resource path="res://protobuftesting/ProtobufParser.cs" type="Script" id=8]
+[ext_resource path="res://scenes/ProjectsPopup.cs" type="Script" id=9]
+[ext_resource path="res://scenes/CreateUserPopup.cs" type="Script" id=10]
+[ext_resource path="res://scenes/CreateProjectPopup.cs" type="Script" id=11]
 
 [sub_resource type="CanvasItemMaterial" id=1]
 
@@ -66,6 +70,27 @@ autowrap = true
 
 [node name="hookesbutton" parent="quit_button" instance=ExtResource( 5 )]
 
+[node name="credits_button" type="Button" parent="."]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -62.0
+margin_top = -198.0
+margin_right = 58.0
+margin_bottom = -158.0
+rect_pivot_offset = Vector2( 100, 0 )
+
+[node name="Label" type="Label" parent="credits_button"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "Credits"
+align = 1
+valign = 1
+autowrap = true
+
+[node name="hookesbutton" parent="credits_button" instance=ExtResource( 5 )]
+
 [node name="play_button" type="Button" parent="."]
 anchor_left = 0.5
 anchor_top = 1.0
@@ -88,26 +113,175 @@ autowrap = true
 
 [node name="hookesbutton" parent="play_button" instance=ExtResource( 5 )]
 
-[node name="credits_button" type="Button" parent="."]
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-margin_left = -62.0
-margin_top = -198.0
-margin_right = 58.0
-margin_bottom = -158.0
-rect_pivot_offset = Vector2( 100, 0 )
+[node name="LoginPopup" type="PopupDialog" parent="play_button"]
+visible = true
+margin_left = -36.0
+margin_top = -432.0
+margin_right = 437.0
+margin_bottom = -241.0
+script = ExtResource( 6 )
 
-[node name="Label" type="Label" parent="credits_button"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-text = "Credits"
-align = 1
-valign = 1
-autowrap = true
+[node name="UsernameField" type="TextEdit" parent="play_button/LoginPopup"]
+margin_left = 135.0
+margin_top = 40.0
+margin_right = 415.0
+margin_bottom = 62.0
 
-[node name="hookesbutton" parent="credits_button" instance=ExtResource( 5 )]
+[node name="RichTextLabel" type="RichTextLabel" parent="play_button/LoginPopup"]
+margin_left = 39.0
+margin_top = 43.0
+margin_right = 153.0
+margin_bottom = 59.0
+text = "Username:"
+fit_content_height = true
+
+[node name="PasswordField" type="TextEdit" parent="play_button/LoginPopup"]
+margin_left = 134.0
+margin_top = 74.0
+margin_right = 414.0
+margin_bottom = 96.0
+
+[node name="RichTextLabel2" type="RichTextLabel" parent="play_button/LoginPopup"]
+margin_left = 38.0
+margin_top = 77.0
+margin_right = 152.0
+margin_bottom = 93.0
+text = "Password:"
+fit_content_height = true
+
+[node name="Button" type="Button" parent="play_button/LoginPopup"]
+margin_left = 314.0
+margin_top = 141.0
+margin_right = 447.0
+margin_bottom = 168.0
+text = "Login"
+
+[node name="Error" type="RichTextLabel" parent="play_button/LoginPopup"]
+margin_left = 32.0
+margin_top = 108.0
+margin_right = 169.0
+margin_bottom = 132.0
+fit_content_height = true
+
+[node name="Create Account" type="Button" parent="play_button/LoginPopup"]
+margin_left = 41.0
+margin_top = 138.0
+margin_right = 172.0
+margin_bottom = 167.0
+text = "Create Account"
+
+[node name="ProjectsPopup" type="PopupDialog" parent="play_button"]
+visible = true
+margin_left = 29.0
+margin_top = -569.0
+margin_right = 375.0
+margin_bottom = -135.0
+script = ExtResource( 9 )
+
+[node name="ScrollContainer" type="ScrollContainer" parent="play_button/ProjectsPopup"]
+margin_left = 22.0
+margin_top = 13.0
+margin_right = 322.0
+margin_bottom = 381.0
+scroll_horizontal_enabled = false
+
+[node name="VBoxContainer" type="VBoxContainer" parent="play_button/ProjectsPopup/ScrollContainer"]
+margin_right = 300.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 300, 30 )
+
+[node name="Button" type="Button" parent="play_button/ProjectsPopup"]
+margin_left = 12.0
+margin_top = 394.0
+margin_right = 337.0
+margin_bottom = 423.0
+text = "Create Project"
+
+[node name="CreateProjectPopup" type="PopupDialog" parent="play_button"]
+visible = true
+margin_left = -35.0
+margin_top = -409.0
+margin_right = 438.0
+margin_bottom = -271.0
+script = ExtResource( 11 )
+
+[node name="ProjectNameField" type="TextEdit" parent="play_button/CreateProjectPopup"]
+margin_left = 135.0
+margin_top = 40.0
+margin_right = 415.0
+margin_bottom = 62.0
+
+[node name="RichTextLabel" type="RichTextLabel" parent="play_button/CreateProjectPopup"]
+margin_left = 30.0
+margin_top = 43.0
+margin_right = 144.0
+margin_bottom = 59.0
+text = "Project Name: "
+fit_content_height = true
+
+[node name="Button" type="Button" parent="play_button/CreateProjectPopup"]
+margin_left = 317.0
+margin_top = 90.0
+margin_right = 450.0
+margin_bottom = 117.0
+text = "Create Project"
+
+[node name="Error" type="RichTextLabel" parent="play_button/CreateProjectPopup"]
+margin_left = 29.0
+margin_top = 94.0
+margin_right = 159.0
+margin_bottom = 110.0
+fit_content_height = true
+
+[node name="CreateUserPopup" type="PopupDialog" parent="play_button"]
+margin_left = -36.0
+margin_top = -432.0
+margin_right = 437.0
+margin_bottom = -241.0
+script = ExtResource( 10 )
+
+[node name="UsernameField" type="TextEdit" parent="play_button/CreateUserPopup"]
+margin_left = 135.0
+margin_top = 40.0
+margin_right = 415.0
+margin_bottom = 62.0
+
+[node name="RichTextLabel" type="RichTextLabel" parent="play_button/CreateUserPopup"]
+margin_left = 39.0
+margin_top = 43.0
+margin_right = 153.0
+margin_bottom = 59.0
+text = "Username:"
+fit_content_height = true
+
+[node name="PasswordField" type="TextEdit" parent="play_button/CreateUserPopup"]
+margin_left = 134.0
+margin_top = 74.0
+margin_right = 414.0
+margin_bottom = 96.0
+hiding_enabled = true
+
+[node name="RichTextLabel2" type="RichTextLabel" parent="play_button/CreateUserPopup"]
+margin_left = 38.0
+margin_top = 77.0
+margin_right = 152.0
+margin_bottom = 93.0
+text = "Password:"
+fit_content_height = true
+
+[node name="Button" type="Button" parent="play_button/CreateUserPopup"]
+margin_left = 314.0
+margin_top = 141.0
+margin_right = 447.0
+margin_bottom = 168.0
+text = "Create User"
+
+[node name="Error" type="RichTextLabel" parent="play_button/CreateUserPopup"]
+margin_left = 40.0
+margin_top = 147.0
+margin_right = 170.0
+margin_bottom = 163.0
+fit_content_height = true
 
 [node name="Label" type="Label" parent="."]
 anchor_left = 0.5
@@ -126,5 +300,10 @@ valign = 1
 script = ExtResource( 8 )
 
 [connection signal="pressed" from="quit_button" to="quit_button" method="OnPressed"]
-[connection signal="pressed" from="play_button" to="play_button" method="OnPressed"]
 [connection signal="pressed" from="credits_button" to="credits_button" method="OnPressed"]
+[connection signal="pressed" from="play_button" to="play_button" method="OnPressed"]
+[connection signal="pressed" from="play_button/LoginPopup/Button" to="play_button/LoginPopup" method="OnLogin"]
+[connection signal="pressed" from="play_button/LoginPopup/Create Account" to="play_button/LoginPopup" method="OnCreateUser"]
+[connection signal="pressed" from="play_button/ProjectsPopup/Button" to="play_button/CreateProjectPopup" method="Open"]
+[connection signal="pressed" from="play_button/CreateProjectPopup/Button" to="play_button/CreateProjectPopup" method="OnCreateProject"]
+[connection signal="pressed" from="play_button/CreateUserPopup/Button" to="play_button/CreateUserPopup" method="OnCreateUser"]

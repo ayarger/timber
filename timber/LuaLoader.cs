@@ -131,7 +131,7 @@ public class LuaLoader : Node
             else
             {
 				actor_info.statConfig = enemyStatConfig;
-				ArborResource.Load<Texture>("images/cheese.png");
+				ArborResource.Load<Texture>("public/images/cheese.png");
 			}
 			
             map_code_to_actor_config[actor_info.map_code] = actor_info;
@@ -172,7 +172,7 @@ public class LuaLoader : Node
 
 		/* Load Audio */
 		ArborResource.UseResource(
-			"sounds/pre_battle.ogg",
+			"public/sounds/pre_battle.ogg",
 			(AudioStream audio) =>
 			{
 				ArborAudioManager.RequestBGM(audio);
@@ -180,7 +180,7 @@ public class LuaLoader : Node
 			this
 		);
 
-		ArborResource.Load<AudioStream>("sounds/bgm_btd_defeat.ogg");
+		ArborResource.Load<AudioStream>("public/sounds/bgm_btd_defeat.ogg");
 
         //yield return ArborResource.WaitFor("sounds/bgm_btd_defeat.ogg");
 
@@ -235,7 +235,7 @@ public class LuaLoader : Node
             else
             {
                 actor_info.statConfig = enemyStatConfig;
-                ArborResource.Load<Texture>("images/cheese.png");
+                ArborResource.Load<Texture>("public/images/cheese.png");
             }
 
             map_code_to_actor_config[actor_info.map_code] = actor_info;

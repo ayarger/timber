@@ -18,10 +18,10 @@ using Google.Protobuf;
 
 public class ArborResource : Node
 {
+    public const string S3_AUTHENTICATE_WEBURL = "https://jnpsgahiq5.execute-api.us-east-1.amazonaws.com/default/timber-authenticate";
     public const string S3_WRITE_LAMBDA_WEBURL = "https://qsfdaoaoj8.execute-api.us-east-1.amazonaws.com/default/timber-write";
     public const string S3_DELETE_LAMBDA_WEBURL = "https://dy8brlo577.execute-api.us-east-1.amazonaws.com/default/timber-delete";
     public const string S3_MANIFEST_LAMBDA_WEBURL = "https://2z1wmv8pbk.execute-api.us-east-1.amazonaws.com/default/timber-generate-manifest";
-
 
     static Dictionary<string, string> web_query_parameters = new Dictionary<string, string>();
 
@@ -56,6 +56,12 @@ public class ArborResource : Node
 
             InitializeFileDialogueWeb();
         }
+
+        //For debugging purposes, use the temp username/password when running from main.tscn
+        if(TempSecrets.TOKEN == null)
+        {
+            GenerateToken(TempSecrets.TEMPUSERNAME, TempSecrets.TEMPPASSWORD);
+        }
     }
 
     public void OnCallbackAssociatedNodeExitTree(object destroyed_node)
@@ -75,9 +81,13 @@ public class ArborResource : Node
     }
 
     Dictionary<string, object> loaded_assets = new Dictionary<string, object>();
+    // May or may not be used. Notates any assets that were written before login.
+    HashSet<string> dirty = new HashSet<string>();
 
     HashSet<string> assets_currently_loading = new HashSet<string>();
     public static bool NumberAssetsCurrentlyLoading() { return instance.assets_currently_loading.Count > 0; }
+
+    public static Dictionary<string, TimberHTTPResponse> timber_responses = new Dictionary<string, TimberHTTPResponse>();
 
     void OnRequestCompleted(long result, long responseCode, string[] headers, byte[] body, string resource, string type, HTTPRequest request_used, string force_key_for_asset = null)
     {
@@ -268,17 +278,150 @@ public class ArborResource : Node
         }
     }
 
+    public static string GetProjects()
+    {
+        HTTPRequest new_request = new HTTPRequest();
+        instance.AddChild(new_request);
+
+        string web_url = S3_AUTHENTICATE_WEBURL;
+        var headers = new string[]
+        {
+           $"token: {TempSecrets.TOKEN}",
+           $"command: get_projects"
+        };
+
+        Guid myuuid = Guid.NewGuid();
+        string uuid = myuuid.ToString();
+
+        Godot.Collections.Array extra_params = new Godot.Collections.Array
+        {
+            uuid
+        };
+
+        new_request.Connect("request_completed", instance, nameof(OnAuthenticateCompleted), extra_params);
+
+        new_request.Request(web_url, headers, true, HTTPClient.Method.Post, "");
+        return uuid;
+    }
+
+    public static string CreateProject(string projectName)
+    {
+        HTTPRequest new_request = new HTTPRequest();
+        instance.AddChild(new_request);
+
+        string web_url = S3_AUTHENTICATE_WEBURL;
+        var headers = new string[]
+        {
+           $"token: {TempSecrets.TOKEN}",
+           $"project_name: {projectName}",
+           $"command: create_project"
+        };
+
+        Guid myuuid = Guid.NewGuid();
+        string uuid = myuuid.ToString();
+
+        Godot.Collections.Array extra_params = new Godot.Collections.Array
+        {
+            uuid
+        };
+
+        new_request.Connect("request_completed", instance, nameof(OnAuthenticateCompleted), extra_params);
+
+        new_request.Request(web_url, headers, true, HTTPClient.Method.Post, "");
+        return uuid;
+    }
+
+    public static string CreateUser(string username, string password)
+    {
+        HTTPRequest new_request = new HTTPRequest();
+        instance.AddChild(new_request);
+
+        string web_url = S3_AUTHENTICATE_WEBURL;
+        var headers = new string[]
+        {
+           $"command: create_user",
+           $"username: {username}",
+           $"password: {password}"
+        };
+
+        Guid myuuid = Guid.NewGuid();
+        string uuid = myuuid.ToString();
+
+        Godot.Collections.Array extra_params = new Godot.Collections.Array
+        {
+            uuid
+        };
+
+        new_request.Connect("request_completed", instance, nameof(OnAuthenticateCompleted), extra_params);
+
+        new_request.Request(web_url, headers, true, HTTPClient.Method.Post, "");
+        return uuid;
+    }
+    public void OnAuthenticateCompleted(long result, long responseCode, string[] headers, byte[] body, string uuid)
+    {
+        GD.PushWarning(System.Text.Encoding.Default.GetString(body));
+        timber_responses.Add(uuid, new TimberHTTPResponse(result, responseCode, headers, body));
+    }
+
+
+    //Login
+    public static string GenerateToken(string username, string password)
+    {
+        HTTPRequest new_request = new HTTPRequest();
+        instance.AddChild(new_request);
+
+        string web_url = S3_AUTHENTICATE_WEBURL;
+        var headers = new string[]
+        {
+           $"username: {username}",
+           $"password: {password}",
+           $"command: login"
+        };
+
+        Guid myuuid = Guid.NewGuid();
+        string uuid = myuuid.ToString();
+
+        Godot.Collections.Array extra_params = new Godot.Collections.Array
+        {
+            uuid
+        };
+
+        new_request.Connect("request_completed", instance, nameof(OnGenerateTokenCompleted), extra_params);
+
+        new_request.Request(web_url, headers, true, HTTPClient.Method.Post, "");
+        return uuid;
+
+    }
+    public void OnGenerateTokenCompleted(long result, long responseCode, string[] headers, byte[] body, string uuid)
+    {
+        GD.PushWarning(System.Text.Encoding.Default.GetString(body));
+        TempSecrets.TOKEN = System.Text.Encoding.Default.GetString(body);
+        timber_responses.Add(uuid, new TimberHTTPResponse(result, responseCode, headers, body));
+    }
+
     //Supports strings, byte array
+    //If writing a public object, it will write the object but saves to project files
     public static void WriteObject<T>(string resource, T asset)
     {
+        //Unauthenticated
+        if(TempSecrets.TOKEN == null || TempSecrets.TOKEN.Length == 0)
+        {
+            ArborCoroutine.StartCoroutine(instance._OnWriteCompleted(resource, typeof(T).Name == "String" || typeof(T).Name == "string" ? asset.ToString().Length :
+                (asset as byte[]).LongLength,
+                DateTime.UtcNow));
+            instance.dirty.Add(resource);
+            return;
+        }
+
         HTTPRequest new_request = new HTTPRequest();
         instance.AddChild(new_request);
         string web_url = S3_WRITE_LAMBDA_WEBURL;
         var headers = new string[]
         {
-           $"Resource: squirrel_rts/mods/{GetCurrentModID()}/resources/{resource}",
+           $"Resource: squirrel_rts/mods/{GetCurrentModID()}/resources/{(resource.StartsWith("public/") ? resource.Substring(7) : resource)}",
            $"TempPassword: {TempSecrets.TEMPPASSWORD}",
-           $"DoubleDecode: {((typeof(T)==typeof(byte[])) ? "true" : "false")}"
+           $"DoubleDecode: {((typeof(T)==typeof(byte[])) ? "true" : "false")}",
+           $"Token: {TempSecrets.TOKEN}"
         };
 
         Godot.Collections.Array extra_params = new Godot.Collections.Array
@@ -294,6 +437,17 @@ public class ArborResource : Node
             Convert.ToBase64String(asset as byte[]);
 
         new_request.Request(web_url, headers,true, HTTPClient.Method.Post, data);
+
+        //NOT TESTED FULLY YET
+        //Update local copies. Writing to public resources should not happen, but if it does it will update local copies of both public/resource/path and resource/path and only write to resource/path on S3.
+        byte[] bytes = typeof(T).Name == "String" || typeof(T).Name == "string" ? (asset as string).ToUTF8() :
+            asset as byte[];
+
+        instance.OnRequestCompleted(200, 200, null, bytes, resource, typeof(T).Name, null, force_key_for_asset: resource);
+        if (resource.StartsWith("public/"))
+        {
+            instance.OnRequestCompleted(200, 200, null, bytes, resource.Substring(7), typeof(T).Name, null, force_key_for_asset: resource);
+        }
 
     }
     //Supports strings, byte array
@@ -334,8 +488,16 @@ public class ArborResource : Node
         yield return ArborResource.WaitFor("mod_file_manifest.json");
         ModFileManifest manifest = ArborResource.Get<ModFileManifest>("mod_file_manifest.json");
 
+        var existingFiles = manifest.Search((name.StartsWith("public/") ? name.Substring(7) : name));
+        if (existingFiles.Count > 0)
+        {
+            existingFiles[0].size = bytes;
+            existingFiles[0].WriteLastModifiedTime(uploadTime);
+            yield break;
+        }
+
         ModFile newModFile = new ModFile();
-        newModFile.name = name;
+        newModFile.name = name.StartsWith("public/") ? name.Substring(7) : name;
         newModFile.size = bytes;
         newModFile.WriteLastModifiedTime(uploadTime);
 
@@ -445,6 +607,11 @@ public class ArborResource : Node
         }
 
         return (T)instance.loaded_assets[asset_path_relative_to_external_resources_folder];
+    }
+    public static IEnumerator WaitAuthentication(string key)
+    {
+        while (!timber_responses.ContainsKey(key))
+            yield return null;
     }
 
     public static IEnumerator WaitFor(string asset_path_relative_to_external_resources_folder)
@@ -649,6 +816,11 @@ public class ArborResource : Node
         if (web_query_parameters.ContainsKey("default_mod"))
             return web_query_parameters["default_mod"];
 
+        if (TempSecrets.MOD_UUID != null)
+        {
+            return TempSecrets.MOD_UUID;
+        }
+
         return "021c18c5-d54b-4338-a441-4f07ff496333";
     }
 
@@ -680,4 +852,30 @@ public static class ArborResourceExtensions
     {
         ArborResource.UseResource(resource, callback, node);
     }
+}
+
+//This class is supposed to be used to wait for authentication responses.
+public class TimberHTTPResponse
+{
+    public long result;
+    public long responseCode;
+    public string[] headers;
+    public byte[] body;
+    //
+    //string[] headers; 
+    //byte[] body;
+
+    public TimberHTTPResponse(long result, long responseCode, string[] headers, byte[] body)
+    {
+        this.result = result;
+        this.responseCode = responseCode;
+        this.headers = headers;
+        this.body = body;
+    }
+
+    public string GetBodyAsString()
+    {
+        return System.Text.Encoding.Default.GetString(body);
+    }
+
 }

@@ -106,6 +106,13 @@ public class Actor : Spatial
 		UpdateActorDict();
 	}
 
+	private string ConfigureFileNamePrefix(string filename)
+	{
+		return (filename.StartsWith("public/") || filename.StartsWith("images/")) ?
+				filename : ("images/" + filename);
+
+    }
+
 	public virtual void Configure(ActorConfig info)
 	{
 		config = info;
@@ -117,7 +124,7 @@ public class Actor : Spatial
 
 		if (!String.IsNullOrEmpty(config.pre_ko_sprite_filename))
 		{
-			ArborResource.Load<Texture>("images/" + config.pre_ko_sprite_filename);
+			ArborResource.Load<Texture>(ConfigureFileNamePrefix(config.pre_ko_sprite_filename));
 		}else{
 			config.pre_ko_sprite_filename = config.idle_sprite_filename;
 		}
@@ -126,15 +133,15 @@ public class Actor : Spatial
 		{
 			config.ko_sprite_filename = config.idle_sprite_filename;
 		}
-		ArborResource.Load<Texture>("images/" + config.ko_sprite_filename);
+		ArborResource.Load<Texture>(ConfigureFileNamePrefix(config.ko_sprite_filename));
 		actorKO = true;
 
 		ArborCoroutine.StartCoroutine(loadTextures(), this);
 		ArborCoroutine.StartCoroutine(LoadLuaScript(config), this);
 
 		ArborResource.UseResource<Texture>(
-			"images/" + config.idle_sprite_filename,
-			(Texture tex) =>
+            ConfigureFileNamePrefix(config.idle_sprite_filename),
+            (Texture tex) =>
 			{
 				ShaderMaterial char_mat = (ShaderMaterial)character_view.GetSurfaceMaterial(0).Duplicate();
 				ShaderMaterial char_mat_shadow = (ShaderMaterial)character_view_shadow.GetSurfaceMaterial(0).Duplicate();
@@ -313,25 +320,25 @@ public class Actor : Spatial
 		foreach(var sprites in config.sprite_filenames){
 			string key = sprites.Key;
 			string filename = sprites.Value;
-			ArborResource.Load<Texture>("images/" + filename);
+			ArborResource.Load<Texture>(ConfigureFileNamePrefix(filename));
 			//store the texture in the dictionary		}
 		}
 		//HARDCODE
 		if(config.name == "Spot"){
-			ArborResource.Load<Texture>("images/" + "spot_step_left.png");
-			ArborResource.Load<Texture>("images/" + "spot_step_right.png");
-			ArborResource.Load<Texture>("images/" + "spot_attack.png");
-			yield return ArborResource.WaitFor("images/" + "spot_step_left.png");
-			sprite_textures["walk_left"] = ArborResource.Get<Texture>("images/" + "spot_step_left.png");
-			yield return ArborResource.WaitFor("images/" + "spot_step_right.png");
-			sprite_textures["walk_right"] = ArborResource.Get<Texture>("images/" + "spot_step_right.png");
-			yield return ArborResource.WaitFor("images/" + "spot_attack.png");
-			sprite_textures["attack"] = ArborResource.Get<Texture>("images/" + "spot_attack.png");
+			ArborResource.Load<Texture>("public/images/" + "spot_step_left.png");
+			ArborResource.Load<Texture>("public/images/" + "spot_step_right.png");
+			ArborResource.Load<Texture>("public/images/" + "spot_attack.png");
+			yield return ArborResource.WaitFor("public/images/" + "spot_step_left.png");
+			sprite_textures["walk_left"] = ArborResource.Get<Texture>("public/images/" + "spot_step_left.png");
+			yield return ArborResource.WaitFor("public/images/" + "spot_step_right.png");
+			sprite_textures["walk_right"] = ArborResource.Get<Texture>("public/images/" + "spot_step_right.png");
+			yield return ArborResource.WaitFor("public/images/" + "spot_attack.png");
+			sprite_textures["attack"] = ArborResource.Get<Texture>("public/images/" + "spot_attack.png");
 		}
 
 		foreach(var sprites in config.sprite_filenames){
-			yield return ArborResource.WaitFor("images/" + sprites.Value);
-			Texture tex = ArborResource.Get<Texture>("images/" + sprites.Value);
+			yield return ArborResource.WaitFor(ConfigureFileNamePrefix(sprites.Value));
+			Texture tex = ArborResource.Get<Texture>(ConfigureFileNamePrefix(sprites.Value));
 			sprite_textures[sprites.Key] = tex;
 		}
 	}
@@ -403,11 +410,11 @@ public class Actor : Spatial
 
         if (actorKO)
 		{
-            new_ko.Configure(ArborResource.Get<Texture>("images/" + config.pre_ko_sprite_filename), ArborResource.Get<Texture>("images/" + config.ko_sprite_filename), endGame, source);
+            new_ko.Configure(ArborResource.Get<Texture>(ConfigureFileNamePrefix(config.pre_ko_sprite_filename)), ArborResource.Get<Texture>(ConfigureFileNamePrefix(config.ko_sprite_filename)), endGame, source);
         }
 		else
 		{
-            new_ko.Configure(ArborResource.Get<Texture>("images/" + config.idle_sprite_filename), ArborResource.Get<Texture>("images/" + config.idle_sprite_filename), endGame, source);
+            new_ko.Configure(ArborResource.Get<Texture>(ConfigureFileNamePrefix(config.idle_sprite_filename)), ArborResource.Get<Texture>(ConfigureFileNamePrefix(config.idle_sprite_filename)), endGame, source);
         }
 
         QueueFree();

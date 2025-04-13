@@ -45,7 +45,7 @@ public class GameOver : Node
     {
         if (request.fast_mode == false)
         {
-            AudioStream lose_bgm = ArborResource.Get<AudioStream>("sounds/bgm_btd_defeat.ogg");
+            AudioStream lose_bgm = ArborResource.Get<AudioStream>("public/sounds/bgm_btd_defeat.ogg");
             ArborAudioManager.RequestBGM(lose_bgm);
         }
 
@@ -107,45 +107,45 @@ public class GameOver : Node
         /* Load */
         TransitionSystem.RequestHold();
         ArborResource.Load<GameConfig>("game.config");
-        ArborResource.Load<AudioStream>("sounds/bgm_continue.ogg");
-        ArborResource.Load<AudioStream>("sounds/mtd_vocal_1.wav");
-        ArborResource.Load<AudioStream>("sounds/mtd_vocal_2.wav");
-        ArborResource.Load<AudioStream>("sounds/mtd_vocal_3.wav");
-        ArborResource.Load<AudioStream>("sounds/mtd_vocal_4.wav");
-        ArborResource.Load<AudioStream>("sounds/mtd_vocal_5.wav");
-        ArborResource.Load<AudioStream>("sounds/mtd_vocal_6.wav");
-        ArborResource.Load<AudioStream>("sounds/mtd_vocal_7.wav");
-        ArborResource.Load<AudioStream>("sounds/mtd_vocal_8.wav");
-        ArborResource.Load<AudioStream>("sounds/mtd_vocal_9.wav");
-        ArborResource.Load<Texture>("images/spot_continue_1.png");
-        ArborResource.Load<Texture>("images/spot_continue_2.png");
-        ArborResource.Load<Texture>("images/spot_continue_3.png");
-        ArborResource.Load<Texture>("images/spot_victory.png");
-        ArborResource.Load<Texture>("images/lose_bg.png");
+        ArborResource.Load<AudioStream>("public/sounds/bgm_continue.ogg");
+        ArborResource.Load<AudioStream>("public/sounds/mtd_vocal_1.wav");
+        ArborResource.Load<AudioStream>("public/sounds/mtd_vocal_2.wav");
+        ArborResource.Load<AudioStream>("public/sounds/mtd_vocal_3.wav");
+        ArborResource.Load<AudioStream>("public/sounds/mtd_vocal_4.wav");
+        ArborResource.Load<AudioStream>("public/sounds/mtd_vocal_5.wav");
+        ArborResource.Load<AudioStream>("public/sounds/mtd_vocal_6.wav");
+        ArborResource.Load<AudioStream>("public/sounds/mtd_vocal_7.wav");
+        ArborResource.Load<AudioStream>("public/sounds/mtd_vocal_8.wav");
+        ArborResource.Load<AudioStream>("public/sounds/mtd_vocal_9.wav");
+        ArborResource.Load<Texture>("public/images/spot_continue_1.png");
+        ArborResource.Load<Texture>("public/images/spot_continue_2.png");
+        ArborResource.Load<Texture>("public/images/spot_continue_3.png");
+        ArborResource.Load<Texture>("public/images/spot_victory.png");
+        ArborResource.Load<Texture>("public/images/lose_bg.png");
 
-        yield return ArborResource.WaitFor("sounds/bgm_continue.ogg");
-        yield return ArborResource.WaitFor("sounds/mtd_vocal_1.wav");
-        yield return ArborResource.WaitFor("sounds/mtd_vocal_2.wav");
-        yield return ArborResource.WaitFor("sounds/mtd_vocal_3.wav");
-        yield return ArborResource.WaitFor("sounds/mtd_vocal_4.wav");
-        yield return ArborResource.WaitFor("sounds/mtd_vocal_5.wav");
-        yield return ArborResource.WaitFor("sounds/mtd_vocal_6.wav");
-        yield return ArborResource.WaitFor("sounds/mtd_vocal_7.wav");
-        yield return ArborResource.WaitFor("sounds/mtd_vocal_8.wav");
-        yield return ArborResource.WaitFor("sounds/mtd_vocal_9.wav");
+        yield return ArborResource.WaitFor("public/sounds/bgm_continue.ogg");
+        yield return ArborResource.WaitFor("public/sounds/mtd_vocal_1.wav");
+        yield return ArborResource.WaitFor("public/sounds/mtd_vocal_2.wav");
+        yield return ArborResource.WaitFor("public/sounds/mtd_vocal_3.wav");
+        yield return ArborResource.WaitFor("public/sounds/mtd_vocal_4.wav");
+        yield return ArborResource.WaitFor("public/sounds/mtd_vocal_5.wav");
+        yield return ArborResource.WaitFor("public/sounds/mtd_vocal_6.wav");
+        yield return ArborResource.WaitFor("public/sounds/mtd_vocal_7.wav");
+        yield return ArborResource.WaitFor("public/sounds/mtd_vocal_8.wav");
+        yield return ArborResource.WaitFor("public/sounds/mtd_vocal_9.wav");
 
-        yield return ArborResource.WaitFor("images/spot_continue_1.png");
-        yield return ArborResource.WaitFor("images/spot_continue_2.png");
-        yield return ArborResource.WaitFor("images/spot_continue_3.png");
-        yield return ArborResource.WaitFor("images/spot_victory.png");
+        yield return ArborResource.WaitFor("public/images/spot_continue_1.png");
+        yield return ArborResource.WaitFor("public/images/spot_continue_2.png");
+        yield return ArborResource.WaitFor("public/images/spot_continue_3.png");
+        yield return ArborResource.WaitFor("public/images/spot_victory.png");
 
-        yield return ArborResource.WaitFor("images/lose_bg.png");
+        yield return ArborResource.WaitFor("public/images/lose_bg.png");
 
         if(continues > 0)
-            character_view.Texture = ArborResource.Get<Texture>("images/spot_continue_3.png");
+            character_view.Texture = ArborResource.Get<Texture>("public/images/spot_continue_3.png");
         else
-            character_view.Texture = ArborResource.Get<Texture>("images/spot_continue_1.png");
-        background_image.Texture = ArborResource.Get<Texture>("images/lose_bg.png");
+            character_view.Texture = ArborResource.Get<Texture>("public/images/spot_continue_1.png");
+        background_image.Texture = ArborResource.Get<Texture>("public/images/lose_bg.png");
 
         TransitionSystem.RemoveHold();
 
@@ -183,7 +183,7 @@ public class GameOver : Node
         if(can_continue)
             UIManager.RequestFlash(0.1f);
 
-        character_view.Texture = ArborResource.Get<Texture>("images/spot_continue_1.png");
+        character_view.Texture = ArborResource.Get<Texture>("public/images/spot_continue_1.png");
 
         if (!can_continue)
         {
@@ -202,14 +202,14 @@ public class GameOver : Node
         countdown_number_text.Visible = true;
         ToggleContinueLetters(true);
 
-        AudioStream continue_countdown_bgm = ArborResource.Get<AudioStream>("sounds/bgm_continue.ogg");
+        AudioStream continue_countdown_bgm = ArborResource.Get<AudioStream>("public/sounds/bgm_continue.ogg");
         ArborAudioManager.RequestBGM(continue_countdown_bgm);
 
         int countdown = 9;
         while(countdown > -1 && !retry_clicked)
         {  
             countdown_number_text.Text = countdown.ToString();
-            ArborAudioManager.RequestSFX(ArborResource.Get<AudioStream>("sounds/mtd_vocal_" + countdown.ToString() + ".wav"));
+            ArborAudioManager.RequestSFX(ArborResource.Get<AudioStream>("public/sounds/mtd_vocal_" + countdown.ToString() + ".wav"));
 
             yield return ArborCoroutine.WaitForSecondsOrClick(1.0f);
             yield return null;
@@ -235,7 +235,7 @@ public class GameOver : Node
             retry_button.Visible = false;
             continues--;
 
-            character_view.Texture = ArborResource.Get<Texture>("images/spot_victory.png");
+            character_view.Texture = ArborResource.Get<Texture>("public/images/spot_victory.png");
             ArborCoroutine.StartCoroutine(DoRetry(), this);
         }
     }
@@ -279,10 +279,10 @@ public class GameOver : Node
         yield return ArborCoroutine.WaitForSeconds(initial_delay);
 
         /* Character fall animation */
-        character_view.Texture = ArborResource.Get<Texture>("images/spot_continue_2.png");
+        character_view.Texture = ArborResource.Get<Texture>("public/images/spot_continue_2.png");
         yield return ArborCoroutine.WaitForSeconds(0.35f);
 
-        character_view.Texture = ArborResource.Get<Texture>("images/spot_continue_3.png");
+        character_view.Texture = ArborResource.Get<Texture>("public/images/spot_continue_3.png");
 
         yield return ArborCoroutine.WaitForSeconds(1.5f);
 
@@ -314,20 +314,20 @@ public class GameOver : Node
         background_image.Modulate = new Color(0, 0, 0, 1);
 
         /* Show epilogue / game over background */
-        ArborResource.Load<Texture>("images/gameover_bg.png");
-        ArborResource.Load<Texture>("images/gameover.png");
-        ArborResource.Load<AudioStream>("sounds/bgm_gameover_end.ogg");
-        ArborResource.Load<AudioStream>("sounds/vocal_gameover.ogg");
+        ArborResource.Load<Texture>("public/images/gameover_bg.png");
+        ArborResource.Load<Texture>("public/images/gameover.png");
+        ArborResource.Load<AudioStream>("public/sounds/bgm_gameover_end.ogg");
+        ArborResource.Load<AudioStream>("public/sounds/vocal_gameover.ogg");
 
-        yield return ArborResource.WaitFor("images/gameover_bg.png");
-        yield return ArborResource.WaitFor("images/gameover.png");
-        yield return ArborResource.WaitFor("sounds/bgm_gameover_end.ogg");
-        yield return ArborResource.WaitFor("sounds/vocal_gameover.ogg");
+        yield return ArborResource.WaitFor("public/images/gameover_bg.png");
+        yield return ArborResource.WaitFor("public/images/gameover.png");
+        yield return ArborResource.WaitFor("public/sounds/bgm_gameover_end.ogg");
+        yield return ArborResource.WaitFor("public/sounds/vocal_gameover.ogg");
 
-        background_image.Texture = ArborResource.Get<Texture>("images/gameover_bg.png");
-        game_over_image.Texture = ArborResource.Get<Texture>("images/gameover.png");
+        background_image.Texture = ArborResource.Get<Texture>("public/images/gameover_bg.png");
+        game_over_image.Texture = ArborResource.Get<Texture>("public/images/gameover.png");
 
-        AudioStream gameover_bgm = ArborResource.Get<AudioStream>("sounds/bgm_gameover_end.ogg");
+        AudioStream gameover_bgm = ArborResource.Get<AudioStream>("public/sounds/bgm_gameover_end.ogg");
         
         //ArborAudioManager.RequestBGM(gameover_bgm);
         ArborAudioManager.RequestSFX(gameover_bgm);
@@ -363,7 +363,7 @@ public class GameOver : Node
         }
         game_over_image.Modulate = new Color(1, 1, 1, 1);
 
-        AudioStream stream = ArborResource.Get<AudioStream>("sounds/vocal_gameover.ogg");
+        AudioStream stream = ArborResource.Get<AudioStream>("public/sounds/vocal_gameover.ogg");
         var audio_player = ArborAudioManager.RequestSFX(stream);
 
         float time_to_live = audio_player.Stream.GetLength() + 1.0f;

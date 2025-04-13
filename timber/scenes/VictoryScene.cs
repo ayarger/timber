@@ -65,14 +65,14 @@ public class VictoryScene : Node
         TransitionSystem.RequestHold();
 
         /* Load */
-        ArborResource.Load<AudioStream>("sounds/bgm_victory.ogg");
-        ArborResource.Load<Texture>("images/spot_victory.png");
-        ArborResource.Load<Texture>("images/victory_bg.png");
+        ArborResource.Load<AudioStream>("public/sounds/bgm_victory.ogg");
+        ArborResource.Load<Texture>("public/images/spot_victory.png");
+        ArborResource.Load<Texture>("public/images/victory_bg.png");
 
         GD.Print("waiting...");
-        yield return ArborResource.WaitFor("sounds/bgm_victory.ogg");
-        yield return ArborResource.WaitFor("images/spot_victory.png");
-        yield return ArborResource.WaitFor("images/victory_bg.png");
+        yield return ArborResource.WaitFor("public/sounds/bgm_victory.ogg");
+        yield return ArborResource.WaitFor("public/images/spot_victory.png");
+        yield return ArborResource.WaitFor("public/images/victory_bg.png");
 
         GD.Print("done waiting...");
 
@@ -81,9 +81,9 @@ public class VictoryScene : Node
         mat.SetShaderParam("blur_amount", 0.1f);
         mat.SetShaderParam("texture_resolution", new Vector2(1920, 1080));
 
-        character_view.Texture = ArborResource.Get<Texture>("images/spot_victory.png");
-        background_image.Texture = ArborResource.Get<Texture>("images/victory_bg.png");
-        ArborAudioManager.RequestBGM(ArborResource.Get<AudioStream>("sounds/bgm_victory.ogg"));
+        character_view.Texture = ArborResource.Get<Texture>("public/images/spot_victory.png");
+        background_image.Texture = ArborResource.Get<Texture>("public/images/victory_bg.png");
+        ArborAudioManager.RequestBGM(ArborResource.Get<AudioStream>("public/sounds/bgm_victory.ogg"));
 
         TransitionSystem.RemoveHold();
 

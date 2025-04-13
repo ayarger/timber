@@ -20,9 +20,9 @@ public class Icon3D : MeshInstance
 
     IEnumerator DoThing()
     {
-        ArborResource.Load<Texture>("lives_icon.png");
-        yield return ArborResource.WaitFor("lives_icon.png");
-        ImageTexture tex = (ImageTexture)ArborResource.Get<Texture>("lives_icon.png");
+        ArborResource.Load<Texture>("public/images/lives_icon.png");
+        yield return ArborResource.WaitFor("public/images/lives_icon.png");
+        ImageTexture tex = (ImageTexture)ArborResource.Get<Texture>("public/images/lives_icon.png");
 
 
         //GD.Print("has alpha " + tex.HasAlpha());
