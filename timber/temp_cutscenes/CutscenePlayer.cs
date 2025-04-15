@@ -193,7 +193,7 @@ public class CutscenePlayer : CanvasLayer
                 break;
             case "vibrate":
                 vibrateTimer = 0;
-                originalPosition = imageDisplay.RectPosition;
+                //originalPosition = imageDisplay.RectPosition;
                 break;
             default:
                 GD.PrintErr($"Unknown display style: {displayStyle}");

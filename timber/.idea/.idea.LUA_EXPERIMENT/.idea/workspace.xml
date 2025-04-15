@@ -9,39 +9,8 @@
   <component name="ChangeListManager">
     <list default="true" id="538a528e-ecd1-41c7-ae1d-5407c3f4da6b" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.LUA_EXPERIMENT/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.LUA_EXPERIMENT/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ArborResource.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ArborResource.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/project.godot" beforeDir="false" afterPath="$PROJECT_DIR$/project.godot" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scenes/CutsceneEditor.tscn" beforeDir="false" afterPath="$PROJECT_DIR$/scenes/CutsceneEditor.tscn" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scenes/CutsceneManager.tscn" beforeDir="false" afterPath="$PROJECT_DIR$/scenes/CutsceneManager.tscn" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scenes/MainMenu.tscn" beforeDir="false" afterPath="$PROJECT_DIR$/scenes/MainMenu.tscn" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scenes/NewCutsceneManager.tscn" beforeDir="false" afterPath="$PROJECT_DIR$/scenes/NewCutsceneManager.tscn" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scenes/SlidePreview.tscn" beforeDir="false" afterPath="$PROJECT_DIR$/scenes/SlidePreview.tscn" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/CutsceneEditor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/CutsceneEditor.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/temp_cutscenes/CutsceneManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/CutsceneManager.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/temp_cutscenes/CutscenePlayer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/CutscenePlayer.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/CutscenePlayer.tscn" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/CutscenePlayer.tscn" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/1.tres" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/1.tres" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/10.tres" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/10.tres" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/11.tres" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/11.tres" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/12.tres" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/12.tres" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/13.tres" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/13.tres" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/14.tres" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/14.tres" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/15.tres" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/15.tres" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/16.tres" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/16.tres" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/17.tres" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/17.tres" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/18.tres" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/18.tres" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/19.tres" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/19.tres" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/2.tres" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/2.tres" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/20.tres" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/20.tres" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/3.tres" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/3.tres" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/4.tres" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/4.tres" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/5.tres" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/5.tres" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/6.tres" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/6.tres" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/7.tres" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/7.tres" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/8.tres" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/8.tres" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/9.tres" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/Intro_resources/9.tres" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/PreviewRect.cs" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/PreviewRect.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_cutscenes/SlidePreview.cs" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/SlidePreview.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/temp_cutscenes/intro_cutscene_config_test.json" beforeDir="false" afterPath="$PROJECT_DIR$/temp_cutscenes/intro_cutscene_config_test.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -189,7 +158,7 @@
       <workItem from="1743051978313" duration="541000" />
       <workItem from="1743052951023" duration="5672000" />
       <workItem from="1743141911288" duration="41362000" />
-      <workItem from="1744118295563" duration="12862000" />
+      <workItem from="1744118295563" duration="14527000" />
     </task>
     <servers />
   </component>
@@ -232,13 +201,13 @@
         </line-breakpoint>
         <line-breakpoint type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/temp_cutscenes/CutsceneManager.cs</url>
-          <line>303</line>
+          <line>304</line>
           <properties documentPath="C:\Users\anhua\timber_win\timber\temp_cutscenes\CutsceneManager.cs" containingFunctionPresentation="Method 'ConvertCutsceneToJson'">
             <startOffsets>
-              <option value="9213" />
+              <option value="9297" />
             </startOffsets>
             <endOffsets>
-              <option value="9286" />
+              <option value="9370" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="8" />
@@ -261,10 +230,10 @@
           <line>238</line>
           <properties documentPath="C:\Users\anhua\timber_win\timber\temp_cutscenes\CutscenePlayer.cs" containingFunctionPresentation="Method 'OnCutsceneUpdated'">
             <startOffsets>
-              <option value="7083" />
+              <option value="7085" />
             </startOffsets>
             <endOffsets>
-              <option value="7134" />
+              <option value="7136" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="14" />
