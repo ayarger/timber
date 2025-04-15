@@ -1,6 +1,9 @@
 using Godot;
 using System;
 using System.Text;
+using System.Threading.Tasks;
+
+
 
 public class PopupManager : Node
 {
@@ -42,6 +45,20 @@ public class PopupManager : Node
             GD.PrintErr("PopupManager: Missing ActorPreviewWindow elements.");
         }
     }
+
+    public async Task<Asset> PickAsset(string assetType)
+    {
+        // Pick asset usage example 
+        Asset result = await ArborResource.PickAsync(assetType);
+
+        if (result != null)
+            ShowImage(result.GetThumbnail());
+
+        return result;
+    }
+
+
+
 
     public static void ShowImage(Texture texture)
     {

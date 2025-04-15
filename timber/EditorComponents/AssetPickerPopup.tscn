@@ -5,7 +5,6 @@
 [sub_resource type="Theme" id=1]
 
 [node name="AssetPickerPopup" type="WindowDialog"]
-visible = true
 margin_left = 100.0
 margin_top = 100.0
 margin_right = 710.0

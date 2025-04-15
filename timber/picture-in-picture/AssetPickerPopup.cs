@@ -18,18 +18,8 @@ public class AssetPickerPopup : WindowDialog
     public override void _Ready()
     {
         InstantiatePopup();
-        PickAsset();
+        //PickAsset(AssetType.Actor);
         
-    }
-
-    private async void PickAsset()
-    {
-        Asset result = await ArborResource.PickAsync(AssetType.Actor);
-        if (result != null)
-            GD.Print("You picked: " + result.FilePath);
-        else
-            GD.Print("No file picked.");
-
     }
 
     private void InstantiatePopup()

@@ -63,6 +63,11 @@ public abstract class Asset : Control
 
         return button;
     }
+
+    public Texture GetThumbnail()
+    {
+        return _thumbnail;
+    }
 }
 
 public enum AssetType

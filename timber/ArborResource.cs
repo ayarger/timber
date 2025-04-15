@@ -682,7 +682,7 @@ public class ArborResource : Node
         yield return ArborResource.Upload<Texture>("upload");
     }
 
-    public static IEnumerator Pick(AssetType filterType, Action<Asset> callback)
+    public static IEnumerator Pick(string filterType, Action<Asset> callback)
     {
         // Try to find existing picker
         AssetPickerPopup picker = instance.GetTree().Root.GetNodeOrNull<AssetPickerPopup>("AssetPicker/AssetPickerPopup");
@@ -691,7 +691,6 @@ public class ArborResource : Node
         {
             GD.Print("AssetPickerPopup not found, instantiating...");
 
-            // Load the scene (update the path to your actual .tscn location)
             var popupScene = GD.Load<PackedScene>("res://EditorComponents/AssetPickerPopup.tscn");
             if (popupScene == null)
             {
@@ -700,7 +699,7 @@ public class ArborResource : Node
                 yield break;
             }
 
-            // Create AssetPicker parent node if needed
+            // Create AssetPicker node if needed
             Node assetPickerContainer = instance.GetTree().Root.GetNodeOrNull("AssetPicker");
             if (assetPickerContainer == null)
             {
@@ -717,7 +716,7 @@ public class ArborResource : Node
         bool assetChosen = false;
         Asset selectedAsset = null;
 
-        picker.SetFilter(filterType.ToString());
+        picker.SetFilter(filterType);
         picker.Open(asset =>
         {
             selectedAsset = asset;
@@ -730,13 +729,13 @@ public class ArborResource : Node
         callback?.Invoke(selectedAsset);
     }
 
-    public static Task<Asset> PickAsync(AssetType filterType)
+    public static Task<Asset> PickAsync(string filterType)
     {
         var tcs = new TaskCompletionSource<Asset>();
 
         ArborCoroutine.StartCoroutine(Pick(filterType, asset =>
         {
-            tcs.SetResult(asset); // Completes the Task when the asset is picked
+            tcs.SetResult(asset);
         }));
 
         return tcs.Task;

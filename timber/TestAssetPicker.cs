@@ -14,7 +14,7 @@ public class TestAssetPicker : Node2D
 
     private async void OnPickAssetPressed()
     {
-        Asset result = await ArborResource.PickAsync(AssetType.Actor);
+        Asset result = await ArborResource.PickAsync(AssetType.Actor.ToString());
         if (result != null)
             GD.Print("You picked: " + result.FilePath);
         else

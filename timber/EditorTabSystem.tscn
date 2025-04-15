@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://FlatUI/kenneyUI-green.tres" type="Theme" id=1]
 [ext_resource path="res://temp_scripts/hammer.png" type="Texture" id=2]
@@ -7,6 +7,7 @@
 [ext_resource path="res://Dialogue/Beaver.png" type="Texture" id=5]
 [ext_resource path="res://png_background.jpg" type="Texture" id=6]
 [ext_resource path="res://PopupManager.cs" type="Script" id=7]
+[ext_resource path="res://icons/add_icon.png" type="Texture" id=8]
 
 [sub_resource type="Theme" id=1]
 
@@ -15,6 +16,31 @@ font_path = "res://fonts/Roboto-Regular.ttf"
 
 [sub_resource type="DynamicFont" id=3]
 font_data = SubResource( 2 )
+
+[sub_resource type="CSharpScript" id=4]
+resource_name = "PickAssetButton"
+script/source = "using Godot;
+using System;
+
+public class PickAssetButton : Button
+{
+    // Declare member variables here. Examples:
+    // private int a = 2;
+    // private string b = \"text\";
+
+    // Called when the node enters the scene tree for the first time.
+    public override void _Ready()
+    {
+        
+    }
+
+//  // Called every frame. 'delta' is the elapsed time since the previous frame.
+//  public override void _Process(float delta)
+//  {
+//      
+//  }
+}
+"
 
 [node name="EditorTabSystem" type="Node2D"]
 
@@ -225,3 +251,43 @@ size_flags_vertical = 3
 
 [node name="PopupManager" type="Node2D" parent="."]
 script = ExtResource( 7 )
+
+[node name="Button" type="Button" parent="."]
+margin_left = 699.0
+margin_top = 777.0
+margin_right = 1223.0
+margin_bottom = 1295.0
+rect_scale = Vector2( 0.5, 0.5 )
+rect_pivot_offset = Vector2( 752, 60 )
+text = "Pick Image"
+icon = ExtResource( 8 )
+icon_align = 1
+script = SubResource( 4 )
+
+[node name="Button2" type="Button" parent="."]
+margin_left = 979.0
+margin_top = 777.0
+margin_right = 1503.0
+margin_bottom = 1295.0
+rect_scale = Vector2( 0.5, 0.5 )
+rect_pivot_offset = Vector2( 752, 60 )
+text = "Pick Sound"
+icon = ExtResource( 8 )
+icon_align = 1
+script = SubResource( 4 )
+
+[node name="Button3" type="Button" parent="."]
+margin_left = 1261.0
+margin_top = 777.0
+margin_right = 1785.0
+margin_bottom = 1295.0
+rect_scale = Vector2( 0.5, 0.5 )
+rect_pivot_offset = Vector2( 752, 60 )
+text = "Pick Actor"
+icon = ExtResource( 8 )
+icon_align = 1
+script = SubResource( 4 )
+
+[connection signal="pressed" from="Button" to="PopupManager" method="PickAsset" binds= [ "Image" ]]
+[connection signal="pressed" from="Button2" to="PopupManager" method="PickAsset" binds= [ "Sound" ]]
+[connection signal="pressed" from="Button3" to="PopupManager" method="PickAsset" binds= [ "Actor" ]]
