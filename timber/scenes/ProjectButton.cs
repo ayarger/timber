@@ -23,6 +23,17 @@ public class ProjectButton : MarginContainer
     public void OnPressed()
     {
         TempSecrets.MOD_UUID = uuid;
-        TransitionSystem.RequestTransition(@"res://Main.tscn");
+        //TransitionSystem.RequestTransition(@"res://Main.tscn");
+        string scene_path = "res://scenes/CutsceneManager.tscn";
+        PackedScene new_scene = ResourceLoader.Load<PackedScene>(scene_path);
+        if (new_scene == null)
+        {
+            GD.Print("Failed to load scene: " + scene_path);
+        }
+        else
+        {
+            GetTree().ChangeSceneTo(new_scene);
+            GD.Print("Scene Loaded: " + scene_path);
+        }
     }
 }

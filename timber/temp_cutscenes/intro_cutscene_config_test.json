@@ -1,116 +1,122 @@
 [
   {
-    "ImagePath": "cutscenes/2.png",
-    "TransitionStyle": "bounce",
+    "ImagePath": "cutscenes/1.png",
+    "TransitionStyle": "fade_up",
     "DisplayStyle": "standard",
     "Order": 0
   },
   {
-    "ImagePath": "cutscenes/3.png",
+    "ImagePath": "cutscenes/2.png",
     "TransitionStyle": "fade_up",
     "DisplayStyle": "standard",
     "Order": 1
   },
   {
+    "ImagePath": "cutscenes/3.png",
+    "TransitionStyle": "fade_up",
+    "DisplayStyle": "standard",
+    "Order": 2
+  },
+  {
     "ImagePath": "cutscenes/4.png",
     "TransitionStyle": "bounce",
     "DisplayStyle": "standard",
-    "Order": 2
+    "Order": 3
   },
   {
     "ImagePath": "cutscenes/5.png",
     "TransitionStyle": "instant",
     "DisplayStyle": "standard",
-    "Order": 3
+    "Order": 4
   },
   {
     "ImagePath": "cutscenes/6.png",
     "TransitionStyle": "instant",
     "DisplayStyle": "standard",
-    "Order": 4
+    "Order": 5
   },
   {
     "ImagePath": "cutscenes/7.png",
     "TransitionStyle": "instant",
     "DisplayStyle": "standard",
-    "Order": 5
+    "Order": 6
   },
   {
     "ImagePath": "cutscenes/8.png",
     "TransitionStyle": "instant",
     "DisplayStyle": "standard",
-    "Order": 6
+    "Order": 7
   },
   {
     "ImagePath": "cutscenes/9.png",
     "TransitionStyle": "bounce",
     "DisplayStyle": "vibrate",
-    "Order": 7
+    "Order": 8
   },
   {
     "ImagePath": "cutscenes/10.png",
     "TransitionStyle": "fade_up",
     "DisplayStyle": "standard",
-    "Order": 8
+    "Order": 9
   },
   {
     "ImagePath": "cutscenes/11.png",
     "TransitionStyle": "fade_up",
     "DisplayStyle": "standard",
-    "Order": 9
+    "Order": 10
   },
   {
     "ImagePath": "cutscenes/12.png",
     "TransitionStyle": "bounce",
     "DisplayStyle": "standard",
-    "Order": 10
+    "Order": 11
   },
   {
     "ImagePath": "cutscenes/13.png",
     "TransitionStyle": "fade_up",
     "DisplayStyle": "standard",
-    "Order": 11
+    "Order": 12
   },
   {
     "ImagePath": "cutscenes/14.png",
     "TransitionStyle": "instant",
     "DisplayStyle": "standard",
-    "Order": 12
+    "Order": 13
   },
   {
     "ImagePath": "cutscenes/15.png",
     "TransitionStyle": "instant",
     "DisplayStyle": "standard",
-    "Order": 13
+    "Order": 14
   },
   {
     "ImagePath": "cutscenes/16.png",
     "TransitionStyle": "bounce",
     "DisplayStyle": "standard",
-    "Order": 14
+    "Order": 15
   },
   {
     "ImagePath": "cutscenes/17.png",
     "TransitionStyle": "instant",
     "DisplayStyle": "standard",
-    "Order": 15
+    "Order": 16
   },
   {
     "ImagePath": "cutscenes/18.png",
     "TransitionStyle": "bounce",
     "DisplayStyle": "standard",
-    "Order": 16
+    "Order": 17
   },
   {
     "ImagePath": "cutscenes/19.png",
     "TransitionStyle": "instant",
     "DisplayStyle": "standard",
-    "Order": 17
+    "Order": 18
   },
   {
     "ImagePath": "cutscenes/20.png",
     "TransitionStyle": "instant",
     "DisplayStyle": "vibrate",
-    "Order": 18
+    "Order": 19
   }
 ]
