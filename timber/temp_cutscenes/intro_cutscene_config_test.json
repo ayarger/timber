@@ -1,25 +1,25 @@
 [
   {
-    "ImagePath": "cutscenes/1.png",
+    "ImagePath": "cutscenes/2.png",
     "TransitionStyle": "bounce",
-    "DisplayStyle": "shake_small",
-    "Order": 0
-  },
-  {
-    "ImagePath": "cutscenes/13.png",
-    "TransitionStyle": "fade_up",
     "DisplayStyle": "standard",
-    "Order": 1
+    "Order": 0
   },
   {
     "ImagePath": "cutscenes/3.png",
     "TransitionStyle": "fade_up",
     "DisplayStyle": "standard",
-    "Order": 2
+    "Order": 1
   },
   {
     "ImagePath": "cutscenes/4.png",
     "TransitionStyle": "bounce",
+    "DisplayStyle": "standard",
+    "Order": 2
+  },
+  {
+    "ImagePath": "cutscenes/5.png",
+    "TransitionStyle": "instant",
     "DisplayStyle": "standard",
     "Order": 3
   },
@@ -66,19 +66,19 @@
     "Order": 10
   },
   {
-    "ImagePath": "cutscenes/2.png",
+    "ImagePath": "cutscenes/13.png",
     "TransitionStyle": "fade_up",
     "DisplayStyle": "standard",
     "Order": 11
   },
   {
-    "ImagePath": "cutscenes/15.png",
+    "ImagePath": "cutscenes/14.png",
     "TransitionStyle": "instant",
     "DisplayStyle": "standard",
     "Order": 12
   },
   {
-    "ImagePath": "cutscenes/5.png",
+    "ImagePath": "cutscenes/15.png",
     "TransitionStyle": "instant",
     "DisplayStyle": "standard",
     "Order": 13
@@ -106,5 +106,11 @@
     "TransitionStyle": "instant",
     "DisplayStyle": "standard",
     "Order": 17
+  },
+  {
+    "ImagePath": "cutscenes/20.png",
+    "TransitionStyle": "instant",
+    "DisplayStyle": "vibrate",
+    "Order": 18
   }
 ]
