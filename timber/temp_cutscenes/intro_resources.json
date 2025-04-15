@@ -1,0 +1,102 @@
+[
+  {
+    "ImagePath": "res://temp_cutscenes/intro_images/1.png",
+    "TransitionStyle": "fade_up",
+    "DisplayStyle": "standard"
+  },
+  {
+    "ImagePath": "res://temp_cutscenes/intro_images/2.png",
+    "TransitionStyle": "fade_up",
+    "DisplayStyle": "standard"
+  },
+  {
+    "ImagePath": "res://temp_cutscenes/intro_images/3.png",
+    "TransitionStyle": "fade_up",
+    "DisplayStyle": "standard"
+  },
+  {
+    "ImagePath": "res://temp_cutscenes/intro_images/4.png",
+    "TransitionStyle": "bounce",
+    "DisplayStyle": "standard"
+  },
+  {
+    "ImagePath": "res://temp_cutscenes/intro_images/5.png",
+    "TransitionStyle": "instant",
+    "DisplayStyle": "standard"
+  },
+  {
+    "ImagePath": "res://temp_cutscenes/intro_images/6.png",
+    "TransitionStyle": "instant",
+    "DisplayStyle": "standard"
+  },
+  {
+    "ImagePath": "res://temp_cutscenes/intro_images/7.png",
+    "TransitionStyle": "instant",
+    "DisplayStyle": "standard"
+  },
+  {
+    "ImagePath": "res://temp_cutscenes/intro_images/8.png",
+    "TransitionStyle": "instant",
+    "DisplayStyle": "standard"
+  },
+  {
+    "ImagePath": "res://temp_cutscenes/intro_images/9.png",
+    "TransitionStyle": "bounce",
+    "DisplayStyle": "vibrate"
+  },
+  {
+    "ImagePath": "res://temp_cutscenes/intro_images/10.png",
+    "TransitionStyle": "fade_up",
+    "DisplayStyle": "standard"
+  },
+  {
+    "ImagePath": "res://temp_cutscenes/intro_images/11.png",
+    "TransitionStyle": "fade_up",
+    "DisplayStyle": "standard"
+  },
+  {
+    "ImagePath": "res://temp_cutscenes/intro_images/12.png",
+    "TransitionStyle": "bounce",
+    "DisplayStyle": "standard"
+  },
+  {
+    "ImagePath": "res://temp_cutscenes/intro_images/13.png",
+    "TransitionStyle": "fade_up",
+    "DisplayStyle": "standard"
+  },
+  {
+    "ImagePath": "res://temp_cutscenes/intro_images/14.png",
+    "TransitionStyle": "instant",
+    "DisplayStyle": "standard"
+  },
+  {
+    "ImagePath": "res://temp_cutscenes/intro_images/15.png",
+    "TransitionStyle": "instant",
+    "DisplayStyle": "standard"
+  },
+  {
+    "ImagePath": "res://temp_cutscenes/intro_images/16.png",
+    "TransitionStyle": "bounce",
+    "DisplayStyle": "standard"
+  },
+  {
+    "ImagePath": "res://temp_cutscenes/intro_images/17.png",
+    "TransitionStyle": "instant",
+    "DisplayStyle": "standard"
+  },
+  {
+    "ImagePath": "res://temp_cutscenes/intro_images/18.png",
+    "TransitionStyle": "bounce",
+    "DisplayStyle": "standard"
+  },
+  {
+    "ImagePath": "res://temp_cutscenes/intro_images/19.png",
+    "TransitionStyle": "instant",
+    "DisplayStyle": "standard"
+  },
+  {
+    "ImagePath": "res://temp_cutscenes/intro_images/20.png",
+    "TransitionStyle": "instant",
+    "DisplayStyle": "vibrate"
+  }
+]

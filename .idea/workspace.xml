@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="ce700885-fdf4-4376-9793-f76abffe1d43" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/Folder.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/Folder.DotSettings.user" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/timber/Actor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/timber/Actor.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/timber/LuaEngine/luaobjects/LuaActor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/timber/LuaEngine/luaobjects/LuaActor.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/timber/LuaLoader.cs" beforeDir="false" afterPath="$PROJECT_DIR$/timber/LuaLoader.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/timber/SelectionSystem.cs" beforeDir="false" afterPath="$PROJECT_DIR$/timber/SelectionSystem.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/timber/scenes/HasStats.cs" beforeDir="false" afterPath="$PROJECT_DIR$/timber/scenes/HasStats.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/timber/temp_scripts/BarContainer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/timber/temp_scripts/BarContainer.cs" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;history&quot;: [
+    {
+      &quot;state&quot;: &quot;OPEN&quot;
+    }
+  ],
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/ayarger/timber.git&quot;,
+    &quot;accountId&quot;: &quot;6e4073da-5a8e-487a-8b88-6e889d7e5fb3&quot;
+  }
+}</component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/ILViewer/32b7d6a5495340e4bfd392d3d5db407b3a5a00/0f/9cc9a990/0200000Dpdb1.il" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/ILViewer/32b7d6a5495340e4bfd392d3d5db407b3a5a00/38/0d372d8c/02000012pdb115.il" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/ILViewer/32b7d6a5495340e4bfd392d3d5db407b3a5a00/7a/7fbf53bb/02000076pdb1135.il" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/ILViewer/32b7d6a5495340e4bfd392d3d5db407b3a5a00/7f/5ffa4408/020000A0pdb1171.il" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/ILViewer/32b7d6a5495340e4bfd392d3d5db407b3a5a00/b2/b835c883/02000025pdb187.il" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/54b49a39d6c94f36adb89bde3c275b44108e00/5c/2dcc0050/Enumerable.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/b9aa46ca7e704286b432955093e83a1046c600/52/edefdc4a/String.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/b9aa46ca7e704286b432955093e83a1046c600/7a/6a58c918/ThrowHelper.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/b9aa46ca7e704286b432955093e83a1046c600/b6/c61fc334/Exception.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/efbf1361bba342e0a2c7a839ddd1f9ef294c00/8b/594a2455/InputEventMouseButton.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/efbf1361bba342e0a2c7a839ddd1f9ef294c00/90/7fee1b39/Object.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/efbf1361bba342e0a2c7a839ddd1f9ef294c00/fb/4bb98b34/GodotTaskScheduler.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/timber/Actor.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/timber/ArborCoroutine.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/timber/ArborResource.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/timber/DeveloperConsole/Commands/StatCommand.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/timber/DeveloperConsole/Scripts/ConsoleManager.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/timber/EventBus.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/timber/GameplayCamera.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/timber/InputManager.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/timber/LuaEngine/LuaAPI.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/timber/LuaEngine/NLuaScriptManager.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/timber/LuaEngine/luaobjects/LuaActor.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/timber/LuaLoader.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/timber/MeshGenerator.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/timber/ModUploader.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/timber/NAudio/NAudio.Wasapi/WasapiOut.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/timber/SelectionSystem.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/timber/ToastManager.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/timber/UI/DynamicMenu.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/timber/UI/EditUI/EditUI.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/timber/UIOrb.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/timber/addons/YarnSpinner-Godot/Editor/YarnProjectEditorUtility.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/timber/addons/YarnSpinner-Godot/Runtime/InMemoryVariableStorage.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/timber/addons/YarnSpinner-Godot/Runtime/LineMetadataTableEntry.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/timber/addons/YarnSpinner-Godot/Runtime/StringTableEntry.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/timber/fogofwartesting/FogOfWar.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/timber/fogofwartesting/StateManager.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/timber/fogofwartesting/TestMovement.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/timber/plugins/Newtonsoft.Json/JsonTextReader.Async.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/timber/plugins/Newtonsoft.Json/JsonTextReader.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/timber/plugins/Newtonsoft.Json/Utilities/StringBuffer.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/timber/scenes/HasStats.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/timber/scenes/IsSelectable.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/timber/scenes/UIManager.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/timber/temp_scenes/canDisplayStatsChange.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/timber/temp_scenes/isDraggableUI.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/timber/temp_scripts/Bar.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/timber/temp_scripts/BarContainer.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/timber/temp_scripts/StatManager.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/timber/temp_scripts/Tower.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/timber/temp_scripts/TowerManager.cs" root0="SKIP_HIGHLIGHTING" />
+  </component>
+  <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 5
+}</component>
+  <component name="ProjectId" id="2omKINPDy6CFTdDUo6c9l3CibJD" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Godot 3 Start and Debug.Godot.executor": "Debug",
+    "Godot 3 Start and Debug.Timber.executor": "Debug",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "XThreadsFramesViewSplitterKey": "0.266766",
+    "gdscript.promo.shown": "true",
+    "git-widget-placeholder": "stats-console-merge",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RunManager">
+    <configuration name="Timber" type="GODOT_DEBUG_RUN_CONFIGURATION" factoryName="Start and Debug">
+      <option name="EXE_PATH" value="$PROJECT_DIR$/../Downloads/GodotWindows/GodotWindows/GodotForTimber.exe" />
+      <option name="PROGRAM_PARAMETERS" value="--path $PROJECT_DIR$/timber" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/timber" />
+      <option name="PASS_PARENT_ENVS" value="1" />
+      <option name="USE_EXTERNAL_CONSOLE" value="0" />
+      <method v="2">
+        <option name="Build Solution" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="ce700885-fdf4-4376-9793-f76abffe1d43" name="Changes" comment="" />
+      <created>1731469230083</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1731469230083</updated>
+      <workItem from="1731469231607" duration="100000" />
+      <workItem from="1731469348504" duration="2340000" />
+      <workItem from="1731971808547" duration="1212000" />
+      <workItem from="1732029872563" duration="1553000" />
+      <workItem from="1732031756154" duration="4324000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="UnityCheckinConfiguration" checkUnsavedScenes="true" />
+  <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/timber/scenes/HasStats.cs</url>
+          <line>284</line>
+          <properties documentPath="C:\Users\anhua\timber_win\timber\scenes\HasStats.cs" containingFunctionPresentation="Method '_ExitTree'">
+            <startOffsets>
+              <option value="5549" />
+            </startOffsets>
+            <endOffsets>
+              <option value="5566" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="9" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/timber/scenes/HasStats.cs</url>
+          <line>184</line>
+          <properties documentPath="C:\Users\anhua\timber_win\timber\scenes\HasStats.cs" containingFunctionPresentation="Method 'AddStat'">
+            <startOffsets>
+              <option value="3501" />
+            </startOffsets>
+            <endOffsets>
+              <option value="3618" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="12" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/timber/temp_scripts/StatManager.cs</url>
+          <line>24</line>
+          <properties documentPath="C:\Users\anhua\timber_win\timber\temp_scripts\StatManager.cs" containingFunctionPresentation="Method 'Config'">
+            <startOffsets>
+              <option value="738" />
+            </startOffsets>
+            <endOffsets>
+              <option value="796" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="13" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/timber/temp_scripts/Bar.cs</url>
+          <line>113</line>
+          <properties documentPath="C:\Users\anhua\timber_win\timber\temp_scripts\Bar.cs" containingFunctionPresentation="Method '_ExitTree'">
+            <startOffsets>
+              <option value="2754" />
+            </startOffsets>
+            <endOffsets>
+              <option value="2792" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="14" />
+        </line-breakpoint>
+        <breakpoint enabled="true" type="DotNet Exception Breakpoints">
+          <properties exception="System.NullReferenceException" isInternal="false" displayValue="NullReferenceException" namespaceName="System">
+            <option name="internal" value="false" />
+          </properties>
+          <option name="timeStamp" value="10" />
+        </breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+    <watches-manager>
+      <configuration name="GODOT_DEBUG_RUN_CONFIGURATION">
+        <watch expression="this" language="C#" />
+        <watch expression="Stats" language="C#" />
+        <watch expression="Actor" language="C#" />
+        <watch expression="container" language="C#" />
+        <watch expression="statChangeEventSubscription" language="C#" />
+      </configuration>
+    </watches-manager>
+  </component>
+</project>

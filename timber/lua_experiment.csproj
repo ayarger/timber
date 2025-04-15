@@ -21,6 +21,7 @@
   </Target>
   <Import Project="addons\YarnSpinner-Godot\YarnSpinner-Godot.props" />
   <ItemGroup>
+    <Folder Include="TempCutscenes\" />
     <Folder Include="temp_scenes\" />
   </ItemGroup>
 </Project>
