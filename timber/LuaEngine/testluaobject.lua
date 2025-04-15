@@ -23,7 +23,7 @@ function testluaobject:testfunc()
 		--Print("I am at x-position: "..self.x)
 	end
 	WaitForSeconds(2)
-	Print("I am not running!")
+		
 	
 	SetDestination(self.x+3, self.z, true)
 	--Hurt(self, 10)

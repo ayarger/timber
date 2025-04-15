@@ -137,7 +137,6 @@ public class Actor : Spatial
 		actorKO = true;
 
 		ArborCoroutine.StartCoroutine(loadTextures(), this);
-		ArborCoroutine.StartCoroutine(LoadLuaScript(config), this);
 
 		ArborResource.UseResource<Texture>(
             ConfigureFileNamePrefix(config.idle_sprite_filename),
@@ -278,44 +277,7 @@ public class Actor : Spatial
 		shadow_mat.SetShaderParam("screenPosZ", FogOfWar.instance.screenPosZ);
 	}
 
-	IEnumerator LoadLuaScript(ActorConfig config)
-	{
-        /* Load scripts of an actor */
-        foreach (ScriptConfig script in config.scripts)
-        {
-            if (!LuaRegistry.ContainsClass(script.name))
-            {
-				GD.Print(script.name);
-				if (script.name.Contains(".lua"))
-				{
-					script.name = script.name.Substring(0, script.name.Length - 4);
-				}
-                ArborResource.Load<string>("scripts/" + script.name + ".lua");
-                yield return ArborResource.WaitFor("scripts/" + script.name + ".lua");
-				LuaRegistry.RegisterClass(ArborResource.Get<string>("scripts/" + script.name + ".lua"), script.name);
-
-			}
-            LoadScriptAtLocation(script, this);
-        }
-
-        if (config.scripts.Count == 0)
-        {
-            ScriptConfig scriptConfig = new ScriptConfig();
-            scriptConfig.name = NLuaScriptManager.emptyLuaFile;
-            LoadScriptAtLocation(scriptConfig, this);
-        }
-    }
-
-    void LoadScriptAtLocation(ScriptConfig scriptConfig, Spatial owning_actor)
-    {
-        string source_path = System.IO.Directory.GetCurrentDirectory() + @"\resources\scripts\" + scriptConfig.name;
-        NLuaScriptManager.Instance
-                .CreateActor(scriptConfig.name, NLuaScriptManager.GenerateObjectName(), owning_actor);
-
-        return;
-    }
-
-    IEnumerator loadTextures(){
+	IEnumerator loadTextures(){
 
 		foreach(var sprites in config.sprite_filenames){
 			string key = sprites.Key;

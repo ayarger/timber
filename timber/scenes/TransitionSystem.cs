@@ -120,7 +120,15 @@ public class TransitionSystem : Node
         else
         {
             PackedScene new_scene = ResourceLoader.Load<PackedScene>(scene_path);
-            instance.GetTree().ChangeSceneTo(new_scene);
+            if (new_scene == null)
+            {
+                GD.Print("Failed to load scene: " + scene_path);
+            }
+            else
+            {
+                instance.GetTree().ChangeSceneTo(new_scene);
+                GD.Print("Scene Loaded: " + scene_path);
+            }
         }
 
         instance.hole_size_percentage = 0.0f;
