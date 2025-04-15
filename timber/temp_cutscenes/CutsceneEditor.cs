@@ -263,7 +263,7 @@ public partial class CutsceneEditor : Control
         }
 
         // Update UI preview labels
-        UpdateList();
+       RefreshList();
 
         // Save updated JSON
         string filePath = "res://temp_cutscenes/intro_cutscene_config_test.json";

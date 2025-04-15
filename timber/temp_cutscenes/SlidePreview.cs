@@ -168,6 +168,7 @@ public partial class SlidePreview : Control
         string filePath = "res://temp_cutscenes/intro_cutscene_config_test.json";
         filePath = ProjectSettings.GlobalizePath(filePath);
         CutsceneManager.Instance.ConvertCutsceneToJson(filePath);
+        CutsceneManager.Instance.LoadCutsceneImagesFromJsonS3(filePath);
         GD.Print("Changes saved!");
         PopupDialog.Hide();
         CutscenePlayer.Instance.UpdateCutscenePreview();

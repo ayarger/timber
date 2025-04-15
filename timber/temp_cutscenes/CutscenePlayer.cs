@@ -2,7 +2,7 @@ using Godot;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-public class CutscenePlayer : CanvasLayer
+public class CutscenePlayer:Control
 {
     public static CutscenePlayer Instance { get; private set; }
     [Export] private float transitionDuration = 1.0f;
@@ -16,6 +16,7 @@ public class CutscenePlayer : CanvasLayer
     private float oscillationTimer = 0; // For sin_vertical
     private float vibrateTimer = 0; // For vibrate
     private Vector2 originalPosition;
+    private Vector2 originalScale;
 
 
     [Export]private List<CutsceneImageResource> cutsceneImages;
@@ -32,6 +33,8 @@ public class CutscenePlayer : CanvasLayer
             return;
         }
         imageDisplay = GetNode<TextureRect>("TextureRect");
+        originalScale = imageDisplay.RectScale;
+        originalPosition = imageDisplay.RectPosition;
         transitionTween = new Tween();
         AddChild(transitionTween);
 
@@ -41,7 +44,7 @@ public class CutscenePlayer : CanvasLayer
         }
         // Connecting with Editor for Cutscene Preview
        ConnectToEditor();
-      this.Hide();
+       this.Hide();
     }
 
     private void ConnectToEditor()
@@ -163,9 +166,9 @@ public class CutscenePlayer : CanvasLayer
 
     private void BounceTransition()
     {
-        imageDisplay.RectScale = new Vector2(0.8f*0.3f, 0.8f *0.3f);
+        imageDisplay.RectScale = new Vector2(0.8f*originalScale.x, 0.8f *originalScale.y);
         transitionTween.InterpolateProperty(
-            imageDisplay, "rect_scale", new Vector2(0.8f * 0.3f, 0.8f * 0.3f), new Vector2(1*0.3f, 1*0.3f), transitionDuration,
+            imageDisplay, "rect_scale", new Vector2(0.8f * originalScale.x, 0.8f * originalScale.y), new Vector2(originalScale.x, originalScale.y), transitionDuration,
             Tween.TransitionType.Bounce, Tween.EaseType.Out);
         transitionTween.Start();
     }
@@ -173,6 +176,9 @@ public class CutscenePlayer : CanvasLayer
     private void InstantTransition()
     {
         // No animation, just show the new image
+        imageDisplay.Modulate = new Color(1, 1, 1, 1);
+        imageDisplay.RectScale = originalScale;    
+        imageDisplay.Visible = true;     
     }
     
     private void ApplyDisplayStyle(string displayStyle)
@@ -193,7 +199,7 @@ public class CutscenePlayer : CanvasLayer
                 break;
             case "vibrate":
                 vibrateTimer = 0;
-                //originalPosition = imageDisplay.RectPosition;
+                originalPosition = imageDisplay.RectPosition;
                 break;
             default:
                 GD.PrintErr($"Unknown display style: {displayStyle}");
@@ -231,7 +237,10 @@ public class CutscenePlayer : CanvasLayer
     {
         oscillationTimer += delta;
         float oscillation = Mathf.Sin(oscillationTimer * 5) * 20; 
-        imageDisplay.RectPosition = new Vector2(imageDisplay.RectPosition.x, oscillation);
+        imageDisplay.RectPosition = new Vector2(
+            originalPosition.x,
+            originalPosition.y + oscillation
+        );
     }
     
     private void OnCutsceneUpdated()

@@ -43,6 +43,7 @@ stretch_mode = 4
 script = ExtResource( 4 )
 
 [node name="WindowDialog" type="WindowDialog" parent="."]
+visible = true
 margin_left = 432.0
 margin_top = 216.0
 margin_right = 1016.0
@@ -72,11 +73,12 @@ margin_right = -88.0
 margin_bottom = -276.0
 
 [node name="PopupPreview" type="TextureRect" parent="WindowDialog"]
-margin_left = 36.0
-margin_top = 44.0
-margin_right = 579.0
-margin_bottom = 439.0
+margin_left = -70.4385
+margin_top = -30.6254
+margin_right = 472.561
+margin_bottom = 364.375
 rect_scale = Vector2( 0.620001, 0.620001 )
+rect_pivot_offset = Vector2( 271.5, 197.5 )
 texture = ExtResource( 1 )
 expand = true
 stretch_mode = 6

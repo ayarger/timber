@@ -372,6 +372,38 @@ public class CutsceneManager : CanvasLayer
         //EventBus.Publish(new CutsceneStartEvent());
         StartCutscene();
     }
+    
+    public void LoadCutsceneImagesFromJsonS3(string filePath)
+    {
+        if (!System.IO.File.Exists(filePath))
+        {
+            GD.PrintErr("JSON file not found: " + filePath);
+            cutsceneImages.Clear();
+        }
+        string json = System.IO.File.ReadAllText(filePath);
+        List<CutsceneImageData> jsonData = JsonConvert.DeserializeObject<List<CutsceneImageData>>(json);
+        cutsceneImages.Clear();
+        cutsceneImages = new List<CutsceneImageResource>();
+        
+        GD.Print("start loading");
+        foreach (var data in jsonData)
+        {
+            CutsceneImageResource cutsceneImage = new CutsceneImageResource
+            {
+                
+                ImagePath = data.ImagePath,
+                TransitionStyle = data.TransitionStyle,
+                DisplayStyle = data.DisplayStyle,
+                Index = data.Order
+            };
+            LoadCutSceneImage(data.ImagePath, texture =>
+            {
+                cutsceneImage.Image = texture;
+            });
+            cutsceneImages.Add(cutsceneImage);
+        }
+        GD.Print("cutscene info loaded from: " + filePath);
+    }
 
     public override void _ExitTree()
     {
