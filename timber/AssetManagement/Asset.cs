@@ -64,3 +64,12 @@ public abstract class Asset : Control
         return button;
     }
 }
+
+public enum AssetType
+{
+    All,
+    Image,
+    Sound,
+    Actor,
+    Script
+}

@@ -1,28 +1,26 @@
 using Godot;
 using System;
+using System.Collections;
 
 public class TestAssetPicker : Node2D
 {
     private Button _pickButton;
-    private AssetPickerPopup _pickerPopup;
 
     public override void _Ready()
     {
         _pickButton = GetNode<Button>("PickAssetButton");
-        _pickerPopup = GetNode<AssetPickerPopup>("AssetPickerPopup");
-
         _pickButton.Connect("pressed", this, nameof(OnPickAssetPressed));
-        //_pickerPopup.Connect("AssetSelected", this, nameof(OnAssetSelected));
     }
 
-    private void OnPickAssetPressed()
+    private async void OnPickAssetPressed()
     {
-        _pickerPopup.Open(OnAssetSelected);
+        Asset result = await ArborResource.PickAsync(AssetType.Actor);
+        if (result != null)
+            GD.Print("You picked: " + result.FilePath);
+        else
+            GD.Print("No file picked.");
+
     }
 
-    private void OnAssetSelected(string filePath)
-    {
-        GD.Print($"Picked asset: {filePath}");
-        // Replace later with actual stuff
-    }
+
 }

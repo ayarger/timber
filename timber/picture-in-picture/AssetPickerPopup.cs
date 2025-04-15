@@ -12,10 +12,27 @@ public class AssetPickerPopup : WindowDialog
     private GridContainer _assetListContainer;
     private string _currentFilter = "All";
     private List<ModFile> _allAssets = new List<ModFile>();
-    private Action<string> _onAssetSelectedCallback;
+    private Action<Asset> _onAssetSelectedCallback;
     private Timer _loadDelayTimer;
 
     public override void _Ready()
+    {
+        InstantiatePopup();
+        PickAsset();
+        
+    }
+
+    private async void PickAsset()
+    {
+        Asset result = await ArborResource.PickAsync(AssetType.Actor);
+        if (result != null)
+            GD.Print("You picked: " + result.FilePath);
+        else
+            GD.Print("No file picked.");
+
+    }
+
+    private void InstantiatePopup()
     {
         _filterDropdown = GetNode<OptionButton>("VBoxContainer/FilterDropdown");
         _assetListContainer = GetNode<ScrollContainer>("VBoxContainer/ScrollContainer")
@@ -48,6 +65,23 @@ public class AssetPickerPopup : WindowDialog
         _currentFilter = _filterDropdown.GetItemText(index);
         RefreshAssetList();
     }
+
+    public void SetFilter(string filter)
+    {
+        for (int i = 0; i < _filterDropdown.GetItemCount(); i++)
+        {
+            if (_filterDropdown.GetItemText(i) == filter)
+            {
+                _filterDropdown.Select(i);
+                _currentFilter = filter;
+                RefreshAssetList();
+                return;
+            }
+        }
+
+        GD.PrintErr($"AssetPickerPopup: Filter '{filter}' not found in dropdown.");
+    }
+
 
     private IEnumerator LoadAssets()
     {
@@ -98,7 +132,7 @@ public class AssetPickerPopup : WindowDialog
         return false;
     }
 
-    private void OnAssetGuiInput(InputEvent @event, string filePath)
+    private void OnAssetGuiInput(InputEvent @event, Asset filePath)
     {
         if (@event is InputEventMouseButton mouseEvent && mouseEvent.Doubleclick)
         {
@@ -109,7 +143,7 @@ public class AssetPickerPopup : WindowDialog
         }
     }
 
-    public void Open(Action<string> onAssetSelected = null)
+    public void Open(Action<Asset> onAssetSelected = null)
     {
         _onAssetSelectedCallback = onAssetSelected;
         PopupCentered();
@@ -122,7 +156,7 @@ public class AssetPickerPopup : WindowDialog
 
         Control previewButton = asset.CreatePreviewButton();
         previewButton.Disconnect("pressed", asset, nameof(asset.OnButtonPressed));
-        previewButton.Connect("gui_input", this, nameof(OnAssetGuiInput), new Godot.Collections.Array { asset.FilePath });
+        previewButton.Connect("gui_input", this, nameof(OnAssetGuiInput), new Godot.Collections.Array { asset });
         _assetListContainer.AddChild(previewButton);
 
         GD.Print($"Added {asset.FilePath} to UI.");

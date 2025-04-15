@@ -15,6 +15,8 @@ using Amazon.Runtime.Internal.Transform;
 using System.Runtime.CompilerServices;
 using Amazon.Auth.AccessControlPolicy;
 using Google.Protobuf;
+using System.Threading.Tasks;
+
 
 public class ArborResource : Node
 {
@@ -679,6 +681,69 @@ public class ArborResource : Node
     {
         yield return ArborResource.Upload<Texture>("upload");
     }
+
+    public static IEnumerator Pick(AssetType filterType, Action<Asset> callback)
+    {
+        // Try to find existing picker
+        AssetPickerPopup picker = instance.GetTree().Root.GetNodeOrNull<AssetPickerPopup>("AssetPicker/AssetPickerPopup");
+
+        if (picker == null)
+        {
+            GD.Print("AssetPickerPopup not found, instantiating...");
+
+            // Load the scene (update the path to your actual .tscn location)
+            var popupScene = GD.Load<PackedScene>("res://EditorComponents/AssetPickerPopup.tscn");
+            if (popupScene == null)
+            {
+                GD.PrintErr("Failed to load AssetPickerPopup.tscn");
+                callback?.Invoke(null);
+                yield break;
+            }
+
+            // Create AssetPicker parent node if needed
+            Node assetPickerContainer = instance.GetTree().Root.GetNodeOrNull("AssetPicker");
+            if (assetPickerContainer == null)
+            {
+                assetPickerContainer = new Node { Name = "AssetPicker" };
+                instance.GetTree().Root.AddChild(assetPickerContainer);
+            }
+
+            picker = popupScene.Instance<AssetPickerPopup>();
+            picker.Name = "AssetPickerPopup";
+            assetPickerContainer.AddChild(picker);
+        }
+
+        // Start selection
+        bool assetChosen = false;
+        Asset selectedAsset = null;
+
+        picker.SetFilter(filterType.ToString());
+        picker.Open(asset =>
+        {
+            selectedAsset = asset;
+            assetChosen = true;
+        });
+
+        while (!assetChosen)
+            yield return null;
+
+        callback?.Invoke(selectedAsset);
+    }
+
+    public static Task<Asset> PickAsync(AssetType filterType)
+    {
+        var tcs = new TaskCompletionSource<Asset>();
+
+        ArborCoroutine.StartCoroutine(Pick(filterType, asset =>
+        {
+            tcs.SetResult(asset); // Completes the Task when the asset is picked
+        }));
+
+        return tcs.Task;
+    }
+
+
+
 }
 
 public static class ArborResourceExtensions
