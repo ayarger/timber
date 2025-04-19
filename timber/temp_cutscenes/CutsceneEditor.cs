@@ -203,8 +203,9 @@ public partial class CutsceneEditor : Control
     
     private void OnAddSlidePressed()
     {
-        chooseImageButton.Show();
-        uploadImageButton.Show();
+        //chooseImageButton.Show();
+        //uploadImageButton.Show();
+        
     }
     private void OnDeleteConfirmed()
     {
