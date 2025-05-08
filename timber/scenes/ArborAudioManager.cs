@@ -76,6 +76,23 @@ public class ArborAudioManager : Node
         return sfx_audio_player;
     }
 
+    public static AudioStreamPlayer PreviewSFX(AudioStream stream)
+    {
+        if (stream == null)
+            return null;
+
+        AudioStreamPlayer sfx_audio_player = GetAvailableSFXAudioPlayer();
+        sfx_audio_player.Stream = stream;
+
+        foreach(AudioStreamPlayer audio_player in sfx_audio_players)
+        {
+            if(audio_player.Playing)
+                audio_player.Stop();
+        }
+        sfx_audio_player.Play();
+        return sfx_audio_player;
+    }
+
     public static AudioStreamPlayer RequestBGM(AudioStream stream, bool start_loud=false,  bool loop=true)
     {
         AudioStreamPlayer current_bgm_player = GetCurrentBGMPlayer();

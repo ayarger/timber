@@ -1,0 +1,39 @@
+[gd_scene load_steps=2 format=2]
+
+[sub_resource type="StyleBoxFlat" id=1]
+bg_color = Color( 0.439216, 0.439216, 0.439216, 1 )
+border_width_top = 5
+border_width_bottom = 5
+border_color = Color( 0.364706, 0.364706, 0.364706, 1 )
+border_blend = true
+shadow_offset = Vector2( 5, 5 )
+
+[node name="ScriptButton" type="MarginContainer"]
+margin_right = 125.0
+margin_bottom = 49.0
+
+[node name="Button" type="Button" parent="."]
+margin_right = 125.0
+margin_bottom = 49.0
+grow_vertical = 2
+rect_pivot_offset = Vector2( -574, 249 )
+custom_styles/normal = SubResource( 1 )
+clip_text = true
+expand_icon = true
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+margin_right = 125.0
+margin_bottom = 49.0
+mouse_filter = 2
+custom_constants/margin_right = 5
+custom_constants/margin_top = 5
+custom_constants/margin_left = 5
+custom_constants/margin_bottom = 5
+
+[node name="Label" type="Label" parent="MarginContainer"]
+margin_left = 5.0
+margin_top = 17.0
+margin_right = 120.0
+margin_bottom = 31.0
+text = "testscript.lua"
+autowrap = true

@@ -93,18 +93,62 @@ public class NLuaScriptManager : Node
     {
         LuaRegistry.DeregisterActor(name);
 
-    }
+	}
 
-    //Create objects of a class, that hosts an actor. Should be the only "front facing" function for users.
-    //Will probably replace Actor with ActorConfig.
+	//Create objects of a class, that hosts an actor. Should be the only "front facing" function for users.
+	//Will probably replace Actor with ActorConfig.
 	//Should support multiple scripts per actor, but for now that is not supported.
-    public void CreateActor(string className, string objectName, Spatial actor)
+	public void CreateActor(string className, string objectName, Spatial actor)
 	{
 		if (!CreateObject(className, objectName))
 		{
 			return;
 		}
-		LuaRegistry.RegisterActor(new LuaObjectData( objectName, className, actor));
+		LuaRegistry.RegisterActor(new LuaObjectData(objectName, className, actor));
+	}
+
+	public class ErrorData
+	{
+		public int FromLine;
+		public int ToLine;
+		public int FromCol;
+		public int ToCol;
+		public string Message;
+	}
+	//Mostly for showcase. Will need a proper implementation in the godot source code using a real linter.
+	public static List<ErrorData> Linter(string code)
+	{
+		Script script = new Script();
+		try
+		{
+			DynValue dv = script.DoString(code);
+		}
+		catch (SyntaxErrorException e)
+		{
+			ErrorData error = new ErrorData();
+			error.FromLine = e.Token.FromLine;
+			error.ToLine = e.Token.ToLine;
+			error.FromCol = e.Token.FromCol;
+			error.ToCol = e.Token.ToCol;
+			error.Message = e.Message;
+
+            return new List<ErrorData>() { error };
+		}
+		//TODO deal with this later
+		catch (Exception e)
+		{
+			GD.PushWarning("Other error: " + e.Message);
+            ErrorData error = new ErrorData();
+            error.FromLine = 2;
+            error.ToLine = 1;
+            error.FromCol = 2;
+            error.ToCol = 1;
+            error.Message = e.Message;
+            return new List<ErrorData>() { error };
+        }
+
+		return new List<ErrorData>();
+
 	}
 
 	public void RunUntilCompletion(string function, List<string> prms = null)

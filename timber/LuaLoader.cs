@@ -434,6 +434,9 @@ public class ActorConfig
 
 	public List<StateConfig> stateConfigs = new List<StateConfig>();
 	public StatConfig statConfig;
+
+	[System.NonSerialized]
+    public string __filePath; // Used for autosaving
 }
 
 [Serializable]
@@ -490,6 +493,11 @@ public class ModFile
 	{
 		last_modified = time.ToString("yyyy-MM-dd HH:mm:ss",
 								   System.Globalization.CultureInfo.InvariantCulture);
+	}
+
+	public bool EndsWith(string text)
+	{
+		return name.EndsWith(text);
 	}
 }
 

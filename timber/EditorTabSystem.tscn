@@ -1,0 +1,293 @@
+[gd_scene load_steps=13 format=2]
+
+[ext_resource path="res://FlatUI/kenneyUI-green.tres" type="Theme" id=1]
+[ext_resource path="res://temp_scripts/hammer.png" type="Texture" id=2]
+[ext_resource path="res://AssetManagement/AssetSpawner.cs" type="Script" id=3]
+[ext_resource path="res://new_theme.tres" type="Theme" id=4]
+[ext_resource path="res://Dialogue/Beaver.png" type="Texture" id=5]
+[ext_resource path="res://png_background.jpg" type="Texture" id=6]
+[ext_resource path="res://PopupManager.cs" type="Script" id=7]
+[ext_resource path="res://icons/add_icon.png" type="Texture" id=8]
+
+[sub_resource type="Theme" id=1]
+
+[sub_resource type="DynamicFontData" id=2]
+font_path = "res://fonts/Roboto-Regular.ttf"
+
+[sub_resource type="DynamicFont" id=3]
+font_data = SubResource( 2 )
+
+[sub_resource type="CSharpScript" id=4]
+resource_name = "PickAssetButton"
+script/source = "using Godot;
+using System;
+
+public class PickAssetButton : Button
+{
+    // Declare member variables here. Examples:
+    // private int a = 2;
+    // private string b = \"text\";
+
+    // Called when the node enters the scene tree for the first time.
+    public override void _Ready()
+    {
+        
+    }
+
+//  // Called every frame. 'delta' is the elapsed time since the previous frame.
+//  public override void _Process(float delta)
+//  {
+//      
+//  }
+}
+"
+
+[node name="EditorTabSystem" type="Node2D"]
+
+[node name="TabContainer" type="TabContainer" parent="."]
+margin_right = 600.0
+margin_bottom = 800.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme = ExtResource( 1 )
+tab_align = 0
+
+[node name="Assets" type="Tabs" parent="TabContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 4.0
+margin_top = 36.0
+margin_right = -4.0
+margin_bottom = -4.0
+theme = ExtResource( 1 )
+script = ExtResource( 3 )
+
+[node name="ScrollContainer" type="ScrollContainer" parent="TabContainer/Assets"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_right = 12.0
+margin_bottom = 12.0
+rect_min_size = Vector2( 500, 500 )
+size_flags_horizontal = 3
+size_flags_vertical = 3
+scroll_horizontal_enabled = false
+
+[node name="GridContainer" type="GridContainer" parent="TabContainer/Assets/ScrollContainer"]
+margin_right = 604.0
+margin_bottom = 772.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme = SubResource( 1 )
+columns = 2
+
+[node name="Button" type="Button" parent="TabContainer/Assets/ScrollContainer/GridContainer"]
+visible = false
+margin_right = 524.0
+margin_bottom = 520.0
+theme = ExtResource( 4 )
+icon = ExtResource( 2 )
+
+[node name="Scripts" type="Tabs" parent="TabContainer"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 4.0
+margin_top = 36.0
+margin_right = -4.0
+margin_bottom = -4.0
+theme = ExtResource( 1 )
+script = ExtResource( 6 )
+
+[node name="ScriptName" type="Label" parent="TabContainer/Scripts"]
+margin_left = 136.0
+margin_top = 8.0
+margin_right = 388.0
+margin_bottom = 31.0
+rect_scale = Vector2( 1.3, 1.3 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+text = "Lua Script Name"
+
+[node name="TextEdit" type="TextEdit" parent="TabContainer/Scripts"]
+margin_left = 130.0
+margin_top = 42.0
+margin_right = 585.0
+margin_bottom = 754.0
+custom_colors/symbol_color = Color( 0.670588, 0.631373, 0, 1 )
+custom_colors/bookmark_color = Color( 1, 0, 0, 1 )
+custom_colors/line_number_color = Color( 0, 0, 0, 1 )
+custom_colors/background_color = Color( 0.831373, 0.831373, 0.831373, 1 )
+custom_colors/brace_mismatch_color = Color( 1, 0, 0, 1 )
+custom_fonts/font = SubResource( 3 )
+text = "(Lua Text)"
+highlight_current_line = true
+syntax_highlighting = true
+show_line_numbers = true
+bookmark_gutter = true
+highlight_all_occurrences = true
+
+[node name="ErrorBG" type="ColorRect" parent="TabContainer/Scripts/TextEdit"]
+margin_left = 11.0
+margin_top = 671.0
+margin_right = 441.0
+margin_bottom = 740.0
+color = Color( 1, 1, 1, 0 )
+
+[node name="ErrorLabel" type="Label" parent="TabContainer/Scripts/TextEdit/ErrorBG"]
+margin_left = 5.0
+margin_top = 7.0
+margin_right = 426.0
+margin_bottom = 64.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+
+[node name="ScrollContainer" type="ScrollContainer" parent="TabContainer/Scripts"]
+margin_top = 41.0
+margin_right = 127.0
+margin_bottom = 754.0
+scroll_horizontal_enabled = false
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Scripts/ScrollContainer"]
+margin_right = 125.0
+rect_min_size = Vector2( 125, 0 )
+
+[node name="Cutscenes" type="Tabs" parent="TabContainer"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 4.0
+margin_top = 36.0
+margin_right = -4.0
+margin_bottom = -4.0
+theme = ExtResource( 1 )
+
+[node name="Maps" type="Tabs" parent="TabContainer"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 4.0
+margin_top = 32.0
+margin_right = -4.0
+margin_bottom = -4.0
+theme = ExtResource( 1 )
+
+[node name="PreviewWindow" type="WindowDialog" parent="."]
+visible = true
+margin_left = 616.0
+margin_top = 49.0
+margin_right = 1216.0
+margin_bottom = 449.0
+window_title = "Image Preview"
+
+[node name="TransparentBG" type="TextureRect" parent="PreviewWindow"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+texture = ExtResource( 6 )
+expand = true
+
+[node name="PreviewImage" type="TextureRect" parent="PreviewWindow"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 20.0
+margin_top = 20.0
+margin_right = -20.0
+margin_bottom = -20.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+texture = ExtResource( 5 )
+expand = true
+stretch_mode = 6
+
+[node name="ActorPreviewWindow" type="WindowDialog" parent="."]
+visible = true
+margin_left = 1232.0
+margin_top = 50.0
+margin_right = 1832.0
+margin_bottom = 450.0
+window_title = "Actor Preview"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ActorPreviewWindow"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="ActorImage" type="TextureRect" parent="ActorPreviewWindow/HBoxContainer"]
+margin_right = 296.0
+margin_bottom = 400.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+texture = ExtResource( 6 )
+expand = true
+stretch_mode = 2
+
+[node name="PreviewImage" type="TextureRect" parent="ActorPreviewWindow/HBoxContainer/ActorImage"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 20.0
+margin_top = 20.0
+margin_right = -20.0
+margin_bottom = -20.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+texture = ExtResource( 5 )
+expand = true
+stretch_mode = 6
+
+[node name="ActorDetailsScroll" type="ScrollContainer" parent="ActorPreviewWindow/HBoxContainer"]
+margin_left = 300.0
+margin_right = 600.0
+margin_bottom = 400.0
+rect_min_size = Vector2( 300, 0 )
+size_flags_horizontal = 3
+size_flags_vertical = 3
+scroll_horizontal_enabled = false
+
+[node name="ActorDetails" type="VBoxContainer" parent="ActorPreviewWindow/HBoxContainer/ActorDetailsScroll"]
+margin_right = 300.0
+margin_bottom = 400.0
+rect_min_size = Vector2( 250, 0 )
+rect_clip_content = true
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="PopupManager" type="Node2D" parent="."]
+script = ExtResource( 7 )
+
+[node name="Button" type="Button" parent="."]
+margin_left = 699.0
+margin_top = 777.0
+margin_right = 1223.0
+margin_bottom = 1295.0
+rect_scale = Vector2( 0.5, 0.5 )
+rect_pivot_offset = Vector2( 752, 60 )
+text = "Pick Image"
+icon = ExtResource( 8 )
+icon_align = 1
+script = SubResource( 4 )
+
+[node name="Button2" type="Button" parent="."]
+margin_left = 979.0
+margin_top = 777.0
+margin_right = 1503.0
+margin_bottom = 1295.0
+rect_scale = Vector2( 0.5, 0.5 )
+rect_pivot_offset = Vector2( 752, 60 )
+text = "Pick Sound"
+icon = ExtResource( 8 )
+icon_align = 1
+script = SubResource( 4 )
+
+[node name="Button3" type="Button" parent="."]
+margin_left = 1261.0
+margin_top = 777.0
+margin_right = 1785.0
+margin_bottom = 1295.0
+rect_scale = Vector2( 0.5, 0.5 )
+rect_pivot_offset = Vector2( 752, 60 )
+text = "Pick Actor"
+icon = ExtResource( 8 )
+icon_align = 1
+script = SubResource( 4 )
+
+[connection signal="pressed" from="Button" to="PopupManager" method="PickAsset" binds= [ "Image" ]]
+[connection signal="pressed" from="Button2" to="PopupManager" method="PickAsset" binds= [ "Sound" ]]
+[connection signal="pressed" from="Button3" to="PopupManager" method="PickAsset" binds= [ "Actor" ]]
